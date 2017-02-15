@@ -87,3 +87,7 @@ ENV/
 
 # Rope project settings
 .ropeproject
+QQZone/html.txt
+QQZone/html.html
+*.iml
+*.xml
