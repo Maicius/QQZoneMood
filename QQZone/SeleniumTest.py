@@ -1,13 +1,27 @@
 import time
 from selenium import webdriver
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
+driver = webdriver.Chrome('E:/chromedriver/chromedriver')
+driver.get('http://qzone.qq.com/')
+wait = WebDriverWait(driver, 10)
+print('getFinished')
+time.sleep(10)
+print('sleepFinished')
+login = driver.find_element_by_link_text('说说')
+login.click()
+like = wait.until(EC.visibility_of_element_located((By.CLASS_NAME, 'c_tx')))
+like.click()
 
-driver = webdriver.Chrome('E:/chromedriver/chromedriver')  # Optional argument, if not specified will search path.
-#driver.get('http://www.google.com/xhtml')
-driver.get('http://user.qzone.qq.com/1272082503')
-#driver.get('http://www.baidu.com')
-#time.sleep(5) # Let the user actually see something!
-search_box = driver.find_element_by_name('q')
-search_box.send_keys('QQ空间')
-search_box.submit()
-time.sleep(100)
-driver.quit()
+while(driver.find_element_by_link_text('查看更多')):
+    like_more = driver.find_element_by_link_text('查看更多')
+    like_more.click()
+like_name = driver.find_element_by_class_name('info_name')
+like_info = driver.find_element_by_class_name('info_detail')
+print(like_name)
+print(like_info)
+
+
+time.sleep(5)
+

@@ -5,11 +5,10 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 from bs4 import BeautifulSoup
 def qqzone_data():
-    url='http://user.qzone.qq.com/1272082503'
+    url='http://users.qzone.qq.com/cgi-bin/likes/get_like_list_app?uin=1272082503&unikey=http%3A%2F%2Fuser.qzone.qq.com%2F1272082503%2Fmood%2F4770d24b7e0aa358cb210700.1%5E%7C%7C%5Ehttp%3A%2F%2Fuser.qzone.qq.com%2F1272082503%2Fphoto%2F91b7c939-e3c7-41d8-a450-626a11d7ce19%2FNDR0R3DSS38Ko1j2TNMRVgEAAAAAAAA!%5E%7C%7C%5E0&begin_uin=0&query_count=60&if_first_page=1&g_tk=1549424880'
     head={
         'Connection':'keep-alive',
-        'Cookie':'zzpaneluin=; zzpanelkey=; pgv_pvi=5924405248; pgv_si=s3300252672; ptisp=ctc; RK=ao+Sw6AvWR; ptcz=25c2af45a157324d5939ce4510b05d828086df27eb5890a8bb7edc39f9df9926; __Q_w_s__appDataSeed=1; __Q_w_s_hat_seed=1; pgv_pvid=242646819; pgv_info=ssid=s2763182108; pt2gguin=o1272082503; uin=o1272082503; skey=@NXeYUVn4m; p_uin=o1272082503; p_skey=Nyse35Y7R7ysx-wlwOfbIu6Qqw2R6auzHxP8VejRczY_; pt4_token=GaSxir0-TAUYcLTXrtR0GFtBqbU*trr0mRs0aKkQbrc_; __Q_w_s__QZN_TodoMsgCnt=1; Loading=Yes; qzspeedup=sdch; qz_screen=1920x1080; QZ_FE_WEBP_SUPPORT=1; cpu_performance_v8=12',
-        'If-Modified-Since':'Wed, 15 Feb 2017 05:06:19 GMT',
+        'Cookie':'pgv_pvid=9811567020; pgv_info=ssid=s938558904; ptisp=ctc; RK=2g+S16AeVx; ptcz=12e83fc3eb11f4f254e9862bd8449ce67e98594b8f75d6d1491515679e809aae; pt2gguin=o1272082503; uin=o1272082503; skey=@gO3UzmS5e; p_uin=o1272082503; p_skey=Q5rjqjWUMQeBYeuNwRpzF45QbywjMzwq82SIPoG1a2o_; pt4_token=SLPIzoXVuEsCGc6v-2RwnUi5cp8OfWRZnxFRauYgeCc_; Loading=Yes; qzspeedup=sdch; QZ_FE_WEBP_SUPPORT=1; cpu_performance_v8=5; __Q_w_s__QZN_TodoMsgCnt=1; __Q_w_s_hat_seed=1',
         'User-Agent':'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) '
                      'Chrome/52.0.2743.116 Safari/537.36'
     }
@@ -19,7 +18,7 @@ def qqzone_data():
     resp.encoding = 'utf-8'
     content = resp.text
     print('请求完成！')
-    #print(content)
+    print(content)
 
     soup = BeautifulSoup(content, 'html.parser')
     names = soup.select('.f-nick')
