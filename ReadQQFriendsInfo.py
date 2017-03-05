@@ -7,12 +7,12 @@ import time
 import xml.dom.minidom
 import json
 import sys
-import math
+
 import subprocess
 import ssl
 import threading
 import urllib
-import urllib3
+
 
 DEBUG = True
 
