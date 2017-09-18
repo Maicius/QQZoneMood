@@ -34,3 +34,6 @@
 
 > 替换class spider中self.__username与self.__password为自己的QQ号密码
 > 运行
+> 
+
+- 运行结果例图：
