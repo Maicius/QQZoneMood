@@ -9,7 +9,7 @@ import codecs
 import matplotlib.pyplot as plt
 import json
 
-def splitWords(word):
+def splitWrds(word):
     print('begin')
     word_list = jieba.cut(word, cut_all=False)
     # print("/".join(word_list))
@@ -46,13 +46,22 @@ def splitWords(word):
 def get_comment_names(word):
     json_word = json.loads(word)
     name_list = []
+    word_list = ""
     for item in json_word:
         if 'commentlist' in item:
             item = json.loads(item)
             for comment in item['commentlist']:
                 name_list.append(comment['name'])
+                word_list += comment['content']
     name_text = " ".join(name_list)
-    return name_text
+    word_list = jieba.cut(word_list, cut_all=False)
+    word_list2 = []
+    for word in word_list:
+        print word
+        if len(word) >= 2 and word.find('e') == -1:
+            word_list2.append(word)
+    words_text = " ".join(word_list2)
+    return name_text, words_text
 
 def get_agree_names(word):
     json_word = json.loads(words)
@@ -98,12 +107,14 @@ if __name__ == '__main__':
 
     f = codecs.open('mood_detail.json', 'r', encoding='utf-8')
     words = f.read()
-    # comment_text = get_comment_names(words)
+    comment_text, word_text = get_comment_names(words)
     # drawWordCloud(comment_text, 'comment.png')
+
+    drawWordCloud(word_text, 'comment_content.png')
     f.close()
 
-    f = codecs.open('agree.json', 'r', encoding='utf-8')
-    words = f.read()
-    comment_text = get_agree_names(words)
-    drawWordCloud(comment_text, 'agree.png')
-    f.close()
+    # f = codecs.open('agree.json', 'r', encoding='utf-8')
+    # words = f.read()
+    # comment_text = get_agree_names(words)
+    # drawWordCloud(comment_text, 'agree.png')
+    # f.close()
