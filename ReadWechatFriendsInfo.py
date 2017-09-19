@@ -13,7 +13,6 @@ import ssl
 import threading
 import urllib
 
-
 DEBUG = True
 
 MAX_GROUP_NUM = 2
@@ -39,6 +38,7 @@ ContactList = []
 My = []
 SyncKey = []
 
+
 def responseState(func, BaseResopnse):
     ErrMsg = BaseResopnse['ErrMsg']
     Ret = BaseResopnse['Ret']
@@ -62,7 +62,7 @@ def getUUid():
     r = myRequests.get(url=url, params=params)
     r.encoding = 'utf-8'
     data = r.text
-    #print(data)
+    # print(data)
 
     regx = r'window.QRLogin.code = (\d+); window.QRLogin.uuid = "(\S+?)"'
     pm = re.search(regx, data)
@@ -73,9 +73,7 @@ def getUUid():
     return False
 
 
-
 def showQRImage():
-
     global tip
     url = 'https://login.weixin.qq.com/qrcode/' + uuid
     params = {
@@ -90,38 +88,46 @@ def showQRImage():
     f.close()
     time.sleep(1)
 
-    if sys.platform.find('win32') >= 0:
-        #subprocess.call(['open', QRImagePath])
+    # for mac os
+    if sys.platform.find('darwin') >= 0:
+        subprocess.call(['open', QRImagePath])
+    # for linux
+    elif sys.platform.find('linux') >= 0:
+        subprocess.call(['xdg-open', QRImagePath])
+     # for windows
+    elif sys.platform.find('win32') >= 0:
+        # subprocess.call(['open', QRImagePath])
         os.startfile(QRImagePath)
     else:
         subprocess.call(['xdg-open', QRImagePath])
     print('请使用微信扫描二维码登陆')
 
+
 def waitForLogin():
     global tip, base_uri, redirect_uri, push_uri
 
-    url = 'https://login.weixin.qq.com/cgi-bin/mmwebwx-bin/login?tip=%s&uuid=%s&_=%s'%(
+    url = 'https://login.weixin.qq.com/cgi-bin/mmwebwx-bin/login?tip=%s&uuid=%s&_=%s' % (
         tip, uuid, int(time.time()))
     r = myRequests.get(url=url)
     r.encoding = 'utf-8'
     data = r.text
 
-    #print(data)
+    # print(data)
 
-    #window.code = 500
+    # window.code = 500
     regx = r'window.code=(\d+);'
     pm = re.search(regx, data)
 
     code = pm.group(1)
 
-    if code =='201':
+    if code == '201':
         print('扫描成功，请在手机上点击确认以登陆')
         tip = 0
-    elif code =='200':
+    elif code == '200':
         print('正在登陆...')
         regx = r'window.redirect_uri="(\S+?)";'
         pm = re.search(regx, data)
-        redirect_uri = pm.group(1)+'&fun=new'
+        redirect_uri = pm.group(1) + '&fun=new'
         base_uri = redirect_uri[:redirect_uri.rfind('/')]
 
         services = [('wx2.qq.com', 'webpush2.weixin.qq.com'), ('qq.com', 'webpush.weixin.qq.com'),
@@ -146,7 +152,6 @@ def waitForLogin():
 
 
 def login():
-
     global skey, wxsid, wxuin, pass_ticket, BaseRequest
     r = myRequests.get(url=redirect_uri)
     r.encoding = 'utf-8'
@@ -189,11 +194,11 @@ def webwxinit():
     data = r.json()
 
     if DEBUG:
-        f = open(os.path.join(os.getcwd(), 'webwxinit.json'),'wb')
+        f = open(os.path.join(os.getcwd(), 'webwxinit.json'), 'wb')
         f.write(r.content)
         f.close()
 
-    #print(data)
+    # print(data)
 
     global ContactList, My, SyncKey
     dic = data
@@ -206,9 +211,9 @@ def webwxinit():
 
 
 def webwxgetcontact():
-    url = (base_uri + '/webwxgetcontact?pass_ticket=%s&skey=%s&r=%s' % ( pass_ticket, skey, int(time.time())) )
+    url = (base_uri + '/webwxgetcontact?pass_ticket=%s&skey=%s&r=%s' % (pass_ticket, skey, int(time.time())))
     headers = {'content-type': 'application/json; charset=UTF-8'}
-    r = myRequests.post(url=url,headers=headers)
+    r = myRequests.post(url=url, headers=headers)
     r.encoding = 'utf-8'
     data = r.json()
     if DEBUG:
@@ -230,18 +235,19 @@ def webwxgetcontact():
         Member = MemberList[i]
         if Member['VerifyFlag'] & 8 != 0:  # 公众号/服务号
             MemberList.remove(Member)
-        elif Member['UserName'] in SpecialUsers: # 特殊账号
+        elif Member['UserName'] in SpecialUsers:  # 特殊账号
             MemberList.remove(Member)
-        elif Member['UserName'].find('@@') != -1:#群
+        elif Member['UserName'].find('@@') != -1:  # 群
             MemberList.remove(Member)
-        elif Member['UserName'] == My['UserName']: #自己
+        elif Member['UserName'] == My['UserName']:  # 自己
             MemberList.remove(Member)
 
     return MemberList
 
+
 def syncKey():
     SyncKeyItems = ['%s_%s' % (item['Key'], item['Val'])
-                     for item in SyncKey['List']]
+                    for item in SyncKey['List']]
     SyncKeyStr = '|'.join(SyncKeyItems)
     return SyncKeyStr
 
@@ -249,17 +255,17 @@ def syncKey():
 def syncCheck():
     url = push_uri + '/synccheck?'
     params = {
-        'skey':BaseRequest['/Skey'],
-        'sid:':BaseRequest['Sid'],
-        'uin:':BaseRequest['Uin'],
-        'deviceId':BaseRequest['DeviceId'],
+        'skey': BaseRequest['/Skey'],
+        'sid:': BaseRequest['Sid'],
+        'uin:': BaseRequest['Uin'],
+        'deviceId': BaseRequest['DeviceId'],
         'syncKey': syncKey(),
         'r': int(time.time())
     }
     r = myRequests.get(url=url, params=params)
     r.encoding = 'utf-8'
     data = r.text
-    #print(data)
+    # print(data)
 
     regx = r'window.synccheck={retcode:"(\d+)", selector:"(\d+)"}'
     pm = re.search(regx, data)
@@ -275,7 +281,7 @@ def webwxsync():
     url = base_uri + '/webwxsync?lang=zh_CN&skey=%s&sid=%s&pass_ticket=%s' % (
         BaseRequest['Skey'], BaseRequest['Sid'], urllib.quote_plus(pass_ticket))
 
-    params = { 'BaseRequest': BaseRequest, 'SyncKey': SyncKey, 'rr': ~int(time.time()), }
+    params = {'BaseRequest': BaseRequest, 'SyncKey': SyncKey, 'rr': ~int(time.time()), }
     headers = {'content-type': 'application/json; charset=UTF-8'}
     r = myRequests.post(url=url, data=json.dumps(params))
     r.encoding = 'utf-8'
@@ -302,7 +308,8 @@ def main():
     if hasattr(ssl, '_create_unverified_context'):
         ssl._create_default_https_context = ssl._create_unverified_context
 
-    headers = {'User-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.125 Safari/537.36'}
+    headers = {
+        'User-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.125 Safari/537.36'}
 
     myRequests = requests.Session()
     myRequests.headers.update(headers)
@@ -331,16 +338,15 @@ def main():
     d = {}
     imageIndex = 0
     for Member in MemberList:
-
         imageIndex = imageIndex + 1
-        name = 'I:\\ReadQQFrinedsInfo\\friend\\' + str(imageIndex)+'.jpg'
-        imageUrl = 'https://wx2.qq.com'+Member['HeadImgUrl']
+        name = 'wechatPhoto/' + str(imageIndex) + '.jpg'
+        imageUrl = 'https://wx2.qq.com' + Member['HeadImgUrl']
         r = myRequests.get(url=imageUrl, headers=headers)
         imageContent = (r.content)
-        fileImage = open(name,'wb+')
+        fileImage = open(name, 'wb+')
         fileImage.write(imageContent)
         fileImage.close()
-        print('正在下载第：'+str(imageIndex)+'位好友头像')
+        print('正在下载第：' + str(imageIndex) + '位好友头像')
         d[Member['UserName']] = (Member['NickName'], Member['RemarkName'])
         city = Member['City']
         city = 'nocity' if city == '' else city
@@ -356,9 +362,9 @@ def main():
         nick = Member['NickName']
         nick = 'nonick' if nick == '' else nick
 
-        print(name,' ^+*+^ ',city,' ^+*+^ ', Member['Sex'],' ^+*+^ ')
+        print(name, ' ^+*+^ ', city, ' ^+*+^ ', Member['Sex'], ' ^+*+^ ')
 
-if __name__=='__main__':
+if __name__ == '__main__':
     main()
     print('回车键退出')
     input()
