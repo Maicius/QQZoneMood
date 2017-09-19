@@ -39,9 +39,12 @@
 > 2. 说说点赞的总人数
 > 3. 点赞最多的人物排名和点赞数
 > 4. 评论最多的人物排名和评论数
+> 5. 所有说说的内容分析（分词使用的是jieba）
+> 6. 所有评论的内容分析
 - 运行结果：生成词云图
 - 运行结果例图：
 
-![Image](https://github.com/Maicius/wexinFriendInfo/blob/master/QQZone/final2.png)
-![Image2](https://github.com/Maicius/wexinFriendInfo/blob/master/QQZone/comment.png)
-![Image3]()
+![Image](https://github.com/Maicius/wexinFriendInfo/blob/master/QQZone/final2.jpg)
+![Image2](https://github.com/Maicius/wexinFriendInfo/blob/master/QQZone/comment.jpg)
+![Image3](https://github.com/Maicius/wexinFriendInfo/blob/master/QQZone/comment_content.jpg)
+![Image](https://github.com/Maicius/wexinFriendInfo/blob/master/QQZone/agree.jpg)
