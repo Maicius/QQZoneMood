@@ -1,7 +1,9 @@
 # wexinFriendInfo
-## 抓取微信好友信息
+
 ## 抓取QQ空间说说内容并进行分析
+
 ###爬虫文件
+
 ###QQZoneShuoshuo.py
 - python版本：3.6
 - 已经抓取到的信息有：
@@ -48,3 +50,53 @@
 ![Image2](https://github.com/Maicius/wexinFriendInfo/blob/master/QQZone/comment.jpg)
 ![Image3](https://github.com/Maicius/wexinFriendInfo/blob/master/QQZone/comment_content.jpg)
 ![Image](https://github.com/Maicius/wexinFriendInfo/blob/master/QQZone/agree.jpg)
+
+## 抓取微信好友信息
+- 好友列表里所有好友，删除了公众号信息
+
+### 爬虫文件
+###  ReadWechatFrinedsInfo.py
+- python版本： 3.6  
+- 抓取到的信息格式如下：
+
+>（用户名被加密过）   
+{
+"Uin": 0,  
+"UserName": "@01535fb7d3f2626efda79395a24a281106c2094e987efb41b243337d9f4fbf46",  
+"NickName": "HCG",  
+"HeadImgUrl": "/cgi-bin/mmwebwx-bin/webwxgeticon?seq=659005699&username=@01535fb7d3f2626efda79395a24a281106c2094e987efb41b243337d9f4fbf46&skey=@crypt_731e3859_a77aa23f9d062c6d5c5fa3634412924a",  
+"ContactFlag": 3,  
+"MemberCount": 0,  
+"MemberList": [],  
+"RemarkName": "",  
+"HideInputBarFlag": 0,  
+"Sex": 1,  
+"Signature": "",  
+"VerifyFlag": 0,  
+"OwnerUin": 0,  
+"PYInitial": "HCG",  
+"PYQuanPin": "HCG",  
+"RemarkPYInitial": "",  
+"RemarkPYQuanPin": "",  
+"StarFriend": 0,  
+"AppAccountFlag": 0,  
+"Statues": 0,  
+"AttrStatus":  36961,  
+"Province": "广东",  
+"City": "佛山",  
+"Alias": "",  
+"SnsFlag": 17,  
+"UniFriend": 0,  
+"DisplayName": "",  
+"ChatRoomId": 0,  
+"KeyWord": "",  
+"EncryChatRoomId": "",  
+"IsOwner": 0  
+}
+
+- 此外还下载了所有好友的头像
+
+- 运行方式：
+
+> 根据import 安装相应包，直接运行，扫二维码完成网页登录
+
