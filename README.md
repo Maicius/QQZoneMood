@@ -5,7 +5,7 @@
 ###爬虫文件
 
 ###QQZoneShuoshuo.py
-- python版本：3.6
+- python版本：3.6（推荐使用python3，因为本爬虫涉及大量文件交互，python3的编码管理比2中好很多）
 - 已经抓取到的信息有：
 
 > 1. 所有说说信息
@@ -29,12 +29,13 @@
 
 - 运行方式  
 
-> 替换class spider中self.__username与self.__password为自己的QQ号密码
+> 使用pip3安装相应的包，如 sudo pip3 install wordcloud    
+> 替换class spider中self.__username与self.__password为自己的QQ号密码  
 > 运行
 
 ### 数据分析
 ### drawWordCloud.py
-- 注意：由于wordCloud这个库只支持python2，所以这个文件需要在python2 环境下运行
+- python版本：3.6  
 - 已经实现的分析有：
 
 > 1. 平均每条说说的点赞人数  
@@ -43,6 +44,7 @@
 > 4. 评论最多的人物排名和评论数
 > 5. 所有说说的内容分析（分词使用的是jieba）
 > 6. 所有评论的内容分析
+
 - 运行结果：生成词云图
 - 运行结果例图：
 

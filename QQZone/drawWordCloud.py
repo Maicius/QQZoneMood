@@ -1,15 +1,14 @@
-#coding:utf-8
+# coding:utf-8
 
 import jieba
 from wordcloud import WordCloud, ImageColorGenerator, STOPWORDS
-import numpy as np
-from PIL import  Image
 from scipy.misc import imread
 import codecs
 import matplotlib.pyplot as plt
 import json
 
-def splitWrds(word):
+
+def splitWords(word):
     print('begin')
     word_list = jieba.cut(word, cut_all=False)
     # print("/".join(word_list))
@@ -23,7 +22,7 @@ def splitWrds(word):
     #             word_dict[word] = 1
     word_list2 = []
     for word in word_list:
-        print word
+        print(word)
         if len(word) >= 2 and word.find('e') == -1:
             word_list2.append(word)
 
@@ -31,9 +30,9 @@ def splitWrds(word):
     #     print item
     #     item = item.encode('utf-8')
     #     print item
-    print word_list2
+    print(word_list2)
     word_text = " ".join(word_list2)
-    print word_text
+    print(word_text)
 
     # dicts = sorted(word_dict.items(), key= lambda item2: item2[1], reverse=True)
     # for item in dicts:
@@ -57,11 +56,12 @@ def get_comment_names(word):
     word_list = jieba.cut(word_list, cut_all=False)
     word_list2 = []
     for word in word_list:
-        print word
+        print(word)
         if len(word) >= 2 and word.find('e') == -1:
             word_list2.append(word)
     words_text = " ".join(word_list2)
     return name_text, words_text
+
 
 def get_agree_names(word):
     json_word = json.loads(words)
@@ -69,11 +69,12 @@ def get_agree_names(word):
     for item in json_word:
         item = json.loads(item)
         data = item['data']
-        print data
+        print(data)
         if 'like_uin_info' in data:
             for info in data['like_uin_info']:
                 name_list.append(info['nick'])
     return " ".join(name_list)
+
 
 def drawWordCloud(word_text, filename):
     mask = imread('pic copy.png')
@@ -97,24 +98,25 @@ def drawWordCloud(word_text, filename):
     my_wordcloud.to_file(filename=filename)
     print()
 
+
 if __name__ == '__main__':
-    f = codecs.open('mood_details.txt', 'r', encoding='utf-8')
+    f = codecs.open('data/mood_details.txt', 'r', encoding='utf-8')
     words = f.read()
-    # print words
-    # word_text = splitWords(words)
-    # drawWordCloud(words, 'content.png')
+    print(words)
+    word_text = splitWords(words)
+    drawWordCloud(words, 'pic\content.png')
     f.close()
 
-    f = codecs.open('mood_detail.json', 'r', encoding='utf-8')
+    f = codecs.open('data/mood_detail.json', 'r', encoding='utf-8')
     words = f.read()
     comment_text, word_text = get_comment_names(words)
-    # drawWordCloud(comment_text, 'comment.png')
+    drawWordCloud(comment_text, 'pic/comment.png')
 
-    drawWordCloud(word_text, 'comment_content.png')
+    drawWordCloud(word_text, 'pic/comment_content.png')
     f.close()
 
-    # f = codecs.open('agree.json', 'r', encoding='utf-8')
-    # words = f.read()
-    # comment_text = get_agree_names(words)
-    # drawWordCloud(comment_text, 'agree.png')
-    # f.close()
+    f = codecs.open('data/like.json', 'r', encoding='utf-8')
+    words = f.read()
+    comment_text = get_agree_names(words)
+    drawWordCloud(comment_text, 'pic/like.png')
+    f.close()
