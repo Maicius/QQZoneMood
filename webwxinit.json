@@ -9,7 +9,7 @@
 "Uin": 0,
 "UserName": "filehelper",
 "NickName": "文件传输助手",
-"HeadImgUrl": "/cgi-bin/mmwebwx-bin/webwxgeticon?seq=644074335&username=filehelper&skey=@crypt_731e3859_a77aa23f9d062c6d5c5fa3634412924a",
+"HeadImgUrl": "/cgi-bin/mmwebwx-bin/webwxgeticon?seq=644074335&username=filehelper&skey=@crypt_731e3859_45329bb60d53eb95c6cc889e9fde302c",
 "ContactFlag": 2,
 "MemberCount": 0,
 "MemberList": [],
@@ -40,795 +40,28 @@
 }
 ,{
 "Uin": 0,
-"UserName": "@@541f0176f6a98465d6109dcac990426ea99ea0dfce9a41c77b4d757827fd0c60",
-"NickName": "申请保研群",
-"HeadImgUrl": "/cgi-bin/mmwebwx-bin/webwxgetheadimg?seq=0&username=@@541f0176f6a98465d6109dcac990426ea99ea0dfce9a41c77b4d757827fd0c60&skey=@crypt_731e3859_a77aa23f9d062c6d5c5fa3634412924a",
-"ContactFlag": 0,
-"MemberCount": 59,
-"MemberList": [{
-"Uin": 0,
-"UserName": "@c4d061cabd880f7cb93a8b777074354a",
-"NickName": "",
-"AttrStatus": 0,
-"PYInitial": "",
-"PYQuanPin": "",
-"RemarkPYInitial": "",
-"RemarkPYQuanPin": "",
-"MemberStatus": 0,
-"DisplayName": "",
-"KeyWord": "qq3"
-}
-,{
-"Uin": 0,
-"UserName": "@04e397f090c4cae65365aadd2fb1d0c56ccfde229d164fecf975a97174f5a529",
-"NickName": "",
-"AttrStatus": 0,
-"PYInitial": "",
-"PYQuanPin": "",
-"RemarkPYInitial": "",
-"RemarkPYQuanPin": "",
-"MemberStatus": 0,
-"DisplayName": "",
-"KeyWord": ""
-}
-,{
-"Uin": 0,
-"UserName": "@280e6a361b54960f95a565db70e6c54253d7aac6c93a87fd2e6ddf7708ca1164",
-"NickName": "",
-"AttrStatus": 0,
-"PYInitial": "",
-"PYQuanPin": "",
-"RemarkPYInitial": "",
-"RemarkPYQuanPin": "",
-"MemberStatus": 0,
-"DisplayName": "",
-"KeyWord": ""
-}
-,{
-"Uin": 0,
-"UserName": "@2e22075cd3603d5579ed707b806eb7c6e647c6d181fc8efef06f7de1024b1b07",
-"NickName": "",
-"AttrStatus": 0,
-"PYInitial": "",
-"PYQuanPin": "",
-"RemarkPYInitial": "",
-"RemarkPYQuanPin": "",
-"MemberStatus": 0,
-"DisplayName": "",
-"KeyWord": ""
-}
-,{
-"Uin": 0,
-"UserName": "@1341918f0f18375e54be39484e5f29d1b0eba8c0ac9aeb31a8a5f69bd1783bcd",
-"NickName": "",
-"AttrStatus": 0,
-"PYInitial": "",
-"PYQuanPin": "",
-"RemarkPYInitial": "",
-"RemarkPYQuanPin": "",
-"MemberStatus": 0,
-"DisplayName": "",
-"KeyWord": ""
-}
-,{
-"Uin": 0,
-"UserName": "@97d5d61044abf0ffc1757477b3156c33413593b16184f0ba130ce6066154fa7e",
-"NickName": "",
-"AttrStatus": 0,
-"PYInitial": "",
-"PYQuanPin": "",
-"RemarkPYInitial": "",
-"RemarkPYQuanPin": "",
-"MemberStatus": 0,
-"DisplayName": "",
-"KeyWord": ""
-}
-,{
-"Uin": 0,
-"UserName": "@fcc93d2c73f55a7d73b22c63875bc7a9130f0765aa4aa16156e2850b2d76817f",
-"NickName": "",
-"AttrStatus": 0,
-"PYInitial": "",
-"PYQuanPin": "",
-"RemarkPYInitial": "",
-"RemarkPYQuanPin": "",
-"MemberStatus": 0,
-"DisplayName": "",
-"KeyWord": ""
-}
-,{
-"Uin": 0,
-"UserName": "@097abe7918f88460a454f2bff8d08ecedf6d05201aa76f86f4d968d487b3f28a",
-"NickName": "",
-"AttrStatus": 0,
-"PYInitial": "",
-"PYQuanPin": "",
-"RemarkPYInitial": "",
-"RemarkPYQuanPin": "",
-"MemberStatus": 0,
-"DisplayName": "",
-"KeyWord": ""
-}
-,{
-"Uin": 0,
-"UserName": "@106b766fccc12cce172c63d9968e5e0ab385d99444ad904360a8feec085c9a4e",
-"NickName": "",
-"AttrStatus": 0,
-"PYInitial": "",
-"PYQuanPin": "",
-"RemarkPYInitial": "",
-"RemarkPYQuanPin": "",
-"MemberStatus": 0,
-"DisplayName": "",
-"KeyWord": ""
-}
-,{
-"Uin": 0,
-"UserName": "@1b5a565b768977f46bb45ebc62c93666bde6a67f8c0b37f2d1d652ae28ad4c5e",
-"NickName": "",
-"AttrStatus": 0,
-"PYInitial": "",
-"PYQuanPin": "",
-"RemarkPYInitial": "",
-"RemarkPYQuanPin": "",
-"MemberStatus": 0,
-"DisplayName": "",
-"KeyWord": ""
-}
-,{
-"Uin": 0,
-"UserName": "@d9f5ee14e357d86c0292829282c7f107bbc2d12064c6bff42e13672e65cfc9f0",
-"NickName": "",
-"AttrStatus": 0,
-"PYInitial": "",
-"PYQuanPin": "",
-"RemarkPYInitial": "",
-"RemarkPYQuanPin": "",
-"MemberStatus": 0,
-"DisplayName": "",
-"KeyWord": ""
-}
-,{
-"Uin": 0,
-"UserName": "@8d8a3fecc9b7d1f61e3f09a880d062f174ca5cfd7b7204d82c24edb8dd55c409",
-"NickName": "",
-"AttrStatus": 0,
-"PYInitial": "",
-"PYQuanPin": "",
-"RemarkPYInitial": "",
-"RemarkPYQuanPin": "",
-"MemberStatus": 0,
-"DisplayName": "",
-"KeyWord": ""
-}
-,{
-"Uin": 0,
-"UserName": "@79ffe536305aa82db6a7dffeb42e36803cfa06f1f13176dcb66d9c57a7f51c88",
-"NickName": "",
-"AttrStatus": 0,
-"PYInitial": "",
-"PYQuanPin": "",
-"RemarkPYInitial": "",
-"RemarkPYQuanPin": "",
-"MemberStatus": 0,
-"DisplayName": "",
-"KeyWord": ""
-}
-,{
-"Uin": 0,
-"UserName": "@863bd25900b9864d32dad3a78daf66f2650c69d7035ee7dc1071970ee2c5f7ad",
-"NickName": "",
-"AttrStatus": 0,
-"PYInitial": "",
-"PYQuanPin": "",
-"RemarkPYInitial": "",
-"RemarkPYQuanPin": "",
-"MemberStatus": 0,
-"DisplayName": "",
-"KeyWord": ""
-}
-,{
-"Uin": 0,
-"UserName": "@1346506441e32e9ba8b7e62e38bc52c42bc0f60389d30ef05521a72f9a887e4f",
-"NickName": "",
-"AttrStatus": 0,
-"PYInitial": "",
-"PYQuanPin": "",
-"RemarkPYInitial": "",
-"RemarkPYQuanPin": "",
-"MemberStatus": 0,
-"DisplayName": "",
-"KeyWord": ""
-}
-,{
-"Uin": 0,
-"UserName": "@642c9ccdfde37801f60cf34c3ee737630123a160f44d10f1ccde61b326c1843b",
-"NickName": "",
-"AttrStatus": 0,
-"PYInitial": "",
-"PYQuanPin": "",
-"RemarkPYInitial": "",
-"RemarkPYQuanPin": "",
-"MemberStatus": 0,
-"DisplayName": "",
-"KeyWord": ""
-}
-,{
-"Uin": 0,
-"UserName": "@56f0962ae89e8f3d6ada3415af6dfba3c772cb3a137840a44e9a9726dc48501a",
-"NickName": "",
-"AttrStatus": 0,
-"PYInitial": "",
-"PYQuanPin": "",
-"RemarkPYInitial": "",
-"RemarkPYQuanPin": "",
-"MemberStatus": 0,
-"DisplayName": "",
-"KeyWord": ""
-}
-,{
-"Uin": 0,
-"UserName": "@226543033d3b8bb7b64ac35e4ac6389524ffcbd9e4f19e461e6d326734304d24",
-"NickName": "",
-"AttrStatus": 0,
-"PYInitial": "",
-"PYQuanPin": "",
-"RemarkPYInitial": "",
-"RemarkPYQuanPin": "",
-"MemberStatus": 0,
-"DisplayName": "",
-"KeyWord": ""
-}
-,{
-"Uin": 0,
-"UserName": "@e092286c8ac688603ee21255439f81a4b8becc0bd35ac2754ef42d55a2544d22",
-"NickName": "",
-"AttrStatus": 0,
-"PYInitial": "",
-"PYQuanPin": "",
-"RemarkPYInitial": "",
-"RemarkPYQuanPin": "",
-"MemberStatus": 0,
-"DisplayName": "",
-"KeyWord": ""
-}
-,{
-"Uin": 0,
-"UserName": "@1db0831398951d3f1c2b044bced239af6bd7102a8d9f5f2e50f10219fa1566bf",
-"NickName": "",
-"AttrStatus": 0,
-"PYInitial": "",
-"PYQuanPin": "",
-"RemarkPYInitial": "",
-"RemarkPYQuanPin": "",
-"MemberStatus": 0,
-"DisplayName": "",
-"KeyWord": ""
-}
-,{
-"Uin": 0,
-"UserName": "@48ada90e3afe3dec5c0dab28a266c364741b8c301d3f7a2947864db7c9faef47",
-"NickName": "",
-"AttrStatus": 0,
-"PYInitial": "",
-"PYQuanPin": "",
-"RemarkPYInitial": "",
-"RemarkPYQuanPin": "",
-"MemberStatus": 0,
-"DisplayName": "",
-"KeyWord": ""
-}
-,{
-"Uin": 0,
-"UserName": "@0fc4efbce5d4efb394ec2e8ef46d48dbe12f120a705a03c2181c4c56462d1e41",
-"NickName": "",
-"AttrStatus": 0,
-"PYInitial": "",
-"PYQuanPin": "",
-"RemarkPYInitial": "",
-"RemarkPYQuanPin": "",
-"MemberStatus": 0,
-"DisplayName": "",
-"KeyWord": ""
-}
-,{
-"Uin": 0,
-"UserName": "@dbb7a04dba425a6fcc265134740d2c64adb4dfc422d38b7494726451801693b5",
-"NickName": "",
-"AttrStatus": 0,
-"PYInitial": "",
-"PYQuanPin": "",
-"RemarkPYInitial": "",
-"RemarkPYQuanPin": "",
-"MemberStatus": 0,
-"DisplayName": "",
-"KeyWord": ""
-}
-,{
-"Uin": 0,
-"UserName": "@cad5fd5067f34f5bbea273512dd56019",
-"NickName": "",
-"AttrStatus": 0,
-"PYInitial": "",
-"PYQuanPin": "",
-"RemarkPYInitial": "",
-"RemarkPYQuanPin": "",
-"MemberStatus": 0,
-"DisplayName": "",
-"KeyWord": "zhi"
-}
-,{
-"Uin": 0,
-"UserName": "@d644df778532b67c9f2c19fbc050c966bd739650894d760e6020e7e88cfc1814",
-"NickName": "",
-"AttrStatus": 0,
-"PYInitial": "",
-"PYQuanPin": "",
-"RemarkPYInitial": "",
-"RemarkPYQuanPin": "",
-"MemberStatus": 0,
-"DisplayName": "",
-"KeyWord": ""
-}
-,{
-"Uin": 0,
-"UserName": "@03f541ff1c822dfef07cd09018be3cd4",
-"NickName": "",
-"AttrStatus": 0,
-"PYInitial": "",
-"PYQuanPin": "",
-"RemarkPYInitial": "",
-"RemarkPYQuanPin": "",
-"MemberStatus": 0,
-"DisplayName": "",
-"KeyWord": "mic"
-}
-,{
-"Uin": 0,
-"UserName": "@2ee6d7e2345d49de4cf676d95d17e7894b80041183be9e20e92043fcb9011873",
-"NickName": "",
-"AttrStatus": 0,
-"PYInitial": "",
-"PYQuanPin": "",
-"RemarkPYInitial": "",
-"RemarkPYQuanPin": "",
-"MemberStatus": 0,
-"DisplayName": "",
-"KeyWord": ""
-}
-,{
-"Uin": 0,
-"UserName": "@c8daf6dbd06efacee842274eec859b1a",
-"NickName": "",
-"AttrStatus": 0,
-"PYInitial": "",
-"PYQuanPin": "",
-"RemarkPYInitial": "",
-"RemarkPYQuanPin": "",
-"MemberStatus": 0,
-"DisplayName": "",
-"KeyWord": "liu"
-}
-,{
-"Uin": 0,
-"UserName": "@576744df5f787c1228e53aa76591e88331c54838d1eb68b86ec0c1f007421aee",
-"NickName": "",
-"AttrStatus": 0,
-"PYInitial": "",
-"PYQuanPin": "",
-"RemarkPYInitial": "",
-"RemarkPYQuanPin": "",
-"MemberStatus": 0,
-"DisplayName": "",
-"KeyWord": ""
-}
-,{
-"Uin": 0,
-"UserName": "@ed6e3adf8602000d12fb5b9dcfea5c760083cff1d7af3eaaa3e65e00d03ff49d",
-"NickName": "",
-"AttrStatus": 0,
-"PYInitial": "",
-"PYQuanPin": "",
-"RemarkPYInitial": "",
-"RemarkPYQuanPin": "",
-"MemberStatus": 0,
-"DisplayName": "",
-"KeyWord": ""
-}
-,{
-"Uin": 0,
-"UserName": "@2446eafb06f0542950a7658d8730e037c94ebbb55e4f7eedf154fb573627133c",
-"NickName": "",
-"AttrStatus": 0,
-"PYInitial": "",
-"PYQuanPin": "",
-"RemarkPYInitial": "",
-"RemarkPYQuanPin": "",
-"MemberStatus": 0,
-"DisplayName": "",
-"KeyWord": ""
-}
-,{
-"Uin": 0,
-"UserName": "@e96b9609bb7392437af02ca66227cca98d08ae4037216abcba12173e6d7a5801",
-"NickName": "",
-"AttrStatus": 0,
-"PYInitial": "",
-"PYQuanPin": "",
-"RemarkPYInitial": "",
-"RemarkPYQuanPin": "",
-"MemberStatus": 0,
-"DisplayName": "",
-"KeyWord": ""
-}
-,{
-"Uin": 0,
-"UserName": "@2c9b5f881b44913bc1675c28392bee36021e6c7529b69f2026256f671bd1b3f0",
-"NickName": "",
-"AttrStatus": 0,
-"PYInitial": "",
-"PYQuanPin": "",
-"RemarkPYInitial": "",
-"RemarkPYQuanPin": "",
-"MemberStatus": 0,
-"DisplayName": "",
-"KeyWord": ""
-}
-,{
-"Uin": 0,
-"UserName": "@fbd4280b644bcd66a26aff9bee5ec4a7a31d9771db43e86aa77d93d77f2f3a73",
-"NickName": "",
-"AttrStatus": 0,
-"PYInitial": "",
-"PYQuanPin": "",
-"RemarkPYInitial": "",
-"RemarkPYQuanPin": "",
-"MemberStatus": 0,
-"DisplayName": "",
-"KeyWord": ""
-}
-,{
-"Uin": 0,
-"UserName": "@e5bc529dcc9bc571be5d479382f15a0eb98f8612c2516b285895075edd87794c",
-"NickName": "",
-"AttrStatus": 0,
-"PYInitial": "",
-"PYQuanPin": "",
-"RemarkPYInitial": "",
-"RemarkPYQuanPin": "",
-"MemberStatus": 0,
-"DisplayName": "",
-"KeyWord": ""
-}
-,{
-"Uin": 0,
-"UserName": "@18781cdbde4541e2e299ae8e56c11d52bb71b6be29a8c992deecf9f2571a169b",
-"NickName": "",
-"AttrStatus": 0,
-"PYInitial": "",
-"PYQuanPin": "",
-"RemarkPYInitial": "",
-"RemarkPYQuanPin": "",
-"MemberStatus": 0,
-"DisplayName": "",
-"KeyWord": ""
-}
-,{
-"Uin": 0,
-"UserName": "@ec2a6a54be1d7920ae9b890e35b8d4ed95fb37a4a884d348f9de120675d5f48b",
-"NickName": "",
-"AttrStatus": 0,
-"PYInitial": "",
-"PYQuanPin": "",
-"RemarkPYInitial": "",
-"RemarkPYQuanPin": "",
-"MemberStatus": 0,
-"DisplayName": "",
-"KeyWord": ""
-}
-,{
-"Uin": 0,
-"UserName": "@2504f807fec5bbd7073bf734aa44cfb909737eb54f040110f80a1567c05a5ec1",
-"NickName": "",
-"AttrStatus": 0,
-"PYInitial": "",
-"PYQuanPin": "",
-"RemarkPYInitial": "",
-"RemarkPYQuanPin": "",
-"MemberStatus": 0,
-"DisplayName": "",
-"KeyWord": ""
-}
-,{
-"Uin": 0,
-"UserName": "@7c1ed7eeb9d343e85039b64859cb278a",
-"NickName": "",
-"AttrStatus": 0,
-"PYInitial": "",
-"PYQuanPin": "",
-"RemarkPYInitial": "",
-"RemarkPYQuanPin": "",
-"MemberStatus": 0,
-"DisplayName": "",
-"KeyWord": "mut"
-}
-,{
-"Uin": 0,
-"UserName": "@067e33015cc0b3db2fe3b2fe550e33268b3f4e2d94ac75c02ecf0dc3adb39b92",
-"NickName": "",
-"AttrStatus": 0,
-"PYInitial": "",
-"PYQuanPin": "",
-"RemarkPYInitial": "",
-"RemarkPYQuanPin": "",
-"MemberStatus": 0,
-"DisplayName": "",
-"KeyWord": ""
-}
-,{
-"Uin": 0,
-"UserName": "@b23c817a8c86cd9589e331c8526b65353483b5963b74586b86e98a0a4845904d",
-"NickName": "",
-"AttrStatus": 0,
-"PYInitial": "",
-"PYQuanPin": "",
-"RemarkPYInitial": "",
-"RemarkPYQuanPin": "",
-"MemberStatus": 0,
-"DisplayName": "",
-"KeyWord": ""
-}
-,{
-"Uin": 0,
-"UserName": "@fbd54e1f157892a3cf3076a78732bfcbfc1b2421d4c332382f40163a9248ddf7",
-"NickName": "",
-"AttrStatus": 0,
-"PYInitial": "",
-"PYQuanPin": "",
-"RemarkPYInitial": "",
-"RemarkPYQuanPin": "",
-"MemberStatus": 0,
-"DisplayName": "",
-"KeyWord": ""
-}
-,{
-"Uin": 0,
-"UserName": "@f93a24577d57760acca7b319f47f7fe790403c1172522afa5bac374020b6700b",
-"NickName": "",
-"AttrStatus": 0,
-"PYInitial": "",
-"PYQuanPin": "",
-"RemarkPYInitial": "",
-"RemarkPYQuanPin": "",
-"MemberStatus": 0,
-"DisplayName": "",
-"KeyWord": ""
-}
-,{
-"Uin": 0,
-"UserName": "@123c6ad78c4c2df22c3607854b54717c482f841911335a4ff36f45b3d7932a77",
-"NickName": "",
-"AttrStatus": 0,
-"PYInitial": "",
-"PYQuanPin": "",
-"RemarkPYInitial": "",
-"RemarkPYQuanPin": "",
-"MemberStatus": 0,
-"DisplayName": "",
-"KeyWord": ""
-}
-,{
-"Uin": 0,
-"UserName": "@9b6e4b06276fc638b2377b05d47968231ef5ff40e9ae2e5307c8d44fd2ea1ab3",
-"NickName": "",
-"AttrStatus": 0,
-"PYInitial": "",
-"PYQuanPin": "",
-"RemarkPYInitial": "",
-"RemarkPYQuanPin": "",
-"MemberStatus": 0,
-"DisplayName": "",
-"KeyWord": ""
-}
-,{
-"Uin": 0,
-"UserName": "@b596feb11e1ede3e9a88fdd7016a0f9eaa90ca4cc3e2a7ffaad66891d35a79ac",
-"NickName": "",
-"AttrStatus": 0,
-"PYInitial": "",
-"PYQuanPin": "",
-"RemarkPYInitial": "",
-"RemarkPYQuanPin": "",
-"MemberStatus": 0,
-"DisplayName": "",
-"KeyWord": ""
-}
-,{
-"Uin": 0,
-"UserName": "@5f85a4c502355ccbf449f36477d0d2e83424f08f2f04394438cd0080199c903b",
-"NickName": "",
-"AttrStatus": 0,
-"PYInitial": "",
-"PYQuanPin": "",
-"RemarkPYInitial": "",
-"RemarkPYQuanPin": "",
-"MemberStatus": 0,
-"DisplayName": "",
-"KeyWord": ""
-}
-,{
-"Uin": 0,
-"UserName": "@e80e60fc09dc28c73eadac579f06701b46e64499d3fa42cea39ecf0f93cda3b1",
-"NickName": "",
-"AttrStatus": 0,
-"PYInitial": "",
-"PYQuanPin": "",
-"RemarkPYInitial": "",
-"RemarkPYQuanPin": "",
-"MemberStatus": 0,
-"DisplayName": "",
-"KeyWord": ""
-}
-,{
-"Uin": 0,
-"UserName": "@ed576537029db595fb22398c1a77b554afd0e527ba6f77dcc52d1249392e45a8",
-"NickName": "",
-"AttrStatus": 0,
-"PYInitial": "",
-"PYQuanPin": "",
-"RemarkPYInitial": "",
-"RemarkPYQuanPin": "",
-"MemberStatus": 0,
-"DisplayName": "",
-"KeyWord": ""
-}
-,{
-"Uin": 0,
-"UserName": "@8a1f3b7796098b5526f71f6c94b0c02b",
-"NickName": "",
-"AttrStatus": 0,
-"PYInitial": "",
-"PYQuanPin": "",
-"RemarkPYInitial": "",
-"RemarkPYQuanPin": "",
-"MemberStatus": 0,
-"DisplayName": "",
-"KeyWord": "mil"
-}
-,{
-"Uin": 0,
-"UserName": "@0fa29b6798ea259fcd8714a4aca5a0b12317840b30c7d8c5f640e804a56453b0",
-"NickName": "",
-"AttrStatus": 0,
-"PYInitial": "",
-"PYQuanPin": "",
-"RemarkPYInitial": "",
-"RemarkPYQuanPin": "",
-"MemberStatus": 0,
-"DisplayName": "",
-"KeyWord": ""
-}
-,{
-"Uin": 0,
-"UserName": "@9502761810f4218f2052ffad8b297b336e88fd3f0f632381bcae31b56ed3bc38",
-"NickName": "",
-"AttrStatus": 0,
-"PYInitial": "",
-"PYQuanPin": "",
-"RemarkPYInitial": "",
-"RemarkPYQuanPin": "",
-"MemberStatus": 0,
-"DisplayName": "",
-"KeyWord": ""
-}
-,{
-"Uin": 0,
-"UserName": "@ce2f83e3aaae823a8223fef2ed07c99aaf0383df6bebad91b045d1047f6b0e1c",
-"NickName": "",
-"AttrStatus": 0,
-"PYInitial": "",
-"PYQuanPin": "",
-"RemarkPYInitial": "",
-"RemarkPYQuanPin": "",
-"MemberStatus": 0,
-"DisplayName": "",
-"KeyWord": ""
-}
-,{
-"Uin": 0,
-"UserName": "@535396beb0eca54e2dccb2381117392e7096a5c78dbbb3293168808bc07aae80",
-"NickName": "",
-"AttrStatus": 0,
-"PYInitial": "",
-"PYQuanPin": "",
-"RemarkPYInitial": "",
-"RemarkPYQuanPin": "",
-"MemberStatus": 0,
-"DisplayName": "",
-"KeyWord": ""
-}
-,{
-"Uin": 0,
-"UserName": "@789def0425203bec167c131227332c268186973cf5a3dfebbfd1b374020aed18",
-"NickName": "",
-"AttrStatus": 0,
-"PYInitial": "",
-"PYQuanPin": "",
-"RemarkPYInitial": "",
-"RemarkPYQuanPin": "",
-"MemberStatus": 0,
-"DisplayName": "",
-"KeyWord": ""
-}
-,{
-"Uin": 0,
-"UserName": "@2458cfb86cf1ec8ce1577786d275de138273c90954c5bb0d603eb1a5292db721",
-"NickName": "",
-"AttrStatus": 0,
-"PYInitial": "",
-"PYQuanPin": "",
-"RemarkPYInitial": "",
-"RemarkPYQuanPin": "",
-"MemberStatus": 0,
-"DisplayName": "",
-"KeyWord": ""
-}
-,{
-"Uin": 0,
-"UserName": "@28ef376ea87fcbf98b6cd97e69c6d6e7",
-"NickName": "",
-"AttrStatus": 0,
-"PYInitial": "",
-"PYQuanPin": "",
-"RemarkPYInitial": "",
-"RemarkPYQuanPin": "",
-"MemberStatus": 0,
-"DisplayName": "",
-"KeyWord": "yss"
-}
-,{
-"Uin": 0,
-"UserName": "@c0b0c2e1915c13ba557373927b95ff4ae32ea34489698c9b5def6a7e609d8ada",
-"NickName": "",
-"AttrStatus": 0,
-"PYInitial": "",
-"PYQuanPin": "",
-"RemarkPYInitial": "",
-"RemarkPYQuanPin": "",
-"MemberStatus": 0,
-"DisplayName": "",
-"KeyWord": ""
-}
-,{
-"Uin": 0,
-"UserName": "@f2af1186741c50ca72e477b3537c35f3",
-"NickName": "",
-"AttrStatus": 0,
-"PYInitial": "",
-"PYQuanPin": "",
-"RemarkPYInitial": "",
-"RemarkPYQuanPin": "",
-"MemberStatus": 0,
-"DisplayName": "",
-"KeyWord": "Lud"
-}
-],
+"UserName": "@9c17a65bc48e5b849d2f053677e242dabaa90655f8f874e58e5c98a7007f6161",
+"NickName": "虎嗅网",
+"HeadImgUrl": "/cgi-bin/mmwebwx-bin/webwxgeticon?seq=658987435&username=@9c17a65bc48e5b849d2f053677e242dabaa90655f8f874e58e5c98a7007f6161&skey=@crypt_731e3859_45329bb60d53eb95c6cc889e9fde302c",
+"ContactFlag": 3,
+"MemberCount": 0,
+"MemberList": [],
 "RemarkName": "",
 "HideInputBarFlag": 0,
 "Sex": 0,
-"Signature": "",
-"VerifyFlag": 0,
+"Signature": "聚合优质的创新信息和人群",
+"VerifyFlag": 24,
 "OwnerUin": 0,
-"PYInitial": "",
-"PYQuanPin": "",
+"PYInitial": "HXW",
+"PYQuanPin": "huxiuwang",
 "RemarkPYInitial": "",
 "RemarkPYQuanPin": "",
 "StarFriend": 0,
 "AppAccountFlag": 0,
-"Statues": 1,
+"Statues": 0,
 "AttrStatus": 0,
-"Province": "",
-"City": "",
+"Province": "北京",
+"City": "朝阳",
 "Alias": "",
 "SnsFlag": 0,
 "UniFriend": 0,
@@ -840,20 +73,20 @@
 }
 ,{
 "Uin": 0,
-"UserName": "@2db2e96ac258a728da9b57c5636f1815",
-"NickName": "青春川大",
-"HeadImgUrl": "/cgi-bin/mmwebwx-bin/webwxgeticon?seq=646440472&username=@2db2e96ac258a728da9b57c5636f1815&skey=@crypt_731e3859_a77aa23f9d062c6d5c5fa3634412924a",
+"UserName": "@5b66c230513f95b208152ac25b48d1c1",
+"NickName": "川大电气",
+"HeadImgUrl": "/cgi-bin/mmwebwx-bin/webwxgeticon?seq=649145535&username=@5b66c230513f95b208152ac25b48d1c1&skey=@crypt_731e3859_45329bb60d53eb95c6cc889e9fde302c",
 "ContactFlag": 3,
 "MemberCount": 0,
 "MemberList": [],
 "RemarkName": "",
 "HideInputBarFlag": 0,
 "Sex": 0,
-"Signature": "立人达人，格致日新。",
+"Signature": "传播各种关于院内校内的消息，给大家生活提供方便。",
 "VerifyFlag": 8,
 "OwnerUin": 0,
-"PYInitial": "QCCD",
-"PYQuanPin": "qingchunchuanda",
+"PYInitial": "CDDQ",
+"PYQuanPin": "chuandadianqi",
 "RemarkPYInitial": "",
 "RemarkPYQuanPin": "",
 "StarFriend": 0,
@@ -861,7 +94,7 @@
 "Statues": 0,
 "AttrStatus": 0,
 "Province": "四川",
-"City": "成都",
+"City": "",
 "Alias": "",
 "SnsFlag": 0,
 "UniFriend": 0,
@@ -873,28 +106,28 @@
 }
 ,{
 "Uin": 0,
-"UserName": "@6458f20ed80580b6e8581233c1e26360",
-"NickName": "法漾年华",
-"HeadImgUrl": "/cgi-bin/mmwebwx-bin/webwxgeticon?seq=640927534&username=@6458f20ed80580b6e8581233c1e26360&skey=@crypt_731e3859_a77aa23f9d062c6d5c5fa3634412924a",
+"UserName": "@ea76470545167ab4c2317627cf64ac47",
+"NickName": "壹牛闯世界",
+"HeadImgUrl": "/cgi-bin/mmwebwx-bin/webwxgeticon?seq=649145604&username=@ea76470545167ab4c2317627cf64ac47&skey=@crypt_731e3859_45329bb60d53eb95c6cc889e9fde302c",
 "ContactFlag": 3,
 "MemberCount": 0,
 "MemberList": [],
 "RemarkName": "",
 "HideInputBarFlag": 0,
 "Sex": 0,
-"Signature": "四川大学法学院团委学生会",
-"VerifyFlag": 8,
+"Signature": "壹牛环球旅行，兼具国际旅行社与国际NGO双重资质，是国内最具安全保障的国际志愿者旅行平台。覆盖泰国、印尼、斯里兰卡、越南4个国家，数十个国际义工旅行项目，每年出行5000位队员，助力百万青年人成长。探索极致旅行体验，从壹牛出发，绝不做过客！",
+"VerifyFlag": 24,
 "OwnerUin": 0,
-"PYInitial": "FYNH",
-"PYQuanPin": "fayangnianhua",
+"PYInitial": "YNCSJ",
+"PYQuanPin": "yiniuchuangshijie",
 "RemarkPYInitial": "",
 "RemarkPYQuanPin": "",
 "StarFriend": 0,
 "AppAccountFlag": 0,
 "Statues": 0,
 "AttrStatus": 0,
-"Province": "四川",
-"City": "成都",
+"Province": "广东",
+"City": "广州",
 "Alias": "",
 "SnsFlag": 0,
 "UniFriend": 0,
@@ -906,14 +139,14 @@
 }
 ,{
 "Uin": 0,
-"UserName": "@@6720c4acf849cd394a5e762c7649c2126989fffe3efc590456ba5574de3c0250",
+"UserName": "@@bd3fc085128631b661853b7c0cf41d9e29ec66645a1f053ec240e1b20ae3eb57",
 "NickName": "美团外卖红包群一马当先",
-"HeadImgUrl": "/cgi-bin/mmwebwx-bin/webwxgetheadimg?seq=0&username=@@6720c4acf849cd394a5e762c7649c2126989fffe3efc590456ba5574de3c0250&skey=@crypt_731e3859_a77aa23f9d062c6d5c5fa3634412924a",
+"HeadImgUrl": "/cgi-bin/mmwebwx-bin/webwxgetheadimg?seq=0&username=@@bd3fc085128631b661853b7c0cf41d9e29ec66645a1f053ec240e1b20ae3eb57&skey=@crypt_731e3859_45329bb60d53eb95c6cc889e9fde302c",
 "ContactFlag": 0,
 "MemberCount": 55,
 "MemberList": [{
 "Uin": 0,
-"UserName": "@1597f2704a1bdddedae756253dcca68e",
+"UserName": "@c0519f032727f5a37642ca4c2f78ae06",
 "NickName": "",
 "AttrStatus": 0,
 "PYInitial": "",
@@ -926,7 +159,7 @@
 }
 ,{
 "Uin": 0,
-"UserName": "@55206c278e70f580cbad562e6798d2d1f5aae3c66366fb152907649aa02dbbc6",
+"UserName": "@d8163435178f00dc66ab1f34e0259d8f715c3e4c04583a6bb0b431d60fe1d743",
 "NickName": "",
 "AttrStatus": 0,
 "PYInitial": "",
@@ -939,7 +172,7 @@
 }
 ,{
 "Uin": 0,
-"UserName": "@9908b8700f35a0aace8c47ef90e7bc4668c809068946ddceba5c44bf6e19327e",
+"UserName": "@83ebce30e32639cd5dd38882e1a45874ff55680de50a25766078b27211e977e3",
 "NickName": "",
 "AttrStatus": 0,
 "PYInitial": "",
@@ -952,7 +185,7 @@
 }
 ,{
 "Uin": 0,
-"UserName": "@ce2f83e3aaae823a8223fef2ed07c99aaf0383df6bebad91b045d1047f6b0e1c",
+"UserName": "@5f2ea98df31e0cd450607281dfc05788bc8455d93e149fd798c2d9bd5f94bd05",
 "NickName": "",
 "AttrStatus": 0,
 "PYInitial": "",
@@ -965,7 +198,7 @@
 }
 ,{
 "Uin": 0,
-"UserName": "@74581823db74a054fe63bd9ca3bb92b2b03119b8b7821ea6f6ebe2e24070a248",
+"UserName": "@7431952f97f4c4d7ba441ae5dc0dc4570f9f14dd611d195736674308cc765ced",
 "NickName": "",
 "AttrStatus": 0,
 "PYInitial": "",
@@ -978,7 +211,7 @@
 }
 ,{
 "Uin": 0,
-"UserName": "@ec9e549f31f00e034e8bc61eedd38be3be5822c0ff7d0d894db1c47bb8220852",
+"UserName": "@f163fdaf7bb9efe284fabeec99b0b0caeea0725c99dd19658a75411231629e28",
 "NickName": "",
 "AttrStatus": 0,
 "PYInitial": "",
@@ -991,7 +224,7 @@
 }
 ,{
 "Uin": 0,
-"UserName": "@ab6874e82d0479b297b02d66c9bc02b2612b631f8535f29175c83ab36c5fa1e7",
+"UserName": "@c39985a018ab611b24df0314702b2c9fda0b0f9b35152a3af00cc763b3ca5657",
 "NickName": "",
 "AttrStatus": 0,
 "PYInitial": "",
@@ -1004,7 +237,7 @@
 }
 ,{
 "Uin": 0,
-"UserName": "@91e694c18854020d2f25a27d8099bd2fa1520e1cf1e2e1c63f7be10643fb0813",
+"UserName": "@653f6eeb1e3f83423e5cc2d575ee04e6433c15004b052da65db940ecae6869aa",
 "NickName": "",
 "AttrStatus": 0,
 "PYInitial": "",
@@ -1017,7 +250,7 @@
 }
 ,{
 "Uin": 0,
-"UserName": "@1b4433d7bbea87b5a2c6ca8fa6754eda",
+"UserName": "@d1b75fc0f7e23f5d05d48ccc16320f9f",
 "NickName": "",
 "AttrStatus": 0,
 "PYInitial": "",
@@ -1030,7 +263,7 @@
 }
 ,{
 "Uin": 0,
-"UserName": "@63922223f835cc43753a41e9bb58d4589689f901393e5e8714c0ae558f7f52ce",
+"UserName": "@e594bf8cbdfb50c9d4749db833293bbefdd519f47de3f001e325c2b7ff958780",
 "NickName": "",
 "AttrStatus": 0,
 "PYInitial": "",
@@ -1043,7 +276,7 @@
 }
 ,{
 "Uin": 0,
-"UserName": "@18f349dc6c0d1eecb6b1a9ce0a4f0fa51dcc7284cc3fefd9107413e9c5e3bba2",
+"UserName": "@9e83816bd89f2375990a098f5a98722d6c270a8be105821cfff5b9b91a59be77",
 "NickName": "",
 "AttrStatus": 0,
 "PYInitial": "",
@@ -1056,7 +289,7 @@
 }
 ,{
 "Uin": 0,
-"UserName": "@1bbc7420812166402ca1a20c0eebed728c82f9712a30b9e8005b88033baf4650",
+"UserName": "@62942168206feac5ffc2b7e1a89730955354978c3911011807759261b6ae41ef",
 "NickName": "",
 "AttrStatus": 0,
 "PYInitial": "",
@@ -1069,7 +302,7 @@
 }
 ,{
 "Uin": 0,
-"UserName": "@25a01d7a6fbc536c091e04ef616ea0fa5bc83e030434d2b00dd32f9a0cd62983",
+"UserName": "@44606d4508c5d234172bdf02ca78290cb939becbe56a01608096079d4675ad19",
 "NickName": "",
 "AttrStatus": 0,
 "PYInitial": "",
@@ -1082,7 +315,7 @@
 }
 ,{
 "Uin": 0,
-"UserName": "@1a306c9c7b9c7a692153043e44b8836971406d154d7af03d8b59103b9e1d75ea",
+"UserName": "@5391bbfc7a1e31b2a2a4b463c983162dc79cd3b5b39db594ce476845699191fa",
 "NickName": "",
 "AttrStatus": 0,
 "PYInitial": "",
@@ -1095,7 +328,7 @@
 }
 ,{
 "Uin": 0,
-"UserName": "@da64b49b60f665cc022e794ca0c44b52212827cd64578d02586295379a352ca7",
+"UserName": "@9b34c51c629a0deee66221dbbc131910b2863a0b13d32b17b5ce0018beb2a8e3",
 "NickName": "",
 "AttrStatus": 0,
 "PYInitial": "",
@@ -1108,7 +341,7 @@
 }
 ,{
 "Uin": 0,
-"UserName": "@24cff68ccabc0a1a08a8fcff56242e64ad973dd4d1ca5c3930352a8983537ebd",
+"UserName": "@d14c6ff40de2adad62f4b192b535f277647db3454aff178e69426eb424390aeb",
 "NickName": "",
 "AttrStatus": 0,
 "PYInitial": "",
@@ -1121,7 +354,7 @@
 }
 ,{
 "Uin": 0,
-"UserName": "@da5f3aee5ec66d54872610c023126b2131a36097111af972b51ed83a8acc8c3f",
+"UserName": "@5139a2516eee05a878a4080a582c31cd730d747dbdf2009bbcb8c2f59ac9edec",
 "NickName": "",
 "AttrStatus": 0,
 "PYInitial": "",
@@ -1134,7 +367,7 @@
 }
 ,{
 "Uin": 0,
-"UserName": "@788c8b0540ffaeef7ca887e539045298ab1e036f502e41cf4f79ec1f8cb6d29b",
+"UserName": "@5a1219d3397cac84a8bcec706f43bc8143c30b67b47032a8417315c2e2fa8eee",
 "NickName": "",
 "AttrStatus": 0,
 "PYInitial": "",
@@ -1147,7 +380,7 @@
 }
 ,{
 "Uin": 0,
-"UserName": "@8c585def1ee1c61ca2c46c23ceb4e135ea6379686aa26b7f9d285985462ca839",
+"UserName": "@8d19173528e7db703e8ec2bc5fd1d49b0900e9fa0dcc50193fb811afd75fa442",
 "NickName": "",
 "AttrStatus": 0,
 "PYInitial": "",
@@ -1160,7 +393,7 @@
 }
 ,{
 "Uin": 0,
-"UserName": "@d15bbf3830340426d7dd915a2876e70f",
+"UserName": "@0e1671902e3921cd16375a1c4979c214",
 "NickName": "",
 "AttrStatus": 0,
 "PYInitial": "",
@@ -1173,7 +406,7 @@
 }
 ,{
 "Uin": 0,
-"UserName": "@8a0f22260e9d5b21b1fabcaf40f54c4ae68c02fad69b5bf96946870a2592be91",
+"UserName": "@2477e2c7e3340dfe4b6399034ae25fc95a89464106686d5d011fbea5f18115f8",
 "NickName": "",
 "AttrStatus": 0,
 "PYInitial": "",
@@ -1186,7 +419,7 @@
 }
 ,{
 "Uin": 0,
-"UserName": "@3a5c393b2b1f15a2b8b2e8441bc29c58bc83188fcc20b579af9e5e372bd867b2",
+"UserName": "@e7dde32b4ffddf508cbc2b99473c6440289ae77bb1451d315bbf52b3c09b8542",
 "NickName": "",
 "AttrStatus": 0,
 "PYInitial": "",
@@ -1199,7 +432,7 @@
 }
 ,{
 "Uin": 0,
-"UserName": "@789def0425203bec167c131227332c268186973cf5a3dfebbfd1b374020aed18",
+"UserName": "@083927dc02fa5151dfb2c9a346a51755bc91bd565390f5726d5328827c75da9e",
 "NickName": "",
 "AttrStatus": 0,
 "PYInitial": "",
@@ -1212,7 +445,7 @@
 }
 ,{
 "Uin": 0,
-"UserName": "@67cb1b4189eddf3876d8d9138c64a68c",
+"UserName": "@4ef5c8b0e93e1f2701ef75c8dd2c3805",
 "NickName": "",
 "AttrStatus": 0,
 "PYInitial": "",
@@ -1225,7 +458,7 @@
 }
 ,{
 "Uin": 0,
-"UserName": "@8ff6c27f807272865e9087be06ccb5666bee45ba4774f72454aa05850db06192",
+"UserName": "@513a9140e8e308d55d48943a00acabf46ab1e5e6790a9489056c2617c8cc8658",
 "NickName": "",
 "AttrStatus": 0,
 "PYInitial": "",
@@ -1238,7 +471,7 @@
 }
 ,{
 "Uin": 0,
-"UserName": "@c4bb48553e5d37417c2ad19f56e98717d5356f5fc9ed025c7363fb776f34c506",
+"UserName": "@567438a5dc8e4a34d49015203d11a46e5e4ae9ad4a108269e198fe452e7cb0c9",
 "NickName": "",
 "AttrStatus": 0,
 "PYInitial": "",
@@ -1251,7 +484,7 @@
 }
 ,{
 "Uin": 0,
-"UserName": "@99b47a2eca599d81238f4ad93e474eec00c81b455cc885c2c754991af92b4565",
+"UserName": "@0c50091de7b0cd53c939da0278530e1fd8c0e9cccebcb94590158e41b6ddfe64",
 "NickName": "",
 "AttrStatus": 0,
 "PYInitial": "",
@@ -1264,7 +497,7 @@
 }
 ,{
 "Uin": 0,
-"UserName": "@62deaa75f2dd3017b948fbb603f5785062224cad73293ac28b0639b3b946e49f",
+"UserName": "@8a41809386dfb09d7b248c23b31fe5ad13e32f9903151b3c134d663ed56747f8",
 "NickName": "",
 "AttrStatus": 0,
 "PYInitial": "",
@@ -1277,7 +510,7 @@
 }
 ,{
 "Uin": 0,
-"UserName": "@a40433aacc4bbfdfd9ab65042880913164886302cd322c633b6164f8ad667703",
+"UserName": "@0bb6bc8a5dfd32f606eb2d74ec7c7cecb407b6036ea41398ea9c03890ba87486",
 "NickName": "",
 "AttrStatus": 0,
 "PYInitial": "",
@@ -1290,7 +523,7 @@
 }
 ,{
 "Uin": 0,
-"UserName": "@87046577f5b6439245b57955531ede17ae92e1e9893ae6c916a938ba621714fb",
+"UserName": "@d6f75a483d947f2d223664655b577a6eeec9880eea8fc07bac71fd57feee7bed",
 "NickName": "",
 "AttrStatus": 0,
 "PYInitial": "",
@@ -1303,7 +536,7 @@
 }
 ,{
 "Uin": 0,
-"UserName": "@848798ba533499a235bb1a901fef5c0c9ac4730051f36e86e736f02f5d0fe609",
+"UserName": "@0f0e5730da0955df0a0c751229a540a81d546082a782c789dd714e3dc173627a",
 "NickName": "",
 "AttrStatus": 0,
 "PYInitial": "",
@@ -1316,7 +549,7 @@
 }
 ,{
 "Uin": 0,
-"UserName": "@480c2d7a8f4592b8ea6c2847d438a5192ffbce9c5d2e5cc987239ba2455b345f",
+"UserName": "@260bac75c2ce126c650b4bb8ec52dc5b4b813b6027610b180a714908a17ecb4d",
 "NickName": "",
 "AttrStatus": 0,
 "PYInitial": "",
@@ -1329,7 +562,7 @@
 }
 ,{
 "Uin": 0,
-"UserName": "@fc2c44e26416bf3f85f5e90761a8a5e6a0dd2415c7ad42890c19bf8655d6ff9f",
+"UserName": "@83ff113533525b941c60c9a572da311d81b1842d5bf7a0587e2b872aa76d21b3",
 "NickName": "",
 "AttrStatus": 0,
 "PYInitial": "",
@@ -1342,7 +575,7 @@
 }
 ,{
 "Uin": 0,
-"UserName": "@a1e9048ada35666462e63b564ff8219f6547ae6bc9ad7a9d89be7469c9d5044d",
+"UserName": "@514bc89312f1b7a29a31dee090b12a5ef56a5d0b1ab6042e24375ecfae7faee1",
 "NickName": "",
 "AttrStatus": 0,
 "PYInitial": "",
@@ -1355,7 +588,7 @@
 }
 ,{
 "Uin": 0,
-"UserName": "@fd23d37f16b9569a3c9f22c7396b09f77a822a11da2c3bbb0ad6bdb82b3c90a4",
+"UserName": "@b15f138dc0caf588fe79eee769d18ec634783643108f99856af01feb3d4b28ea",
 "NickName": "",
 "AttrStatus": 0,
 "PYInitial": "",
@@ -1368,7 +601,7 @@
 }
 ,{
 "Uin": 0,
-"UserName": "@ae0c891e3db1c786f3927800e309cff3888ca8d81499327dcb1542480bf55234",
+"UserName": "@99c4e2a8f9ed7438fb58456ded7275e481b90f8c6554e69ffdeb8c00846707e4",
 "NickName": "",
 "AttrStatus": 0,
 "PYInitial": "",
@@ -1381,7 +614,7 @@
 }
 ,{
 "Uin": 0,
-"UserName": "@fbbfb9887afcd2e22ddc0d10552d96106c94ecdd7b4f374dcea44a94909803b1",
+"UserName": "@acfd1d11ce60296b499fd75ee13d55fe38ba9cc12f1773c2794144a16665cdc9",
 "NickName": "",
 "AttrStatus": 0,
 "PYInitial": "",
@@ -1394,7 +627,7 @@
 }
 ,{
 "Uin": 0,
-"UserName": "@d6d274b182c206ddbec897c0232e4aafed48d2c46211841782f54d81571a14f4",
+"UserName": "@377892fe08e20cd386c0564184be45414de8f58888d5b68cca12d6153af3895d",
 "NickName": "",
 "AttrStatus": 0,
 "PYInitial": "",
@@ -1407,7 +640,7 @@
 }
 ,{
 "Uin": 0,
-"UserName": "@e1c3ef3575c482a9f67af2f8548fbed7ec266f52d01a0f4f37f34b582f0dab5f",
+"UserName": "@7bc5c4e14be854f01e15ec631622e853253dac60253203f5aad870481ccd7085",
 "NickName": "",
 "AttrStatus": 0,
 "PYInitial": "",
@@ -1420,7 +653,7 @@
 }
 ,{
 "Uin": 0,
-"UserName": "@9429e478cbcaa7a9cc1ff1b438bdcbdafa76769bb878d900e9330d4d950c9b7d",
+"UserName": "@1dca08e03e054a89dbd5230371ad90cbb46a47dae25d80e64ee6248baf06aa1a",
 "NickName": "",
 "AttrStatus": 0,
 "PYInitial": "",
@@ -1433,7 +666,7 @@
 }
 ,{
 "Uin": 0,
-"UserName": "@7260d8fbc0689c7a5cd7ac2a2d18c8a1a8a20040f46a5c065606f441e37bf7ba",
+"UserName": "@1731ba715cda4418aeffd7a3cebd00afc61d063670e2ee2506d0bcc3ccc90b34",
 "NickName": "",
 "AttrStatus": 0,
 "PYInitial": "",
@@ -1446,7 +679,7 @@
 }
 ,{
 "Uin": 0,
-"UserName": "@2bfeef769353f55185bce171de6424996f23da8e1047204faba63590f4199ec1",
+"UserName": "@38a36fa474c27089ed357432ac96fa0e3ba1f9bfec8135e1568615cb4224094b",
 "NickName": "",
 "AttrStatus": 0,
 "PYInitial": "",
@@ -1459,7 +692,7 @@
 }
 ,{
 "Uin": 0,
-"UserName": "@a1fa780a32fc91e2462777a3ac2c4587599fd0601a3451c75a26b52c6514eb66",
+"UserName": "@1de817f1bc970430cc2deb09bf92f4bf8a31a66f3c198fbd36a8a98240f1ed3b",
 "NickName": "",
 "AttrStatus": 0,
 "PYInitial": "",
@@ -1472,7 +705,7 @@
 }
 ,{
 "Uin": 0,
-"UserName": "@9502761810f4218f2052ffad8b297b336e88fd3f0f632381bcae31b56ed3bc38",
+"UserName": "@97b87dbda2b8bc7b9fa25aba8ea9f342b3fad10bef89c8b037106e7525710fa8",
 "NickName": "",
 "AttrStatus": 0,
 "PYInitial": "",
@@ -1485,7 +718,7 @@
 }
 ,{
 "Uin": 0,
-"UserName": "@681092e4f28188a2186d3f2af11cac2d",
+"UserName": "@9d8e833f999e7aeb65baa8c3d731cc6f",
 "NickName": "",
 "AttrStatus": 0,
 "PYInitial": "",
@@ -1498,7 +731,7 @@
 }
 ,{
 "Uin": 0,
-"UserName": "@035cb4567f582315b0b5b302edcdd8d7a0801cf98e208f4796ec00696b7a8733",
+"UserName": "@7db503e4a09c3bbd28aef6deacedf22249f16bdb3355619a381b4fa1c9d67cd3",
 "NickName": "",
 "AttrStatus": 0,
 "PYInitial": "",
@@ -1511,7 +744,7 @@
 }
 ,{
 "Uin": 0,
-"UserName": "@89cffab86bf3fd7e6ae7f9b3cedf62c9650c6ed5db2766399adaca1f350e6c31",
+"UserName": "@8ffcec0992045b0189e109e83ea790842461943bedf881128cffb233056adac1",
 "NickName": "",
 "AttrStatus": 0,
 "PYInitial": "",
@@ -1524,7 +757,7 @@
 }
 ,{
 "Uin": 0,
-"UserName": "@59af1af0dc6f346d7dc4227249da24a2e5f17a400f175d1c2359c3cb444ec419",
+"UserName": "@b83c799faef47a751eea5ef770f96a5c00575520123dc4defe75132434307984",
 "NickName": "",
 "AttrStatus": 0,
 "PYInitial": "",
@@ -1537,7 +770,7 @@
 }
 ,{
 "Uin": 0,
-"UserName": "@17e45ffa89a43052ed65b94d00691f489d4074849488417d36a6f9237aafacce",
+"UserName": "@6c9610ec8b007234b673379ccc000f76eb65cf8d4b6f90d53b48b5d3603af4a7",
 "NickName": "",
 "AttrStatus": 0,
 "PYInitial": "",
@@ -1550,7 +783,7 @@
 }
 ,{
 "Uin": 0,
-"UserName": "@1614521ff163afe6b759ea062acc1093fbeae782c4c299bed0e5c65534d628ce",
+"UserName": "@5f193b1a5deb93268b30d68b921aa30c501123024fc582a7b6778a08e5b15094",
 "NickName": "",
 "AttrStatus": 0,
 "PYInitial": "",
@@ -1563,7 +796,7 @@
 }
 ,{
 "Uin": 0,
-"UserName": "@07b5e84c88a01607f0e84900052d1a1e1508bd0bb4b3b658ae709084fbea27f5",
+"UserName": "@cf8ba01c00220c0cd5976cd691b8c914e34d2d12b616807e7d9a497781407712",
 "NickName": "",
 "AttrStatus": 0,
 "PYInitial": "",
@@ -1576,7 +809,7 @@
 }
 ,{
 "Uin": 0,
-"UserName": "@8080c4a10106f1b4ef06e78da087c78d84cc16b1dd2652385c443f13547e258c",
+"UserName": "@8e6336290d59d9f4b7433753980f62cd5862b5b8c459882d65868f058869d3be",
 "NickName": "",
 "AttrStatus": 0,
 "PYInitial": "",
@@ -1589,7 +822,7 @@
 }
 ,{
 "Uin": 0,
-"UserName": "@4a7b783e363965b3d82c5eb936f8d02ddce6923636531f5d93a575674e0dfa52",
+"UserName": "@ade6b81334b190e7c0bc838e92013c10b81605b80612b84d26a95955cee8e5ec",
 "NickName": "",
 "AttrStatus": 0,
 "PYInitial": "",
@@ -1602,7 +835,7 @@
 }
 ,{
 "Uin": 0,
-"UserName": "@8f098f2738a3e122daf712357f7e18f76d5f6296443499c6f8c6384d3fcf4709",
+"UserName": "@fcb4f55fd4c4af345ebb949430b94ef96f94e52c7d4d76bd56421be81c9ef547",
 "NickName": "",
 "AttrStatus": 0,
 "PYInitial": "",
@@ -1615,7 +848,7 @@
 }
 ,{
 "Uin": 0,
-"UserName": "@b06146e5acac34aec9b4a775f9be10d7",
+"UserName": "@60cab4229882397c8869469d7b1e4d81",
 "NickName": "",
 "AttrStatus": 0,
 "PYInitial": "",
@@ -1654,20 +887,20 @@
 }
 ,{
 "Uin": 0,
-"UserName": "@bed6323e6537473ed45eb884d3a2ac86",
-"NickName": "四川大学",
-"HeadImgUrl": "/cgi-bin/mmwebwx-bin/webwxgeticon?seq=638320761&username=@bed6323e6537473ed45eb884d3a2ac86&skey=@crypt_731e3859_a77aa23f9d062c6d5c5fa3634412924a",
+"UserName": "@5608ad745fd6b963de4ec51c85257b64",
+"NickName": "川大文新团委",
+"HeadImgUrl": "/cgi-bin/mmwebwx-bin/webwxgeticon?seq=631635698&username=@5608ad745fd6b963de4ec51c85257b64&skey=@crypt_731e3859_45329bb60d53eb95c6cc889e9fde302c",
 "ContactFlag": 3,
 "MemberCount": 0,
 "MemberList": [],
 "RemarkName": "",
 "HideInputBarFlag": 0,
 "Sex": 0,
-"Signature": "海纳百川，有容乃大。",
-"VerifyFlag": 24,
+"Signature": "共青团四川大学委员会文学与新闻学院分团委官方微信公共平台。",
+"VerifyFlag": 8,
 "OwnerUin": 0,
-"PYInitial": "SCDX",
-"PYQuanPin": "sichuandaxue",
+"PYInitial": "CDWXTW",
+"PYQuanPin": "chuandawenxintuanwei",
 "RemarkPYInitial": "",
 "RemarkPYQuanPin": "",
 "StarFriend": 0,
@@ -1687,86 +920,53 @@
 }
 ,{
 "Uin": 0,
-"UserName": "@b3ef7d069527b8de5a97253d0ea99603ff20976420be756595bab09483beacd6",
-"NickName": "腾讯招聘",
-"HeadImgUrl": "/cgi-bin/mmwebwx-bin/webwxgeticon?seq=658976122&username=@b3ef7d069527b8de5a97253d0ea99603ff20976420be756595bab09483beacd6&skey=@crypt_731e3859_a77aa23f9d062c6d5c5fa3634412924a",
+"UserName": "@0ea2fc12f698e02f98e62780e63aa316",
+"NickName": "scu微生活",
+"HeadImgUrl": "/cgi-bin/mmwebwx-bin/webwxgeticon?seq=626926894&username=@0ea2fc12f698e02f98e62780e63aa316&skey=@crypt_731e3859_45329bb60d53eb95c6cc889e9fde302c",
 "ContactFlag": 3,
 "MemberCount": 0,
 "MemberList": [],
 "RemarkName": "",
 "HideInputBarFlag": 0,
 "Sex": 0,
-"Signature": " ",
-"VerifyFlag": 24,
+"Signature": "提供四川大学（川大）表白、树洞、生活服务信息。。。",
+"VerifyFlag": 8,
 "OwnerUin": 0,
-"PYInitial": "TXZP",
-"PYQuanPin": "tengxunzhaopin",
+"PYInitial": "SCUWSH",
+"PYQuanPin": "scuweishenghuo",
 "RemarkPYInitial": "",
 "RemarkPYQuanPin": "",
 "StarFriend": 0,
 "AppAccountFlag": 0,
 "Statues": 0,
 "AttrStatus": 0,
-"Province": "广东",
-"City": "深圳",
+"Province": "四川",
+"City": "成都",
 "Alias": "",
 "SnsFlag": 0,
 "UniFriend": 0,
 "DisplayName": "",
 "ChatRoomId": 0,
-"KeyWord": "",
+"KeyWord": "gh_",
 "EncryChatRoomId": "",
 "IsOwner": 0
 }
 ,{
 "Uin": 0,
-"UserName": "@c4d061cabd880f7cb93a8b777074354a",
-"NickName": "黎红友",
-"HeadImgUrl": "/cgi-bin/mmwebwx-bin/webwxgeticon?seq=657506666&username=@c4d061cabd880f7cb93a8b777074354a&skey=@crypt_731e3859_a77aa23f9d062c6d5c5fa3634412924a",
-"ContactFlag": 3,
-"MemberCount": 0,
-"MemberList": [],
-"RemarkName": "",
-"HideInputBarFlag": 0,
-"Sex": 1,
-"Signature": "哈、哈、哈……",
-"VerifyFlag": 0,
-"OwnerUin": 0,
-"PYInitial": "LHY",
-"PYQuanPin": "lihongyou",
-"RemarkPYInitial": "",
-"RemarkPYQuanPin": "",
-"StarFriend": 0,
-"AppAccountFlag": 0,
-"Statues": 0,
-"AttrStatus": 33656871,
-"Province": "四川",
-"City": "成都",
-"Alias": "",
-"SnsFlag": 16,
-"UniFriend": 0,
-"DisplayName": "",
-"ChatRoomId": 0,
-"KeyWord": "qq3",
-"EncryChatRoomId": "",
-"IsOwner": 0
-}
-,{
-"Uin": 0,
-"UserName": "@eb1577b9bdcf34d527f9d4c87e9cdae6",
-"NickName": "川大电气",
-"HeadImgUrl": "/cgi-bin/mmwebwx-bin/webwxgeticon?seq=649145535&username=@eb1577b9bdcf34d527f9d4c87e9cdae6&skey=@crypt_731e3859_a77aa23f9d062c6d5c5fa3634412924a",
+"UserName": "@fa90b564877c76fc96c27fb6d9f823f2",
+"NickName": "川大经院团委学生会信息平台",
+"HeadImgUrl": "/cgi-bin/mmwebwx-bin/webwxgeticon?seq=631636388&username=@fa90b564877c76fc96c27fb6d9f823f2&skey=@crypt_731e3859_45329bb60d53eb95c6cc889e9fde302c",
 "ContactFlag": 3,
 "MemberCount": 0,
 "MemberList": [],
 "RemarkName": "",
 "HideInputBarFlag": 0,
 "Sex": 0,
-"Signature": "传播各种关于院内校内的消息，给大家生活提供方便。",
+"Signature": "面向四川大学经济学院学生，以及所有关注四川大学经济学院团委学生会的朋友，提供信息、资讯推送等服务。",
 "VerifyFlag": 8,
 "OwnerUin": 0,
-"PYInitial": "CDDQ",
-"PYQuanPin": "chuandadianqi",
+"PYInitial": "CDJYTWXSHXXPT",
+"PYQuanPin": "chuandajingyuantuanweixueshenghuixinxipingtai",
 "RemarkPYInitial": "",
 "RemarkPYQuanPin": "",
 "StarFriend": 0,
@@ -1774,7 +974,7 @@
 "Statues": 0,
 "AttrStatus": 0,
 "Province": "四川",
-"City": "",
+"City": "成都",
 "Alias": "",
 "SnsFlag": 0,
 "UniFriend": 0,
@@ -1786,53 +986,20 @@
 }
 ,{
 "Uin": 0,
-"UserName": "@e408749565f7f2080757b1c66f22317e",
-"NickName": "壹牛闯世界",
-"HeadImgUrl": "/cgi-bin/mmwebwx-bin/webwxgeticon?seq=649145604&username=@e408749565f7f2080757b1c66f22317e&skey=@crypt_731e3859_a77aa23f9d062c6d5c5fa3634412924a",
+"UserName": "@08fe4c2d06c66ec3e967b4aa72bceacb",
+"NickName": "地理说",
+"HeadImgUrl": "/cgi-bin/mmwebwx-bin/webwxgeticon?seq=646429903&username=@08fe4c2d06c66ec3e967b4aa72bceacb&skey=@crypt_731e3859_45329bb60d53eb95c6cc889e9fde302c",
 "ContactFlag": 3,
 "MemberCount": 0,
 "MemberList": [],
 "RemarkName": "",
 "HideInputBarFlag": 0,
 "Sex": 0,
-"Signature": "壹牛环球旅行，兼具国际旅行社与国际NGO双重资质，是国内最具安全保障的国际志愿者旅行平台。覆盖泰国、印尼、斯里兰卡、越南4个国家，数十个国际义工旅行项目，每年出行5000位队员，助力百万青年人成长。探索极致旅行体验，从壹牛出发，绝不做过客！",
-"VerifyFlag": 24,
-"OwnerUin": 0,
-"PYInitial": "YNCSJ",
-"PYQuanPin": "yiniuchuangshijie",
-"RemarkPYInitial": "",
-"RemarkPYQuanPin": "",
-"StarFriend": 0,
-"AppAccountFlag": 0,
-"Statues": 0,
-"AttrStatus": 0,
-"Province": "广东",
-"City": "广州",
-"Alias": "",
-"SnsFlag": 0,
-"UniFriend": 0,
-"DisplayName": "",
-"ChatRoomId": 0,
-"KeyWord": "gh_",
-"EncryChatRoomId": "",
-"IsOwner": 0
-}
-,{
-"Uin": 0,
-"UserName": "@d3b5089e576b69b3bb273a1f79e7b21e",
-"NickName": "理想岛",
-"HeadImgUrl": "/cgi-bin/mmwebwx-bin/webwxgeticon?seq=654335948&username=@d3b5089e576b69b3bb273a1f79e7b21e&skey=@crypt_731e3859_a77aa23f9d062c6d5c5fa3634412924a",
-"ContactFlag": 3,
-"MemberCount": 0,
-"MemberList": [],
-"RemarkName": "",
-"HideInputBarFlag": 0,
-"Sex": 0,
-"Signature": "人与人之间最大的差别不是智商或财富，而是思考问题的层次和模式。关注理想岛，提升认知维度。",
+"Signature": "只为世人都能见到： 绝世风景、独特人文、优质摄影、探险精神。",
 "VerifyFlag": 8,
 "OwnerUin": 0,
-"PYInitial": "LXD",
-"PYQuanPin": "lixiangdao",
+"PYInitial": "DLS",
+"PYQuanPin": "delishuo",
 "RemarkPYInitial": "",
 "RemarkPYQuanPin": "",
 "StarFriend": 0,
@@ -1840,13 +1007,846 @@
 "Statues": 0,
 "AttrStatus": 0,
 "Province": "上海",
-"City": "徐汇",
+"City": "普陀",
 "Alias": "",
 "SnsFlag": 0,
 "UniFriend": 0,
 "DisplayName": "",
 "ChatRoomId": 0,
 "KeyWord": "gh_",
+"EncryChatRoomId": "",
+"IsOwner": 0
+}
+,{
+"Uin": 0,
+"UserName": "@4833a867a4f742a01058e4c4c260ae63",
+"NickName": "涪陵网事",
+"HeadImgUrl": "/cgi-bin/mmwebwx-bin/webwxgeticon?seq=665638706&username=@4833a867a4f742a01058e4c4c260ae63&skey=@crypt_731e3859_45329bb60d53eb95c6cc889e9fde302c",
+"ContactFlag": 3,
+"MemberCount": 0,
+"MemberList": [],
+"RemarkName": "",
+"HideInputBarFlag": 0,
+"Sex": 0,
+"Signature": "涪陵网事，网上说涪陵事儿！",
+"VerifyFlag": 24,
+"OwnerUin": 0,
+"PYInitial": "FLWS",
+"PYQuanPin": "fulingwangshi",
+"RemarkPYInitial": "",
+"RemarkPYQuanPin": "",
+"StarFriend": 0,
+"AppAccountFlag": 0,
+"Statues": 0,
+"AttrStatus": 0,
+"Province": "重庆",
+"City": "涪陵",
+"Alias": "",
+"SnsFlag": 0,
+"UniFriend": 0,
+"DisplayName": "",
+"ChatRoomId": 0,
+"KeyWord": "gh_",
+"EncryChatRoomId": "",
+"IsOwner": 0
+}
+,{
+"Uin": 0,
+"UserName": "@@cd2ec8fe44c13f9e1c2f300e8c56ed7550dacb8944ad1de09a5e524c255bd934",
+"NickName": "申请保研群",
+"HeadImgUrl": "/cgi-bin/mmwebwx-bin/webwxgetheadimg?seq=0&username=@@cd2ec8fe44c13f9e1c2f300e8c56ed7550dacb8944ad1de09a5e524c255bd934&skey=@crypt_731e3859_45329bb60d53eb95c6cc889e9fde302c",
+"ContactFlag": 0,
+"MemberCount": 59,
+"MemberList": [{
+"Uin": 0,
+"UserName": "@5cd78f0e2bf962dc34b1edba3de6029d",
+"NickName": "",
+"AttrStatus": 0,
+"PYInitial": "",
+"PYQuanPin": "",
+"RemarkPYInitial": "",
+"RemarkPYQuanPin": "",
+"MemberStatus": 0,
+"DisplayName": "",
+"KeyWord": "qq3"
+}
+,{
+"Uin": 0,
+"UserName": "@0d1e79d1670b0806179e693af5882db75a1cf7b541dc1e0bb0acf791f482bfd9",
+"NickName": "",
+"AttrStatus": 0,
+"PYInitial": "",
+"PYQuanPin": "",
+"RemarkPYInitial": "",
+"RemarkPYQuanPin": "",
+"MemberStatus": 0,
+"DisplayName": "",
+"KeyWord": ""
+}
+,{
+"Uin": 0,
+"UserName": "@82b9ec04f27bda45788963f05bbf162a821ba2a8307ac544faef4e4946ef65f0",
+"NickName": "",
+"AttrStatus": 0,
+"PYInitial": "",
+"PYQuanPin": "",
+"RemarkPYInitial": "",
+"RemarkPYQuanPin": "",
+"MemberStatus": 0,
+"DisplayName": "",
+"KeyWord": ""
+}
+,{
+"Uin": 0,
+"UserName": "@e4e57b922ea70f1e52318e409dce20a59f2fa45de6588e63b01c906a75e9dbbf",
+"NickName": "",
+"AttrStatus": 0,
+"PYInitial": "",
+"PYQuanPin": "",
+"RemarkPYInitial": "",
+"RemarkPYQuanPin": "",
+"MemberStatus": 0,
+"DisplayName": "",
+"KeyWord": ""
+}
+,{
+"Uin": 0,
+"UserName": "@17ab9e527e9497bce54be65ac9611cd3124591340c87ae834f9917bbdd19da30",
+"NickName": "",
+"AttrStatus": 0,
+"PYInitial": "",
+"PYQuanPin": "",
+"RemarkPYInitial": "",
+"RemarkPYQuanPin": "",
+"MemberStatus": 0,
+"DisplayName": "",
+"KeyWord": ""
+}
+,{
+"Uin": 0,
+"UserName": "@252f4c93b0626f0df77e1c687bf3f7585fbec1408d625dec293bd4f55934e962",
+"NickName": "",
+"AttrStatus": 0,
+"PYInitial": "",
+"PYQuanPin": "",
+"RemarkPYInitial": "",
+"RemarkPYQuanPin": "",
+"MemberStatus": 0,
+"DisplayName": "",
+"KeyWord": ""
+}
+,{
+"Uin": 0,
+"UserName": "@e4181456b9f7756a08024af2f5749a204f1d238e1203ac375a3f1764adb5cdd1",
+"NickName": "",
+"AttrStatus": 0,
+"PYInitial": "",
+"PYQuanPin": "",
+"RemarkPYInitial": "",
+"RemarkPYQuanPin": "",
+"MemberStatus": 0,
+"DisplayName": "",
+"KeyWord": ""
+}
+,{
+"Uin": 0,
+"UserName": "@f03f5f0fad4eee54a8bfaaab9abd143321ac417e0d07597fca59316ef39460e0",
+"NickName": "",
+"AttrStatus": 0,
+"PYInitial": "",
+"PYQuanPin": "",
+"RemarkPYInitial": "",
+"RemarkPYQuanPin": "",
+"MemberStatus": 0,
+"DisplayName": "",
+"KeyWord": ""
+}
+,{
+"Uin": 0,
+"UserName": "@e869b4ca0b5dda292d1c1d47588855b828325fc82942d7f4f84c557539a0312b",
+"NickName": "",
+"AttrStatus": 0,
+"PYInitial": "",
+"PYQuanPin": "",
+"RemarkPYInitial": "",
+"RemarkPYQuanPin": "",
+"MemberStatus": 0,
+"DisplayName": "",
+"KeyWord": ""
+}
+,{
+"Uin": 0,
+"UserName": "@2bdf9ec6d00272811ea7a8fcfff05816d95d7a84b2dd4bf8bd2ea0674d39ddcb",
+"NickName": "",
+"AttrStatus": 0,
+"PYInitial": "",
+"PYQuanPin": "",
+"RemarkPYInitial": "",
+"RemarkPYQuanPin": "",
+"MemberStatus": 0,
+"DisplayName": "",
+"KeyWord": ""
+}
+,{
+"Uin": 0,
+"UserName": "@1d6e1561d716f0371a76a267a4582131a4b1ef7d103d82f31eb36fe827b6d3fd",
+"NickName": "",
+"AttrStatus": 0,
+"PYInitial": "",
+"PYQuanPin": "",
+"RemarkPYInitial": "",
+"RemarkPYQuanPin": "",
+"MemberStatus": 0,
+"DisplayName": "",
+"KeyWord": ""
+}
+,{
+"Uin": 0,
+"UserName": "@76db590b52120f057208e0f65ee09e92b7a95ff9d47ab0f3ee3267101e91339b",
+"NickName": "",
+"AttrStatus": 0,
+"PYInitial": "",
+"PYQuanPin": "",
+"RemarkPYInitial": "",
+"RemarkPYQuanPin": "",
+"MemberStatus": 0,
+"DisplayName": "",
+"KeyWord": ""
+}
+,{
+"Uin": 0,
+"UserName": "@e3ee930d1e0420a210e34f659b833ebe81cd425c94b216411828bbde777763db",
+"NickName": "",
+"AttrStatus": 0,
+"PYInitial": "",
+"PYQuanPin": "",
+"RemarkPYInitial": "",
+"RemarkPYQuanPin": "",
+"MemberStatus": 0,
+"DisplayName": "",
+"KeyWord": ""
+}
+,{
+"Uin": 0,
+"UserName": "@5848e900379ffdc4714d88bdca7d2771d7f2544182b9fb4a0907d84f75049843",
+"NickName": "",
+"AttrStatus": 0,
+"PYInitial": "",
+"PYQuanPin": "",
+"RemarkPYInitial": "",
+"RemarkPYQuanPin": "",
+"MemberStatus": 0,
+"DisplayName": "",
+"KeyWord": ""
+}
+,{
+"Uin": 0,
+"UserName": "@c764b893a00351f1a2479c0e3d264cffe3f9d90204c6fa6252c413207618eff6",
+"NickName": "",
+"AttrStatus": 0,
+"PYInitial": "",
+"PYQuanPin": "",
+"RemarkPYInitial": "",
+"RemarkPYQuanPin": "",
+"MemberStatus": 0,
+"DisplayName": "",
+"KeyWord": ""
+}
+,{
+"Uin": 0,
+"UserName": "@00d92cdfd8c9e9a73da403cb8ec1778ad9053a46d674ddb3aa637ff418dc3319",
+"NickName": "",
+"AttrStatus": 0,
+"PYInitial": "",
+"PYQuanPin": "",
+"RemarkPYInitial": "",
+"RemarkPYQuanPin": "",
+"MemberStatus": 0,
+"DisplayName": "",
+"KeyWord": ""
+}
+,{
+"Uin": 0,
+"UserName": "@02e8445094577e3996042037381959e376233315cacb3e9855857f289c675850",
+"NickName": "",
+"AttrStatus": 0,
+"PYInitial": "",
+"PYQuanPin": "",
+"RemarkPYInitial": "",
+"RemarkPYQuanPin": "",
+"MemberStatus": 0,
+"DisplayName": "",
+"KeyWord": ""
+}
+,{
+"Uin": 0,
+"UserName": "@562dbb5f4a982a8954f1b9139d69405eb8a0e180524e0a76bff9cc10da930f96",
+"NickName": "",
+"AttrStatus": 0,
+"PYInitial": "",
+"PYQuanPin": "",
+"RemarkPYInitial": "",
+"RemarkPYQuanPin": "",
+"MemberStatus": 0,
+"DisplayName": "",
+"KeyWord": ""
+}
+,{
+"Uin": 0,
+"UserName": "@c424d8e56fcbf95bbff5732b828c4242e84e53e4da2159955d11d1948bdf290c",
+"NickName": "",
+"AttrStatus": 0,
+"PYInitial": "",
+"PYQuanPin": "",
+"RemarkPYInitial": "",
+"RemarkPYQuanPin": "",
+"MemberStatus": 0,
+"DisplayName": "",
+"KeyWord": ""
+}
+,{
+"Uin": 0,
+"UserName": "@8baeb21ad328c404f4c8f6b514e3fe4a45831623dd3e5eef30f702e2994fddcf",
+"NickName": "",
+"AttrStatus": 0,
+"PYInitial": "",
+"PYQuanPin": "",
+"RemarkPYInitial": "",
+"RemarkPYQuanPin": "",
+"MemberStatus": 0,
+"DisplayName": "",
+"KeyWord": ""
+}
+,{
+"Uin": 0,
+"UserName": "@e836ea5f9295817c5cc5d6d4428acffca1ad734f7bd10fdc805a7caa0e9ec49f",
+"NickName": "",
+"AttrStatus": 0,
+"PYInitial": "",
+"PYQuanPin": "",
+"RemarkPYInitial": "",
+"RemarkPYQuanPin": "",
+"MemberStatus": 0,
+"DisplayName": "",
+"KeyWord": ""
+}
+,{
+"Uin": 0,
+"UserName": "@0a81126707aa952da39578aeece5fe72e61789d42466b1157a34d3cd8ee1e20b",
+"NickName": "",
+"AttrStatus": 0,
+"PYInitial": "",
+"PYQuanPin": "",
+"RemarkPYInitial": "",
+"RemarkPYQuanPin": "",
+"MemberStatus": 0,
+"DisplayName": "",
+"KeyWord": ""
+}
+,{
+"Uin": 0,
+"UserName": "@9e6a767523fa15ebba885dbf8d9254bfd8c2cc82a52983e9dff034cf2c1b0aba",
+"NickName": "",
+"AttrStatus": 0,
+"PYInitial": "",
+"PYQuanPin": "",
+"RemarkPYInitial": "",
+"RemarkPYQuanPin": "",
+"MemberStatus": 0,
+"DisplayName": "",
+"KeyWord": ""
+}
+,{
+"Uin": 0,
+"UserName": "@f5228199c2aee342011c7217e5521edf",
+"NickName": "",
+"AttrStatus": 0,
+"PYInitial": "",
+"PYQuanPin": "",
+"RemarkPYInitial": "",
+"RemarkPYQuanPin": "",
+"MemberStatus": 0,
+"DisplayName": "",
+"KeyWord": "zhi"
+}
+,{
+"Uin": 0,
+"UserName": "@7392bd6663979e06f65bfdce3e6cedcc186ee1558c57b7925093a4a0c87b7f2e",
+"NickName": "",
+"AttrStatus": 0,
+"PYInitial": "",
+"PYQuanPin": "",
+"RemarkPYInitial": "",
+"RemarkPYQuanPin": "",
+"MemberStatus": 0,
+"DisplayName": "",
+"KeyWord": ""
+}
+,{
+"Uin": 0,
+"UserName": "@0bfd271d8f2681c0704024713221a28f",
+"NickName": "",
+"AttrStatus": 0,
+"PYInitial": "",
+"PYQuanPin": "",
+"RemarkPYInitial": "",
+"RemarkPYQuanPin": "",
+"MemberStatus": 0,
+"DisplayName": "",
+"KeyWord": "mic"
+}
+,{
+"Uin": 0,
+"UserName": "@f2c54545922ab0cf1c0c18d2a8ca8cdad42d76884b803924729fa5ae9376d720",
+"NickName": "",
+"AttrStatus": 0,
+"PYInitial": "",
+"PYQuanPin": "",
+"RemarkPYInitial": "",
+"RemarkPYQuanPin": "",
+"MemberStatus": 0,
+"DisplayName": "",
+"KeyWord": ""
+}
+,{
+"Uin": 0,
+"UserName": "@ce1058727ef4539eaeaff1576e3b5e3b",
+"NickName": "",
+"AttrStatus": 0,
+"PYInitial": "",
+"PYQuanPin": "",
+"RemarkPYInitial": "",
+"RemarkPYQuanPin": "",
+"MemberStatus": 0,
+"DisplayName": "",
+"KeyWord": "liu"
+}
+,{
+"Uin": 0,
+"UserName": "@0300b7abf29481c9131cda8e76382a5307b64219d98470c2a96f4bb8a54b295b",
+"NickName": "",
+"AttrStatus": 0,
+"PYInitial": "",
+"PYQuanPin": "",
+"RemarkPYInitial": "",
+"RemarkPYQuanPin": "",
+"MemberStatus": 0,
+"DisplayName": "",
+"KeyWord": ""
+}
+,{
+"Uin": 0,
+"UserName": "@3092747e1cb905c989b8c30ef540e570ed4bf4066102fa53dba9e4aaf0766418",
+"NickName": "",
+"AttrStatus": 0,
+"PYInitial": "",
+"PYQuanPin": "",
+"RemarkPYInitial": "",
+"RemarkPYQuanPin": "",
+"MemberStatus": 0,
+"DisplayName": "",
+"KeyWord": ""
+}
+,{
+"Uin": 0,
+"UserName": "@e5a563d93383df2b6461c7605819b0ad5aeddf88ea0bd708552c2c30fb385894",
+"NickName": "",
+"AttrStatus": 0,
+"PYInitial": "",
+"PYQuanPin": "",
+"RemarkPYInitial": "",
+"RemarkPYQuanPin": "",
+"MemberStatus": 0,
+"DisplayName": "",
+"KeyWord": ""
+}
+,{
+"Uin": 0,
+"UserName": "@a77f93664cb8e00389823228f8f61d65ddb909fcae4d3719bc8a895d6d9ef5f8",
+"NickName": "",
+"AttrStatus": 0,
+"PYInitial": "",
+"PYQuanPin": "",
+"RemarkPYInitial": "",
+"RemarkPYQuanPin": "",
+"MemberStatus": 0,
+"DisplayName": "",
+"KeyWord": ""
+}
+,{
+"Uin": 0,
+"UserName": "@f9a0a0aec5f894ab6ff72e404dc47d5120cc7b04fa3d3fa8e6c0130dbd5f3824",
+"NickName": "",
+"AttrStatus": 0,
+"PYInitial": "",
+"PYQuanPin": "",
+"RemarkPYInitial": "",
+"RemarkPYQuanPin": "",
+"MemberStatus": 0,
+"DisplayName": "",
+"KeyWord": ""
+}
+,{
+"Uin": 0,
+"UserName": "@8dc94258679bc4ced21e09d3122e2f0d95d9590d5e7b49e58beead2593b0b4df",
+"NickName": "",
+"AttrStatus": 0,
+"PYInitial": "",
+"PYQuanPin": "",
+"RemarkPYInitial": "",
+"RemarkPYQuanPin": "",
+"MemberStatus": 0,
+"DisplayName": "",
+"KeyWord": ""
+}
+,{
+"Uin": 0,
+"UserName": "@6dda90c8497c60303894f3fb7db79706bd330c993b320e25fda3d3bd5b806405",
+"NickName": "",
+"AttrStatus": 0,
+"PYInitial": "",
+"PYQuanPin": "",
+"RemarkPYInitial": "",
+"RemarkPYQuanPin": "",
+"MemberStatus": 0,
+"DisplayName": "",
+"KeyWord": ""
+}
+,{
+"Uin": 0,
+"UserName": "@1fb4380adeff1292abe17aa1a7e7e84159a95322428b3c0f050fbd9bb1f45833",
+"NickName": "",
+"AttrStatus": 0,
+"PYInitial": "",
+"PYQuanPin": "",
+"RemarkPYInitial": "",
+"RemarkPYQuanPin": "",
+"MemberStatus": 0,
+"DisplayName": "",
+"KeyWord": ""
+}
+,{
+"Uin": 0,
+"UserName": "@34f83b1d12f2f0670190286e85266ea2bae21d24c95c3c379b1622495e3fa18e",
+"NickName": "",
+"AttrStatus": 0,
+"PYInitial": "",
+"PYQuanPin": "",
+"RemarkPYInitial": "",
+"RemarkPYQuanPin": "",
+"MemberStatus": 0,
+"DisplayName": "",
+"KeyWord": ""
+}
+,{
+"Uin": 0,
+"UserName": "@a735a7f7d06fd8e39fe0b4a7a86d799a655295c69bd2a7955af50f3dbe3c427f",
+"NickName": "",
+"AttrStatus": 0,
+"PYInitial": "",
+"PYQuanPin": "",
+"RemarkPYInitial": "",
+"RemarkPYQuanPin": "",
+"MemberStatus": 0,
+"DisplayName": "",
+"KeyWord": ""
+}
+,{
+"Uin": 0,
+"UserName": "@661ed4084d811705544b491395bd6e41",
+"NickName": "",
+"AttrStatus": 0,
+"PYInitial": "",
+"PYQuanPin": "",
+"RemarkPYInitial": "",
+"RemarkPYQuanPin": "",
+"MemberStatus": 0,
+"DisplayName": "",
+"KeyWord": "mut"
+}
+,{
+"Uin": 0,
+"UserName": "@286da220526d19cff3ffd2001f396349355fad89c490a322b710aa014e5b4a4a",
+"NickName": "",
+"AttrStatus": 0,
+"PYInitial": "",
+"PYQuanPin": "",
+"RemarkPYInitial": "",
+"RemarkPYQuanPin": "",
+"MemberStatus": 0,
+"DisplayName": "",
+"KeyWord": ""
+}
+,{
+"Uin": 0,
+"UserName": "@82afc9ec0ccd134f7e6e43beae15ad4446eaf7f4c32362a345d6ec7dfa600bca",
+"NickName": "",
+"AttrStatus": 0,
+"PYInitial": "",
+"PYQuanPin": "",
+"RemarkPYInitial": "",
+"RemarkPYQuanPin": "",
+"MemberStatus": 0,
+"DisplayName": "",
+"KeyWord": ""
+}
+,{
+"Uin": 0,
+"UserName": "@9f7d1c690d138ab2532a00bbe9659dda8bc8cc615bb851f311d9b5a92147337e",
+"NickName": "",
+"AttrStatus": 0,
+"PYInitial": "",
+"PYQuanPin": "",
+"RemarkPYInitial": "",
+"RemarkPYQuanPin": "",
+"MemberStatus": 0,
+"DisplayName": "",
+"KeyWord": ""
+}
+,{
+"Uin": 0,
+"UserName": "@b4f9101283712903bde41b133fc64f86ecafb6158496a746e950c3bdc976670e",
+"NickName": "",
+"AttrStatus": 0,
+"PYInitial": "",
+"PYQuanPin": "",
+"RemarkPYInitial": "",
+"RemarkPYQuanPin": "",
+"MemberStatus": 0,
+"DisplayName": "",
+"KeyWord": ""
+}
+,{
+"Uin": 0,
+"UserName": "@a9d803c376d828bf0104b3c67187f10012bf48805c17456a1fe723cf93a485f9",
+"NickName": "",
+"AttrStatus": 0,
+"PYInitial": "",
+"PYQuanPin": "",
+"RemarkPYInitial": "",
+"RemarkPYQuanPin": "",
+"MemberStatus": 0,
+"DisplayName": "",
+"KeyWord": ""
+}
+,{
+"Uin": 0,
+"UserName": "@95e9e9fde823d4687aa88d90d1beb3ec88a5d3e431d98a439cb3d2dd461fb634",
+"NickName": "",
+"AttrStatus": 0,
+"PYInitial": "",
+"PYQuanPin": "",
+"RemarkPYInitial": "",
+"RemarkPYQuanPin": "",
+"MemberStatus": 0,
+"DisplayName": "",
+"KeyWord": ""
+}
+,{
+"Uin": 0,
+"UserName": "@49d0c7223653df67ef075d0f2ebd9e0a583c2fa9b87c937b4e7171202882efa7",
+"NickName": "",
+"AttrStatus": 0,
+"PYInitial": "",
+"PYQuanPin": "",
+"RemarkPYInitial": "",
+"RemarkPYQuanPin": "",
+"MemberStatus": 0,
+"DisplayName": "",
+"KeyWord": ""
+}
+,{
+"Uin": 0,
+"UserName": "@195912d6f7c914e4d7b62c7e0263fd1814ebbc0a43d27d46bead425c85a132b7",
+"NickName": "",
+"AttrStatus": 0,
+"PYInitial": "",
+"PYQuanPin": "",
+"RemarkPYInitial": "",
+"RemarkPYQuanPin": "",
+"MemberStatus": 0,
+"DisplayName": "",
+"KeyWord": ""
+}
+,{
+"Uin": 0,
+"UserName": "@e06fe9d056acab61eccc319f40d59a96e0b8ce05e77a2970fca9852fe6f65ba3",
+"NickName": "",
+"AttrStatus": 0,
+"PYInitial": "",
+"PYQuanPin": "",
+"RemarkPYInitial": "",
+"RemarkPYQuanPin": "",
+"MemberStatus": 0,
+"DisplayName": "",
+"KeyWord": ""
+}
+,{
+"Uin": 0,
+"UserName": "@920fea1f42504a5d67d1aaf32620c973728d0049685abb83763ca2e5e305dc77",
+"NickName": "",
+"AttrStatus": 0,
+"PYInitial": "",
+"PYQuanPin": "",
+"RemarkPYInitial": "",
+"RemarkPYQuanPin": "",
+"MemberStatus": 0,
+"DisplayName": "",
+"KeyWord": ""
+}
+,{
+"Uin": 0,
+"UserName": "@4aaeee7f15665d059705c8c1c02a88db",
+"NickName": "",
+"AttrStatus": 0,
+"PYInitial": "",
+"PYQuanPin": "",
+"RemarkPYInitial": "",
+"RemarkPYQuanPin": "",
+"MemberStatus": 0,
+"DisplayName": "",
+"KeyWord": "mil"
+}
+,{
+"Uin": 0,
+"UserName": "@75c34fb5d22252d85978695ccc34320b28b361ee2af52e1482d115d62cfa55cd",
+"NickName": "",
+"AttrStatus": 0,
+"PYInitial": "",
+"PYQuanPin": "",
+"RemarkPYInitial": "",
+"RemarkPYQuanPin": "",
+"MemberStatus": 0,
+"DisplayName": "",
+"KeyWord": ""
+}
+,{
+"Uin": 0,
+"UserName": "@97b87dbda2b8bc7b9fa25aba8ea9f342b3fad10bef89c8b037106e7525710fa8",
+"NickName": "",
+"AttrStatus": 0,
+"PYInitial": "",
+"PYQuanPin": "",
+"RemarkPYInitial": "",
+"RemarkPYQuanPin": "",
+"MemberStatus": 0,
+"DisplayName": "",
+"KeyWord": ""
+}
+,{
+"Uin": 0,
+"UserName": "@5f2ea98df31e0cd450607281dfc05788bc8455d93e149fd798c2d9bd5f94bd05",
+"NickName": "",
+"AttrStatus": 0,
+"PYInitial": "",
+"PYQuanPin": "",
+"RemarkPYInitial": "",
+"RemarkPYQuanPin": "",
+"MemberStatus": 0,
+"DisplayName": "",
+"KeyWord": ""
+}
+,{
+"Uin": 0,
+"UserName": "@68bc24e2b314032c4fb78d14e6e98c38c05f634fa8f34058ad66f6f540c08a21",
+"NickName": "",
+"AttrStatus": 0,
+"PYInitial": "",
+"PYQuanPin": "",
+"RemarkPYInitial": "",
+"RemarkPYQuanPin": "",
+"MemberStatus": 0,
+"DisplayName": "",
+"KeyWord": ""
+}
+,{
+"Uin": 0,
+"UserName": "@083927dc02fa5151dfb2c9a346a51755bc91bd565390f5726d5328827c75da9e",
+"NickName": "",
+"AttrStatus": 0,
+"PYInitial": "",
+"PYQuanPin": "",
+"RemarkPYInitial": "",
+"RemarkPYQuanPin": "",
+"MemberStatus": 0,
+"DisplayName": "",
+"KeyWord": ""
+}
+,{
+"Uin": 0,
+"UserName": "@555556582a724c474f92d48d0202b3196c369a76fc4613742f50bdd14cddd2ac",
+"NickName": "",
+"AttrStatus": 0,
+"PYInitial": "",
+"PYQuanPin": "",
+"RemarkPYInitial": "",
+"RemarkPYQuanPin": "",
+"MemberStatus": 0,
+"DisplayName": "",
+"KeyWord": ""
+}
+,{
+"Uin": 0,
+"UserName": "@362f9416193cc36a9f1cd45f7fc850f4",
+"NickName": "",
+"AttrStatus": 0,
+"PYInitial": "",
+"PYQuanPin": "",
+"RemarkPYInitial": "",
+"RemarkPYQuanPin": "",
+"MemberStatus": 0,
+"DisplayName": "",
+"KeyWord": "yss"
+}
+,{
+"Uin": 0,
+"UserName": "@b33c494431077d01ddb6cb3e30f9f439934582d918c3d6f94e3442050bcbd40d",
+"NickName": "",
+"AttrStatus": 0,
+"PYInitial": "",
+"PYQuanPin": "",
+"RemarkPYInitial": "",
+"RemarkPYQuanPin": "",
+"MemberStatus": 0,
+"DisplayName": "",
+"KeyWord": ""
+}
+,{
+"Uin": 0,
+"UserName": "@f741d82994ef5e5a76e1bfb134b90f4b",
+"NickName": "",
+"AttrStatus": 0,
+"PYInitial": "",
+"PYQuanPin": "",
+"RemarkPYInitial": "",
+"RemarkPYQuanPin": "",
+"MemberStatus": 0,
+"DisplayName": "",
+"KeyWord": "Lud"
+}
+],
+"RemarkName": "",
+"HideInputBarFlag": 0,
+"Sex": 0,
+"Signature": "",
+"VerifyFlag": 0,
+"OwnerUin": 0,
+"PYInitial": "",
+"PYQuanPin": "",
+"RemarkPYInitial": "",
+"RemarkPYQuanPin": "",
+"StarFriend": 0,
+"AppAccountFlag": 0,
+"Statues": 1,
+"AttrStatus": 0,
+"Province": "",
+"City": "",
+"Alias": "",
+"SnsFlag": 0,
+"UniFriend": 0,
+"DisplayName": "",
+"ChatRoomId": 0,
+"KeyWord": "",
 "EncryChatRoomId": "",
 "IsOwner": 0
 }
@@ -1859,24 +1859,24 @@
 }
 ,{
 "Key": 2,
-"Val": 666366425
+"Val": 666367016
 }
 ,{
 "Key": 3,
-"Val": 666366403
+"Val": 666367020
 }
 ,{
 "Key": 1000,
-"Val": 1505782621
+"Val": 1505815742
 }
 ]
 }
 ,
 "User": {
 "Uin": 1208383038,
-"UserName": "@ce2f83e3aaae823a8223fef2ed07c99aaf0383df6bebad91b045d1047f6b0e1c",
+"UserName": "@5f2ea98df31e0cd450607281dfc05788bc8455d93e149fd798c2d9bd5f94bd05",
 "NickName": "袁豪",
-"HeadImgUrl": "/cgi-bin/mmwebwx-bin/webwxgeticon?seq=1492423476&username=@ce2f83e3aaae823a8223fef2ed07c99aaf0383df6bebad91b045d1047f6b0e1c&skey=@crypt_731e3859_a77aa23f9d062c6d5c5fa3634412924a",
+"HeadImgUrl": "/cgi-bin/mmwebwx-bin/webwxgeticon?seq=1988075440&username=@5f2ea98df31e0cd450607281dfc05788bc8455d93e149fd798c2d9bd5f94bd05&skey=@crypt_731e3859_45329bb60d53eb95c6cc889e9fde302c",
 "RemarkName": "",
 "PYInitial": "",
 "PYQuanPin": "",
@@ -1894,54 +1894,305 @@
 "SnsFlag": 1
 }
 ,
-"ChatSet": "filehelper,@@541f0176f6a98465d6109dcac990426ea99ea0dfce9a41c77b4d757827fd0c60,@2db2e96ac258a728da9b57c5636f1815,@6458f20ed80580b6e8581233c1e26360,@@6720c4acf849cd394a5e762c7649c2126989fffe3efc590456ba5574de3c0250,@bed6323e6537473ed45eb884d3a2ac86,@b3ef7d069527b8de5a97253d0ea99603ff20976420be756595bab09483beacd6,@c4d061cabd880f7cb93a8b777074354a,@eb1577b9bdcf34d527f9d4c87e9cdae6,@e408749565f7f2080757b1c66f22317e,@d3b5089e576b69b3bb273a1f79e7b21e,@@2456313d953cfb45a2be920eaffdf9ecf06a26dd6c531608edcb724ab4a3c408,@@64963d95ca44f41749b1350641efcd990ca809457e89e4a211810e275736ae95,@@e12b949ad99572b9ad16dea2ff94c527ef662fd32dfe1b922b06759a84fd7a25,@@426b39fb42c67274c73139dda9a6936e13794181bf89793970a7cb91baafbdb1,@@e5ffe887486d2dbf63b5b64011f524ea5030e6729781fa31657fc60c665406ac,",
-"SKey": "@crypt_731e3859_a77aa23f9d062c6d5c5fa3634412924a",
+"ChatSet": "filehelper,@9c17a65bc48e5b849d2f053677e242dabaa90655f8f874e58e5c98a7007f6161,@5b66c230513f95b208152ac25b48d1c1,@ea76470545167ab4c2317627cf64ac47,@@bd3fc085128631b661853b7c0cf41d9e29ec66645a1f053ec240e1b20ae3eb57,@5608ad745fd6b963de4ec51c85257b64,@0ea2fc12f698e02f98e62780e63aa316,@fa90b564877c76fc96c27fb6d9f823f2,@08fe4c2d06c66ec3e967b4aa72bceacb,@4833a867a4f742a01058e4c4c260ae63,@@cd2ec8fe44c13f9e1c2f300e8c56ed7550dacb8944ad1de09a5e524c255bd934,@8070f2b24da82a88e248c3f02f7bc331,@@bf647f784b50e91a6a77eecad0d4dcba59b189312df6ef843e4cc6774060fc66,@be946769ea6a20238ae7989b3b1a5565,@ce42147d9d369ef3ea9df1272f070a51,@@1628d4f87589d433bc7800cad595d27fd70d63052ac5698914a80efc74f29bbb,@05452178741190ec9cb2eb788b77f334,@fa585903703cf279a42ad1fe2e1a7afa,@24a8984f13bbd68f8c8447bb8c2b5495,@12ac82e33af5dbfb42011168fb10b56a1002d685e2ab7707103243251a7f7ddf,@7431952f97f4c4d7ba441ae5dc0dc4570f9f14dd611d195736674308cc765ced,@653f6eeb1e3f83423e5cc2d575ee04e6433c15004b052da65db940ecae6869aa,@@07b4f945ff5da438879d23a5bd3e1dd7fef33042df0cb5e00db800bcd0ab8aee,@@407ee2d6b09bf8eed9853f0886c2efee6549e07c8839f1d38a2966bd383d3625,@@82d3184a281bf3105f5f6ed00ad4cce2e9abf746e95daf02ce827669b53addf3,@@491171d56da74a3f2af684feefb04992e5643472cd556d7e151c7589033c4978,",
+"SKey": "@crypt_731e3859_45329bb60d53eb95c6cc889e9fde302c",
 "ClientVersion": 637865267,
-"SystemTime": 1505800608,
+"SystemTime": 1505832288,
 "GrayScale": 1,
 "InviteStartCount": 40,
-"MPSubscribeMsgCount": 6,
+"MPSubscribeMsgCount": 17,
 "MPSubscribeMsgList": [{
-"UserName": "@6458f20ed80580b6e8581233c1e26360",
-"MPArticleCount": 1,
+"UserName": "@9c17a65bc48e5b849d2f053677e242dabaa90655f8f874e58e5c98a7007f6161",
+"MPArticleCount": 4,
 "MPArticleList": [{
-"Title": "公示 | 法学院团委学生会2017级干事名单",
-"Digest": "公示 | 法学院团委学生会2017级干事名单",
-"Cover": "http://mmbiz.qpic.cn/mmbiz_jpg/draMca5ibaicS2fhjBSEOUUuoo0SVUUQj9LSU4zozZRWaMysEicZFssQXtDZNsqGkH4Ik8vvsricfnmlLBCpKiakjMA/640?wxtype=jpeg&wxfrom=0",
-"Url": "http://mp.weixin.qq.com/s?__biz=MzA4MzMyNTI0MQ==&mid=2651801816&idx=1&sn=e7c77667bdb5c6f0b0e104941e5c82aa&chksm=8403d08eb3745998bdd934469713ccd25d56ed97815986fc4b48d96f206bc6e6232541d1b76e&scene=0#rd"
-}
-],
-"Time": 1505794683,
-"NickName": "法漾年华"
+"Title": "阿里大文娱：先投18亿元，“富养”一个现场娱乐事业群",
+"Digest": "他们有两个赛跑对象：全行业的环境变化，还有阿里对他们的耐心",
+"Cover": "http://mmbiz.qpic.cn/mmbiz_jpg/b2YlTLuGbKDMnHpb7Q0m6PGiaMdfhzv2Z7RpNmTSfgx71An5cVmKaoiaTD6ckP8eAuiaGGBN8wwh5fmuwyvR7x4Zw/640?wxtype=jpeg&wxfrom=0",
+"Url": "http://mp.weixin.qq.com/s?__biz=MTQzMjE1NjQwMQ==&mid=2655541324&idx=1&sn=1e097aade8c04ce500b0dfa069efe1dd&chksm=66dff7d251a87ec43b35be57f773159999d4fe2dc8e42a6f84936c9b88c6e2e2cf0b90be14b0&scene=0#rd"
 }
 ,{
-"UserName": "@bed6323e6537473ed45eb884d3a2ac86",
-"MPArticleCount": 1,
-"MPArticleList": [{
-"Title": "权威发布 | 四川大学2018年接收推免硕士研究生章程",
-"Digest": "推免季，小伙伴快到碗里来！",
-"Cover": "http://mmbiz.qpic.cn/mmbiz_jpg/B8G1DMKE7dOpo4e4H7AxtgDibsYxcVqZliawf6JsmYgib0NmnsVJtF4FlC42stJHzuTNqOGadwBI15BCpRiaia6lvzA/640?wxtype=jpeg&wxfrom=0",
-"Url": "http://mp.weixin.qq.com/s?__biz=MzA5Mzc2MDYxMw==&mid=2650058665&idx=1&sn=de259291982f7957b27e11d28f119255&chksm=8858f2a3bf2f7bb572b4e87dd472ea72fe95e6d3b5df76d4e9749de0850e3cf07f3a9cf6665c&scene=0#rd"
-}
-],
-"Time": 1505792661,
-"NickName": "四川大学"
+"Title": "从《阴阳师》到《王者荣耀》，游戏怎么就成了社交平台？",
+"Digest": "60、70后主导的世界里，游戏就是原罪",
+"Cover": "http://mmbiz.qpic.cn/mmbiz_jpg/b2YlTLuGbKDMnHpb7Q0m6PGiaMdfhzv2ZYCAScL44WOpUvsibUzR6jEMrEo96j0HA4XMGp9ZibykvAFlpmXxZHyYA/300?wxtype=jpeg&wxfrom=0",
+"Url": "http://mp.weixin.qq.com/s?__biz=MTQzMjE1NjQwMQ==&mid=2655541324&idx=2&sn=b3934d7263909551c53fc3ffebda929c&chksm=66dff7d251a87ec49e32913d699a336dbdf4a60301817c8a7b1d6b173a8e0de89e315100d98e&scene=0#rd"
 }
 ,{
-"UserName": "@b3ef7d069527b8de5a97253d0ea99603ff20976420be756595bab09483beacd6",
-"MPArticleCount": 1,
-"MPArticleList": [{
-"Title": "Tencent 2018 MBA Recruiting",
-"Digest": "Join Tencent, Impact the world",
-"Cover": "http://mmbiz.qpic.cn/mmbiz_jpg/CqncWic46iaMh5flIdkehL4IUQFyKREHbzpMlFaRvAWzicCCVJ6cXxVPRHQTmqOdmhQHnecJR6YltnsgHq7cDialiag/640?wxtype=jpeg&wxfrom=0",
-"Url": "http://mp.weixin.qq.com/s?__biz=MTkyNTM0MzA4MQ==&mid=2650882479&idx=1&sn=f2a88f588e6abb4a5e2e5cc7cf1f2360&chksm=410871a9767ff8bfc93fae24418cebfaf7db042e7acc63e8dd182fad45889b374d0823b417b9&scene=0#rd"
-}
-],
-"Time": 1505790723,
-"NickName": "腾讯招聘"
+"Title": "聊五块钱 | 如何看待追星？",
+"Digest": "追星吗大兄弟？",
+"Cover": "http://mmbiz.qpic.cn/mmbiz_jpg/b2YlTLuGbKDMnHpb7Q0m6PGiaMdfhzv2ZZe4LLw5vtwC8CqiaJcBwx6y82XnULXibOYBazO86FPqGCt9sjsyYknug/300?wxtype=jpeg&wxfrom=0",
+"Url": "http://mp.weixin.qq.com/s?__biz=MTQzMjE1NjQwMQ==&mid=2655541324&idx=3&sn=9bdf7863c16667eb1a291fceb9eb1ad6&chksm=66dff7d251a87ec4e012d0370c2225484fbe2a9beaabf501a5418f53adfa168a2252747c2135&scene=0#rd"
 }
 ,{
-"UserName": "@eb1577b9bdcf34d527f9d4c87e9cdae6",
+"Title": "保险行业AI化势不可挡，落地法门在于“叩其两端”",
+"Digest": "只有抓住保险AI化的趋势，国内的保险公司才能抓住当下“金融科技”的技术红利",
+"Cover": "http://mmbiz.qpic.cn/mmbiz_jpg/b2YlTLuGbKDMnHpb7Q0m6PGiaMdfhzv2Zia9JT0y5xIicSX9aXp0EdA4Z3ygia3fdL0icqSmRE9EiaHUdgkKS6CLRSkA/300?wxtype=jpeg&wxfrom=0",
+"Url": "http://mp.weixin.qq.com/s?__biz=MTQzMjE1NjQwMQ==&mid=2655541324&idx=4&sn=1faa6706b978db256f55dac3f22ddcfe&chksm=66dff7d251a87ec467e072c9d3d2eaa4c55750e696d36bbd1ea42089dee54daaff182de249fe&scene=0#rd"
+}
+],
+"Time": 1505831898,
+"NickName": "虎嗅网"
+}
+,{
+"UserName": "@5b66c230513f95b208152ac25b48d1c1",
+"MPArticleCount": 3,
+"MPArticleList": [{
+"Title": "电气信息学院各专业教育暨系主任见面会顺利举行",
+"Digest": "2017年9月15日下午，电气信息学院各专业教育暨系主任见面会在综合楼C座分别顺利举行。",
+"Cover": "http://mmbiz.qpic.cn/mmbiz_jpg/kefop4KpvHib7CgOlHBXhxWAfNMn46sj8poVWmSGCBtWB1mooQo5nxZTPgFk92ofmmfKDkRJibaiaMwy87gIatLow/640?wxtype=jpeg&wxfrom=0",
+"Url": "http://mp.weixin.qq.com/s?__biz=MzA3MzQ4NjcxOQ==&mid=2651999771&idx=1&sn=3a1c1c583459cd2dde2a03c928d0a3a0&chksm=84e8b60bb39f3f1dd75b8c4e669d9fd89e7cc667c25644773526594875b33fc523f45e43efa2&scene=0#rd"
+}
+,{
+"Title": "关于组织我校学生参加第四届全国高校网络安全知识竞赛的通知",
+"Digest": "竞赛以网络安全为人民，网络安全靠人民为主题。鼓励学生积极参与竞赛活动，参加网上答题，激发学生学习网络安全知识的兴趣，提升网络安全防护能力。",
+"Cover": "http://mmbiz.qpic.cn/mmbiz_jpg/kefop4KpvHib7CgOlHBXhxWAfNMn46sj8BxVSiaC3lRIzAicot8UAfwPw6CHzt4h2icxPg3ibLmHMBKGR78QJq9O27Q/300?wxtype=jpeg&wxfrom=0",
+"Url": "http://mp.weixin.qq.com/s?__biz=MzA3MzQ4NjcxOQ==&mid=2651999771&idx=2&sn=6522b3842bb295f6300154f2ba703c69&chksm=84e8b60bb39f3f1d7ad1fbaff83e386448989af6a8e7e1f49b3f6a62904a07f1f4c0ddbfe419&scene=0#rd"
+}
+,{
+"Title": "电气信息学院2017级新生游园会顺利举行",
+"Digest": "萌新游园会顺利举行2017年9月17日下午，电气信息学院2017级新生游园会在江安校区青春广场前正式启动。",
+"Cover": "http://mmbiz.qpic.cn/mmbiz_jpg/kefop4KpvHib7CgOlHBXhxWAfNMn46sj8OmOzByVdIVoQoO3tibTypptVIbpO2OtFpvplS257jVcviacoSouEACWA/300?wxtype=jpeg&wxfrom=0",
+"Url": "http://mp.weixin.qq.com/s?__biz=MzA3MzQ4NjcxOQ==&mid=2651999771&idx=3&sn=85b6ecee4b74a25ed07e4f82796619fd&chksm=84e8b60bb39f3f1de53b04acfbfe4e6fc01af13b78c9d86fce87480d7b7ab5c801271b8523a4&scene=0#rd"
+}
+],
+"Time": 1505831443,
+"NickName": "川大电气"
+}
+,{
+"UserName": "@ea76470545167ab4c2317627cf64ac47",
+"MPArticleCount": 1,
+"MPArticleList": [{
+"Title": "招聘 | 我们寻找渴望环游世界的你",
+"Digest": "这是一则有趣的招聘信息。",
+"Cover": "http://mmbiz.qpic.cn/mmbiz_jpg/hLickBFxyvFKAw8JnAbmUibnO1d8XCya4THD1Lx0ibg3x9nCwza4eBEuJRPFKbIZTRU6znZqdx4KB61lbMQ3oE6ibA/640?wxtype=jpeg&wxfrom=0",
+"Url": "http://mp.weixin.qq.com/s?__biz=MzIzMTIyNjg4Nw==&mid=2649804342&idx=1&sn=023ba9eadea9cd1678a3350a707b71e9&chksm=f0a3055ec7d48c48171a2cd6acc8400523e629cabe79b8da1f78f93fa8f78db9396e25c117f0&scene=0#rd"
+}
+],
+"Time": 1505829086,
+"NickName": "壹牛闯世界"
+}
+,{
+"UserName": "@5608ad745fd6b963de4ec51c85257b64",
+"MPArticleCount": 1,
+"MPArticleList": [{
+"Title": "帮推|关于组织我校学生参加第四届全国高校网络安全知识竞赛的通知",
+"Digest": "四届全国高校网络安全知识竞赛",
+"Cover": "http://mmbiz.qpic.cn/mmbiz_jpg/uNCxL3D60eJQvVpwbeZnvJKcoHTD6DhtH8DEdic0YiaS2XK3Feb6IXoeQjITgvLibic4adgKHta8WTUQxibMyeCPaSQ/640?wxtype=jpeg&wxfrom=0",
+"Url": "http://mp.weixin.qq.com/s?__biz=MjM5OTkzNzc4Mg==&mid=2651170428&idx=1&sn=64f1693f575025a248f542f52714a72e&chksm=bcc2d5e58bb55cf3e5abef9ec4de57e4c94936fd875b8841e8b47218a75c0f9c8befbb86400d&scene=0#rd"
+}
+],
+"Time": 1505828268,
+"NickName": "川大文新团委"
+}
+,{
+"UserName": "@0ea2fc12f698e02f98e62780e63aa316",
+"MPArticleCount": 3,
+"MPArticleList": [{
+"Title": "【川大表白墙】16级高勇，我在自己的心窗上栓上美丽的风铃，如果你来到，铃声叩动，便是你给我的开心。",
+"Digest": "表白墙",
+"Cover": "http://mmbiz.qpic.cn/mmbiz_jpg/ib3w9Ylhv3SCVd9nicDkH35phP9pMLXhwrzaN8fVt2boP5NGVsmCD7KzgKjh9kZePcGD1fBs62VyHpXeIRTSYQDg/640?wx_fmt=jpeg&wxtype=jpeg&wxfrom=0",
+"Url": "http://mp.weixin.qq.com/s?__biz=MzA4MTEwNzk2NQ==&mid=2450368753&idx=1&sn=454c34de46b7087c4c42034786f27110&chksm=88630663bf148f75ef06a59b29a6300a8fdb56f9e76ca134a76a903573cc14adc6476c9d0327&scene=0#rd"
+}
+,{
+"Title": "【树洞|生活信息】 树洞里的人都有自己的故事，相知而不相识，也是如此的美好! ",
+"Digest": "树洞",
+"Cover": "http://mmbiz.qpic.cn/mmbiz_jpg/ib3w9Ylhv3SBGAxIEPoDibhESZb4xflH9dSjHkbf7RAiazZmLZBUiaJfINLTKNkye49ndNop6Grsqib3e2GzXkrxomw/640?wx_fmt=jpeg&wxtype=jpeg&wxfrom=0",
+"Url": "http://mp.weixin.qq.com/s?__biz=MzA4MTEwNzk2NQ==&mid=2450368753&idx=2&sn=92f1928e7bfb3a5dada6f9722de35294&chksm=88630663bf148f758c16a1d3a288a36185115355cfb58c897a7b562376c794d9c2e93d69444d&scene=0#rd"
+}
+,{
+"Title": "【川大晚安】知乎上45个神回复，看完整个人都神清气爽",
+"Digest": "晚安",
+"Cover": "http://mmbiz.qpic.cn/mmbiz_jpg/ib3w9Ylhv3SCVd9nicDkH35phP9pMLXhwr0LoF007w06Vjff2BI4A6pib27zjHNxPWDqF7OYzpvSUUFyBoNG64fVg/640?wx_fmt=jpeg&wxtype=jpeg&wxfrom=0",
+"Url": "http://mp.weixin.qq.com/s?__biz=MzA4MTEwNzk2NQ==&mid=2450368753&idx=3&sn=b63339bd847db534bfeaccdd4278778a&chksm=88630663bf148f75bdca19ad0220510398d36c79306d6ff582897735919291ee0b82eb2d10fc&scene=0#rd"
+}
+],
+"Time": 1505828198,
+"NickName": "scu微生活"
+}
+,{
+"UserName": "@fa90b564877c76fc96c27fb6d9f823f2",
+"MPArticleCount": 2,
+"MPArticleList": [{
+"Title": "四川大学秋季田径运动会报名开始",
+"Digest": "四川大学秋季田径运动会报名开始",
+"Cover": "http://mmbiz.qpic.cn/mmbiz_png/leYjGrKL2o53ZSPMdEXJD9ALlxqNxsQFrjPu8OPAM03oIsTayAmTpt1R5XhJjIgnhx3gcoRKDtmibdzmnInTX2g/640?wxtype=jpeg&wxfrom=0",
+"Url": "http://mp.weixin.qq.com/s?__biz=MzA5MTA3OTMxNw==&mid=2651141042&idx=1&sn=99bab964be251b9f2ff6c3dd2defe6ec&chksm=8bf04448bc87cd5ed04663fcf5e69b81c7202ea0f6a815e948b2eb3d434dc33059e5798f8634&scene=0#rd"
+}
+,{
+"Title": "经心为你·老生常谈 | 新生攻略饮食篇之江安校园美食",
+"Digest": "江安校园美食",
+"Cover": "http://mmbiz.qpic.cn/mmbiz_png/leYjGrKL2o53ZSPMdEXJD9ALlxqNxsQFqBdOKW6mEKj2wFkB6Victp5jKfdeS2nwVmdSnAEokMFgvdBlc2SlQeA/300?wxtype=jpeg&wxfrom=0",
+"Url": "http://mp.weixin.qq.com/s?__biz=MzA5MTA3OTMxNw==&mid=2651141042&idx=2&sn=ece47058ec54605f824acf40f8553d18&chksm=8bf04448bc87cd5ea6360ff30201923fd958f23cdbccfb896148e2bd1c579edc3fa987537e90&scene=0#rd"
+}
+],
+"Time": 1505828076,
+"NickName": "川大经院团委学生会信息平台"
+}
+,{
+"UserName": "@08fe4c2d06c66ec3e967b4aa72bceacb",
+"MPArticleCount": 1,
+"MPArticleList": [{
+"Title": "22冰川70图：凭什么说冰川是最美风景？",
+"Digest": "冰川比雪山更美。\n除非，这22处冰川，好几个你没听说过。",
+"Cover": "http://mmbiz.qpic.cn/mmbiz_jpg/AByKNswOlNVTZ2Ur1eGOqkdI3tic07ucjRcWA5ia10ztPp7ib8tYuQhhL32kolZOxbQBHdYjTCusS82JWVpSsibiaAQ/640?wxtype=jpeg&wxfrom=0",
+"Url": "http://mp.weixin.qq.com/s?__biz=MzIwOTA4OTE3OA==&mid=2650493579&idx=1&sn=cb1fbeb3d5cd4857e6c3cc7d01e89f02&chksm=8f76d57eb8015c684df674216154d543b7d83dda4da87724993b08a005a43f7d9fb60661337f&scene=0#rd"
+}
+],
+"Time": 1505827986,
+"NickName": "地理说"
+}
+,{
+"UserName": "@4833a867a4f742a01058e4c4c260ae63",
+"MPArticleCount": 6,
+"MPArticleList": [{
+"Title": "【福利】免费上门检测！品格吊顶再掀冬季暖心服务！",
+"Digest": "没错，品格又来搞事情了！搞什么事？免费上门检测！品格吊顶再掀冬季暖心服务！",
+"Cover": "http://mmbiz.qpic.cn/mmbiz_jpg/dwQpvuC8PXib3s2ZUXyeorAwoaicWntC5uaOJkETZJK6ZbfoG3Oic8cVwnw6ibSTZPd5P6FoY4GRC4UV4tOW046kSw/640?wxtype=jpeg&wxfrom=0",
+"Url": "http://mp.weixin.qq.com/s?__biz=MzA4MDA1ODc4MQ==&mid=2652061555&idx=1&sn=281489042e85485df149219ddb908022&chksm=844d9f81b33a169728b9eefe16c365aca809e5cb18b7e7309b7cdbf923100c7702c38746bb8c&scene=0#rd"
+}
+,{
+"Title": "#爱在涪陵# 1076号女嘉宾：番茄是只猫",
+"Digest": "爱在涪陵#爱在涪陵#【全城招募单身男女嘉宾】爱情就像一阵风，会突然来袭，因为一次邂逅，会让你不在孤单！现在涪",
+"Cover": "http://mmbiz.qpic.cn/mmbiz_jpg/dwQpvuC8PXib3s2ZUXyeorAwoaicWntC5udXex4XhzL02xW2xMTNw357aVTlatXib2cP1bs8oCPb8bbVVlSdKMpcw/300?wxtype=jpeg&wxfrom=0",
+"Url": "http://mp.weixin.qq.com/s?__biz=MzA4MDA1ODc4MQ==&mid=2652061555&idx=2&sn=acd30de1f6bbe3d8da39cdd0d5f6c7e0&chksm=844d9f81b33a1697cc6759cb30e7a1fbc5b073a06700472eefeb6bc6c7d8ce35a1aa2d165679&scene=0#rd"
+}
+,{
+"Title": "2017年全国大众创业万众创新活动在涪陵西城咖啡成功举行！",
+"Digest": "2017年全国大众创业万众创新活动周重庆涪陵分会场，于今天2017年9月18日在涪陵西城咖啡举行双创促升级，",
+"Cover": "http://mmbiz.qpic.cn/mmbiz_jpg/dwQpvuC8PXib3s2ZUXyeorAwoaicWntC5urOl3YBpmibnVcsiaDdjdOTTtkvX0s2OOoLpW5chFH8QVv7o55pLtXgZQ/300?wxtype=jpeg&wxfrom=0",
+"Url": "http://mp.weixin.qq.com/s?__biz=MzA4MDA1ODc4MQ==&mid=2652061555&idx=3&sn=c22ac901b0002eb161c75aa6299762c5&chksm=844d9f81b33a16973acb497f76ac1bfb8c70c399e9e07ccdab648727a970de2a02dae35db57d&scene=0#rd"
+}
+,{
+"Title": "中国超级乐手【歇斯】2017全国巡讲会涪陵站 | 9月23日精彩呈现",
+"Digest": "9月23日周六，中国顶级吉他大师与您面对面交流！",
+"Cover": "http://mmbiz.qpic.cn/mmbiz_jpg/jQMicMqZLJveCVFCiaX0mV5BYBy1JejCqo7eVdSuibiayfmgRNAYRLQzoNiaRcrIVmicra3U1P1GQfrutrLjcGMaCGVQ/300?wxtype=jpeg&wxfrom=0",
+"Url": "http://mp.weixin.qq.com/s?__biz=MzA4MDA1ODc4MQ==&mid=2652061555&idx=4&sn=7dd032b86083809cbcdbc4a03044a492&chksm=844d9f81b33a169708cc70aef5ad89f7598a052668bb6310f082704c27b50694cb97360bc136&scene=0#rd"
+}
+,{
+"Title": "涪陵网信办牵头在易家坝开展防网络电信诈骗安全宣传",
+"Digest": "随着科技的发展，网络技术也发生着日新月异的变化，网络上的信息也变得日益复杂。为了增强广大人民群众网络安全意识",
+"Cover": "http://mmbiz.qpic.cn/mmbiz_jpg/dwQpvuC8PXib3s2ZUXyeorAwoaicWntC5uFrEI4IOOume0uChTeynAGS4B6IsRTlJAR8hhCZpSSianQicEnqBL8tDw/300?wxtype=jpeg&wxfrom=0",
+"Url": "http://mp.weixin.qq.com/s?__biz=MzA4MDA1ODc4MQ==&mid=2652061555&idx=5&sn=cce473aa6ab69f8abf97239b58e3b85d&chksm=844d9f81b33a1697f6a201cde0fccae61a421e03d6be8b37767a33b626569c994130d6e67e3a&scene=0#rd"
+}
+,{
+"Title": "涪陵信息 | 9.19更新招聘,房源,二手等便民信息...",
+"Digest": "≡◆≡招聘信息≡◆≡【招聘】峨眉烧烤餐饮文化有限公司 因发展需要公司长期诚聘以下岗位 1 、店长2名，性别不",
+"Cover": "http://mmbiz.qpic.cn/mmbiz_jpg/dwQpvuC8PXib3s2ZUXyeorAwoaicWntC5uGaicLsNFnGY3Qc9C5EgGqgKA9EldpSuHsaadhicSp06jgIic7Z6yOBGnw/300?wxtype=jpeg&wxfrom=0",
+"Url": "http://mp.weixin.qq.com/s?__biz=MzA4MDA1ODc4MQ==&mid=2652061555&idx=6&sn=a7cdfd25860a5580a5748b6d3cfb0aa6&chksm=844d9f81b33a1697df5bd88215bfc4ce66e5e85416dbec3a5d23241c397fe6a869339cef521f&scene=0#rd"
+}
+],
+"Time": 1505827873,
+"NickName": "涪陵网事"
+}
+,{
+"UserName": "@8070f2b24da82a88e248c3f02f7bc331",
+"MPArticleCount": 3,
+"MPArticleList": [{
+"Title": "复旦毕业生假扮走私犯卧底非洲，多次险中逃生……央视为他拍纪录片",
+"Digest": "世界不是被作恶者摧毁的，而是被看到了邪恶却一言不发的人摧毁的。",
+"Cover": "http://mmbiz.qpic.cn/mmbiz_jpg/kaJJfkjDRBeS7eFKX6r0GV4sz4b8Ll4nmlvzdJgyibKdmcdm78uIUwuHCPInpk1z25Zpt3VPpD2owaFCllFHEQA/640?wxtype=jpeg&wxfrom=0",
+"Url": "http://mp.weixin.qq.com/s?__biz=MzI1NTIyMTA3Mw==&mid=2649512147&idx=1&sn=32a7bf6d9223c7d933044b342bb201d5&chksm=f221b4edc5563dfb05225b452ce230f6183f9b8130d87bf70b9a769242c1e9e134e4efd98109&scene=0#rd"
+}
+,{
+"Title": "外卖，毁不掉我们的下一代",
+"Digest": "我们做的某些环保行为，其实经不起逻辑的推敲和定量的分析，只是感动了自己。",
+"Cover": "http://mmbiz.qpic.cn/mmbiz_jpg/kaJJfkjDRBeS7eFKX6r0GV4sz4b8Ll4nOZicDue2SEFMoVMqogISI1c0cOLAvxl0YAVIQaBz2G2XYOicYBJakNqg/300?wxtype=jpeg&wxfrom=0",
+"Url": "http://mp.weixin.qq.com/s?__biz=MzI1NTIyMTA3Mw==&mid=2649512147&idx=2&sn=b81e350092b47e654527145f02ffe4c0&chksm=f221b4edc5563dfb5ec7ab1a6c767669d3c85350ccb33579167f1c311aca0ac87b63a0d60c2d&scene=0#rd"
+}
+,{
+"Title": "北大女硕士求职悲欢刷屏，并不是食物链顶端的矫情",
+"Digest": "在这个要求时刻清零和面向未来的时代，我们已经没有“赢家”的概念了",
+"Cover": "http://mmbiz.qpic.cn/mmbiz_jpg/kaJJfkjDRBeS7eFKX6r0GV4sz4b8Ll4nlMt758Nibobm3jUicBj2icTT267aibU5s2g4lQ3V5xHvs7GJyteaTJc4IA/300?wxtype=jpeg&wxfrom=0",
+"Url": "http://mp.weixin.qq.com/s?__biz=MzI1NTIyMTA3Mw==&mid=2649512147&idx=3&sn=62273f05e20df5c43382886216ec43f9&chksm=f221b4edc5563dfbcedcebb5ea4cb8e0597f2e2758bd35c2eb26d3d8801385b42ad12d6fd9ab&scene=0#rd"
+}
+],
+"Time": 1505826378,
+"NickName": "理想岛"
+}
+,{
+"UserName": "@be946769ea6a20238ae7989b3b1a5565",
+"MPArticleCount": 2,
+"MPArticleList": [{
+"Title": "150天4700公里 90后情侣带着狗从杭州跑步到西藏",
+"Digest": "2017年2月94年的伊伊到拉萨旅游，当她爬到所住的客栈后山看到拉萨全景时，萌生了一个念头， “我要跑步到拉",
+"Cover": "http://mmbiz.qpic.cn/mmbiz_jpg/563wOT0RBjtbIuucuY0zs7PrEwoXjIawtSJXE79LrXsSGAShIOKasIO5aj8M4JpxdlfpkpOx22jQjQu9IibKoFg/640?wxtype=jpeg&wxfrom=0",
+"Url": "http://mp.weixin.qq.com/s?__biz=MjM5Njc3MDU0MA==&mid=2651217146&idx=1&sn=5877a3af1cadecb38cace2337e8d8d75&chksm=bd16db798a61526f27479072177da68e493749327cac33c3da8bd1316d8eb18b46f1fe6f6181&scene=0#rd"
+}
+,{
+"Title": "强势围观！飞仙关隧道贯通，雅康高速二郎山隧道也要通了！",
+"Digest": "飞仙关隧道今日凌晨双向贯通！6分钟即可穿越川藏“第一关”！",
+"Cover": "http://mmbiz.qpic.cn/mmbiz_jpg/563wOT0RBjsTAJxriacQ5rIicj2oGSIPj28Vm1cBtSWVBaS66a14H2oNFAtA5Z5xBBC1aBsoaI8zhu0WojS3rbiaA/300?wxtype=jpeg&wxfrom=0",
+"Url": "http://mp.weixin.qq.com/s?__biz=MjM5Njc3MDU0MA==&mid=2651217146&idx=2&sn=8c14a258a8d731588470bc676745dd06&chksm=bd16db798a61526f7b04b1c04c33d6ca8b9d6a450eb500d4ad893ccd67b1781b3003c28d1e9e&scene=0#rd"
+}
+],
+"Time": 1505826066,
+"NickName": "川藏旅行网"
+}
+,{
+"UserName": "@ce42147d9d369ef3ea9df1272f070a51",
+"MPArticleCount": 2,
+"MPArticleList": [{
+"Title": "知乎上的45条神回复，针针见血，看完整个人通透多了",
+"Digest": "爽就一个字",
+"Cover": "http://mmbiz.qpic.cn/mmbiz_jpg/NPd0xqhsvfkwYfPWEvTGZHrT9loiac13nuxhAAMBFcPlEa6XuqiaBonTJhkiaQz29XqSPb3miaxFJsaiafw5FQU4czQ/640?wxtype=jpeg&wxfrom=0",
+"Url": "http://mp.weixin.qq.com/s?__biz=MzI3ODAxMTU3MA==&mid=2651294717&idx=1&sn=1047cd9fbce787e1779e5eaa20421d15&chksm=f0aea020c7d92936201ad2c32bb43e66a5a578f6cae9c62885db6f7560ef28d613a0cf9eb1ab&scene=0#rd"
+}
+,{
+"Title": "69届艾美奖名单公布！中国留学生也能结缘艾美，你只需要这几步……",
+"Digest": "中国留学党进军艾美的绝佳机会来了！",
+"Cover": "http://mmbiz.qpic.cn/mmbiz_jpg/NPd0xqhsvfkwYfPWEvTGZHrT9loiac13no8cfCja19bF3UCS3aZ2tDQRnbrwRgnwx3N2PpvobicpNSzjEIPFiapCA/300?wxtype=jpeg&wxfrom=0",
+"Url": "http://mp.weixin.qq.com/s?__biz=MzI3ODAxMTU3MA==&mid=2651294717&idx=2&sn=7e9a8104d9ec8ca312bf3d558f27213a&chksm=f0aea020c7d9293619fc0e6e1d3d8588860defeb0f5f4f5ded6bddd23bb180d68356935a75ce&scene=0#rd"
+}
+],
+"Time": 1505824859,
+"NickName": "北美学霸君"
+}
+,{
+"UserName": "@05452178741190ec9cb2eb788b77f334",
+"MPArticleCount": 1,
+"MPArticleList": [{
+"Title": "科科福利 | 这里有一份“武侯 · 创业青年说”邀请函 ，请查收！",
+"Digest": "所谓创业，就是折腾？？",
+"Cover": "http://mmbiz.qpic.cn/mmbiz_jpg/t8gbicIhLhFKAVq0mRF7KtbSpkYI4gYpGrIYfEwIskPsdp5yjZglUKEptpNy0D2Mgh2BAmxyvJX5aKZIibA26tEw/640?wxtype=jpeg&wxfrom=0",
+"Url": "http://mp.weixin.qq.com/s?__biz=MjM5ODYxNjA0MQ==&mid=2650934071&idx=1&sn=b85c91b3279c0c988de263b64973c546&chksm=bd3ea5b18a492ca787f7b98c967d0221986b4a09e3fad903443699952cf6162177a796dbd70e&scene=0#rd"
+}
+],
+"Time": 1505823096,
+"NickName": "四川大学学生学术科技协会"
+}
+,{
+"UserName": "@fa585903703cf279a42ad1fe2e1a7afa",
+"MPArticleCount": 1,
+"MPArticleList": [{
+"Title": "电子信息领域“千人”和“青千”稳居全国首位！看这五年我电如何打造“人才高峰”",
+"Digest": "电子科技大学师资队伍建设五年成绩综述",
+"Cover": "http://mmbiz.qpic.cn/mmbiz_jpg/gFxQW0ZLIfNrSkF0vjgDeQWPibqL4LAq1cVek9A95dW4EbKXRaO1wEV7yxySeOE2Uzic7ibO5lqusGOawgKicCObMw/640?wxtype=jpeg&wxfrom=0",
+"Url": "http://mp.weixin.qq.com/s?__biz=MjM5MzM5MTMwMQ==&mid=2651587925&idx=1&sn=023e3bed202d10f612eee39f6ad0a411&chksm=bd6f12ff8a189be923e1e8537a810fd05dc200953aad40d4be22c9bedbb76054589eea9b5999&scene=0#rd"
+}
+],
+"Time": 1505822329,
+"NickName": "电子科技大学"
+}
+,{
+"UserName": "@24a8984f13bbd68f8c8447bb8c2b5495",
+"MPArticleCount": 2,
+"MPArticleList": [{
+"Title": "比赛通知 | 这里有一个英语dalao不可错过的机会",
+"Digest": "2017年“外研社杯”全国英语演讲大赛四川大学选拔赛开始报名啦",
+"Cover": "http://mmbiz.qpic.cn/mmbiz_jpg/ovK3XJaFx7zqnTPibsaVP1aGoWHH6E0rGq3s4R2slFJxCANhvyqMIjoMSgiap35Ejcz8z6LrNJGUEWNEwPeHmefw/640?wxtype=jpeg&wxfrom=0",
+"Url": "http://mp.weixin.qq.com/s?__biz=MjM5Njg3MjM0NA==&mid=2651783160&idx=1&sn=8f708cc51f7ba12aa830ac76f8d3e148&chksm=bd18f60f8a6f7f19932008e56ffba2799f9de0592724580f0f2b85c40f04b5d050e9ad1713bb&scene=0#rd"
+}
+,{
+"Title": "关于组织我校学生参加第四届全国高校网络安全知识竞赛的通知",
+"Digest": "关于组织我校学生参加第四届全国高校网络安全知识竞赛的通知",
+"Cover": "http://mmbiz.qpic.cn/mmbiz_jpg/ovK3XJaFx7zqnTPibsaVP1aGoWHH6E0rGbfZhcUzYvFzJMMduZAIfR5BjjgGhPR1NZd7g4pxu17NNdBy74APk6A/300?wxtype=jpeg&wxfrom=0",
+"Url": "http://mp.weixin.qq.com/s?__biz=MjM5Njg3MjM0NA==&mid=2651783160&idx=2&sn=fef0a0d290837a5e5c3cab4101270054&chksm=bd18f60f8a6f7f19a5a1516894ebfc42be80c97a5a7128715816c20689b270bf70689a175bc6&scene=0#rd"
+}
+],
+"Time": 1505818715,
+"NickName": "川大高分子团委学生会"
+}
+,{
+"UserName": "@5b66c230513f95b208152ac25b48d1c1",
 "MPArticleCount": 5,
 "MPArticleList": [{
 "Title": "“真心话”and“大冒险”",
@@ -1978,7 +2229,7 @@
 "NickName": "川大电气"
 }
 ,{
-"UserName": "@e408749565f7f2080757b1c66f22317e",
+"UserName": "@ea76470545167ab4c2317627cf64ac47",
 "MPArticleCount": 2,
 "MPArticleList": [{
 "Title": "如何从旅行小白打怪升级成为旅行定制师？",
@@ -1997,7 +2248,7 @@
 "NickName": "壹牛闯世界"
 }
 ,{
-"UserName": "@d3b5089e576b69b3bb273a1f79e7b21e",
+"UserName": "@8070f2b24da82a88e248c3f02f7bc331",
 "MPArticleCount": 3,
 "MPArticleList": [{
 "Title": "你的深度思考能力，是如何一步步被毁掉的？",
