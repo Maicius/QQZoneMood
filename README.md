@@ -9,9 +9,10 @@
 
 ## 抓取QQ空间说说内容并进行分析
 
-###爬虫文件
+### 爬虫文件
 
-###QQZoneShuoshuo.py
+### QQZoneShuoshuo.py
+
 - python版本：3.6（推荐使用python3，因为本爬虫涉及大量文件交互，python3的编码管理比2中好很多）
 - 已经抓取到的信息有：
 
