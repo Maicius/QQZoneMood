@@ -1,4 +1,11 @@
-# wexinFriendInfo
+# Interesting Crawler
+
+- 目前包含三个爬虫 
+ 
+	> 1.爬取QQ空间说说内容（包括评论和点赞）     
+	> 2.爬取微信好友列表  
+	> 3.爬取scuInfo的数据（会被封ip）  
+
 
 ## 抓取QQ空间说说内容并进行分析
 
@@ -37,8 +44,14 @@
 > - 4.替换class spider中self.__username与self.__password为自己的QQ号密码  
 > - 5.运行(命令行下直接使用指令 python QQZoneShuoshuo.py)
 
+- 运行方式（windows) 
+ 
+>  - windows下推荐使用界面进行操作，可参考这篇博文：
+> - [使用Pycharm安装Python第三方库](http://blog.csdn.net/qiannianguji01/article/details/50397046)  
+
 ### 数据分析
 ### drawWordCloud.py
+
 - python版本：3.6  
 - 已经实现的分析有：
 
