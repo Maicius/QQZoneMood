@@ -24,14 +24,18 @@
   
 > 建议使用PyCharm打开，  
 > 在PyCharm中根据import的报错可以自动安装相应模块  
-> selenium需要与chrome driver结合使用,可以查看这篇博客：  
+> *注意*selenium需要与chrome driver结合使用,可以查看这篇博客：  
 > [selenium之 chromedriver与chrome版本映射表（更新至v2.32）](http://blog.csdn.net/huilan_same/article/details/51896672)
 
-- 运行方式  
+- 运行方式（针对macOS和linux）  
 
-> 使用pip3安装相应的包，如 sudo pip3 install wordcloud    
-> 替换class spider中self.__username与self.__password为自己的QQ号密码  
-> 运行
+> - 1.打开terminal
+> - 2.确保自己已经安装了pip和pip3，如未安装，请使用下面命令安装：  
+> - macOS：sudo brew install pip; sudo brew install pip3  
+> - linux:  sudo apt-get install pip; sudo apt-get install pip3
+> - 3.使用pip3安装相应的包(根据代码头文件可知)，如 sudo pip3 install wordcloud    
+> - 4.替换class spider中self.__username与self.__password为自己的QQ号密码  
+> - 5.运行(命令行下直接使用指令 python QQZoneShuoshuo.py)
 
 ### 数据分析
 ### drawWordCloud.py
