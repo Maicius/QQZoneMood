@@ -8,6 +8,7 @@ from wordcloud import WordCloud, ImageColorGenerator, STOPWORDS
 import matplotlib.pyplot as plt
 from scipy.misc import imread
 
+
 def spider():
     headers = {
         'host': 'scuinfo.com',
