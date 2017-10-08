@@ -53,6 +53,14 @@ def get_comment_names(word):
             for comment in item['commentlist']:
                 name_list.append(comment['name'])
                 word_list += comment['content']
+
+    name_dic = {}
+    for item in name_list:
+        if item in name_dic:
+            name_dic[item] += 1
+        else:
+            name_dic[item] = 1
+    print(str(sorted(name_dic.items(), key=lambda nameItem: nameItem[1], reverse=True)))
     name_text = " ".join(name_list)
     word_list = jieba.cut(word_list, cut_all=False)
     word_list2 = []
@@ -64,7 +72,7 @@ def get_comment_names(word):
     return name_text, words_text
 
 
-# 获取每条说说的内容与点赞数、评论数
+# 获取每条说说的内容与点赞数、评论数、时间
 # 用于分析说说的内容与点赞评论的关系
 def get_comment_agree_list(word):
     json_text = json.loads(word)
@@ -73,7 +81,6 @@ def get_comment_agree_list(word):
     json_agree = json.loads(agree_list)
     mylist = []
     for i in range(len(json_text)):
-
         comment_num = 0
         comment = json.loads(json_text[i])
 
@@ -90,7 +97,7 @@ def get_comment_agree_list(word):
         content = comment['content']
         time_local = time.localtime(comment['created_time'])
         dt = time.strftime("%Y-%m-%d %H:%M:%S", time_local)
-        #转发的说说字段略有不同，此处忽略
+        # 转发的说说字段略有不同，此处忽略
         # if conlist != None:
         #     for item in conlist:
         #         if 'con' in item:
@@ -102,15 +109,33 @@ def get_comment_agree_list(word):
     with open('data/shuoshuoHistory.txt', 'w', encoding='utf-8') as mood_writer:
         mood_writer.write(str(mylist))
 
+    moreThan200list = []
     moreThan100list = []
-
+    moreThan50list = []
+    lessThan50list = []
+    count = 0
+    length = 0
+    for item in mylist:
+        if item[2] >= 200:
+            moreThan200list.append(item[1])
+        elif item[2] >= 100:
+            moreThan100list.append(item[1])
+        elif item[2] >= 50:
+            moreThan50list.append(item[1])
+        else:
+            lessThan50list.append(item[1])
+        count += item[3]
+        length += 1
+    print("avg:" + str(count / length))
+    print(len(moreThan200list))
+    print(len(moreThan100list))
+    print(len(moreThan50list))
+    print(len(lessThan50list))
     print(str(mylist))
     print("按点赞的人排序：")
-    print(str(sorted(mylist, key= lambda item: item[2], reverse=True)))
+    print(str(sorted(mylist, key=lambda item: item[2], reverse=True)))
     print("按评论的人排序：")
     print(str(sorted(mylist, key=lambda item: item[3], reverse=True)))
-
-
 
 
 def get_agree_names(agree_names):
@@ -157,13 +182,14 @@ if __name__ == '__main__':
     # drawWordCloud(words, 'pic\content.png')s
     # f.close()
     #
-    # f = codecs.open('data/mood_detail.json', 'r', encoding='utf-8')
-    # words = f.read()
-    # comment_text, word_text = get_comment_names(words)
+    f = codecs.open('data/mood_detail.json', 'r', encoding='utf-8')
+    words = f.read()
+    comment_text, word_text = get_comment_names(words)
+
     # drawWordCloud(comment_text, 'pic/comment.png')
     #
     # drawWordCloud(word_text, 'pic/comment_content.png')
-    # f.close()
+    f.close()
     #
     # f = codecs.open('data/like.json', 'r', encoding='utf-8')
     # words = f.read()
@@ -171,6 +197,6 @@ if __name__ == '__main__':
     # drawWordCloud(comment_text, 'pic/like.png')
     # f.close()
 
-    f = codecs.open('data/mood_detail.json', 'r', encoding='utf-8')
-    words = f.read()
-    get_comment_agree_list(words)
+    # f = codecs.open('data/mood_detail.json', 'r', encoding='utf-8')
+    # words = f.read()
+    # get_comment_agree_list(words)
