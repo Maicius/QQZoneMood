@@ -1,5 +1,8 @@
 # Interesting Crawler
 
+![QQ空间说说历史曲线图](https://github.com/Maicius/InterestingCrawler/blob/master/QQZone/history.png)  
+![QQ空间说说按点赞和评论数分类图](https://github.com/Maicius/InterestingCrawler/blob/master/QQZone/shuoshuoPie.png)  
+
 - 目前包含三个爬虫 
  
 	> 1.爬取QQ空间说说内容（包括评论和点赞）     
