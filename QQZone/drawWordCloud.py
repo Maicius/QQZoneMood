@@ -99,6 +99,11 @@ def get_comment_agree_list(word):
         #             content += item['ourl']
         #    mylist.append([content, agree_num, comment_num])
         mylist.append([str(dt), content, agree_num, comment_num])
+    with open('data/shuoshuoHistory.txt', 'w', encoding='utf-8') as mood_writer:
+        mood_writer.write(str(mylist))
+
+    moreThan100list = []
+
     print(str(mylist))
     print("按点赞的人排序：")
     print(str(sorted(mylist, key= lambda item: item[2], reverse=True)))
