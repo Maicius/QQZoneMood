@@ -52,6 +52,7 @@
  
 >  - windows下推荐使用界面进行操作，可参考这篇博文：
 > - [使用Pycharm安装Python第三方库](http://blog.csdn.net/qiannianguji01/article/details/50397046)  
+> - 或者: 手动下载pip，再运行 pip install requirements.txt
 
 ### 数据分析
 ### drawWordCloud.py
