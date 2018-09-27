@@ -139,11 +139,16 @@ class Spider(object):
         return url
 
     # 由于有的比较老旧的说说的点赞信息被清空了，需要从这里获取点赞的数目
-    def get_like_num_url(self, unikeys):
+    def get_like_num_url(self, unikey):
+        """
+
+        :param unikeys:
+        :return:
+        """
         like_url = 'https://user.qzone.qq.com/proxy/domain/r.qzone.qq.com/cgi-bin/user/qz_opcnt2?'
         params = {
             "_stp": '',
-            "unikey": unikeys,
+            "unikey": unikey,
             # 'face': '0<|>0<|>0<|>0<|>0<|>0<|>0<|>0<|>0<|>0',
             'face':0,
             'fupdate': 1,
