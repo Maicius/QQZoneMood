@@ -172,8 +172,13 @@ class Spider(object):
             json += arr[i]
         return json
 
-    # 获取动态详情列表（一页20个）
-    def get_mood_list(self, file_name_head='data', mood_num=200):
+    def get_mood_list(self, file_name_head='data', mood_num=100, download_image=False):
+        """
+         # 获取动态详情列表（一页20个）
+        :param file_name_head: 文件名的前缀
+        :param mood_num: 下载的动态数量，最好设置为20的倍数
+        :return:
+        """
         url_mood = self.get_mood_url()
         url_mood = url_mood + '&uin=' + str(self.__username)
         pos = 0
@@ -201,9 +206,13 @@ class Spider(object):
                     like_detail = self.get_like_num(unikey['curlikekey'])
                     self.like_detail.append(like_detail)
                     # 获取点赞详情（方法二）
-                    # 此方法会获取到点赞的人的昵称，但是有的数据已经被清空了
+                    # 此方法能稳定获取到点赞的人的昵称，但是有的数据已经被清空了
                     like_list_name = self.get_like_list()
                     self.like_list_names.append(like_list_name)
+                    if download_image:
+                        for pic_url in unikey['smallpic_list']:
+                            file_name = self.tid +'--'+ pic_url.split('/')[-1]
+                            self.download_image(pic_url, file_name)
                 pos += 20
                 # 每抓100条保存一次数据
                 if pos % 100 == 0:
@@ -221,12 +230,17 @@ class Spider(object):
             except BaseException as e:
                 print("ERROR===================")
                 print(e)
-                print("因错误导致爬虫终止....")
+                print("因错误导致爬虫终止....现在临时保存数据")
+                self.save_all_data_to_json(file_name_head)
+                print("保存临时数据成功")
                 print("ERROR===================")
-
+                exit(1)
         # 保存所有数据到指定文件
         print('保存最终数据中...')
+        self.save_all_data_to_json(file_name_head)
+        print("finish===================")
 
+    def save_all_data_to_json(self, file_name_head):
         self.save_data_to_json(data=self.content, file_name='data/' + file_name_head + 'content.json')
         self.save_data_to_json(data=self.like_list_names, file_name = 'data/' + file_name_head + 'like_list_name' + '.json')
         self.save_data_to_json(data=self.mood_details, file_name='data/' + file_name_head + 'mood_detail' + '.json')
@@ -238,7 +252,6 @@ class Spider(object):
             self.re.set(file_name_head + "_QQ_mood_details", json.dumps(self.mood_details, ensure_ascii=False))
             self.re.set(file_name_head + "_QQ_like_list_num",
                         json.dumps(self.like_detail, ensure_ascii=False))
-        print("finish===================")
 
     def save_data_to_json(self, data, file_name):
         with open(file_name, 'w', encoding='utf-8') as w2:
@@ -285,8 +298,6 @@ class Spider(object):
     # unikey eg: http://user.qzone.qq.com/1272082503/mood/4770d24b81eba85b0b110800.1
     def get_unilikeKey_tid_and_smallpic(self, mood_detail):
         unikey_tid_list = []
-
-        curlikekey_list = []
         jsonData = json.loads(mood_detail)
         for item in jsonData['msglist']:
             # print(item.keys())
@@ -317,7 +328,7 @@ class Spider(object):
         image_url = url
         r = self.req.get(url=image_url, headers=self.headers)
         image_content = (r.content)
-        file_image = open(name, 'wb+')
+        file_image = open('qq_image/' + name + '.jpg', 'wb+')
         file_image.write(image_content)
         file_image.close()
 
@@ -416,7 +427,7 @@ def capture_data():
     sp = Spider(use_redis=True, debug=True)
     sp.login()
     print("Login success")
-    sp.get_mood_list(file_name_head='maicius', mood_num = 200)
+    sp.get_mood_list(file_name_head='maicius', mood_num = 20, download_image=True)
     print("Finish to capture")
 
 

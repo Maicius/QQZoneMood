@@ -92,3 +92,6 @@ QQZone/html.html
 *.iml
 *.xml
 *.json
+qq_image
+!__init__.py
+
