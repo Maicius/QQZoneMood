@@ -1,7 +1,7 @@
 # Interesting Crawler
 
-![QQ空间说说历史曲线图](https://github.com/Maicius/InterestingCrawler/blob/master/QQZone/history.png)  
-![QQ空间说说按点赞和评论数分类图](https://github.com/Maicius/InterestingCrawler/blob/master/QQZone/shuoshuoPie.png)  
+![QQ空间说说历史曲线图](https://github.com/Maicius/InterestingCrawler/blob/master/QQZone/image/history.png)  
+![QQ空间说说按点赞和评论数分类图](https://github.com/Maicius/InterestingCrawler/blob/master/QQZone/image/shuoshuoPie.png)  
 
 - 目前包含三个爬虫 
  
@@ -72,10 +72,10 @@
 - 运行结果：生成词云图
 - 运行结果例图：
 
-![Image](https://github.com/Maicius/wexinFriendInfo/blob/master/QQZone/final2.jpg)
-![Image2](https://github.com/Maicius/wexinFriendInfo/blob/master/QQZone/comment.jpg)
-![Image3](https://github.com/Maicius/wexinFriendInfo/blob/master/QQZone/comment_content.jpg)
-![Image](https://github.com/Maicius/wexinFriendInfo/blob/master/QQZone/agree.jpg)
+![Image](https://github.com/Maicius/wexinFriendInfo/blob/master/QQZone/image/final2.jpg)
+![Image2](https://github.com/Maicius/wexinFriendInfo/blob/master/QQZone/image/comment.jpg)
+![Image3](https://github.com/Maicius/wexinFriendInfo/blob/master/QQZone/image/comment_content.jpg)
+![Image](https://github.com/Maicius/wexinFriendInfo/blob/master/QQZone/image/agree.jpg)
 
 ## 抓取微信好友信息
 - 好友列表里所有好友，删除了公众号信息

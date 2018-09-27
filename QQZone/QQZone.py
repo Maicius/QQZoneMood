@@ -26,8 +26,7 @@ class Spider(object):
         self.debug = debug
         self.web = webdriver.Chrome()
         self.web.get(self.host)
-        self.__username = ''
-        self.__password = ''
+        self.__username, self.__password = self.get_username_password()
         self.mood_host = self.http_host + '/' + self.__username + '/mood/'
         self.headers = {
             'host': 'h5.qzone.qq.com',
@@ -77,6 +76,11 @@ class Spider(object):
         self.get_g_tk()
         self.headers['Cookie'] = self.cookies
         self.web.quit()
+
+    def get_username_password(self):
+        with open('userinfo.json', 'r', encoding='utf-8') as r:
+            userinfo = json.load(r)
+        return userinfo['username'], userinfo['password']
 
     # 构造获取动态的URL
     def get_mood_url(self):
