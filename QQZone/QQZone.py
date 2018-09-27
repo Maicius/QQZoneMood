@@ -187,6 +187,14 @@ class Spider(object):
         url_mood = self.get_mood_url()
         url_mood = url_mood + '&uin=' + str(self.__username)
         pos = 0
+
+        # 如果mood_num为-1，则下载全部的动态
+        if mood_num == -1:
+            url__ = url_mood + '&pos=' + str(pos)
+            mood = self.req.get(url=url__, headers=self.headers).content.decode('utf-8')
+            mood_json = json.loads(self.get_json(mood))
+            mood_num = mood_json['usrinfo']['msgnum']
+
         # 1700为我空间动态数量
         while pos < mood_num:
             print('正在爬取', pos, '...')
@@ -432,7 +440,7 @@ def capture_data():
     sp = Spider(use_redis=True, debug=True)
     sp.login()
     print("Login success")
-    sp.get_mood_list(file_name_head='maicius', mood_num = 20, download_image=True)
+    sp.get_mood_list(file_name_head='maicius', mood_num = -1, download_image=True)
     print("Finish to capture")
 
 
