@@ -46,7 +46,7 @@
 > - 2.确保自己已经安装了pip和pip3(如果电脑同时安装了py2 和 py3，给则pip会默认给py2添加库，pip3会给py3添加库；如果只安装了一个版本的py,则不需要考虑这个问题)，如未安装，请使用下面命令安装：  
 > - macOS：sudo brew install pip; sudo brew install pip3  
 > - linux:  sudo apt-get install pip; sudo apt-get install pip3
-> - 3. pip install requirements.txt 或者: pip3 install requirements.txt  
+> - 3. pip3 install requirements.txt 或者: pip3 install requirements.txt  
 > - 4.替换class spider中self.__username与self.__password为自己的QQ号密码  
 > - 5.运行(命令行下直接使用指令 python QQZoneShuoshuo.py)
 
