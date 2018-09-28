@@ -11,7 +11,7 @@ from urllib import parse
 import re
 import redis
 import json
-
+import copy
 
 class Spider(object):
     def __init__(self, use_redis=False, debug=False):
@@ -45,6 +45,7 @@ class Spider(object):
         self.like_list_names = []
         self.tid = ""
         self.mood_details = []
+        self.error_unikeys = []
         if (use_redis):
             self.re = connect_redis()
 
@@ -162,12 +163,16 @@ class Spider(object):
         # unikeys = "<|>".join(curlikekey)
         unikeys = curlikekey
         if unikeys != '':
-            like_url = self.get_like_num_url(unikeys)
-            like_content = self.req.get(like_url).content.decode('utf-8')
-            # like_content是所有的点赞信息，其中like字段为点赞数目，list是点赞的人列表，有的数据中list为空
-            return like_content
+            try:
+                like_url = self.get_like_num_url(unikeys)
+                like_content = self.get_json(self.req.get(like_url).content.decode('utf-8'))
+                # like_content是所有的点赞信息，其中like字段为点赞数目，list是点赞的人列表，有的数据中list为空
+                return like_content
+            except BaseException as e:
+                self.format_error(e, 'Failed to get like_url:' + unikeys)
+                return {}
         else:
-            return []
+            return {}
 
     # 将响应字符串转化为标准Json
     def get_json(self, str1):
@@ -192,7 +197,7 @@ class Spider(object):
         recover_index_split = 0
         if recover:
             recover_index = self.do_recover_from_exist_data(file_name_head)
-            pos = recover_index // 20
+            pos = recover_index // 20 * 20
             recover_index_split = recover_index % 20
         # 如果mood_num为-1，则下载全部的动态
         if mood_num == -1:
@@ -200,6 +205,7 @@ class Spider(object):
             mood = self.req.get(url=url__, headers=self.headers).content.decode('utf-8')
             mood_json = json.loads(self.get_json(mood))
             mood_num = mood_json['usrinfo']['msgnum']
+
 
         # 1700为我空间动态数量
         while pos < mood_num:
@@ -216,27 +222,9 @@ class Spider(object):
                 if recover_index_split != 0:
                     self.unikeys = self.unikeys[recover_index_split:]
                     recover_index_split = 0
-                # 获取点赞的人的详情列表
-                for unikey in self.unikeys:
-                    if (self.debug):
-                        print('unikey:' + unikey['unikey'])
-                    self.unikey = unikey['unikey']
-                    self.tid = unikey['tid']
-                    # 获取动态详情
-                    mood_detail = self.get_mood_detail()
-                    self.mood_details.append(mood_detail)
-                    # 获取点赞详情（方法一）
-                    # 此方法有时候不能获取到点赞的人的昵称，但是点赞的数量这个数据一直存在
-                    like_detail = self.get_like_num(unikey['curlikekey'])
-                    self.like_detail.append(like_detail)
-                    # 获取点赞详情（方法二）
-                    # 此方法能稳定获取到点赞的人的昵称，但是有的数据已经被清空了
-                    like_list_name = self.get_like_list()
-                    self.like_list_names.append(like_list_name)
-                    if download_image:
-                        for pic_url in unikey['smallpic_list']:
-                            file_name = self.tid +'--'+ pic_url.split('/')[-1]
-                            self.download_image(pic_url, file_name)
+
+                # 获取数据
+                self.do_get_infos(self.unikeys, download_image)
                 pos += 20
                 # 每抓100条保存一次数据
                 if pos % 100 == 0:
@@ -253,18 +241,60 @@ class Spider(object):
                         w.write(json_content)
             except BaseException as e:
                 print("ERROR===================")
-                print(e)
                 print("因错误导致爬虫终止....现在临时保存数据")
                 self.save_all_data_to_json(file_name_head)
                 print('已爬取的数据页数(20条一页):', pos)
                 print("保存临时数据成功")
                 print("ERROR===================")
-                exit(1)
+                raise e
         # 保存所有数据到指定文件
         print('保存最终数据中...')
+        if len(self.error_unikeys) > 0:
+            if(self.debug):
+                print('Error Unikeys Num:', len(self.error_unikeys))
+                print('Retry to get them...')
+            self.get_error_unikey(download_image)
         self.save_all_data_to_json(file_name_head)
         print("finish===================")
 
+    def do_get_infos(self,unikeys,  download_image):
+        for unikey in unikeys:
+            if (self.debug):
+                print('unikey:' + unikey['unikey'])
+            self.unikey = unikey['unikey']
+            self.tid = unikey['tid']
+            # 获取动态详情
+            try:
+                mood_detail = self.get_mood_detail()
+                self.mood_details.append(mood_detail)
+                # 获取点赞详情（方法一）
+                # 此方法有时候不能获取到点赞的人的昵称，但是点赞的数量这个数据一直存在
+                like_detail = self.get_like_num(unikey['curlikekey'])
+                self.like_detail.append(like_detail)
+                # 获取点赞详情（方法二）
+                # 此方法能稳定获取到点赞的人的昵称，但是有的数据已经被清空了
+                like_list_name = self.get_like_list()
+                self.like_list_names.append(like_list_name)
+                if download_image:
+                    for pic_url in unikey['smallpic_list']:
+                        file_name = self.tid + '--' + pic_url.split('/')[-1]
+                        self.download_image(pic_url, file_name)
+            except BaseException as e:
+                self.format_error(e, 'continue to capture...')
+                # 保存抓取失败的数据信息
+                self.error_unikeys.append(unikey)
+                continue
+
+    def get_error_unikey(self, download_image):
+        """
+        重新下载第一次下载中失败的数据
+        :param download_image:
+        :return:
+        """
+
+        # 深拷贝，避免do_get_infos中对self.error_unikeys的更改导致的错误
+        error_unikeys = copy.deepcopy(self.error_unikeys)
+        self.do_get_infos(error_unikeys, download_image)
 
     def do_recover_from_exist_data(self, file_name_head):
         if self.use_redis:
@@ -317,7 +347,7 @@ class Spider(object):
                 data = json.load(content)
             return data
         except  BaseException as e:
-            format(e, 'Failed to load data ' + file_name)
+            self.format_error(e, 'Failed to load data ' + file_name)
 
 
     def format_error(self, e, msg):
@@ -332,20 +362,30 @@ class Spider(object):
         url = self.get_aggree_url()
         if (self.debug):
             print('获取点赞的人', url)
-        like_list = self.req.get(url=url, headers=self.headers)
-        like_list_detail = self.get_json(like_list.content.decode('utf-8'))
-        # like_list_detail = like_list_detail.replace('\\n', '')
-        # print(like_list_detail)
-        # print("success to get like list")
-        return like_list_detail
+        try:
+            like_list = self.req.get(url=url, headers=self.headers)
+            like_list_detail = self.get_json(like_list.content.decode('utf-8'))
+            # like_list_detail = like_list_detail.replace('\\n', '')
+            # print(like_list_detail)
+            # print("success to get like list")
+            return like_list_detail
+        except BaseException as e:
+            self.format_error(e, 'Failed to get agree:' + url)
+            return {}
+
 
     # 获得每一条说说的详细内容
     def get_mood_detail(self):
         url_detail = self.get_mood_detail_url()
-        # print(urlDetail)
-        mood_detail = self.req.get(url=url_detail, headers=self.headers)
-        json_mood = self.get_json(str(mood_detail.content.decode('utf-8')))
-        return json_mood
+        if(self.debug):
+            print('获取说说动态详情:', url_detail)
+        try:
+            mood_detail = self.req.get(url=url_detail, headers=self.headers)
+            json_mood = self.get_json(str(mood_detail.content.decode('utf-8')))
+            return json_mood
+        except BaseException as e:
+            self.format_error(e, 'Failed to get mood_detail:' + url_detail)
+            return {}
 
     # 根据unikey 获得tid
     def get_tid(self, unikey):
@@ -370,7 +410,6 @@ class Spider(object):
         unikey_tid_list = []
         jsonData = json.loads(mood_detail)
         for item in jsonData['msglist']:
-            # print(item.keys())
             tid = item['tid']
             unikey = self.mood_host + tid + '.1'
             if (self.debug):
@@ -396,11 +435,14 @@ class Spider(object):
 
     def download_image(self, url, name):
         image_url = url
-        r = self.req.get(url=image_url, headers=self.headers)
-        image_content = (r.content)
-        file_image = open('qq_image/' + name + '.jpg', 'wb+')
-        file_image.write(image_content)
-        file_image.close()
+        try:
+            r = self.req.get(url=image_url, headers=self.headers)
+            image_content = (r.content)
+            file_image = open('qq_image/' + name + '.jpg', 'wb+')
+            file_image.write(image_content)
+            file_image.close()
+        except BaseException as e:
+            self.format_error(e, 'Failed to download image:' + name)
 
 
 def connect_redis():
@@ -497,7 +539,8 @@ def capture_data():
     sp = Spider(use_redis=True, debug=True)
     sp.login()
     print("Login success")
-    sp.get_mood_list(file_name_head='maicius',mood_begin=280,  mood_num = -1, download_image=True, recover=True)
+    sp.get_mood_list(file_name_head='maicius',mood_begin=0,  mood_num = -1, download_image=True, recover=True)
+
     print("Finish to capture")
 
 
