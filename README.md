@@ -7,14 +7,13 @@
  
 	> 1.爬取QQ空间说说内容（包括评论和点赞）     
 	> 2.爬取微信好友列表  
-	> 3.爬取scuInfo的数据（会被封ip）  
 
 
 ## 抓取QQ空间说说内容并进行分析
 
 ### 爬虫文件
 
-### QQZoneShuoshuo.py
+### QQZone.py
 
 - python版本：3.6（推荐使用python3，因为本爬虫涉及大量文件交互，python3的编码管理比2中好很多）
 - 登陆使用的是Selenium， 无法识别验证码，抓取使用requests
@@ -24,10 +23,12 @@
 > 1. 所有说说信息
 > 2. 每条说说的详细信息（比1中的信息更全面，1中数据只显示每条说说的前10个评论）  
 > 3. 每条说说的点赞人列表
+> 4. 更加详细的点赞人列表
+> 5. 所有说说的缩略图
 
 - 存储方式：
 
-> 目前实现了两种存储方式:  
+> 目前实现了两种存储方式（通过Spider中user_redis参数进行配置）:  
 > 1. 存储到json文件中   
 > 2. 存储到redis数据库中  
 > 如果安装了redis，建议存储到redis中  
@@ -40,21 +41,22 @@
 > *注意*selenium需要与chrome driver结合使用,可以查看这篇博客：  
 > [selenium之 chromedriver与chrome版本映射表（更新至v2.32）](http://blog.csdn.net/huilan_same/article/details/51896672)
 
-- 运行方式（针对macOS和linux）  
+#### QQZone运行方式 
 
-> - 1.打开terminal
-> - 2.确保自己已经安装了pip和pip3(如果电脑同时安装了py2 和 py3，给则pip会默认给py2添加库，pip3会给py3添加库；如果只安装了一个版本的py,则不需要考虑这个问题)，如未安装，请使用下面命令安装：  
-> - macOS：sudo brew install pip; sudo brew install pip3  
-> - linux:  sudo apt-get install pip; sudo apt-get install pip3
-> - 3. pip3 install requirements.txt 或者: pip3 install requirements.txt  
-> - 4.替换class spider中self.__username与self.__password为自己的QQ号密码  
-> - 5.运行(命令行下直接使用指令 python QQZoneShuoshuo.py)
+- 1.安装依赖
+> pip3 install -r requirements.txt 
 
-- 运行方式（windows) 
- 
->  - windows下推荐使用界面进行操作，可参考这篇博文：
-> - [使用Pycharm安装Python第三方库](http://blog.csdn.net/qiannianguji01/article/details/50397046)  
-> - 或者: 手动下载pip，再运行 pip install requirements.txt
+- 2.配置用户名和密码
+> 修改userinfo.json.example为文件userinfo.json，并填好QQ号和QQ密码
+	
+- 3.\_\_init\_\_函数参数说明，请根据需要修改	
+> use\_redis: 是否使用redis做数据存储和缓存，True表示使用，False表示不使用
+> debug：是否开启debug模式，debug模式下会打印很多控制台信息，True表示启用，False表示不启用
+
+- 4.根据需要修改Spider.get\_mood\_list()函数参数，参数作用可以参考注释
+
+- 5.运行代码
+> python3 QQZone.py
 
 ### 数据分析
 ### drawWordCloud.py
