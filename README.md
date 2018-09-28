@@ -3,7 +3,7 @@
 ![QQ空间说说历史曲线图](https://github.com/Maicius/InterestingCrawler/blob/master/QQZone/image/history.png)  
 ![QQ空间说说按点赞和评论数分类图](https://github.com/Maicius/InterestingCrawler/blob/master/QQZone/image/shuoshuoPie.png)  
 
-- 目前包含三个爬虫 
+- 目前包含两个个爬虫 
  
 	> 1.爬取QQ空间说说内容（包括评论和点赞）     
 	> 2.爬取微信好友列表  
@@ -28,7 +28,7 @@
 
 - 存储方式：
 
-> 目前实现了两种存储方式（通过Spider中user_redis参数进行配置）:  
+> 目前实现了两种存储方式（通过Spider中use_redis参数进行配置）:  
 > 1. 存储到json文件中   
 > 2. 存储到redis数据库中  
 > 如果安装了redis，建议存储到redis中  
@@ -71,6 +71,16 @@
 > 5. 所有说说的内容分析（分词使用的是jieba）
 > 6. 所有评论的内容分析
 
+- 待实现的目标有：
+
+> 发什么样的内容容易获得点赞和评论(自然语言处理)
+
+> 发什么样的图片容易获得点赞和评论(图像识别)
+
+> [可选]人物画像：分析出人物的性格特点、爱好(知识图谱)
+
+> [可选]历史事件抽取（自然语言处理、事件抽取）
+
 - 运行结果：生成词云图
 - 运行结果例图：
 
@@ -78,6 +88,7 @@
 ![Image2](https://github.com/Maicius/wexinFriendInfo/blob/master/QQZone/image/comment.jpg)
 ![Image3](https://github.com/Maicius/wexinFriendInfo/blob/master/QQZone/image/comment_content.jpg)
 ![Image](https://github.com/Maicius/wexinFriendInfo/blob/master/QQZone/image/agree.jpg)
+![Image](QQZone/image/bike2.png)
 
 ## 抓取微信好友信息
 - 好友列表里所有好友，删除了公众号信息
@@ -123,8 +134,4 @@
 }
 
 - 此外还下载了所有好友的头像
-
-- 运行方式：
-
-> 根据import 安装相应包，直接运行，扫二维码完成网页登录
 
