@@ -24,8 +24,6 @@ class Spider(object):
         self.http_host = 'http://user.qzone.qq.com'
         self.use_redis = use_redis
         self.debug = debug
-        self.web = webdriver.Chrome()
-        self.web.get(self.host)
         self.file_name_head = file_name_head
         self.__username, self.__password = self.get_username_password()
         self.mood_host = self.http_host + '/' + self.__username + '/mood/'
@@ -50,7 +48,7 @@ class Spider(object):
         self.CONTENT_FILE_NAME = 'data/' + file_name_head + '_QQ_content.json'
         self.LIKE_DETAIL_FILE_NAME = 'data/' + file_name_head + '_QQ_like_detail' + '.json'
         self.LIKE_LIST_NAME_FILE_NAME = 'data/' + file_name_head + '_QQ_like_list_name' + '.json'
-        self.MOOD_DETAIL_FILE_NAME = 'data/' + file_name_head + '_QQ_mood_detail' + '.json'
+        self.MOOD_DETAIL_FILE_NAME = 'data/' + file_name_head + '_QQ_mood_details' + '.json'
         if (use_redis):
             self.re = connect_redis()
 
@@ -60,6 +58,8 @@ class Spider(object):
         登陆成功后获取cookie，并存在self.cookie中
         :return:
         """
+        self.web = webdriver.Chrome()
+        self.web.get(self.host)
         self.web.switch_to.frame('login_frame')
         log = self.web.find_element_by_id("switcher_plogin")
         log.click()
@@ -563,8 +563,9 @@ def do_simple_query():
 
 if __name__ == '__main__':
     # 执行capture_data以为的函数时请注释掉capture_data
-    capture_data()
+    # capture_data()
     # 计算一些信息
     # calculate_info()
     # analysisMoodDetails()
-    # do_simple_query()
+    do_simple_query()
+
