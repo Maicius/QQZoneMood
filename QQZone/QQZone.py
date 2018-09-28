@@ -177,17 +177,23 @@ class Spider(object):
             json += arr[i]
         return json
 
-    def get_mood_list(self, file_name_head='data', mood_num=100, download_image=False):
+    def get_mood_list(self, file_name_head='data', mood_begin=0, mood_num=100, download_image=False, recover=False):
         """
          # 获取动态详情列表（一页20个）
         :param file_name_head: 文件名的前缀
         :param mood_num: 下载的动态数量，最好设置为20的倍数
+        :param download_image: 是否下载图片，下载的图片是仅供预览用的小图，该步骤比较耗时
+        :param recover: 是否从redis或文件中恢复数据（主要用于爬虫意外终端之后的数据恢复）
         :return:
         """
         url_mood = self.get_mood_url()
         url_mood = url_mood + '&uin=' + str(self.__username)
-        pos = 0
-
+        pos = mood_begin
+        recover_index_split = 0
+        if recover:
+            recover_index = self.do_recover_from_exist_data(file_name_head)
+            pos = recover_index // 20
+            recover_index_split = recover_index % 20
         # 如果mood_num为-1，则下载全部的动态
         if mood_num == -1:
             url__ = url_mood + '&pos=' + str(pos)
@@ -205,6 +211,11 @@ class Spider(object):
                 self.content.append(json_content)
                 # 获取每条动态的unikey
                 self.unikeys = self.get_unilikeKey_tid_and_smallpic(json_content)
+
+                # 从数据中恢复后，避免重复爬取相同数据
+                if recover_index_split != 0:
+                    self.unikeys = self.unikeys[recover_index_split:]
+                    recover_index_split = 0
                 # 获取点赞的人的详情列表
                 for unikey in self.unikeys:
                     if (self.debug):
@@ -245,6 +256,7 @@ class Spider(object):
                 print(e)
                 print("因错误导致爬虫终止....现在临时保存数据")
                 self.save_all_data_to_json(file_name_head)
+                print('已爬取的数据页数(20条一页):', pos)
                 print("保存临时数据成功")
                 print("ERROR===================")
                 exit(1)
@@ -252,6 +264,29 @@ class Spider(object):
         print('保存最终数据中...')
         self.save_all_data_to_json(file_name_head)
         print("finish===================")
+
+
+    def do_recover_from_exist_data(self, file_name_head):
+        if self.use_redis:
+            try:
+                self.content = json.loads(self.re.get(file_name_head + "_QQ"))
+                self.like_list_names = json.loads(self.re.get(file_name_head + "_QQ_like_list_all"))
+                self.mood_details = json.loads(self.re.get(file_name_head + "_QQ_mood_details"))
+                self.like_detail = json.loads(self.re.get(file_name_head + "_QQ_like_list_num"))
+                if self.debug:
+                    print('Finish to recover data from redis:')
+                    print('content:', len(self.content))
+                    print('like_list_names:', len(self.like_list_names))
+                    print('mood_details:', len(self.mood_details))
+                    print('like_detail:', len(self.like_detail))
+                return len(self.like_list_names)
+            except BaseException as e:
+                self.format_error(e, 'Failed to recover data from redis')
+                print('Now, try to recover data from json files...')
+                self.load_data_from_json(file_name_head)
+        else:
+            self.load_data_from_json(file_name_head)
+
 
     def save_all_data_to_json(self, file_name_head):
         self.save_data_to_json(data=self.content, file_name='data/' + file_name_head + 'content.json')
@@ -269,6 +304,28 @@ class Spider(object):
     def save_data_to_json(self, data, file_name):
         with open(file_name, 'w', encoding='utf-8') as w2:
             json.dump(data, w2, ensure_ascii=False)
+
+    def load_all_data_from_json(self, file_name_head):
+        self.content = self.load_data_from_json('data/' + file_name_head + 'content.json')
+        self.like_list_names = self.load_data_from_json('data/' + file_name_head + 'like_list_name' + '.json')
+        self.mood_details = self.load_data_from_json('data/' + file_name_head + 'mood_detail' + '.json')
+        self.like_detail = self.load_data_from_json('data/' + file_name_head + 'like_list_name' + '.json')
+
+    def load_data_from_json(self, file_name):
+        try:
+            with open(file_name, encoding='utf-8') as content:
+                data = json.load(content)
+            return data
+        except  BaseException as e:
+            format(e, 'Failed to load data ' + file_name)
+
+
+    def format_error(self, e, msg):
+        print('ERROR===================')
+        print(e)
+        print(msg)
+        print('ERROR===================')
+
 
     # 获得点赞的人
     def get_like_list(self):
@@ -440,7 +497,7 @@ def capture_data():
     sp = Spider(use_redis=True, debug=True)
     sp.login()
     print("Login success")
-    sp.get_mood_list(file_name_head='maicius', mood_num = -1, download_image=True)
+    sp.get_mood_list(file_name_head='maicius',mood_begin=280,  mood_num = -1, download_image=True, recover=True)
     print("Finish to capture")
 
 
