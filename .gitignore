@@ -94,4 +94,4 @@ QQZone/html.html
 *.json
 qq_image
 !__init__.py
-
+*.csv
