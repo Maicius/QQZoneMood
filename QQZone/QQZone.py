@@ -12,6 +12,8 @@ import re
 import redis
 import json
 import copy
+import datetime
+
 
 class Spider(object):
     def __init__(self, use_redis=False, debug=False, file_name_head=''):
@@ -20,6 +22,7 @@ class Spider(object):
         :param use_redis: If true, use redis and json file to save data, if false, use json file only.
         :param debug: If true, print info in console
         """
+        self.begin_time = datetime.datetime.now()
         self.host = 'https://user.qzone.qq.com'
         self.http_host = 'http://user.qzone.qq.com'
         self.use_redis = use_redis
@@ -44,13 +47,30 @@ class Spider(object):
         self.like_list_names = []
         self.tid = ""
         self.mood_details = []
-        self.error_unikeys = []
+        self.error_like_detail_unikeys = []
+        self.error_like_list_unikeys = []
+        self.error_mood_unikeys = []
+        self.error_like_detail = {}
+        self.error_like_list = {}
+        self.error_mood = {}
+        self.init_file_name(file_name_head)
+
+        if (use_redis):
+            self.re = self.connect_redis()
+
+    def init_file_name(self, file_name_head):
         self.CONTENT_FILE_NAME = 'data/' + file_name_head + '_QQ_content.json'
         self.LIKE_DETAIL_FILE_NAME = 'data/' + file_name_head + '_QQ_like_detail' + '.json'
         self.LIKE_LIST_NAME_FILE_NAME = 'data/' + file_name_head + '_QQ_like_list_name' + '.json'
-        self.MOOD_DETAIL_FILE_NAME = 'data/' + file_name_head + '_QQ_mood_details' + '.json'
-        if (use_redis):
-            self.re = connect_redis()
+        self.MOOD_DETAIL_FILE_NAME = 'data/' + file_name_head + '_QQ_mood_detail' + '.json'
+
+        self.ERROR_LIKE_DETAIL_FILE_NAME = 'error/' + file_name_head + '_QQ_like_detail_error' + '.json'
+        self.ERROR_LIKE_LIST_NAME_FILE_NAME = 'error/' + file_name_head + '_QQ_like_list_name_error' + '.json'
+        self.ERROR_MOOD_DETAIL_FILE_NAME = 'error/' + file_name_head + '_QQ_mood_detail_error' + '.json'
+
+        self.ERROR_LIKE_DETAIL_UNIKEY_FILE_NAME = 'error/' + file_name_head + '_QQ_like_detail_error_unikey' + '.txt'
+        self.ERROR_LIKE_LIST_NAME_UNIKEY_FILE_NAME = 'error/' + file_name_head + '_QQ_like_list_error_unikey' + '.txt'
+        self.ERROR_MOOD_DETAIL_UNIKEY_FILE_NAME = 'error/' + file_name_head + '_QQ_mood_detail_error_unikey' + '.txt'
 
     def login(self):
         """
@@ -110,7 +130,7 @@ class Spider(object):
         return url
 
     # 构造点赞的人的URL
-    def get_aggree_url(self):
+    def get_aggree_url(self, unikey):
         url = 'https://user.qzone.qq.com/proxy/domain/users.qzone.qq.com/cgi-bin/likes/get_like_list_app?'
         params = {
             "uin": self.__username,
@@ -124,12 +144,12 @@ class Spider(object):
         return url
 
     # 构造获取动态详情的url
-    def get_mood_detail_url(self):
+    def get_mood_detail_url(self, unikey, tid):
         url = 'https://user.qzone.qq.com/proxy/domain/taotao.qq.com/cgi-bin/emotion_cgi_msgdetail_v6?'
         params = {
             "uin": self.__username,
-            "unikey": self.unikey,
-            "tid": self.tid,
+            "unikey": unikey,
+            "tid": tid,
             "t1_source": 1,
             "ftype": 0,
             "sort": 0,
@@ -145,7 +165,7 @@ class Spider(object):
         return url
 
     # 由于有的比较老旧的说说的点赞信息被清空了，需要从这里获取点赞的数目
-    def get_like_num_url(self, unikey):
+    def get_like_detail_url(self, unikey):
         """
 
         :param unikeys:
@@ -156,7 +176,7 @@ class Spider(object):
             "_stp": '',
             "unikey": unikey,
             # 'face': '0<|>0<|>0<|>0<|>0<|>0<|>0<|>0<|>0<|>0',
-            'face':0,
+            'face': 0,
             'fupdate': 1,
             'g_tk': self.g_tk,
             'qzonetoken': ''
@@ -164,19 +184,27 @@ class Spider(object):
         like_url = like_url + parse.urlencode(params)
         return like_url
 
-    def get_like_num(self, curlikekey):
+    def get_like_detail(self, curlikekey):
         # unikeys = "<|>".join(curlikekey)
         unikeys = curlikekey
+        like_url = self.get_like_detail_url(unikeys)
         if unikeys != '':
             try:
-                like_url = self.get_like_num_url(unikeys)
                 like_content = self.get_json(self.req.get(like_url).content.decode('utf-8'))
                 # like_content是所有的点赞信息，其中like字段为点赞数目，list是点赞的人列表，有的数据中list为空
                 return like_content
             except BaseException as e:
-                self.format_error(e, 'Failed to get like_url:' + unikeys)
-                return {}
+                # 因为这里错误较多，所以进行一次retry，如果不行则保留unikey
+                self.format_error(e, 'Retry to get like_url:' + unikeys)
+                try:
+                    like_content = self.get_json(self.req.get(like_url).content.decode('utf-8'))
+                    return like_content
+                except BaseException as e:
+                    self.error_like_detail_unikeys.append(unikeys)
+                    self.format_error(e, 'Failed to get like_url:' + unikeys)
+                    return {}
         else:
+            self.error_like_detail_unikeys.append(unikeys)
             return {}
 
     # 将响应字符串转化为标准Json
@@ -211,7 +239,6 @@ class Spider(object):
             mood_json = json.loads(self.get_json(mood))
             mood_num = mood_json['usrinfo']['msgnum']
 
-
         # 1700为我空间动态数量
         while pos < mood_num:
             print('正在爬取', pos, '...')
@@ -222,28 +249,16 @@ class Spider(object):
                 self.content.append(json_content)
                 # 获取每条动态的unikey
                 self.unikeys = self.get_unilikeKey_tid_and_smallpic(json_content)
-
                 # 从数据中恢复后，避免重复爬取相同数据
                 if recover_index_split != 0:
                     self.unikeys = self.unikeys[recover_index_split:]
                     recover_index_split = 0
-
                 # 获取数据
                 self.do_get_infos(self.unikeys, download_image)
                 pos += 20
                 # 每抓100条保存一次数据
                 if pos % 100 == 0:
-                    if self.use_redis:
-                        self.re.set(self.CONTENT_FILE_NAME[5:], json.dumps(self.content, ensure_ascii=False))
-                        self.re.set(self.LIKE_LIST_NAME_FILE_NAME[5:],
-                                    json.dumps(self.like_list_names, ensure_ascii=False))
-                        self.re.set(self.MOOD_DETAIL_FILE_NAME[5:],
-                                    json.dumps(self.mood_details, ensure_ascii=False))
-                        self.re.set(self.LIKE_DETAIL_FILE_NAME[5:],
-                                    json.dumps(self.like_detail, ensure_ascii=False))
-                    # 缓存到json文件
-                    # with open('data/' + self.file_name_head + str(pos) + '.json', 'w', encoding='utf-8') as w:
-                    #     w.write(json_content)
+                    self.save_data_to_redis(final_result=False)
             except BaseException as e:
                 print("ERROR===================")
                 print("因错误导致爬虫终止....现在临时保存数据")
@@ -254,15 +269,15 @@ class Spider(object):
                 raise e
         # 保存所有数据到指定文件
         print('保存最终数据中...')
-        if len(self.error_unikeys) > 0:
-            if(self.debug):
-                print('Error Unikeys Num:', len(self.error_unikeys))
+        if len(self.error_like_detail_unikeys) > 0:
+            if (self.debug):
+                print('Error Unikeys Num:', len(self.error_like_detail_unikeys))
                 print('Retry to get them...')
-            self.get_error_unikey(download_image)
+            self.retry_error_unikey()
         self.save_all_data_to_json()
         print("finish===================")
 
-    def do_get_infos(self,unikeys,  download_image):
+    def do_get_infos(self, unikeys, download_image):
         for unikey in unikeys:
             if (self.debug):
                 print('unikey:' + unikey['unikey'])
@@ -270,15 +285,15 @@ class Spider(object):
             self.tid = unikey['tid']
             # 获取动态详情
             try:
-                mood_detail = self.get_mood_detail()
+                mood_detail = self.get_mood_detail(self.unikey, self.tid)
                 self.mood_details.append(mood_detail)
                 # 获取点赞详情（方法一）
                 # 此方法有时候不能获取到点赞的人的昵称，但是点赞的数量这个数据一直存在
-                like_detail = self.get_like_num(unikey['curlikekey'])
+                like_detail = self.get_like_detail(unikey['curlikekey'])
                 self.like_detail.append(like_detail)
                 # 获取点赞详情（方法二）
                 # 此方法能稳定获取到点赞的人的昵称，但是有的数据已经被清空了
-                like_list_name = self.get_like_list()
+                like_list_name = self.get_like_list(self.unikey)
                 self.like_list_names.append(like_list_name)
                 if download_image:
                     for pic_url in unikey['smallpic_list']:
@@ -286,20 +301,32 @@ class Spider(object):
                         self.download_image(pic_url, file_name)
             except BaseException as e:
                 self.format_error(e, 'continue to capture...')
-                # 保存抓取失败的数据信息
-                self.error_unikeys.append(unikey)
                 continue
 
-    def get_error_unikey(self, download_image):
+    def retry_error_unikey(self):
         """
         重新下载第一次下载中失败的数据
         :param download_image:
         :return:
         """
+        # 深拷贝
+        error_detail_unikeys = copy.deepcopy(self.error_like_detail_unikeys)
+        self.error_like_detail_unikeys = []
+        for error_detail_unikey in error_detail_unikeys:
+            like_detail = self.get_like_detail(error_detail_unikey)
+            self.error_like_detail[error_detail_unikey] = like_detail
 
-        # 深拷贝，避免do_get_infos中对self.error_unikeys的更改导致的错误
-        error_unikeys = copy.deepcopy(self.error_unikeys)
-        self.do_get_infos(error_unikeys, download_image)
+        error_mood_unikeys = copy.deepcopy(self.error_mood_unikeys)
+        self.error_mood_unikeys = []
+        for error_mood_unikey in error_mood_unikeys:
+            mood_detail = self.get_mood_detail(error_mood_unikey[0], error_mood_unikey[1])
+            self.error_mood[error_mood_unikey] = mood_detail
+
+        error_like_list_unikeys = copy.deepcopy(self.error_like_list_unikeys)
+        self.error_like_list_unikeys = []
+        for error_like_list_unikey in error_like_list_unikeys:
+            like_list = self.get_like_list(error_like_list_unikey)
+            self.error_like_list[error_like_list_unikey] = like_list
 
     def do_recover_from_exist_data(self):
         if self.use_redis:
@@ -322,26 +349,53 @@ class Spider(object):
         else:
             self.load_all_data_from_json()
 
-
     def save_all_data_to_json(self):
         self.save_data_to_json(data=self.content, file_name=self.CONTENT_FILE_NAME)
-        self.save_data_to_json(data=self.like_list_names, file_name = self.LIKE_LIST_NAME_FILE_NAME)
+        self.save_data_to_json(data=self.like_list_names, file_name=self.LIKE_LIST_NAME_FILE_NAME)
         self.save_data_to_json(data=self.mood_details, file_name=self.MOOD_DETAIL_FILE_NAME)
         self.save_data_to_json(data=self.like_detail, file_name=self.LIKE_DETAIL_FILE_NAME)
+        self.save_data_to_json(data=self.error_mood, file_name=self.ERROR_MOOD_DETAIL_FILE_NAME)
+        self.save_data_to_json(data=self.error_like_detail, file_name=self.ERROR_LIKE_DETAIL_FILE_NAME)
+        self.save_data_to_json(data=self.error_like_list, file_name=self.ERROR_LIKE_LIST_NAME_FILE_NAME)
+        self.save_data_to_txt(data=self.error_like_list_unikeys, file_name=self.ERROR_LIKE_LIST_NAME_UNIKEY_FILE_NAME)
+        self.save_data_to_txt(data=self.error_like_detail_unikeys, file_name=self.ERROR_LIKE_DETAIL_FILE_NAME)
+        self.save_data_to_txt(data=self.error_mood_unikeys, file_name=self.ERROR_MOOD_DETAIL_UNIKEY_FILE_NAME)
+        self.save_data_to_redis(final_result=True)
 
+    def save_data_to_redis(self, final_result=False):
         if self.use_redis:
-            if self.use_redis:
-                self.re.set(self.CONTENT_FILE_NAME[5:], json.dumps(self.content, ensure_ascii=False))
-                self.re.set(self.LIKE_LIST_NAME_FILE_NAME[5:],
-                            json.dumps(self.like_list_names, ensure_ascii=False))
-                self.re.set(self.MOOD_DETAIL_FILE_NAME[5:],
-                            json.dumps(self.mood_details, ensure_ascii=False))
-                self.re.set(self.LIKE_DETAIL_FILE_NAME[5:],
-                            json.dumps(self.like_detail, ensure_ascii=False))
+            self.re.set(self.CONTENT_FILE_NAME[5:], json.dumps(self.content, ensure_ascii=False))
+            self.re.set(self.LIKE_LIST_NAME_FILE_NAME[5:],
+                        json.dumps(self.like_list_names, ensure_ascii=False))
+            self.re.set(self.MOOD_DETAIL_FILE_NAME[5:],
+                        json.dumps(self.mood_details, ensure_ascii=False))
+            self.re.set(self.LIKE_DETAIL_FILE_NAME[5:],
+                        json.dumps(self.like_detail, ensure_ascii=False))
+
+            if final_result:
+                self.re.set(self.ERROR_LIKE_DETAIL_FILE_NAME[6:],
+                            json.dumps(self.error_like_detail, ensure_ascii=False))
+                self.re.set(self.ERROR_LIKE_LIST_NAME_FILE_NAME[6:],
+                            json.dumps(self.error_like_list, ensure_ascii=False))
+                self.re.set(self.ERROR_MOOD_DETAIL_FILE_NAME[6:],
+                            json.dumps(self.error_mood, ensure_ascii=False))
+                self.re.set(self.ERROR_LIKE_DETAIL_UNIKEY_FILE_NAME, "==".join(self.error_like_detail_unikeys))
+                self.re.set(self.ERROR_LIKE_LIST_NAME_UNIKEY_FILE_NAME, "==".join(self.error_like_list_unikeys))
+                self.re.set(self.ERROR_MOOD_DETAIL_UNIKEY_FILE_NAME, "==".join(self.error_mood_unikeys))
 
     def save_data_to_json(self, data, file_name):
-        with open(file_name, 'w', encoding='utf-8') as w2:
-            json.dump(data, w2, ensure_ascii=False)
+        try:
+            with open(file_name, 'w', encoding='utf-8') as w2:
+                json.dump(data, w2, ensure_ascii=False)
+        except BaseException as e:
+            self.format_error(e, 'Failed to save file:' + file_name)
+
+    def save_data_to_txt(self, data, file_name):
+        try:
+            with open(file_name, 'w', encoding='utf-8') as w:
+                w.write(data)
+        except BaseException as e:
+            self.format_error(e, 'Failed to save file:' + file_name)
 
     def load_all_data_from_json(self):
         self.content = self.load_data_from_json(self.CONTENT_FILE_NAME)
@@ -357,35 +411,31 @@ class Spider(object):
         except  BaseException as e:
             self.format_error(e, 'Failed to load data ' + file_name)
 
-
     def format_error(self, e, msg):
         print('ERROR===================')
         print(e)
         print(msg)
         print('ERROR===================')
 
-
     # 获得点赞的人
-    def get_like_list(self):
-        url = self.get_aggree_url()
+    def get_like_list(self, unikey):
+        url = self.get_aggree_url(unikey)
         if (self.debug):
             print('获取点赞的人', url)
         try:
             like_list = self.req.get(url=url, headers=self.headers)
             like_list_detail = self.get_json(like_list.content.decode('utf-8'))
-            # like_list_detail = like_list_detail.replace('\\n', '')
-            # print(like_list_detail)
-            # print("success to get like list")
             return like_list_detail
         except BaseException as e:
             self.format_error(e, 'Failed to get agree:' + url)
+
+            self.error_like_list_unikeys.append(unikey)
             return {}
 
-
     # 获得每一条说说的详细内容
-    def get_mood_detail(self):
-        url_detail = self.get_mood_detail_url()
-        if(self.debug):
+    def get_mood_detail(self, unikey, tid):
+        url_detail = self.get_mood_detail_url(unikey, tid)
+        if (self.debug):
             print('获取说说动态详情:', url_detail)
         try:
             mood_detail = self.req.get(url=url_detail, headers=self.headers)
@@ -393,6 +443,7 @@ class Spider(object):
             return json_mood
         except BaseException as e:
             self.format_error(e, 'Failed to get mood_detail:' + url_detail)
+            self.error_mood_unikeys.append((unikey, tid))
             return {}
 
     # 根据unikey 获得tid
@@ -452,26 +503,36 @@ class Spider(object):
         except BaseException as e:
             self.format_error(e, 'Failed to download image:' + name)
 
+    def result_report(self):
+        print("#######################")
+        print('爬取用户:', self.__username)
+        print('总耗时:', (datetime.datetime.now() - self.begin_time).seconds / 60, '分钟')
+        print('QQ空间动态数据数量:', len(self.mood_details))
+        print('最终失败的数据量:')
+        print('--------------')
+        print('动态:', len(self.error_mood_unikeys))
+        print('点赞详情（包括浏览量）:', len(self.error_like_detail_unikeys))
+        print('点赞好友列表:', len(self.error_like_list_unikeys))
+        print('--------------')
+        pass
 
-def connect_redis():
-    try:
-        pool = redis.ConnectionPool(host="127.0.0.1", port=6379, decode_responses=True)
-        re = redis.Redis(connection_pool=pool)
-        return re
-    except BaseException as e:
-        print('Error===================')
-        print(e)
-        print('Failed to connect redis')
-        print('===================')
+    def connect_redis(self):
+        try:
+            pool = redis.ConnectionPool(host="127.0.0.1", port=6379, decode_responses=True)
+            re = redis.Redis(connection_pool=pool)
+            return re
+        except BaseException as e:
+            print('Error===================')
+            print(e)
+            print('Failed to connect redis')
+            print('===================')
 
 
 def doAnalysis(file_name, commentNumber, commentList):
     f = open(file_name, encoding='utf-8')
     data = json.load(f)
-    agreeDict = []
     for item in data['msglist']:
         print(item['content'])
-        # print(item.keys())
         time_local = time.localtime(item['created_time'])
         # 转换成新的时间格式(2016-05-05 20:28:54)
         dt = time.strftime("%Y-%m-%d %H:%M:%S", time_local)
@@ -547,25 +608,14 @@ def capture_data():
     sp = Spider(use_redis=True, debug=True, file_name_head='maicius')
     sp.login()
     print("Login success")
-    sp.get_mood_list(mood_begin=0,  mood_num = -1, download_image=True, recover=True)
-
+    sp.get_mood_list(mood_begin=0, mood_num=-1, download_image=False, recover=False)
     print("Finish to capture")
-
-def do_simple_query():
-    """
-    To do some simple redis query
-    :return:
-    """
-    sp = Spider(use_redis=True, debug=True)
-    like_list = json.loads(sp.re.get('maicius_QQ_like_list_all'))
-    sp.save_data_to_json(like_list, 'maicius_QQ_like_list_all.json')
 
 
 if __name__ == '__main__':
     # 执行capture_data以为的函数时请注释掉capture_data
-    # capture_data()
+    capture_data()
     # 计算一些信息
     # calculate_info()
     # analysisMoodDetails()
-    do_simple_query()
-
+    # do_simple_query()
