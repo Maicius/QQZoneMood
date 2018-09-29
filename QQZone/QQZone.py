@@ -101,6 +101,7 @@ class Spider(object):
         # 根据cookie计算g_tk值
         self.get_g_tk()
         self.headers['Cookie'] = self.cookies
+        print("Login success")
         self.web.quit()
 
     def get_username_password(self):
@@ -269,12 +270,12 @@ class Spider(object):
                 raise e
         # 保存所有数据到指定文件
         print('保存最终数据中...')
-        if len(self.error_like_detail_unikeys) > 0:
-            if (self.debug):
-                print('Error Unikeys Num:', len(self.error_like_detail_unikeys))
-                print('Retry to get them...')
-            self.retry_error_unikey()
+        if (self.debug):
+            print('Error Unikeys Num:', len(self.error_like_detail_unikeys))
+            print('Retry to get them...')
+        self.retry_error_unikey()
         self.save_all_data_to_json()
+        self.result_report()
         print("finish===================")
 
     def do_get_infos(self, unikeys, download_image):
@@ -363,25 +364,28 @@ class Spider(object):
         self.save_data_to_redis(final_result=True)
 
     def save_data_to_redis(self, final_result=False):
-        if self.use_redis:
-            self.re.set(self.CONTENT_FILE_NAME[5:], json.dumps(self.content, ensure_ascii=False))
-            self.re.set(self.LIKE_LIST_NAME_FILE_NAME[5:],
-                        json.dumps(self.like_list_names, ensure_ascii=False))
-            self.re.set(self.MOOD_DETAIL_FILE_NAME[5:],
-                        json.dumps(self.mood_details, ensure_ascii=False))
-            self.re.set(self.LIKE_DETAIL_FILE_NAME[5:],
-                        json.dumps(self.like_detail, ensure_ascii=False))
+        try:
+            if self.use_redis:
+                self.re.set(self.CONTENT_FILE_NAME[5:], json.dumps(self.content, ensure_ascii=False))
+                self.re.set(self.LIKE_LIST_NAME_FILE_NAME[5:],
+                            json.dumps(self.like_list_names, ensure_ascii=False))
+                self.re.set(self.MOOD_DETAIL_FILE_NAME[5:],
+                            json.dumps(self.mood_details, ensure_ascii=False))
+                self.re.set(self.LIKE_DETAIL_FILE_NAME[5:],
+                            json.dumps(self.like_detail, ensure_ascii=False))
 
-            if final_result:
-                self.re.set(self.ERROR_LIKE_DETAIL_FILE_NAME[6:],
-                            json.dumps(self.error_like_detail, ensure_ascii=False))
-                self.re.set(self.ERROR_LIKE_LIST_NAME_FILE_NAME[6:],
-                            json.dumps(self.error_like_list, ensure_ascii=False))
-                self.re.set(self.ERROR_MOOD_DETAIL_FILE_NAME[6:],
-                            json.dumps(self.error_mood, ensure_ascii=False))
-                self.re.set(self.ERROR_LIKE_DETAIL_UNIKEY_FILE_NAME, "==".join(self.error_like_detail_unikeys))
-                self.re.set(self.ERROR_LIKE_LIST_NAME_UNIKEY_FILE_NAME, "==".join(self.error_like_list_unikeys))
-                self.re.set(self.ERROR_MOOD_DETAIL_UNIKEY_FILE_NAME, "==".join(self.error_mood_unikeys))
+                if final_result:
+                    self.re.set(self.ERROR_LIKE_DETAIL_FILE_NAME[6:],
+                                json.dumps(self.error_like_detail, ensure_ascii=False))
+                    self.re.set(self.ERROR_LIKE_LIST_NAME_FILE_NAME[6:],
+                                json.dumps(self.error_like_list, ensure_ascii=False))
+                    self.re.set(self.ERROR_MOOD_DETAIL_FILE_NAME[6:],
+                                json.dumps(self.error_mood, ensure_ascii=False))
+                    self.re.set(self.ERROR_LIKE_DETAIL_UNIKEY_FILE_NAME, "==".join(self.error_like_detail_unikeys))
+                    self.re.set(self.ERROR_LIKE_LIST_NAME_UNIKEY_FILE_NAME, "==".join(self.error_like_list_unikeys))
+                    self.re.set(self.ERROR_MOOD_DETAIL_UNIKEY_FILE_NAME, "==".join(self.error_mood_unikeys))
+        except BaseException as e:
+            self.format_error(e, 'Faild to save data in redis')
 
     def save_data_to_json(self, data, file_name):
         try:
@@ -426,11 +430,15 @@ class Spider(object):
             like_list = self.req.get(url=url, headers=self.headers)
             like_list_detail = self.get_json(like_list.content.decode('utf-8'))
             return like_list_detail
-        except BaseException as e:
-            self.format_error(e, 'Failed to get agree:' + url)
-
-            self.error_like_list_unikeys.append(unikey)
-            return {}
+        except BaseException:
+            try:
+                like_list = self.req.get(url=url, headers=self.headers)
+                like_list_detail = self.get_json(like_list.content.decode('utf-8'))
+                return like_list_detail
+            except BaseException as e:
+                self.format_error(e, 'Failed to get agree:' + url)
+                self.error_like_list_unikeys.append(unikey)
+                return {}
 
     # 获得每一条说说的详细内容
     def get_mood_detail(self, unikey, tid):
@@ -441,10 +449,15 @@ class Spider(object):
             mood_detail = self.req.get(url=url_detail, headers=self.headers)
             json_mood = self.get_json(str(mood_detail.content.decode('utf-8')))
             return json_mood
-        except BaseException as e:
-            self.format_error(e, 'Failed to get mood_detail:' + url_detail)
-            self.error_mood_unikeys.append((unikey, tid))
-            return {}
+        except BaseException:
+            try:
+                mood_detail = self.req.get(url=url_detail, headers=self.headers)
+                json_mood = self.get_json(str(mood_detail.content.decode('utf-8')))
+                return json_mood
+            except BaseException as e:
+                self.format_error(e, 'Failed to get mood_detail:' + url_detail)
+                self.error_mood_unikeys.append((unikey, tid))
+                return {}
 
     # 根据unikey 获得tid
     def get_tid(self, unikey):
@@ -514,7 +527,7 @@ class Spider(object):
         print('点赞详情（包括浏览量）:', len(self.error_like_detail_unikeys))
         print('点赞好友列表:', len(self.error_like_list_unikeys))
         print('--------------')
-        pass
+        print("########################")
 
     def connect_redis(self):
         try:
@@ -527,89 +540,10 @@ class Spider(object):
             print('Failed to connect redis')
             print('===================')
 
-
-def doAnalysis(file_name, commentNumber, commentList):
-    f = open(file_name, encoding='utf-8')
-    data = json.load(f)
-    for item in data['msglist']:
-        print(item['content'])
-        time_local = time.localtime(item['created_time'])
-        # 转换成新的时间格式(2016-05-05 20:28:54)
-        dt = time.strftime("%Y-%m-%d %H:%M:%S", time_local)
-        print(dt)
-        if 'pic' in item:
-            itemKey = item['pic']
-            if 'curlikekey' in itemKey[0]:
-                unikey = itemKey[0]['curlikekey'].split('^||^')
-                # print(unikey)
-        if 'commentlist' in item:
-            commentNumber.append(len(item['commentlist']))
-            for item2 in item['commentlist']:
-                if item2['name'] in commentList:
-                    commentList[item2['name']] += 1
-                else:
-                    commentList[item2['name']] = 1
-                    # print(item2['name'])
-        else:
-            commentNumber.append(0)
-    f.close()
-
-
-def analysisMoodDetails():
-    f = open('data/mood_detail.json', encoding='utf-8')
-    data = json.load(f)
-    mood_words = ""
-    for item in data:
-        mood = json.loads(item)
-        # print(mood.keys())
-        mood_words += mood['content']
-    with open('data/mood_details.txt', 'w', encoding='utf-8') as mood_writer:
-        mood_writer.write(mood_words)
-
-
-# 计算点赞的人、评论的人
-def calculate_info():
-    commentList = {}
-    commentNumber = []
-    pos = 0
-    while pos < 1700:
-        fileName = 'data/data' + str(pos) + '.json'
-        doAnalysis(fileName, commentNumber, commentList)
-        pos += 20
-    f = open('data/like.json', encoding='utf-8')
-    data = json.load(f)
-    totalAgree = 0
-    agreeNick = {}
-    agreeNumberList = []
-    for item in data:
-        item = json.loads(item)
-        uin_data = item['data']
-        totalAgree += int(uin_data['total_number'])
-        agreeNumberList.append(uin_data['total_number'])
-        # print(str(agreeNumberList))
-        for item_uin in uin_data['like_uin_info']:
-            if item_uin['nick'] in agreeNick:
-                agreeNick[item_uin['nick']] += 1
-            else:
-                agreeNick[item_uin['nick']] = 1
-    agreeNumberList.sort(reverse=True)
-    commentNumber.sort(reverse=True)
-    print("累计点赞数：" + str(totalAgree))
-    print("平均点赞数" + str(totalAgree / 1700))
-    print("点赞次数" + str(agreeNumberList))
-    print("点赞的人：" + str(sorted(agreeNick.items(), key=lambda item2: item2[1], reverse=True)))
-    # print("评论数:" + str(commentNumber))
-    print("给我评论的人：" + str(sorted(commentList.items(), key=lambda nameItem: nameItem[1], reverse=True)))
-    print("finish")
-    f.close()
-
-
 def capture_data():
     sp = Spider(use_redis=True, debug=True, file_name_head='maicius')
     sp.login()
-    print("Login success")
     sp.get_mood_list(mood_begin=0, mood_num=-1, download_image=False, recover=False)
-    print("Finish to capture")
 
 
 if __name__ == '__main__':
