@@ -364,6 +364,11 @@ class Spider(object):
         self.save_data_to_redis(final_result=True)
 
     def save_data_to_redis(self, final_result=False):
+        """
+        保存数据到redis中
+        :param final_result: 是否为最终结果，如果是，则会保存错误信息，如果不是，则仅做缓存
+        :return:
+        """
         try:
             if self.use_redis:
                 self.re.set(self.CONTENT_FILE_NAME[5:], json.dumps(self.content, ensure_ascii=False))
@@ -397,7 +402,7 @@ class Spider(object):
     def save_data_to_txt(self, data, file_name):
         try:
             with open(file_name, 'w', encoding='utf-8') as w:
-                w.write(data)
+                w.write(";".join(data))
         except BaseException as e:
             self.format_error(e, 'Failed to save file:' + file_name)
 
@@ -496,12 +501,15 @@ class Spider(object):
                     if 'smallurl' in item_key[i]:
                         smallurl = item_key[i]['smallurl']
                         pic_list.append(smallurl)
-                # 如果存在多张图片
-                if len(item_key) > 1:
+                # 如果存在多张图片或没有图片
+                if len(item_key) != 1:
                     curlikekey = unikey + "<.>" + unikey
                 else:
                     curlikekey = item_key[0]['curlikekey']
                 # curlikekey_list.append(curlikekey)
+            else:
+                curlikekey = unikey + "<.>" + unikey
+
             unikey_tid_list.append(dict(unikey=unikey, tid=tid, smallpic_list=pic_list, curlikekey=curlikekey))
         return unikey_tid_list
 
@@ -541,15 +549,11 @@ class Spider(object):
             print('===================')
 
 def capture_data():
-    sp = Spider(use_redis=True, debug=True, file_name_head='maicius')
+    sp = Spider(use_redis=True, debug=False, file_name_head='maicius')
     sp.login()
     sp.get_mood_list(mood_begin=0, mood_num=-1, download_image=False, recover=False)
 
 
 if __name__ == '__main__':
-    # 执行capture_data以为的函数时请注释掉capture_data
     capture_data()
-    # 计算一些信息
-    # calculate_info()
-    # analysisMoodDetails()
-    # do_simple_query()
+
