@@ -44,19 +44,23 @@ class QQZoneAnalysis(Spider):
         content = msglist['content']
         time = msglist['createTime']
         time_stamp = msglist['created_time']
+        secret = msglist['secret']
         if 'pictotal' in msglist:
             pic_num = msglist['pictotal']
         else:
             pic_num = 0
         cmt_num = msglist['cmtnum']
         cmt_list = []
+        cmt_total_num = cmt_num
         if 'commentlist' in msglist:
             comment_list = msglist['commentlist']
+
             for comment in comment_list:
                 comment_content = comment['content']
                 comment_name = comment['name']
                 comment_time = comment['createTime2']
                 comment_reply_num = comment['replyNum']
+                cmt_total_num += comment_reply_num
                 comment_reply_list = []
                 if comment_reply_num > 0:
                     for comment_reply in comment['list_3']:
@@ -74,8 +78,8 @@ class QQZoneAnalysis(Spider):
 
 
         self.mood_data.append(dict(tid=tid, content=content, time=time, time_stamp=time_stamp, pic_num=pic_num,
-                                   cmt_num=cmt_num, like_num=like_num, prd_num=prd_num, uin_list=uin_list,
-                                   cmt_list=cmt_list))
+                                   cmt_num=cmt_num, like_num=like_num, prd_num=prd_num, uin_list=uin_list, cmt_total_num=cmt_total_num,
+                                   cmt_list=cmt_list, secret=secret))
 
     def parse_like_and_prd(self, like):
         try:
@@ -84,10 +88,13 @@ class QQZoneAnalysis(Spider):
             key = current['key'].split('/')[-1]
             newdata = current['newdata']
             # 点赞数
-            like_num = newdata['LIKE']
-            # 浏览数
-            prd_num = newdata['PRD']
-            return key, like_num, prd_num
+            if 'LIKE' in newdata:
+                like_num = newdata['LIKE']
+                # 浏览数
+                prd_num = newdata['PRD']
+                return key, like_num, prd_num
+            else:
+                return key, 0, 0
         except BaseException as e:
             print(like)
             self.format_error(e, 'Error in like, return 0')
