@@ -4,6 +4,7 @@ import re
 import json
 import pandas as pd
 
+
 class QQZoneAnalysis(Spider):
     def __init__(self, use_redis=False, debug=False, file_name_head=''):
         Spider.__init__(self, use_redis, debug, file_name_head)
