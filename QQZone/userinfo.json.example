@@ -1,7 +1,0 @@
-"""
-Before start, you should change this file to userinfo.json with correct username and password
-"""
-{
-  "username":"",
-  "password":""
-}

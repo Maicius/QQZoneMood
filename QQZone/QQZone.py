@@ -95,7 +95,7 @@ class Spider(object):
         btn = self.web.find_element_by_id('login_button')
         time.sleep(5)
         btn.click()
-        time.sleep(5)
+        time.sleep(20)
         self.web.get('https://user.qzone.qq.com/{}'.format(self.__username))
         cookie = ''
         # 获取cookie
