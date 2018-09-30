@@ -22,6 +22,7 @@ class Spider(object):
         init method
         :param use_redis: If true, use redis and json file to save data, if false, use json file only.
         :param debug: If true, print info in console
+        :param file_name_head: 文件名的前缀
         """
         self.begin_time = datetime.datetime.now()
         self.host = 'https://user.qzone.qq.com'
