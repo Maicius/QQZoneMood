@@ -13,7 +13,7 @@ class QQZoneAnalysis(Spider):
     def load_file_from_redis(self):
         self.do_recover_from_exist_data()
 
-    def check_data_shape(self):
+    def  check_data_shape(self):
         if len(self.mood_details) == len(self.like_list_names) == len(self.like_detail):
             return True
         else:

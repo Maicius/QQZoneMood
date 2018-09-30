@@ -93,6 +93,7 @@ QQZone/html.html
 *.xml
 *.json
 qq_image
+qq_big_image
 !__init__.py
 *.csv
 

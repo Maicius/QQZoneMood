@@ -72,6 +72,8 @@ class Spider(object):
         self.ERROR_LIKE_DETAIL_UNIKEY_FILE_NAME = 'error/' + file_name_head + '_QQ_like_detail_error_unikey' + '.txt'
         self.ERROR_LIKE_LIST_NAME_UNIKEY_FILE_NAME = 'error/' + file_name_head + '_QQ_like_list_error_unikey' + '.txt'
         self.ERROR_MOOD_DETAIL_UNIKEY_FILE_NAME = 'error/' + file_name_head + '_QQ_mood_detail_error_unikey' + '.txt'
+        self.SMALL_IMAGE_DIR = 'qq_image/'
+        self.BIG_IMAGE_DIR = 'qq_big_image/'
 
     def login(self):
         """
@@ -217,7 +219,9 @@ class Spider(object):
             json += arr[i]
         return json
 
-    def get_mood_list(self, mood_begin=0, mood_num=100, download_image=False, recover=False):
+    def get_mood_list(self, mood_begin=0, mood_num=100, download_small_image=False, recover=False,
+                      download_big_image=False, download_mood_detail=True, download_like_detail=True,
+                      download_like_names=True):
         """
          # 获取动态详情列表（一页20个）
         :param file_name_head: 文件名的前缀
@@ -256,7 +260,9 @@ class Spider(object):
                     self.unikeys = self.unikeys[recover_index_split:]
                     recover_index_split = 0
                 # 获取数据
-                self.do_get_infos(self.unikeys, download_image)
+                self.do_get_infos(self.unikeys, download_small_image=download_small_image,
+                                  download_big_image=download_big_image, download_mood_detail=download_mood_detail,
+                                  download_like_detail=download_like_detail, download_like_names=download_like_names)
                 pos += 20
                 # 每抓100条保存一次数据
                 if pos % 100 == 0:
@@ -279,7 +285,8 @@ class Spider(object):
         self.result_report()
         print("finish===================")
 
-    def do_get_infos(self, unikeys, download_image):
+    def do_get_infos(self, unikeys, download_small_image, download_big_image, download_mood_detail,
+                     download_like_detail, download_like_names):
         for unikey in unikeys:
             if (self.debug):
                 print('unikey:' + unikey['unikey'])
@@ -287,20 +294,34 @@ class Spider(object):
             self.tid = unikey['tid']
             # 获取动态详情
             try:
-                mood_detail = self.get_mood_detail(self.unikey, self.tid)
-                self.mood_details.append(mood_detail)
+                if download_mood_detail:
+                    mood_detail = self.get_mood_detail(self.unikey, self.tid)
+                    self.mood_details.append(mood_detail)
+
                 # 获取点赞详情（方法一）
                 # 此方法有时候不能获取到点赞的人的昵称，但是点赞的数量这个数据一直存在
-                like_detail = self.get_like_detail(unikey['curlikekey'])
-                self.like_detail.append(like_detail)
+                if download_like_detail:
+                    like_detail = self.get_like_detail(unikey['curlikekey'])
+                    self.like_detail.append(like_detail)
+
                 # 获取点赞详情（方法二）
                 # 此方法能稳定获取到点赞的人的昵称，但是有的数据已经被清空了
-                like_list_name = self.get_like_list(self.unikey)
-                self.like_list_names.append(like_list_name)
-                if download_image:
-                    for pic_url in unikey['smallpic_list']:
+                if download_like_names:
+                    like_list_name = self.get_like_list(self.unikey)
+                    self.like_list_names.append(like_list_name)
+                if download_small_image:
+                    for pic_url in unikey['small_pic_list']:
                         file_name = self.tid + '--' + pic_url.split('/')[-1]
-                        self.download_image(pic_url, file_name)
+                        self.download_image(pic_url, self.SMALL_IMAGE_DIR + file_name)
+
+                if download_big_image:
+                    for big_pic_url in unikey['big_pic_list']:
+                        if self.debug:
+                            print('大图地址:', big_pic_url)
+                        file_name = self.tid + '--' + big_pic_url.split('/')[-1]
+                        self.download_image(big_pic_url, self.BIG_IMAGE_DIR + file_name)
+
+
             except BaseException as e:
                 self.format_error(e, 'continue to capture...')
                 continue
@@ -494,7 +515,8 @@ class Spider(object):
                 print('unikey:' + unikey)
             # 如果存在图片
             pic_list = []
-            curlikekey = ''
+            big_pic_list = []
+
             if 'pic' in item:
                 item_key = item['pic']
                 # 保存所有图片的预览图下载地址
@@ -502,6 +524,10 @@ class Spider(object):
                     if 'smallurl' in item_key[i]:
                         smallurl = item_key[i]['smallurl']
                         pic_list.append(smallurl)
+                    if 'url2' in item_key[i]:
+                        big_url = item_key[i]['url2']
+                        big_pic_list.append(big_url)
+
                 # 如果存在多张图片或没有图片
                 if len(item_key) != 1:
                     curlikekey = unikey + "<.>" + unikey
@@ -511,7 +537,8 @@ class Spider(object):
             else:
                 curlikekey = unikey + "<.>" + unikey
 
-            unikey_tid_list.append(dict(unikey=unikey, tid=tid, smallpic_list=pic_list, curlikekey=curlikekey))
+            unikey_tid_list.append(
+                dict(unikey=unikey, tid=tid, small_pic_list=pic_list, curlikekey=curlikekey, big_pic_list=big_pic_list))
         return unikey_tid_list
 
     def download_image(self, url, name):
@@ -519,7 +546,7 @@ class Spider(object):
         try:
             r = self.req.get(url=image_url, headers=self.headers)
             image_content = (r.content)
-            file_image = open('qq_image/' + name + '.jpg', 'wb+')
+            file_image = open(name + '.jpg', 'wb+')
             file_image.write(image_content)
             file_image.close()
         except BaseException as e:
@@ -549,12 +576,13 @@ class Spider(object):
             print('Failed to connect redis')
             print('===================')
 
+
 def capture_data():
-    sp = Spider(use_redis=True, debug=False, file_name_head='maicius')
+    sp = Spider(use_redis=True, debug=True, file_name_head='maicius')
     sp.login()
-    sp.get_mood_list(mood_begin=0, mood_num=-1, download_image=False, recover=False)
+    sp.get_mood_list(mood_begin=0, mood_num=-1, download_small_image=False, download_big_image=True,
+                     download_mood_detail=False, download_like_detail=False, download_like_names=False, recover=False, )
 
 
 if __name__ == '__main__':
     capture_data()
-
