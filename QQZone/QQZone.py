@@ -220,15 +220,20 @@ class Spider(object):
             json += arr[i]
         return json
 
-    def get_mood_list(self, mood_begin=0, mood_num=100, download_small_image=False, recover=False,
+    def get_mood_list(self, mood_begin=0, mood_num=100, recover=False, download_small_image=False,
                       download_big_image=False, download_mood_detail=True, download_like_detail=True,
                       download_like_names=True):
+
         """
-         # 获取动态详情列表（一页20个）
-        :param file_name_head: 文件名的前缀
+         # 获取动态详情列表（一页20个）并存储到本地
+        :param mood_begin: 开始下载的动态序号，0表示从第0条动态开始下载
         :param mood_num: 下载的动态数量，最好设置为20的倍数
-        :param download_image: 是否下载图片，下载的图片是仅供预览用的小图，该步骤比较耗时
-        :param recover: 是否从redis或文件中恢复数据（主要用于爬虫意外终端之后的数据恢复）
+        :param recover: 是否从redis或文件中恢复数据（主要用于爬虫意外中断之后的数据恢复）
+        :param download_small_image: 是否下载缩略图，仅供预览用的小图，该步骤比较耗时，QQ空间提供了3中不同尺寸的图片，这里下载的是最小尺寸的图片
+        :param download_big_image: 是否下载大图，QQ空间中保存的最大的图片，该步骤比较耗时
+        :param download_mood_detail:是否下载动态详情
+        :param download_like_detail:是否下载点赞的详情，包括点赞数量、评论数量、浏览量，该数据未被清除
+        :param download_like_names:是否下载点赞的详情，主要包含点赞的人员列表，该数据有很多都被清空了
         :return:
         """
         url_mood = self.get_mood_url()
@@ -582,7 +587,7 @@ def capture_data():
     sp = Spider(use_redis=True, debug=True, file_name_head='maicius')
     sp.login()
     sp.get_mood_list(mood_begin=0, mood_num=-1, download_small_image=False, download_big_image=True,
-                     download_mood_detail=False, download_like_detail=False, download_like_names=False, recover=False, )
+                     download_mood_detail=False, download_like_detail=False, download_like_names=False, recover=False)
 
 
 if __name__ == '__main__':

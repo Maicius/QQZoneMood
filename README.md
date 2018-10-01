@@ -58,10 +58,29 @@
 	
 - 3.\_\_init\_\_函数参数说明，请根据需要修改	
 
-	> use\_redis: 是否使用redis做数据存储和缓存，True表示使用，False表示不使用
-	> debug：是否开启debug模式，debug模式下会打印很多控制台信息，True表示启用，False表示不启用
+	> use\_redis: 是否使用redis做数据存储和缓存，True表示使用，False表示不使用  
+	> debug：是否开启debug模式，debug模式下会打印很多控制台信息，True表示启用，False表示不启用  
+	> file\_name\_head: 存储数据的文件名前缀，用于多次下载时区分数据
 
-- 4.根据需要修改Spider.get\_mood\_list()函数参数，参数作用可以参考注释
+
+- 4.根据需要修改核心方法 Spider.get\_mood\_list()函数参数，参数解释如下：
+	
+		 def get_mood_list(self, mood_begin=0, mood_num=100, recover=False, download_small_image=False,
+                      download_big_image=False, download_mood_detail=True, download_like_detail=True,
+                      download_like_names=True):
+
+        """
+         # 获取动态详情列表（一页20个）并存储到本地
+        :param mood_begin: 开始下载的动态序号，0表示从第0条动态开始下载
+        :param mood_num: 下载的动态数量，最好设置为20的倍数
+        :param recover: 是否从redis或文件中恢复数据（主要用于爬虫意外中断之后的数据恢复）
+        :param download_small_image: 是否下载缩略图，仅供预览用的小图，该步骤比较耗时，QQ空间提供了3中不同尺寸的图片，这里下载的是最小尺寸的图片
+        :param download_big_image: 是否下载大图，QQ空间中保存的最大的图片，该步骤比较耗时
+        :param download_mood_detail:是否下载动态详情
+        :param download_like_detail:是否下载点赞的详情，包括点赞数量、评论数量、浏览量，该数据未被清除
+        :param download_like_names:是否下载点赞的详情，主要包含点赞的人员列表，该数据有很多都被清空了
+        :return:
+        """ 
 
 - 5.运行代码--获取数据
 
@@ -108,6 +127,7 @@
 
 ### 爬虫文件
 ###  ReadWechatFrinedsInfo.py
+
 - python版本： 3.6  
 - 抓取到的信息格式如下：
 
