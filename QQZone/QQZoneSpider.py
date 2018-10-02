@@ -16,7 +16,7 @@ import copy
 import datetime
 
 
-class Spider(object):
+class QQZoneSpider(object):
     def __init__(self, use_redis=False, debug=False, file_name_head=''):
         """
         init method
@@ -30,8 +30,8 @@ class Spider(object):
         self.use_redis = use_redis
         self.debug = debug
         self.file_name_head = file_name_head
-        self.__username, self.__password = self.get_username_password()
-        self.mood_host = self.http_host + '/' + self.__username + '/mood/'
+        self.username, self.password = self.get_username_password()
+        self.mood_host = self.http_host + '/' + self.username + '/mood/'
         self.headers = {
             'host': 'h5.qzone.qq.com',
             'accept-encoding': 'gzip, deflate, br',
@@ -55,6 +55,7 @@ class Spider(object):
         self.error_like_detail = {}
         self.error_like_list = {}
         self.error_mood = {}
+        self.g_tk = 0
         self.init_file_name(file_name_head)
 
         if (use_redis):
@@ -89,14 +90,14 @@ class Spider(object):
         log.click()
         time.sleep(1)
         username = self.web.find_element_by_id('u')
-        username.send_keys(self.__username)
+        username.send_keys(self.username)
         ps = self.web.find_element_by_id('p')
-        ps.send_keys(self.__password)
+        ps.send_keys(self.password)
         btn = self.web.find_element_by_id('login_button')
         time.sleep(5)
         btn.click()
-        time.sleep(20)
-        self.web.get('https://user.qzone.qq.com/{}'.format(self.__username))
+        time.sleep(5)
+        self.web.get('https://user.qzone.qq.com/{}'.format(self.username))
         cookie = ''
         # 获取cookie
         for elem in self.web.get_cookies():
@@ -138,7 +139,7 @@ class Spider(object):
     def get_aggree_url(self, unikey):
         url = 'https://user.qzone.qq.com/proxy/domain/users.qzone.qq.com/cgi-bin/likes/get_like_list_app?'
         params = {
-            "uin": self.__username,
+            "uin": self.username,
             "unikey": self.unikey,
             "begin_uin": 0,
             "query_count": 60,
@@ -152,7 +153,7 @@ class Spider(object):
     def get_mood_detail_url(self, unikey, tid):
         url = 'https://user.qzone.qq.com/proxy/domain/taotao.qq.com/cgi-bin/emotion_cgi_msgdetail_v6?'
         params = {
-            "uin": self.__username,
+            "uin": self.username,
             "unikey": unikey,
             "tid": tid,
             "t1_source": 1,
@@ -195,14 +196,14 @@ class Spider(object):
         like_url = self.get_like_detail_url(unikeys)
         if unikeys != '':
             try:
-                like_content = self.get_json(self.req.get(like_url).content.decode('utf-8'))
+                like_content = self.get_json(self.req.get(like_url, headers=self.headers).content.decode('utf-8'))
                 # like_content是所有的点赞信息，其中like字段为点赞数目，list是点赞的人列表，有的数据中list为空
                 return like_content
             except BaseException as e:
                 # 因为这里错误较多，所以进行一次retry，如果不行则保留unikey
                 self.format_error(e, 'Retry to get like_url:' + unikeys)
                 try:
-                    like_content = self.get_json(self.req.get(like_url).content.decode('utf-8'))
+                    like_content = self.get_json(self.req.get(like_url, headers=self.headers).content.decode('utf-8'))
                     return like_content
                 except BaseException as e:
                     self.error_like_detail_unikeys.append(unikeys)
@@ -237,7 +238,7 @@ class Spider(object):
         :return:
         """
         url_mood = self.get_mood_url()
-        url_mood = url_mood + '&uin=' + str(self.__username)
+        url_mood = url_mood + '&uin=' + str(self.username)
         pos = mood_begin
         recover_index_split = 0
         if recover:
@@ -560,7 +561,7 @@ class Spider(object):
 
     def result_report(self):
         print("#######################")
-        print('爬取用户:', self.__username)
+        print('爬取用户:', self.username)
         print('总耗时:', (datetime.datetime.now() - self.begin_time).seconds / 60, '分钟')
         print('QQ空间动态数据数量:', len(self.mood_details))
         print('最终失败的数据量:')
@@ -584,7 +585,7 @@ class Spider(object):
 
 
 def capture_data():
-    sp = Spider(use_redis=True, debug=True, file_name_head='maicius')
+    sp = QQZoneSpider(use_redis=True, debug=True, file_name_head='maicius')
     sp.login()
     sp.get_mood_list(mood_begin=0, mood_num=-1, download_small_image=False, download_big_image=True,
                      download_mood_detail=False, download_like_detail=False, download_like_names=False, recover=False)

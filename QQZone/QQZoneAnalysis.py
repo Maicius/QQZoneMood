@@ -1,19 +1,17 @@
 import redis
-from QQZone import Spider
+from QQZone.QQZoneSpider import QQZoneSpider
 import re
 import json
 import pandas as pd
 import jieba
-import time
 from wordcloud import WordCloud, ImageColorGenerator, STOPWORDS
 from scipy.misc import imread
-import codecs
 import matplotlib.pyplot as plt
 
 
-class QQZoneAnalysis(Spider):
+class QQZoneAnalysis(QQZoneSpider):
     def __init__(self, use_redis=False, debug=False, file_name_head=''):
-        Spider.__init__(self, use_redis, debug, file_name_head)
+        QQZoneSpider.__init__(self, use_redis, debug, file_name_head)
         self.mood_data = []
         self.MOOD_DATA_FILE_NAME = 'data/' + file_name_head + '_mood_data.csv'
 
@@ -119,7 +117,7 @@ class QQZoneAnalysis(Spider):
             uin_list.append(dict(nick=nick, gender=gender))
         return total_num, uin_list
 
-    def drawWordCloud(word_text, filename):
+    def drawWordCloud(self, word_text, filename):
         mask = imread('bike.jpg')
         my_wordcloud = WordCloud(
             background_color='white',  # 设置背景颜色
@@ -136,11 +134,11 @@ class QQZoneAnalysis(Spider):
         # 以下代码显示图片
         plt.imshow(my_wordcloud)
         plt.axis("off")
-        plt.show()
         # 保存图片
         my_wordcloud.to_file(filename=filename)
+        plt.show()
 
-    def get_jieba_words(content):
+    def get_jieba_words(self, content):
         word_list = jieba.cut(content, cut_all=False)
         word_list2 = []
         waste_words = "现在 时候 这里 那里 今天 明天 非常 出去 各种 其实 真是 有点 只能 有些 只能 小时 baidu 还好 回到 好多 好的 继续 不会 起来 虽然 然饿 幸好一个 一些 一下 一样 一堆 所有 这样 那样 之后 只是 每次 所以 为了 还有 这么 那么 个人 因为 每次 但是 不想 出来 的话 这种 那种 开始 觉得 这个 那个 几乎 最后 自己 这些 那些 总之 " \
