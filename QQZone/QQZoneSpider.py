@@ -449,7 +449,7 @@ class QQZoneSpider(object):
         except  BaseException as e:
             self.format_error(e, 'Failed to load data ' + file_name)
 
-    def format_error(self, e, msg):
+    def format_error(self, e, msg=""):
         print('ERROR===================')
         print(e)
         print(msg)
