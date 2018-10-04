@@ -24,7 +24,8 @@
 	> 2. 每条说说的详细信息（比1中的信息更全面，1中数据只显示每条说说的前10个评论）  
 	> 3. 每条说说的点赞人列表
 	> 4. 更加详细的点赞人列表（3中获取的数据有很多被清空了，这里能稳定获取到点赞的人数量、浏览量和评论量）
-	> 5. 所有说说的缩略图
+	> 5. 所有说说的缩略图  
+	> 6. 好友信息
 
 - 存在问题：
 	
@@ -58,19 +59,14 @@
 	
 - 3.\_\_init\_\_函数参数说明，请根据需要修改	
 
-	> use\_redis: 是否使用redis做数据存储和缓存，True表示使用，False表示不使用  
-	> debug：是否开启debug模式，debug模式下会打印很多控制台信息，True表示启用，False表示不启用  
-	> file\_name\_head: 存储数据的文件名前缀，用于多次下载时区分数据
 
+		 def __init__(self, use_redis=False, debug=False, file_name_head='', mood_begin=0, mood_num=-1,
+                 download_small_image=False, download_big_image=False,
+                 download_mood_detail=True, download_like_detail=True, download_like_names=True, recover=False):
 
-- 4.根据需要修改核心方法 Spider.get\_mood\_list()函数参数，参数解释如下：
-	
-		 def get_mood_list(self, mood_begin=0, mood_num=100, recover=False, download_small_image=False,
-                      download_big_image=False, download_mood_detail=True, download_like_detail=True,
-                      download_like_names=True):
-
-        """
-         # 获取动态详情列表（一页20个）并存储到本地
+        :param use_redis: If true, use redis and json file to save data, if false, use json file only.
+        :param debug: If true, print info in console
+        :param file_name_head: 文件名的前缀
         :param mood_begin: 开始下载的动态序号，0表示从第0条动态开始下载
         :param mood_num: 下载的动态数量，最好设置为20的倍数
         :param recover: 是否从redis或文件中恢复数据（主要用于爬虫意外中断之后的数据恢复）
@@ -79,9 +75,7 @@
         :param download_mood_detail:是否下载动态详情
         :param download_like_detail:是否下载点赞的详情，包括点赞数量、评论数量、浏览量，该数据未被清除
         :param download_like_names:是否下载点赞的详情，主要包含点赞的人员列表，该数据有很多都被清空了
-        :return:
-        """ 
-
+        
 - 5.运行代码--获取数据
 
 	> python3 QQZone.py

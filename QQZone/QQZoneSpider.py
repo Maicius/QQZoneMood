@@ -25,6 +25,14 @@ class QQZoneSpider(object):
         :param use_redis: If true, use redis and json file to save data, if false, use json file only.
         :param debug: If true, print info in console
         :param file_name_head: 文件名的前缀
+        :param mood_begin: 开始下载的动态序号，0表示从第0条动态开始下载
+        :param mood_num: 下载的动态数量，最好设置为20的倍数
+        :param recover: 是否从redis或文件中恢复数据（主要用于爬虫意外中断之后的数据恢复）
+        :param download_small_image: 是否下载缩略图，仅供预览用的小图，该步骤比较耗时，QQ空间提供了3中不同尺寸的图片，这里下载的是最小尺寸的图片
+        :param download_big_image: 是否下载大图，QQ空间中保存的最大的图片，该步骤比较耗时
+        :param download_mood_detail:是否下载动态详情
+        :param download_like_detail:是否下载点赞的详情，包括点赞数量、评论数量、浏览量，该数据未被清除
+        :param download_like_names:是否下载点赞的详情，主要包含点赞的人员列表，该数据有很多都被清空了
         """
 
         # 初始化下载项
@@ -238,14 +246,6 @@ class QQZoneSpider(object):
 
         """
          # 获取动态详情列表（一页20个）并存储到本地
-        :param mood_begin: 开始下载的动态序号，0表示从第0条动态开始下载
-        :param mood_num: 下载的动态数量，最好设置为20的倍数
-        :param recover: 是否从redis或文件中恢复数据（主要用于爬虫意外中断之后的数据恢复）
-        :param download_small_image: 是否下载缩略图，仅供预览用的小图，该步骤比较耗时，QQ空间提供了3中不同尺寸的图片，这里下载的是最小尺寸的图片
-        :param download_big_image: 是否下载大图，QQ空间中保存的最大的图片，该步骤比较耗时
-        :param download_mood_detail:是否下载动态详情
-        :param download_like_detail:是否下载点赞的详情，包括点赞数量、评论数量、浏览量，该数据未被清除
-        :param download_like_names:是否下载点赞的详情，主要包含点赞的人员列表，该数据有很多都被清空了
         :return:
         """
         url_mood = self.get_mood_url()
@@ -389,7 +389,6 @@ class QQZoneSpider(object):
 
     def save_all_data_to_json(self):
         self.save_data_to_json(data=self.content, file_name=self.CONTENT_FILE_NAME)
-
         if self.download_mood_detail:
             self.save_data_to_json(data=self.mood_details, file_name=self.MOOD_DETAIL_FILE_NAME)
             self.save_data_to_json(data=self.error_mood, file_name=self.ERROR_MOOD_DETAIL_FILE_NAME)
