@@ -113,7 +113,7 @@ class QQZoneFriendSpider(QQZoneSpider):
         friend_df = pd.DataFrame(self.friend_detail_list)
         friend_df.sort_values(by='add_friend_time', inplace=True)
         friend_df.to_csv(self.FRIEND_DETAIL_LIST_FILE_NAME)
-        print("Finish to clean data...")
+        print("Finish to clean friend data...")
         print("File Name:", self.FRIEND_DETAIL_LIST_FILE_NAME)
 
     def get_friend_total_num(self):

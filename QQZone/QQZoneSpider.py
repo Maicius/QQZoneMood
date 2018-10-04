@@ -17,13 +17,26 @@ import datetime
 
 
 class QQZoneSpider(object):
-    def __init__(self, use_redis=False, debug=False, file_name_head=''):
+    def __init__(self, use_redis=False, debug=False, file_name_head='', mood_begin=0, mood_num=-1,
+                 download_small_image=False, download_big_image=False,
+                 download_mood_detail=True, download_like_detail=True, download_like_names=True, recover=False):
         """
         init method
         :param use_redis: If true, use redis and json file to save data, if false, use json file only.
         :param debug: If true, print info in console
         :param file_name_head: 文件名的前缀
         """
+
+        # 初始化下载项
+        self.mood_begin = mood_begin
+        self.mood_num = mood_num
+        self.recover = recover
+        self.download_small_image = download_small_image
+        self.download_big_image = download_big_image
+        self.download_mood_detail = download_mood_detail
+        self.download_like_detail = download_like_detail
+        self.download_like_names = download_like_names
+
         self.begin_time = datetime.datetime.now()
         self.host = 'https://user.qzone.qq.com'
         self.http_host = 'http://user.qzone.qq.com'
@@ -221,9 +234,7 @@ class QQZoneSpider(object):
             json += arr[i]
         return json
 
-    def get_mood_list(self, mood_begin=0, mood_num=100, recover=False, download_small_image=False,
-                      download_big_image=False, download_mood_detail=True, download_like_detail=True,
-                      download_like_names=True):
+    def get_mood_list(self):
 
         """
          # 获取动态详情列表（一页20个）并存储到本地
@@ -239,21 +250,21 @@ class QQZoneSpider(object):
         """
         url_mood = self.get_mood_url()
         url_mood = url_mood + '&uin=' + str(self.username)
-        pos = mood_begin
+        pos = self.mood_begin
         recover_index_split = 0
-        if recover:
+        if self.recover:
             recover_index = self.do_recover_from_exist_data()
             pos = recover_index // 20 * 20
             recover_index_split = recover_index % 20
         # 如果mood_num为-1，则下载全部的动态
-        if mood_num == -1:
+        if self.mood_num == -1:
             url__ = url_mood + '&pos=' + str(pos)
             mood = self.req.get(url=url__, headers=self.headers).content.decode('utf-8')
             mood_json = json.loads(self.get_json(mood))
-            mood_num = mood_json['usrinfo']['msgnum']
+            self.mood_num = mood_json['usrinfo']['msgnum']
 
         # 1700为我空间动态数量
-        while pos < mood_num:
+        while pos < self.mood_num:
             print('正在爬取', pos, '...')
             try:
                 url__ = url_mood + '&pos=' + str(pos)
@@ -267,9 +278,7 @@ class QQZoneSpider(object):
                     self.unikeys = self.unikeys[recover_index_split:]
                     recover_index_split = 0
                 # 获取数据
-                self.do_get_infos(self.unikeys, download_small_image=download_small_image,
-                                  download_big_image=download_big_image, download_mood_detail=download_mood_detail,
-                                  download_like_detail=download_like_detail, download_like_names=download_like_names)
+                self.do_get_infos(self.unikeys)
                 pos += 20
                 # 每抓100条保存一次数据
                 if pos % 100 == 0:
@@ -292,8 +301,7 @@ class QQZoneSpider(object):
         self.result_report()
         print("finish===================")
 
-    def do_get_infos(self, unikeys, download_small_image, download_big_image, download_mood_detail,
-                     download_like_detail, download_like_names):
+    def do_get_infos(self, unikeys):
         for unikey in unikeys:
             if (self.debug):
                 print('unikey:' + unikey['unikey'])
@@ -301,27 +309,27 @@ class QQZoneSpider(object):
             self.tid = unikey['tid']
             # 获取动态详情
             try:
-                if download_mood_detail:
+                if self.download_mood_detail:
                     mood_detail = self.get_mood_detail(self.unikey, self.tid)
                     self.mood_details.append(mood_detail)
 
                 # 获取点赞详情（方法一）
                 # 此方法有时候不能获取到点赞的人的昵称，但是点赞的数量这个数据一直存在
-                if download_like_detail:
+                if self.download_like_detail:
                     like_detail = self.get_like_detail(unikey['curlikekey'])
                     self.like_detail.append(like_detail)
 
                 # 获取点赞详情（方法二）
                 # 此方法能稳定获取到点赞的人的昵称，但是有的数据已经被清空了
-                if download_like_names:
+                if self.download_like_names:
                     like_list_name = self.get_like_list(self.unikey)
                     self.like_list_names.append(like_list_name)
-                if download_small_image:
+                if self.download_small_image:
                     for pic_url in unikey['small_pic_list']:
                         file_name = self.tid + '--' + pic_url.split('/')[-1]
                         self.download_image(pic_url, self.SMALL_IMAGE_DIR + file_name)
 
-                if download_big_image:
+                if self.download_big_image:
                     for big_pic_url in unikey['big_pic_list']:
                         if self.debug:
                             print('大图地址:', big_pic_url)
@@ -381,15 +389,22 @@ class QQZoneSpider(object):
 
     def save_all_data_to_json(self):
         self.save_data_to_json(data=self.content, file_name=self.CONTENT_FILE_NAME)
-        self.save_data_to_json(data=self.like_list_names, file_name=self.LIKE_LIST_NAME_FILE_NAME)
-        self.save_data_to_json(data=self.mood_details, file_name=self.MOOD_DETAIL_FILE_NAME)
-        self.save_data_to_json(data=self.like_detail, file_name=self.LIKE_DETAIL_FILE_NAME)
-        self.save_data_to_json(data=self.error_mood, file_name=self.ERROR_MOOD_DETAIL_FILE_NAME)
-        self.save_data_to_json(data=self.error_like_detail, file_name=self.ERROR_LIKE_DETAIL_FILE_NAME)
-        self.save_data_to_json(data=self.error_like_list, file_name=self.ERROR_LIKE_LIST_NAME_FILE_NAME)
-        self.save_data_to_txt(data=self.error_like_list_unikeys, file_name=self.ERROR_LIKE_LIST_NAME_UNIKEY_FILE_NAME)
-        self.save_data_to_txt(data=self.error_like_detail_unikeys, file_name=self.ERROR_LIKE_DETAIL_FILE_NAME)
-        self.save_data_to_txt(data=self.error_mood_unikeys, file_name=self.ERROR_MOOD_DETAIL_UNIKEY_FILE_NAME)
+
+        if self.download_mood_detail:
+            self.save_data_to_json(data=self.mood_details, file_name=self.MOOD_DETAIL_FILE_NAME)
+            self.save_data_to_json(data=self.error_mood, file_name=self.ERROR_MOOD_DETAIL_FILE_NAME)
+            self.save_data_to_txt(data=self.error_mood_unikeys, file_name=self.ERROR_MOOD_DETAIL_UNIKEY_FILE_NAME)
+
+        if self.download_like_names:
+            self.save_data_to_json(data=self.like_detail, file_name=self.LIKE_DETAIL_FILE_NAME)
+            self.save_data_to_json(data=self.error_like_detail, file_name=self.ERROR_LIKE_DETAIL_FILE_NAME)
+            self.save_data_to_txt(data=self.error_like_detail_unikeys, file_name=self.ERROR_LIKE_DETAIL_FILE_NAME)
+
+        if self.download_like_detail:
+            self.save_data_to_json(data=self.like_list_names, file_name=self.LIKE_LIST_NAME_FILE_NAME)
+            self.save_data_to_json(data=self.error_like_list, file_name=self.ERROR_LIKE_LIST_NAME_FILE_NAME)
+            self.save_data_to_txt(data=self.error_like_list_unikeys, file_name=self.ERROR_LIKE_LIST_NAME_UNIKEY_FILE_NAME)
+
         self.save_data_to_redis(final_result=True)
 
     def save_data_to_redis(self, final_result=False):
@@ -401,23 +416,35 @@ class QQZoneSpider(object):
         try:
             if self.use_redis:
                 self.re.set(self.CONTENT_FILE_NAME[5:], json.dumps(self.content, ensure_ascii=False))
-                self.re.set(self.LIKE_LIST_NAME_FILE_NAME[5:],
-                            json.dumps(self.like_list_names, ensure_ascii=False))
-                self.re.set(self.MOOD_DETAIL_FILE_NAME[5:],
-                            json.dumps(self.mood_details, ensure_ascii=False))
-                self.re.set(self.LIKE_DETAIL_FILE_NAME[5:],
-                            json.dumps(self.like_detail, ensure_ascii=False))
+
+                if self.download_like_names:
+                    self.re.set(self.LIKE_LIST_NAME_FILE_NAME[5:],
+                                json.dumps(self.like_list_names, ensure_ascii=False))
+
+                if self.download_mood_detail:
+                    self.re.set(self.MOOD_DETAIL_FILE_NAME[5:],
+                                json.dumps(self.mood_details, ensure_ascii=False))
+
+                if self.download_like_detail:
+                    self.re.set(self.LIKE_DETAIL_FILE_NAME[5:],
+                                json.dumps(self.like_detail, ensure_ascii=False))
 
                 if final_result:
-                    self.re.set(self.ERROR_LIKE_DETAIL_FILE_NAME[6:],
-                                json.dumps(self.error_like_detail, ensure_ascii=False))
-                    self.re.set(self.ERROR_LIKE_LIST_NAME_FILE_NAME[6:],
-                                json.dumps(self.error_like_list, ensure_ascii=False))
-                    self.re.set(self.ERROR_MOOD_DETAIL_FILE_NAME[6:],
-                                json.dumps(self.error_mood, ensure_ascii=False))
-                    self.re.set(self.ERROR_LIKE_DETAIL_UNIKEY_FILE_NAME, "==".join(self.error_like_detail_unikeys))
-                    self.re.set(self.ERROR_LIKE_LIST_NAME_UNIKEY_FILE_NAME, "==".join(self.error_like_list_unikeys))
-                    self.re.set(self.ERROR_MOOD_DETAIL_UNIKEY_FILE_NAME, "==".join(self.error_mood_unikeys))
+                    if self.download_like_detail:
+                        self.re.set(self.ERROR_LIKE_DETAIL_FILE_NAME[6:],
+                                    json.dumps(self.error_like_detail, ensure_ascii=False))
+                        self.re.set(self.ERROR_LIKE_DETAIL_UNIKEY_FILE_NAME, "==".join(self.error_like_detail_unikeys))
+
+                    if self.download_like_names:
+                        self.re.set(self.ERROR_LIKE_LIST_NAME_FILE_NAME[6:],
+                                    json.dumps(self.error_like_list, ensure_ascii=False))
+                        self.re.set(self.ERROR_LIKE_LIST_NAME_UNIKEY_FILE_NAME, "==".join(self.error_like_list_unikeys))
+
+                    if self.download_mood_detail:
+                        self.re.set(self.ERROR_MOOD_DETAIL_FILE_NAME[6:],
+                                    json.dumps(self.error_mood, ensure_ascii=False))
+                        self.re.set(self.ERROR_MOOD_DETAIL_UNIKEY_FILE_NAME, "==".join(self.error_mood_unikeys))
+
         except BaseException as e:
             self.format_error(e, 'Faild to save data in redis')
 
@@ -585,10 +612,11 @@ class QQZoneSpider(object):
 
 
 def capture_data():
-    sp = QQZoneSpider(use_redis=True, debug=True, file_name_head='maicius')
+    sp = QQZoneSpider(use_redis=True, debug=True, file_name_head='maicius', mood_begin=0, mood_num=-1,
+                      download_small_image=False, download_big_image=False,
+                      download_mood_detail=True, download_like_detail=True, download_like_names=True, recover=False)
     sp.login()
-    sp.get_mood_list(mood_begin=0, mood_num=-1, download_small_image=False, download_big_image=True,
-                     download_mood_detail=False, download_like_detail=False, download_like_names=False, recover=False)
+    sp.get_mood_list()
 
 
 if __name__ == '__main__':
