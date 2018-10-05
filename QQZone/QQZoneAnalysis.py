@@ -14,7 +14,7 @@ class QQZoneAnalysis(QQZoneSpider):
         QQZoneSpider.__init__(self, use_redis, debug, file_name_head)
         self.mood_data = []
         self.MOOD_DATA_FILE_NAME = 'data/' + file_name_head + '_mood_data.csv'
-        self.friend = QQZoneFriendSpider()
+        self.friend = QQZoneFriendSpider(analysis=True, file_name_head=file_name_head)
         self.friend.clean_friend_data()
 
     def load_file_from_redis(self):
