@@ -3,58 +3,86 @@
 ![QQ空间说说历史曲线图](https://github.com/Maicius/InterestingCrawler/blob/master/QQZone/image/history.png)  
 ![QQ空间说说按点赞和评论数分类图](https://github.com/Maicius/InterestingCrawler/blob/master/QQZone/image/shuoshuoPie.png)  
 
-- 目前包含三个爬虫 
+- 目前包含两个个爬虫 
  
 	> 1.爬取QQ空间说说内容（包括评论和点赞）     
 	> 2.爬取微信好友列表  
-	> 3.爬取scuInfo的数据（会被封ip）  
 
 
 ## 抓取QQ空间说说内容并进行分析
 
 ### 爬虫文件
 
-### QQZoneShuoshuo.py
+### QQZone.py
 
 - python版本：3.6（推荐使用python3，因为本爬虫涉及大量文件交互，python3的编码管理比2中好很多）
 - 登陆使用的是Selenium， 无法识别验证码，抓取使用requests
 - 若出现验证码，则先尝试手动从浏览器登陆并退出再运行程序
 - 已经抓取到的信息有：
 
-> 1. 所有说说信息
-> 2. 每条说说的详细信息（比1中的信息更全面，1中数据只显示每条说说的前10个评论）  
-> 3. 每条说说的点赞人列表
+	> 1. 所有说说信息
+	> 2. 每条说说的详细信息（比1中的信息更全面，1中数据只显示每条说说的前10个评论）  
+	> 3. 每条说说的点赞人列表
+	> 4. 更加详细的点赞人列表（3中获取的数据有很多被清空了，这里能稳定获取到点赞的人数量、浏览量和评论量）
+	> 5. 所有说说的缩略图  
+	> 6. 好友信息
+
+- 存在问题：
+	
+	> 评论数量超过20之后的评论信息(如评论人，评论文字)暂时无法获取，但是前20条数据是没问题的，且评论数量始终正确
 
 - 存储方式：
 
-> 目前实现了两种存储方式:  
-> 1. 存储到json文件中   
-> 2. 存储到redis数据库中  
-> 如果安装了redis，建议存储到redis中  
-> 关于redis的安装和配置，请自行搜索  
+	> 目前实现了两种存储方式（通过Spider中use_redis参数进行配置）:  
+	> 1. 存储到json文件中   
+	> 2. 存储到redis数据库中  
+	> 如果安装了redis，建议存储到redis中  
+	> 关于redis的安装和配置，请自行搜索  
+	> Redis使用中常见问题可以参考这篇博客:[Redis 踩坑笔记](http://www.xiaomaidong.com/?p=308)
 
 - 运行环境：
   
-> 建议使用PyCharm打开，  
-> 在PyCharm中根据import的报错可以自动安装相应模块  
-> *注意*selenium需要与chrome driver结合使用,可以查看这篇博客：  
-> [selenium之 chromedriver与chrome版本映射表（更新至v2.32）](http://blog.csdn.net/huilan_same/article/details/51896672)
+	> 建议使用PyCharm打开，  
+	> 在PyCharm中根据import的报错可以自动安装相应模块  
+	> *注意*selenium需要与chrome driver结合使用,可以查看这篇博客：  
+	> [selenium之 chromedriver与chrome版本映射表（更新至v2.32）](http://blog.csdn.net/huilan_same/article/details/51896672)
 
-- 运行方式（针对macOS和linux）  
+#### QQZone运行方式 
 
-> - 1.打开terminal
-> - 2.确保自己已经安装了pip和pip3(如果电脑同时安装了py2 和 py3，给则pip会默认给py2添加库，pip3会给py3添加库；如果只安装了一个版本的py,则不需要考虑这个问题)，如未安装，请使用下面命令安装：  
-> - macOS：sudo brew install pip; sudo brew install pip3  
-> - linux:  sudo apt-get install pip; sudo apt-get install pip3
-> - 3. pip3 install requirements.txt 或者: pip3 install requirements.txt  
-> - 4.替换class spider中self.__username与self.__password为自己的QQ号密码  
-> - 5.运行(命令行下直接使用指令 python QQZoneShuoshuo.py)
+- 1.安装依赖
 
-- 运行方式（windows) 
- 
->  - windows下推荐使用界面进行操作，可参考这篇博文：
-> - [使用Pycharm安装Python第三方库](http://blog.csdn.net/qiannianguji01/article/details/50397046)  
-> - 或者: 手动下载pip，再运行 pip install requirements.txt
+	> pip3 install -r requirements.txt 
+
+- 2.配置用户名和密码
+
+	> 修改userinfo.json.example为文件userinfo.json，并填好QQ号和QQ密码
+	
+- 3.\_\_init\_\_函数参数说明，请根据需要修改	
+
+
+		 def __init__(self, use_redis=False, debug=False, file_name_head='', mood_begin=0, mood_num=-1,
+                 download_small_image=False, download_big_image=False,
+                 download_mood_detail=True, download_like_detail=True, download_like_names=True, recover=False):
+
+        :param use_redis: If true, use redis and json file to save data, if false, use json file only.
+        :param debug: If true, print info in console
+        :param file_name_head: 文件名的前缀
+        :param mood_begin: 开始下载的动态序号，0表示从第0条动态开始下载
+        :param mood_num: 下载的动态数量，最好设置为20的倍数
+        :param recover: 是否从redis或文件中恢复数据（主要用于爬虫意外中断之后的数据恢复）
+        :param download_small_image: 是否下载缩略图，仅供预览用的小图，该步骤比较耗时，QQ空间提供了3中不同尺寸的图片，这里下载的是最小尺寸的图片
+        :param download_big_image: 是否下载大图，QQ空间中保存的最大的图片，该步骤比较耗时
+        :param download_mood_detail:是否下载动态详情
+        :param download_like_detail:是否下载点赞的详情，包括点赞数量、评论数量、浏览量，该数据未被清除
+        :param download_like_names:是否下载点赞的详情，主要包含点赞的人员列表，该数据有很多都被清空了
+        
+- 5.运行代码--获取数据
+
+	> python3 QQZone.py
+
+- 6.数据清理，导出csv结构数据
+
+	> python3 QQZoneAnalysis.py
 
 ### 数据分析
 ### drawWordCloud.py
@@ -62,12 +90,22 @@
 - python版本：3.6  
 - 已经实现的分析有：
 
-> 1. 平均每条说说的点赞人数  
-> 2. 说说点赞的总人数
-> 3. 点赞最多的人物排名和点赞数
-> 4. 评论最多的人物排名和评论数
-> 5. 所有说说的内容分析（分词使用的是jieba）
-> 6. 所有评论的内容分析
+	> 1. 平均每条说说的点赞人数  
+	> 2. 说说点赞的总人数
+	> 3. 点赞最多的人物排名和点赞数
+	> 4. 评论最多的人物排名和评论数
+	> 5. 所有说说的内容分析（分词使用的是jieba）
+	> 6. 所有评论的内容分析
+
+- 待实现的目标有：
+
+	> 发什么样的内容容易获得点赞和评论(自然语言处理)
+
+	> 发什么样的图片容易获得点赞和评论(图像识别)
+
+	> [可选]人物画像：分析出人物的性格特点、爱好(知识图谱)
+
+	> [可选]历史事件抽取（自然语言处理、事件抽取）
 
 - 运行结果：生成词云图
 - 运行结果例图：
@@ -76,12 +114,14 @@
 ![Image2](https://github.com/Maicius/wexinFriendInfo/blob/master/QQZone/image/comment.jpg)
 ![Image3](https://github.com/Maicius/wexinFriendInfo/blob/master/QQZone/image/comment_content.jpg)
 ![Image](https://github.com/Maicius/wexinFriendInfo/blob/master/QQZone/image/agree.jpg)
+![Image](QQZone/image/bike2.png)
 
 ## 抓取微信好友信息
 - 好友列表里所有好友，删除了公众号信息
 
 ### 爬虫文件
 ###  ReadWechatFrinedsInfo.py
+
 - python版本： 3.6  
 - 抓取到的信息格式如下：
 
@@ -121,8 +161,4 @@
 }
 
 - 此外还下载了所有好友的头像
-
-- 运行方式：
-
-> 根据import 安装相应包，直接运行，扫二维码完成网页登录
 
