@@ -95,8 +95,8 @@ class QQZoneFriendSpider(QQZoneSpider):
         if len(self.friend_list) == 0:
             self.load_friend_data()
         friend_total_num = len(self.friend_list)
-        if friend_total_num != len(self.friend_detail):
-            self.format_error('Friend Number is wrong')
+        # if friend_total_num != len(self.friend_detail):
+        #     self.format_error('Friend Number is wrong')
         self.friend_detail_list = []
         for friend in self.friend_detail:
             friend_uin = friend['friendUin']
@@ -140,6 +140,6 @@ class QQZoneFriendSpider(QQZoneSpider):
 if __name__ == '__main__':
     friend_spider = QQZoneFriendSpider(use_redis=True, debug=True, file_name_head="maicius", analysis=True)
     # friend_spider.get_friend_detail()
-    # friend_spider.clean_friend_data()
+    friend_spider.clean_friend_data()
     friend_spider.calculate_friend_num_timeline(1411891250)
 
