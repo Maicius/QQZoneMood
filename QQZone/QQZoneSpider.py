@@ -489,7 +489,7 @@ class QQZoneSpider(object):
         print(e)
         print(msg)
         print('ERROR===================')
-        raise e
+        # raise e
 
     # 获得点赞的人
     def get_like_list(self, unikey):
