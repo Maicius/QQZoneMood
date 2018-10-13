@@ -14,10 +14,11 @@ import redis
 import json
 import copy
 import datetime
+from QQZone.util.util import get_mktime
 
 
 class QQZoneSpider(object):
-    def __init__(self, use_redis=False, debug=False, file_name_head='', mood_begin=0, mood_num=-1,
+    def __init__(self, use_redis=False, debug=False, file_name_head='', mood_begin=0, mood_num=-1, stop_time='-1',
                  download_small_image=False, download_big_image=False,
                  download_mood_detail=True, download_like_detail=True, download_like_names=True, recover=False):
         """
@@ -44,7 +45,11 @@ class QQZoneSpider(object):
         self.download_mood_detail = download_mood_detail
         self.download_like_detail = download_like_detail
         self.download_like_names = download_like_names
-
+        self.until_stop_time = True
+        if stop_time != '-1':
+            self.stop_time = get_mktime(stop_time)
+        else:
+            self.stop_time = -1
         self.begin_time = datetime.datetime.now()
         self.host = 'https://user.qzone.qq.com'
         self.http_host = 'http://user.qzone.qq.com'
@@ -222,7 +227,7 @@ class QQZoneSpider(object):
                 return like_content
             except BaseException as e:
                 # 因为这里错误较多，所以进行一次retry，如果不行则保留unikey
-                self.format_error(e, 'Retry to get like_url:' + unikeys)
+                self._error(e, 'Retry to get like_url:' + unikeys)
                 try:
                     like_content = self.get_json(self.req.get(like_url, headers=self.headers).content.decode('utf-8'))
                     return like_content
@@ -254,8 +259,9 @@ class QQZoneSpider(object):
         recover_index_split = 0
         if self.recover:
             recover_index = self.do_recover_from_exist_data()
-            pos = recover_index // 20 * 20
-            recover_index_split = recover_index % 20
+            if recover_index is not None:
+                pos = recover_index // 20 * 20
+                recover_index_split = recover_index % 20
         # 如果mood_num为-1，则下载全部的动态
         if self.mood_num == -1:
             url__ = url_mood + '&pos=' + str(pos)
@@ -263,8 +269,7 @@ class QQZoneSpider(object):
             mood_json = json.loads(self.get_json(mood))
             self.mood_num = mood_json['usrinfo']['msgnum']
 
-        # 1700为我空间动态数量
-        while pos < self.mood_num:
+        while pos < self.mood_num and self.until_stop_time:
             print('正在爬取', pos, '...')
             try:
                 url__ = url_mood + '&pos=' + str(pos)
@@ -311,8 +316,11 @@ class QQZoneSpider(object):
             try:
                 if self.download_mood_detail:
                     mood_detail = self.get_mood_detail(self.unikey, self.tid)
-                    self.mood_details.append(mood_detail)
+                    # 如果达到了设置的停止日期，退出循环
 
+                    if self.stop_time != -1 and self.check_time(mood_detail) == False:
+                        break
+                    self.mood_details.append(mood_detail)
                 # 获取点赞详情（方法一）
                 # 此方法有时候不能获取到点赞的人的昵称，但是点赞的数量这个数据一直存在
                 if self.download_like_detail:
@@ -402,7 +410,8 @@ class QQZoneSpider(object):
         if self.download_like_detail:
             self.save_data_to_json(data=self.like_list_names, file_name=self.LIKE_LIST_NAME_FILE_NAME)
             self.save_data_to_json(data=self.error_like_list, file_name=self.ERROR_LIKE_LIST_NAME_FILE_NAME)
-            self.save_data_to_txt(data=self.error_like_list_unikeys, file_name=self.ERROR_LIKE_LIST_NAME_UNIKEY_FILE_NAME)
+            self.save_data_to_txt(data=self.error_like_list_unikeys,
+                                  file_name=self.ERROR_LIKE_LIST_NAME_UNIKEY_FILE_NAME)
 
         self.save_data_to_redis(final_result=True)
 
@@ -480,7 +489,7 @@ class QQZoneSpider(object):
         print(e)
         print(msg)
         print('ERROR===================')
-        # raise e
+        raise e
 
     # 获得点赞的人
     def get_like_list(self, unikey):
@@ -509,6 +518,7 @@ class QQZoneSpider(object):
         try:
             mood_detail = self.req.get(url=url_detail, headers=self.headers)
             json_mood = self.get_json(str(mood_detail.content.decode('utf-8')))
+
             return json_mood
         except BaseException:
             try:
@@ -610,11 +620,22 @@ class QQZoneSpider(object):
             print('Failed to connect redis')
             print('===================')
 
+    def check_time(self, mood):
+        mood = json.loads(mood)
+        create_time = mood['created_time']
+        if self.debug:
+            print('time:', create_time, self.stop_time)
+        if self.stop_time >= create_time:
+            self.until_stop_time = False
+            print('达到设置的停止时间，即将退出爬虫')
+            return False
+
 
 def capture_data():
-    sp = QQZoneSpider(use_redis=True, debug=True, file_name_head='maicius', mood_begin=0, mood_num=-1,
+    sp = QQZoneSpider(use_redis=True, debug=True, file_name_head='maicius1', mood_begin=0, mood_num=-1,
+                      stop_time='-1',
                       download_small_image=False, download_big_image=False,
-                      download_mood_detail=True, download_like_detail=True, download_like_names=True, recover=True)
+                      download_mood_detail=True, download_like_detail=True, download_like_names=True, recover=False)
     sp.login()
     sp.get_mood_list()
 

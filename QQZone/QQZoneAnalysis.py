@@ -10,12 +10,14 @@ import matplotlib.pyplot as plt
 from QQZone.QQZoneFriendSpider import QQZoneFriendSpider
 
 class QQZoneAnalysis(QQZoneSpider):
-    def __init__(self, use_redis=False, debug=False, file_name_head=''):
+    def __init__(self, use_redis=False, debug=False, file_name_head='', analysis_friend=False):
         QQZoneSpider.__init__(self, use_redis, debug, file_name_head)
         self.mood_data = []
         self.MOOD_DATA_FILE_NAME = 'data/' + file_name_head + '_mood_data.csv'
-        self.friend = QQZoneFriendSpider(analysis=True, file_name_head=file_name_head)
-        self.friend.clean_friend_data()
+        self.analysis_friend = analysis_friend
+        if self.analysis_friend:
+            self.friend = QQZoneFriendSpider(analysis=True, file_name_head=file_name_head)
+            self.friend.clean_friend_data()
 
     def load_file_from_redis(self):
         self.do_recover_from_exist_data()
@@ -66,7 +68,7 @@ class QQZoneAnalysis(QQZoneSpider):
             cmt_list = []
             cmt_total_num = cmt_num
             if 'commentlist' in msglist:
-                comment_list = msglist['commentlist']
+                comment_list = msglist['commentlist'] if msglist['commentlist'] is not None else []
 
                 for comment in comment_list:
                     comment_content = comment['content']
@@ -90,7 +92,10 @@ class QQZoneAnalysis(QQZoneSpider):
                         dict(comment_content=comment_content, comment_name=comment_name, comment_time=comment_time,
                              comment_reply_num=comment_reply_num, comment_reply_list=comment_reply_list))
 
-            friend_num = self.friend.calculate_friend_num_timeline(time_stamp)
+            if self.analysis_friend:
+                friend_num = self.friend.calculate_friend_num_timeline(time_stamp)
+            else:
+                friend_num = -1
             self.mood_data.append(dict(tid=tid, content=content, time=time, time_stamp=time_stamp, pic_num=pic_num,
                                    cmt_num=cmt_num, like_num=like_num, prd_num=prd_num, uin_list=uin_list, cmt_total_num=cmt_total_num,
                                    cmt_list=cmt_list, friend_num=friend_num))
@@ -165,7 +170,7 @@ class QQZoneAnalysis(QQZoneSpider):
 
 
 if __name__ == '__main__':
-    analysis = QQZoneAnalysis(use_redis=True, debug=False, file_name_head='maicius')
+    analysis = QQZoneAnalysis(use_redis=True, debug=False, file_name_head='fuyuko')
     print(analysis.check_data_shape())
     analysis.get_useful_info_from_json()
     analysis.save_data_to_csv()

@@ -15,6 +15,7 @@ class QQZoneFriendSpider(QQZoneSpider):
         self.friend_detail = []
         self.friend_list = []
         self.friend_df = None
+        self.re = self.connect_redis()
 
     def get_friend_list(self):
         friend_list_url = self.get_friend_list_url()

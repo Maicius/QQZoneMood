@@ -54,3 +54,7 @@ def get_standard_time_from_mktime(mktime):
 def get_month(date):
     time_array = time.strptime(str(date), "%Y-%m-%d")
     return time.strftime("%Y-%m", time_array)
+
+if __name__ =='__main__':
+    print(get_mktime('2018-09-6'))
+    print(get_mktime('2018-9-06'))
