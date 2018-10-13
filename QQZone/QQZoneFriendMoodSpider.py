@@ -4,6 +4,9 @@ from copy import deepcopy
 from urllib import parse
 
 class QQZoneFriendMoodSpider(QQZoneSpider):
+    """
+    爬取指定好友的动态
+    """
     def __init__(self, use_redis=False, debug=False, file_name_head='', mood_begin=0, mood_num=-1, stop_time='-1',
                  download_small_image=False, download_big_image=False,
                  download_mood_detail=True, download_like_detail=True, download_like_names=True, recover=False):
