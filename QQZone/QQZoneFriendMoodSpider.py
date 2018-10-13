@@ -14,7 +14,7 @@ class QQZoneFriendMoodSpider(QQZoneSpider):
                               download_like_names=download_like_names,
                               recover=recover)
         self.friend_name_list = self.get_friend_username()
-        self.raw_username = deepcopy(self.username)
+
 
     def get_friend_username(self):
         with open('friend_info.json', 'r', encoding='utf-8') as r:

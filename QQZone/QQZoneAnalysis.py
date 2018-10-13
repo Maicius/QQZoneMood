@@ -119,7 +119,6 @@ class QQZoneAnalysis(QQZoneSpider):
             self.format_error(e, 'Error in like, return 0')
             return 0, 0, 0
 
-
     def parse_like_names(self, like):
         data = json.loads(like)['data']
         total_num = data['total_number']

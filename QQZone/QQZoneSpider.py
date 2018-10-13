@@ -15,7 +15,7 @@ import json
 import copy
 import datetime
 from QQZone.util.util import get_mktime
-
+from copy import deepcopy
 
 class QQZoneSpider(object):
     def __init__(self, use_redis=False, debug=False, file_name_head='', mood_begin=0, mood_num=-1, stop_time='-1',
@@ -58,6 +58,7 @@ class QQZoneSpider(object):
         self.file_name_head = file_name_head
         self.username, self.password = self.get_username_password()
         self.mood_host = self.http_host + '/' + self.username + '/mood/'
+        self.raw_username = deepcopy(self.username)
         self.headers = {
             'host': 'h5.qzone.qq.com',
             'accept-encoding': 'gzip, deflate, br',
@@ -216,6 +217,27 @@ class QQZoneSpider(object):
         like_url = like_url + parse.urlencode(params)
         return like_url
 
+    # 获取评论详情
+    def get_cmt_detail_url(self, start, top_id):
+        url = 'https://h5.qzone.qq.com/proxy/domain/taotao.qzone.qq.com/cgi-bin/emotion_cgi_getcmtreply_v6?'
+        params = {
+            'format':'jsonp',
+            'g_tk':self.g_tk,
+            'hostUin':self.username,
+            'inCharset':'',
+            'need_private_comment':1,
+            'num':20,
+            'order':0,
+            'outCharset':'',
+            'qzonetoken':'',
+            'random':'',
+            'ref':'',
+            'start':start,
+            'topicId': top_id,
+            'uin': self.raw_username
+        }
+        return url + parse.urlencode(params)
+
     def get_like_detail(self, curlikekey):
         # unikeys = "<|>".join(curlikekey)
         unikeys = curlikekey
@@ -227,7 +249,7 @@ class QQZoneSpider(object):
                 return like_content
             except BaseException as e:
                 # 因为这里错误较多，所以进行一次retry，如果不行则保留unikey
-                self._error(e, 'Retry to get like_url:' + unikeys)
+                self.format_error(e, 'Retry to get like_url:' + unikeys)
                 try:
                     like_content = self.get_json(self.req.get(like_url, headers=self.headers).content.decode('utf-8'))
                     return like_content
@@ -282,8 +304,11 @@ class QQZoneSpider(object):
                 if recover_index_split != 0:
                     self.unikeys = self.unikeys[recover_index_split:]
                     recover_index_split = 0
+
                 # 获取数据
                 self.do_get_infos(self.unikeys)
+
+
                 pos += 20
                 # 每抓100条保存一次数据
                 if pos % 100 == 0:
@@ -306,6 +331,20 @@ class QQZoneSpider(object):
         self.result_report()
         print("finish===================")
 
+    def get_all_cmt_num(self, cmt_num, tid):
+        top_id = self.username + '_' + tid
+        page = cmt_num // 20 + 1
+        cmt_list = []
+        for i in range(1, page):
+            start = i * 20
+            url = self.get_cmt_detail_url(start=start, top_id=top_id)
+            if self.debug:
+                print('获取超过20的点赞的人信息:', url)
+            content = self.get_json(self.req.get(url).content.decode('utf-8'))
+            content = json.loads(content)
+            cmt_list.append(content['data']['comments'])
+        return cmt_list
+
     def do_get_infos(self, unikeys):
         for unikey in unikeys:
             if (self.debug):
@@ -316,11 +355,15 @@ class QQZoneSpider(object):
             try:
                 if self.download_mood_detail:
                     mood_detail = self.get_mood_detail(self.unikey, self.tid)
+                    mood = json.loads(mood_detail)
                     # 如果达到了设置的停止日期，退出循环
-
-                    if self.stop_time != -1 and self.check_time(mood_detail) == False:
+                    if self.stop_time != -1 and self.check_time(mood) == False:
                         break
-                    self.mood_details.append(mood_detail)
+                    cmt_num = self.check_comment_num(mood)
+                    if cmt_num != -1:
+                        extern_cmt = self.get_all_cmt_num(cmt_num, self.tid)
+                        mood['commentlist'] = mood['commentlist'] + extern_cmt
+                    self.mood_details.append(mood)
                 # 获取点赞详情（方法一）
                 # 此方法有时候不能获取到点赞的人的昵称，但是点赞的数量这个数据一直存在
                 if self.download_like_detail:
@@ -332,6 +375,7 @@ class QQZoneSpider(object):
                 if self.download_like_names:
                     like_list_name = self.get_like_list(self.unikey)
                     self.like_list_names.append(like_list_name)
+
                 if self.download_small_image:
                     for pic_url in unikey['small_pic_list']:
                         file_name = self.tid + '--' + pic_url.split('/')[-1]
@@ -621,14 +665,23 @@ class QQZoneSpider(object):
             print('===================')
 
     def check_time(self, mood):
-        mood = json.loads(mood)
+
         create_time = mood['created_time']
+
         if self.debug:
             print('time:', create_time, self.stop_time)
         if self.stop_time >= create_time:
             self.until_stop_time = False
             print('达到设置的停止时间，即将退出爬虫')
             return False
+
+    def check_comment_num(self, mood):
+        cmt_num = mood['cmt_num']
+        if cmt_num > 20:
+            return cmt_num
+        else:
+            return -1
+
 
 
 def capture_data():
