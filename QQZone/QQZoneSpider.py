@@ -545,6 +545,7 @@ class QQZoneSpider(object):
         if self.debug:
             raise e
 
+
     # 获得点赞的人
     def get_like_list(self, unikey):
         url = self.get_aggree_url(unikey)

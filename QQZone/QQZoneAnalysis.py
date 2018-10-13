@@ -14,6 +14,7 @@ class QQZoneAnalysis(QQZoneSpider):
         QQZoneSpider.__init__(self, use_redis, debug, file_name_head)
         self.mood_data = []
         self.MOOD_DATA_FILE_NAME = 'data/' + file_name_head + '_mood_data.csv'
+        self.MOOD_DATA_EXCEL_FILE_NAME = 'data/' + file_name_head + '_mood_data.xlsx'
         self.analysis_friend = analysis_friend
         if self.analysis_friend:
             self.friend = QQZoneFriendSpider(analysis=True, file_name_head=file_name_head)
@@ -33,6 +34,10 @@ class QQZoneAnalysis(QQZoneSpider):
         self.mood_data_df = pd.DataFrame(self.mood_data)
         self.mood_data_df.to_csv(self.MOOD_DATA_FILE_NAME)
 
+    def save_data_to_excel(self):
+        self.mood_data_df = pd.DataFrame(self.mood_data)
+        self.mood_data_df.to_excel(self.MOOD_DATA_EXCEL_FILE_NAME)
+
     def get_useful_info_from_json(self):
         self.load_file_from_redis()
         for i in range(len(self.mood_details)):
@@ -44,7 +49,10 @@ class QQZoneAnalysis(QQZoneSpider):
             self.parse_mood_detail(self.mood_details[i], key=key, uin_list=uin_list, like_num=like_num, prd_num=prd_num)
 
     def parse_mood_detail(self, mood, key, uin_list, like_num, prd_num):
-        msglist = json.loads(mood)
+        try:
+            msglist = json.loads(mood)
+        except BaseException:
+            msglist = mood
         tid = msglist['tid']
         if key == tid:
             print('Correct')
@@ -71,26 +79,29 @@ class QQZoneAnalysis(QQZoneSpider):
                 comment_list = msglist['commentlist'] if msglist['commentlist'] is not None else []
 
                 for comment in comment_list:
-                    comment_content = comment['content']
-                    comment_name = comment['name']
-                    comment_time = comment['createTime2']
-                    comment_reply_num = comment['replyNum']
-                    cmt_total_num += comment_reply_num
-                    comment_reply_list = []
-                    if comment_reply_num > 0:
-                        for comment_reply in comment['list_3']:
-                            comment_reply_content = comment_reply['content']
-                            # 去掉 @{uin:117557,nick:16,who:1,auto:1} 这种文字
-                            comment_reply_content = re.subn(re.compile('\@\{.*?\}'), '', comment_reply_content)[
-                                0].strip()
-                            comment_reply_name = comment_reply['name']
-                            comment_reply_time = comment_reply['createTime2']
-                            comment_reply_list.append(dict(comment_reply_content=comment_reply_content,
-                                                           comment_reply_name=comment_reply_name,
-                                                           comment_reply_time=comment_reply_time))
-                    cmt_list.append(
-                        dict(comment_content=comment_content, comment_name=comment_name, comment_time=comment_time,
-                             comment_reply_num=comment_reply_num, comment_reply_list=comment_reply_list))
+                    try:
+                        comment_content = comment['content']
+                        comment_name = comment['name']
+                        comment_time = comment['createTime2']
+                        comment_reply_num = comment['replyNum']
+                        cmt_total_num += comment_reply_num
+                        comment_reply_list = []
+                        if comment_reply_num > 0:
+                            for comment_reply in comment['list_3']:
+                                comment_reply_content = comment_reply['content']
+                                # 去掉 @{uin:117557,nick:16,who:1,auto:1} 这种文字
+                                comment_reply_content = re.subn(re.compile('\@\{.*?\}'), '', comment_reply_content)[
+                                    0].strip()
+                                comment_reply_name = comment_reply['name']
+                                comment_reply_time = comment_reply['createTime2']
+                                comment_reply_list.append(dict(comment_reply_content=comment_reply_content,
+                                                               comment_reply_name=comment_reply_name,
+                                                               comment_reply_time=comment_reply_time))
+                        cmt_list.append(
+                            dict(comment_content=comment_content, comment_name=comment_name, comment_time=comment_time,
+                                 comment_reply_num=comment_reply_num, comment_reply_list=comment_reply_list))
+                    except BaseException as e:
+                        self.format_error(e, comment)
 
             if self.analysis_friend:
                 friend_num = self.friend.calculate_friend_num_timeline(time_stamp)
@@ -169,7 +180,8 @@ class QQZoneAnalysis(QQZoneSpider):
 
 
 if __name__ == '__main__':
-    analysis = QQZoneAnalysis(use_redis=True, debug=False, file_name_head='fuyuko')
+    analysis = QQZoneAnalysis(use_redis=True, debug=True, file_name_head='fuyuko')
     print(analysis.check_data_shape())
     analysis.get_useful_info_from_json()
     analysis.save_data_to_csv()
+    analysis.save_data_to_excel()
