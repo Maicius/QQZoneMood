@@ -1,5 +1,5 @@
 import time
-
+import os
 # %a 星期的简写。如 星期三为Web
 # %A 星期的全写。如 星期三为Wednesday
 # %b 月份的简写。如4月份为Apr
@@ -54,6 +54,10 @@ def get_standard_time_from_mktime(mktime):
 def get_month(date):
     time_array = time.strptime(str(date), "%Y-%m-%d")
     return time.strftime("%Y-%m", time_array)
+
+def check_file_exist(dir):
+    if os.path.exists(dir) == False:
+        os.makedirs(dir)
 
 if __name__ =='__main__':
     print(get_mktime('2018-09-6'))

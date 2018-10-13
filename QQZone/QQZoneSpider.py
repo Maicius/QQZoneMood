@@ -16,6 +16,7 @@ import copy
 import datetime
 from QQZone.util.util import get_mktime
 from copy import deepcopy
+from QQZone.util import util
 
 class QQZoneSpider(object):
     def __init__(self, use_redis=False, debug=False, file_name_head='', mood_begin=0, mood_num=-1, stop_time='-1',
@@ -101,8 +102,12 @@ class QQZoneSpider(object):
         self.ERROR_LIKE_DETAIL_UNIKEY_FILE_NAME = 'error/' + file_name_head + '_QQ_like_detail_error_unikey' + '.txt'
         self.ERROR_LIKE_LIST_NAME_UNIKEY_FILE_NAME = 'error/' + file_name_head + '_QQ_like_list_error_unikey' + '.txt'
         self.ERROR_MOOD_DETAIL_UNIKEY_FILE_NAME = 'error/' + file_name_head + '_QQ_mood_detail_error_unikey' + '.txt'
-        self.SMALL_IMAGE_DIR = 'qq_image/'
-        self.BIG_IMAGE_DIR = 'qq_big_image/'
+        self.SMALL_IMAGE_DIR = 'qq_image/' + file_name_head + '/'
+        self.BIG_IMAGE_DIR = 'qq_big_image/' + file_name_head + '/'
+        util.check_file_exist('data/')
+        util.check_file_exist('error/')
+        util.check_file_exist(self.SMALL_IMAGE_DIR)
+        util.check_file_exist(self.BIG_IMAGE_DIR)
 
     def login(self):
         """
@@ -296,7 +301,11 @@ class QQZoneSpider(object):
             try:
                 url__ = url_mood + '&pos=' + str(pos)
                 mood_list = self.req.get(url=url__, headers=self.headers)
-                json_content = self.get_json(str(mood_list.content.decode('utf-8')))
+                print(mood_list.content)
+                try:
+                    json_content = self.get_json(str(mood_list.content.decode('utf-8')))
+                except BaseException as e:
+                    json_content = self.get_json(mood_list.text)
                 self.content.append(json_content)
                 # 获取每条动态的unikey
                 self.unikeys = self.get_unilikeKey_tid_and_smallpic(json_content)
@@ -339,8 +348,8 @@ class QQZoneSpider(object):
             start = i * 20
             url = self.get_cmt_detail_url(start=start, top_id=top_id)
             if self.debug:
-                print('获取超过20的点赞的人信息:', url)
-            content = self.get_json(self.req.get(url).content.decode('utf-8'))
+                print('获取超过20的点赞的人信息:',cmt_num, url)
+            content = self.get_json(self.req.get(url, headers=self.headers).content.decode('utf-8'))
             content = json.loads(content)
             cmt_list.append(content['data']['comments'])
         return cmt_list
@@ -533,7 +542,8 @@ class QQZoneSpider(object):
         print(e)
         print(msg)
         print('ERROR===================')
-        # raise e
+        if self.debug:
+            raise e
 
     # 获得点赞的人
     def get_like_list(self, unikey):
@@ -676,7 +686,7 @@ class QQZoneSpider(object):
             return False
 
     def check_comment_num(self, mood):
-        cmt_num = mood['cmt_num']
+        cmt_num = mood['cmtnum']
         if cmt_num > 20:
             return cmt_num
         else:
@@ -685,7 +695,7 @@ class QQZoneSpider(object):
 
 
 def capture_data():
-    sp = QQZoneSpider(use_redis=True, debug=True, file_name_head='maicius1', mood_begin=0, mood_num=-1,
+    sp = QQZoneSpider(use_redis=True, debug=True, file_name_head='hndx', mood_begin=20, mood_num=100,
                       stop_time='-1',
                       download_small_image=False, download_big_image=False,
                       download_mood_detail=True, download_like_detail=True, download_like_names=True, recover=False)
