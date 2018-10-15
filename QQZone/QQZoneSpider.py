@@ -16,6 +16,7 @@ import datetime
 from QQZone.util.util import get_mktime
 from copy import deepcopy
 from QQZone.util import util
+import math
 
 class QQZoneSpider(object):
     def __init__(self, use_redis=False, debug=False, file_name_head='', mood_begin=0, mood_num=-1, stop_time='-1',
@@ -341,16 +342,18 @@ class QQZoneSpider(object):
 
     def get_all_cmt_num(self, cmt_num, tid):
         top_id = self.username + '_' + tid
-        page = cmt_num // 20 + 1
+        # 向上取整
+        page = math.ceil(cmt_num / 20)
         cmt_list = []
         for i in range(1, page):
             start = i * 20
             url = self.get_cmt_detail_url(start=start, top_id=top_id)
             if self.debug:
-                print('获取超过20的点赞的人信息:',cmt_num, url)
+                print('获取超过20的评论的人信息:',cmt_num, url)
             content = self.get_json(self.req.get(url, headers=self.headers).content.decode('utf-8'))
             content = json.loads(content)
-            cmt_list.append(content['data']['comments'])
+            comments = content['data']['comments']
+            cmt_list.extend(comments)
         return cmt_list
 
     def do_get_infos(self, unikeys):
@@ -370,7 +373,7 @@ class QQZoneSpider(object):
                     cmt_num = self.check_comment_num(mood)
                     if cmt_num != -1:
                         extern_cmt = self.get_all_cmt_num(cmt_num, self.tid)
-                        mood['commentlist'] = mood['commentlist'] + extern_cmt
+                        mood['commentlist'].extend(extern_cmt)
                     self.mood_details.append(mood)
                 # 获取点赞详情（方法一）
                 # 此方法有时候不能获取到点赞的人的昵称，但是点赞的数量这个数据一直存在
@@ -695,10 +698,10 @@ class QQZoneSpider(object):
 
 
 def capture_data():
-    sp = QQZoneSpider(use_redis=True, debug=True, file_name_head='hndx', mood_begin=20, mood_num=100,
+    sp = QQZoneSpider(use_redis=True, debug=True, file_name_head='hndx', mood_begin=0, mood_num=20,
                       stop_time='-1',
                       download_small_image=False, download_big_image=False,
-                      download_mood_detail=True, download_like_detail=True, download_like_names=True, recover=False)
+                      download_mood_detail=True, download_like_detail=True, download_like_names=True, recover=True)
     sp.login()
     sp.get_mood_list()
 
