@@ -346,14 +346,21 @@ class QQZoneSpider(object):
         page = math.ceil(cmt_num / 20)
         cmt_list = []
         for i in range(1, page):
+
             start = i * 20
+            print(start)
             url = self.get_cmt_detail_url(start=start, top_id=top_id)
             if self.debug:
-                print('获取超过20的评论的人信息:',cmt_num, url)
-            content = self.get_json(self.req.get(url, headers=self.headers).content.decode('utf-8'))
-            content = json.loads(content)
-            comments = content['data']['comments']
-            cmt_list.extend(comments)
+                print('获取超过20的评论的人信息:', cmt_num, url)
+            content = self.req.get(url, headers=self.headers).content
+            try:
+                content_json = self.get_json(content.decode('utf-8'))
+                content_json = json.loads(content_json)
+                comments = content_json['data']['comments']
+                cmt_list.extend(comments)
+            except BaseException as e:
+                print(content)
+                self.format_error(e, content)
         return cmt_list
 
     def do_get_infos(self, unikeys):
@@ -701,7 +708,7 @@ def capture_data():
     sp = QQZoneSpider(use_redis=True, debug=True, file_name_head='hndx', mood_begin=0, mood_num=20,
                       stop_time='-1',
                       download_small_image=False, download_big_image=False,
-                      download_mood_detail=True, download_like_detail=True, download_like_names=True, recover=True)
+                      download_mood_detail=True, download_like_detail=True, download_like_names=True, recover=False)
     sp.login()
     sp.get_mood_list()
 
