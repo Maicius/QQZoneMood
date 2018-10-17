@@ -1,5 +1,9 @@
+//  修改配置文件为friend_info.json
+// friend_name: 用户QQ号, 该空间需要有访问权限
+// file_name_dead: 文件名开头，用于保存文件时区分不同的用户
 [
-    {
-        "friend_name":"11111111"
-    }
+  {
+    "file_name_head":"fuyuko",
+    "friend_name": ""
+  }
 ]

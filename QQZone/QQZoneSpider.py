@@ -19,7 +19,7 @@ from QQZone.util import util
 import math
 
 class QQZoneSpider(object):
-    def __init__(self, use_redis=False, debug=False, file_name_head='', mood_begin=0, mood_num=-1, stop_time='-1',
+    def __init__(self, use_redis=False, debug=False, mood_begin=0, mood_num=-1, stop_time='-1',
                  download_small_image=False, download_big_image=False,
                  download_mood_detail=True, download_like_detail=True, download_like_names=True, recover=False):
         """
@@ -56,8 +56,7 @@ class QQZoneSpider(object):
         self.http_host = 'http://user.qzone.qq.com'
         self.use_redis = use_redis
         self.debug = debug
-        self.file_name_head = file_name_head
-        self.username, self.password = self.get_username_password()
+        self.username, self.password, self.file_name_head = self.get_username_password()
         self.mood_host = self.http_host + '/' + self.username + '/mood/'
         self.raw_username = deepcopy(self.username)
         self.headers = {
@@ -84,7 +83,7 @@ class QQZoneSpider(object):
         self.error_like_list = {}
         self.error_mood = {}
         self.g_tk = 0
-        self.init_file_name(file_name_head)
+        self.init_file_name(self.file_name_head)
 
         if (use_redis):
             self.re = self.connect_redis()
@@ -144,7 +143,7 @@ class QQZoneSpider(object):
     def get_username_password(self):
         with open('userinfo.json', 'r', encoding='utf-8') as r:
             userinfo = json.load(r)
-        return userinfo['username'], userinfo['password']
+        return userinfo['username'], userinfo['password'], userinfo['file_name_head']
 
     # 构造获取动态的URL
     def get_mood_url(self):

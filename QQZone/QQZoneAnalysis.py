@@ -200,7 +200,7 @@ class QQZoneAnalysis(QQZoneSpider):
 
 
 if __name__ == '__main__':
-    analysis = QQZoneAnalysis(use_redis=True, debug=True, file_name_head='chikuo')
+    analysis = QQZoneAnalysis(use_redis=True, debug=True, file_name_head='fuyuko')
     print(analysis.check_data_shape())
     analysis.get_useful_info_from_json()
     analysis.save_data_to_csv()

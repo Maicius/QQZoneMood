@@ -1,4 +1,10 @@
+//  修改配置文件
+// username: 用户QQ号
+// password: 用户密码
+// file_name_dead: 文件名开头，用于保存文件时区分不同的用户
 {
-  "username":"",
-  "password":""
+
+  "username":"1272082503",
+  "password":"yuanhao110110HAO",
+  "file_name_head":"fuyuko"
 }

@@ -7,10 +7,10 @@ class QQZoneFriendMoodSpider(QQZoneSpider):
     """
     爬取指定好友的动态
     """
-    def __init__(self, use_redis=False, debug=False, file_name_head='', mood_begin=0, mood_num=-1, stop_time='-1',
+    def __init__(self, use_redis=False, debug=False, mood_begin=0, mood_num=-1, stop_time='-1',
                  download_small_image=False, download_big_image=False,
                  download_mood_detail=True, download_like_detail=True, download_like_names=True, recover=False):
-        QQZoneSpider.__init__(self, use_redis=use_redis, debug=debug, file_name_head=file_name_head,
+        QQZoneSpider.__init__(self, use_redis=use_redis, debug=debug,
                               mood_begin=mood_begin, mood_num=mood_num, stop_time=stop_time,
                               download_small_image=download_small_image, download_big_image=download_big_image,
                               download_mood_detail=download_mood_detail, download_like_detail=download_like_detail,
@@ -20,13 +20,19 @@ class QQZoneFriendMoodSpider(QQZoneSpider):
 
 
     def get_friend_username(self):
-        with open('friend_info.json', 'r', encoding='utf-8') as r:
-            friend_info = json.load(r)
-        return friend_info
+        try:
+            with open('friend_info.json', 'r', encoding='utf-8') as r:
+                friend_info = json.load(r)
+            return friend_info
+        except BaseException as e:
+            self.format_error(e, "friend_info.json文件不存在或格式错误，请按照friend_info.json.example文件进行修改")
+            exit(1)
 
     def change_username(self, friend_name):
-        self.username = friend_name
+        self.username = friend_name['friend_name']
+        self.file_name_head = friend_name['file_name_head']
         self.mood_host = self.http_host + '/' + self.username + '/mood/'
+
 
     # 构造点赞的人的URL
     def get_aggree_url(self, unikey):
@@ -45,14 +51,14 @@ class QQZoneFriendMoodSpider(QQZoneSpider):
     def get_friend_mood(self):
         self.login()
         for name in self.friend_name_list:
-            self.change_username(name['friend_name'])
+            self.change_username(name)
             self.get_mood_list()
 
 
 if __name__ == '__main__':
-    qqfriend = QQZoneFriendMoodSpider(use_redis=True, debug=True, file_name_head='chikuo', mood_begin=0, mood_num=100,
+    qqfriend = QQZoneFriendMoodSpider(use_redis=True, debug=False, mood_begin=0, mood_num=-1,
                                       stop_time='-1',
                                       download_small_image=False, download_big_image=False,
                                       download_mood_detail=True, download_like_detail=True, download_like_names=True,
-                                      recover=False)
+                                      recover=True)
     qqfriend.get_friend_mood()

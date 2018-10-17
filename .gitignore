@@ -97,3 +97,4 @@ qq_big_image
 !__init__.py
 *.csv
 error/*
+*.xlsx
