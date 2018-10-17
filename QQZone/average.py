@@ -6,7 +6,9 @@ from QQZone.QQZoneAnalysis import QQZoneAnalysis
 class Average(object):
 
     """
-    创建一个平均数类"，用于计算cmt_total_num、like_num、prd_num的均值"""
+    创建一个平均数类
+    用于计算cmt_total_num、like_num、prd_num的均值
+    """
 
     def __init__(self, use_redis=False, debug=True, file_name_head="", filename="", filename_list=None):
         """
@@ -63,8 +65,6 @@ class Average(object):
         h = self.df['prd_num']
         self.E = m * a * b + n * b + h
         self.V = self.E / self.df['friend_num']
-        self.normalized_V()
-        self.concat_n_V()
 
     def normalized_V(self):
         self.n_V = (self.V - min(self.V)) / (max(self.V) - min(self.V))
@@ -76,7 +76,14 @@ class Average(object):
         self.df['n_V'] = self.n_V
         self.df.to_csv(self.N_V_FILE_NAME)
 
+    def format_output(self):
+        print("用户名：", self.qqzone.username)
+        print("平均评论数量:", self.cmt_total_num_average)
+        print("平均点赞数量:", self.like_num_average)
+        print("平均浏览量:", self.prd_num_average)
+
 
 if __name__ == '__main__':
     av = Average(use_redis=True, debug=True, file_name_head="maicius")
     av.calculate_all()
+    av.format_output()

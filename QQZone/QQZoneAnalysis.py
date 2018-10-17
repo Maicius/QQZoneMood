@@ -17,7 +17,7 @@ class QQZoneAnalysis(QQZoneSpider):
         self.MOOD_DATA_EXCEL_FILE_NAME = 'data/' + file_name_head + '_mood_data.xlsx'
         self.analysis_friend = analysis_friend
         if self.analysis_friend:
-            self.friend = QQZoneFriendSpider(analysis=True, file_name_head=file_name_head)
+            self.friend = QQZoneFriendSpider(analysis=True)
             self.friend.clean_friend_data()
 
     def load_file_from_redis(self):

@@ -17,7 +17,7 @@
 
 - python版本：3.6（推荐使用python3，因为本爬虫涉及大量文件交互，python3的编码管理比2中好很多）
 - 登陆使用的是Selenium， 无法识别验证码，抓取使用requests
-- 若出现验证码，则先尝试手动从浏览器登陆并退出再运行程序
+- 若出现图形验证码，程序在点击登陆后设置了5秒暂停，可以手动完成验证
 - 已经抓取到的信息有：
 
 	> 1. 所有说说信息
@@ -30,7 +30,7 @@
 
 - 存储方式：
 
-	> 目前实现了两种存储方式（通过Spider中use_redis参数进行配置）:  
+	> 目前提供了两种存储方式的接口（通过Spider中use_redis参数进行配置）:  
 	> 1. 存储到json文件中   
 	> 2. 存储到redis数据库中  
 	> 如果安装了redis，建议存储到redis中  
@@ -75,11 +75,19 @@
         :param download_like_detail:是否下载点赞的详情，包括点赞数量、评论数量、浏览量，该数据未被清除
         :param download_like_names:是否下载点赞的详情，主要包含点赞的人员列表，该数据有很多都被清空了
         
-- 5.运行代码--获取数据
+- 5.获取自己空间的动态数据
 
-	> python3 QQZone.py
+	> python3 QQZoneSpider.py
+	
+- 6.获取好友列表并计算每个时间点的好友数量
 
-- 6.数据清理，导出csv结构数据
+	> python3 QQZoneFriendSpider.py
+
+- 7.获取指定好友的动态详情
+
+	> python3	QQZoneFriendMoodSpider.py
+
+- 8.数据清理，导出csv结构数据
 
 	> python3 QQZoneAnalysis.py
 
