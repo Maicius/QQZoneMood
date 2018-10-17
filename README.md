@@ -25,7 +25,8 @@
 	> 3. 每条说说的点赞人列表
 	> 4. 更加详细的点赞人列表（3中获取的数据有很多被清空了，这里能稳定获取到点赞的人数量、浏览量和评论量）
 	> 5. 所有说说的缩略图  
-	> 6. 好友信息
+	> 6. 用户好友数据(可计算出用户在每个时间的好友数量)
+	> 7. 指定好友的QQ空间动态数据
 
 - 存储方式：
 
@@ -36,11 +37,10 @@
 	> 关于redis的安装和配置，请自行搜索  
 	> Redis使用中常见问题可以参考这篇博客:[Redis 踩坑笔记](http://www.xiaomaidong.com/?p=308)
 
-- 运行环境：
-  
-	> 建议使用PyCharm打开，  
-	> 在PyCharm中根据import的报错可以自动安装相应模块  
-	> *注意*selenium需要与chrome driver结合使用,可以查看这篇博客：  
+- *注意*：
+ 
+ 	> 本爬虫登录部分是使用的selenium模拟登陆，需要手动下载chrome driver和chrome浏览器  
+	> 请注意版本匹配，可以查看这篇博客：  
 	> [selenium之 chromedriver与chrome版本映射表（更新至v2.32）](http://blog.csdn.net/huilan_same/article/details/51896672)
 
 #### QQZone运行方式 
@@ -49,22 +49,25 @@
 
 	> pip3 install -r requirements.txt 
 
-- 2.配置用户名和密码
+- 2.修改配置文件
 
-	> 修改userinfo.json.example为文件userinfo.json，并填好QQ号和QQ密码
+	> 修改userinfo.json.example为文件userinfo.json，并填好QQ号、QQ密码、保存数据用的文件名前缀；
+	
+	> [可选]修改需要爬取的好友的QQ号和保存数据用的文件名前缀
 	
 - 3.\_\_init\_\_函数参数说明，请根据需要修改	
 
 
-		 def __init__(self, use_redis=False, debug=False, file_name_head='', mood_begin=0, mood_num=-1,
+		 def __init__(self, use_redis=False, debug=False, mood_begin=0, mood_num=-1,
                  download_small_image=False, download_big_image=False,
                  download_mood_detail=True, download_like_detail=True, download_like_names=True, recover=False):
 
-        :param use_redis: If true, use redis and json file to save data, if false, use json file only.
+                :param use_redis: If true, use redis and json file to save data, if false, use json file only.
         :param debug: If true, print info in console
         :param file_name_head: 文件名的前缀
         :param mood_begin: 开始下载的动态序号，0表示从第0条动态开始下载
         :param mood_num: 下载的动态数量，最好设置为20的倍数
+        :param stop_time: 停止下载的时间，-1表示全部数据；注意，这里是倒序，比如，stop_time="2016-01-01",表示爬取当前时间到2016年1月1日前的数据
         :param recover: 是否从redis或文件中恢复数据（主要用于爬虫意外中断之后的数据恢复）
         :param download_small_image: 是否下载缩略图，仅供预览用的小图，该步骤比较耗时，QQ空间提供了3中不同尺寸的图片，这里下载的是最小尺寸的图片
         :param download_big_image: 是否下载大图，QQ空间中保存的最大的图片，该步骤比较耗时
@@ -81,7 +84,6 @@
 	> python3 QQZoneAnalysis.py
 
 ### 数据分析
-### drawWordCloud.py
 
 - python版本：3.6  
 - 已经实现的分析有：
@@ -103,7 +105,6 @@
 
 	> [可选]历史事件抽取（自然语言处理、事件抽取）
 
-- 运行结果：生成词云图
 - 运行结果例图：
 
 ![Image](https://github.com/Maicius/wexinFriendInfo/blob/master/QQZone/image/final2.jpg)
@@ -111,6 +112,10 @@
 ![Image3](https://github.com/Maicius/wexinFriendInfo/blob/master/QQZone/image/comment_content.jpg)
 ![Image](https://github.com/Maicius/wexinFriendInfo/blob/master/QQZone/image/agree.jpg)
 ![Image](QQZone/image/bike2.png)
+> QQ动态关键字词云
+
+![Image](QQZone/image/relation.png)
+> 好友关系图
 
 ## 抓取微信好友信息
 - 好友列表里所有好友，删除了公众号信息
