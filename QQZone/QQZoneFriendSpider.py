@@ -8,13 +8,13 @@ class QQZoneFriendSpider(QQZoneSpider):
     """
     爬取自己的好友的数量等基本信息（不是爬好友的动态）
     """
-    def __init__(self, use_redis=False, debug=False, analysis=False, file_name_head=""):
-        QQZoneSpider.__init__(self, use_redis=use_redis, debug=debug, file_name_head=file_name_head)
+    def __init__(self, use_redis=False, debug=False, analysis=False):
+        QQZoneSpider.__init__(self, use_redis=use_redis, debug=debug)
         if self.g_tk == 0 and analysis == False:
             self.login()
-        self.FRIEND_LIST_FILE_NAME = 'friend/' + file_name_head + '_friend_list.json'
-        self.FRIEND_DETAIL_FILE_NAME = 'friend/' + file_name_head + '_friend_detail.json'
-        self.FRIEND_DETAIL_LIST_FILE_NAME = 'friend/' + file_name_head + '_friend_detail_list.csv'
+        self.FRIEND_LIST_FILE_NAME = 'friend/' + self.file_name_head + '_friend_list.json'
+        self.FRIEND_DETAIL_FILE_NAME = 'friend/' + self.file_name_head + '_friend_detail.json'
+        self.FRIEND_DETAIL_LIST_FILE_NAME = 'friend/' + self.file_name_head + '_friend_detail_list.csv'
         self.friend_detail = []
         self.friend_list = []
         self.friend_df = None
@@ -142,7 +142,7 @@ class QQZoneFriendSpider(QQZoneSpider):
 
 
 if __name__ == '__main__':
-    friend_spider = QQZoneFriendSpider(use_redis=True, debug=True, file_name_head="maicius", analysis=True)
+    friend_spider = QQZoneFriendSpider(use_redis=True, debug=True, analysis=True)
     # friend_spider.get_friend_detail()
     friend_spider.clean_friend_data()
     friend_spider.calculate_friend_num_timeline(1411891250)

@@ -705,7 +705,7 @@ class QQZoneSpider(object):
 
 
 def capture_data():
-    sp = QQZoneSpider(use_redis=True, debug=True, file_name_head='hndx', mood_begin=0, mood_num=20,
+    sp = QQZoneSpider(use_redis=True, debug=True, mood_begin=0, mood_num=20,
                       stop_time='-1',
                       download_small_image=False, download_big_image=False,
                       download_mood_detail=True, download_like_detail=True, download_like_names=True, recover=False)
