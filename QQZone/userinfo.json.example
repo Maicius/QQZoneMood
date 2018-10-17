@@ -1,10 +1,6 @@
-//  修改配置文件
-// username: 用户QQ号
-// password: 用户密码
-// file_name_dead: 文件名开头，用于保存文件时区分不同的用户
 {
-
-  "username":"1272082503",
-  "password":"yuanhao110110HAO",
-  "file_name_head":"fuyuko"
+  "explanation": "请仔细修改本配置文件，并修改文件名为user_info.json; username: 用户QQ号;password: 用户密码;file_name_dead: 文件名开头，用于保存文件时区分不同的用户",
+  "username":"120000000",
+  "password":"",
+  "file_name_head":"maicius"
 }
