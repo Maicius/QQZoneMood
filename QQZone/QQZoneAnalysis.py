@@ -78,25 +78,45 @@ class QQZoneAnalysis(QQZoneSpider):
             if 'commentlist' in msglist:
                 comment_list = msglist['commentlist'] if msglist['commentlist'] is not None else []
 
-                for comment in comment_list:
+                for i in range(len(comment_list)):
                     try:
+                        comment = comment_list[i]
                         comment_content = comment['content']
-                        comment_name = comment['name']
-                        comment_time = comment['createTime2']
-                        comment_reply_num = comment['replyNum']
+                        if i < 20:
+                            comment_name = comment['name']
+                            comment_time = comment['createTime2']
+                            comment_reply_num = comment['replyNum']
+                            comment_reply_list = []
+                            if comment_reply_num > 0:
+                                for comment_reply in comment['list_3']:
+                                    comment_reply_content = comment_reply['content']
+                                    # 去掉 @{uin:117557,nick:16,who:1,auto:1} 这种文字
+                                    comment_reply_content = re.subn(re.compile('\@\{.*?\}'), '', comment_reply_content)[
+                                        0].strip()
+                                    comment_reply_name = comment_reply['name']
+                                    comment_reply_time = comment_reply['createTime2']
+                                    comment_reply_list.append(dict(comment_reply_content=comment_reply_content,
+                                                                   comment_reply_name=comment_reply_name,
+                                                                   comment_reply_time=comment_reply_time))
+                        else:
+                            comment_name = comment['poster']['name']
+                            comment_time = comment['postTime']
+                            comment_reply_num = comment['extendData']['replyNum']
+                            comment_reply_list = []
+                            if comment_reply_num > 0:
+                                for comment_reply in comment['replies']:
+                                    comment_reply_content = comment_reply['content']
+                                    # 去掉 @{uin:117557,nick:16,who:1,auto:1} 这种文字
+                                    comment_reply_content = re.subn(re.compile('\@\{.*?\}'), '', comment_reply_content)[
+                                        0].strip()
+                                    comment_reply_name = comment_reply['poster']['name']
+                                    comment_reply_time = comment_reply['postTime']
+                                    comment_reply_list.append(dict(comment_reply_content=comment_reply_content,
+                                                                   comment_reply_name=comment_reply_name,
+                                                                   comment_reply_time=comment_reply_time))
+
+
                         cmt_total_num += comment_reply_num
-                        comment_reply_list = []
-                        if comment_reply_num > 0:
-                            for comment_reply in comment['list_3']:
-                                comment_reply_content = comment_reply['content']
-                                # 去掉 @{uin:117557,nick:16,who:1,auto:1} 这种文字
-                                comment_reply_content = re.subn(re.compile('\@\{.*?\}'), '', comment_reply_content)[
-                                    0].strip()
-                                comment_reply_name = comment_reply['name']
-                                comment_reply_time = comment_reply['createTime2']
-                                comment_reply_list.append(dict(comment_reply_content=comment_reply_content,
-                                                               comment_reply_name=comment_reply_name,
-                                                               comment_reply_time=comment_reply_time))
                         cmt_list.append(
                             dict(comment_content=comment_content, comment_name=comment_name, comment_time=comment_time,
                                  comment_reply_num=comment_reply_num, comment_reply_list=comment_reply_list))
@@ -180,7 +200,7 @@ class QQZoneAnalysis(QQZoneSpider):
 
 
 if __name__ == '__main__':
-    analysis = QQZoneAnalysis(use_redis=True, debug=True, file_name_head='fuyuko')
+    analysis = QQZoneAnalysis(use_redis=True, debug=True, file_name_head='chikuo')
     print(analysis.check_data_shape())
     analysis.get_useful_info_from_json()
     analysis.save_data_to_csv()
