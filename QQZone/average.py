@@ -1,7 +1,9 @@
 import numpy as np
 import pandas as pd
-from QQZone.QQZoneAnalysis import QQZoneAnalysis
+from json import JSONDecodeError
 
+from QQZone.QQZoneAnalysis import QQZoneAnalysis
+import json
 
 class Average(object):
 
@@ -9,7 +11,6 @@ class Average(object):
     创建一个平均数类
     用于计算cmt_total_num、like_num、prd_num的均值
     """
-
     def __init__(self, use_redis=False, debug=True, file_name_head="", filename="", filename_list=None):
         """
 
@@ -23,6 +24,7 @@ class Average(object):
         self.filename = filename
         self.filename_list = filename_list
         self.N_V_FILE_NAME = 'data/' + file_name_head + '_n_v_mood_data.csv'
+        self.CMT_RESULT_NAMES = 'data/' + file_name_head + '_cmt_result_names.csv'
         self.qqzone = QQZoneAnalysis(use_redis, debug, file_name_head)
         if file_name_head != "" and filename == "":
             self.filename = self.qqzone.MOOD_DATA_FILE_NAME
@@ -82,8 +84,46 @@ class Average(object):
         print("平均点赞数量:", self.like_num_average)
         print("平均浏览量:", self.prd_num_average)
 
+    def calculate_cmt_rank(self):
+        cmt_list = self.df['cmt_list']
+        print(cmt_list.shape)
+        cmt_list_csv = []
+        wrong_count = 0
+        for item in cmt_list.values:
+            item1 = item.replace("\"", "\”")
+            item2 = item1.replace("\'", "\"")
+            # print(item2)
+            try:
+                json_item = json.loads(item2)
+                cmt_list_csv.extend(json_item)
+            except JSONDecodeError as e:
+                item3 = item2.replace("\\xa0", "")
+                try:
+                    json_item = json.loads(item3)
+                    cmt_list_csv.extend(json_item)
+                except JSONDecodeError as e:
+                    wrong_count +=1
+                    print(e, item3)
+                    pass
+        print(wrong_count)
+        cmt_df = pd.DataFrame(cmt_list_csv)
+        print(cmt_df.shape)
+        all_cmt_name_df = cmt_df['comment_name']
+        cmt_names = cmt_df['comment_name'].drop_duplicates()
+        cmt_result_csv = []
+        for name in cmt_names:
+            cmt_name_result = (all_cmt_name_df == name)
+            cmt_times = cmt_name_result.sum()
+            cmt_result_csv.append(dict(cmt_name=name, cmt_times=cmt_times))
+        cmt_result_csv_df = pd.DataFrame(cmt_result_csv)
+        cmt_result_csv_df.sort_values(by='cmt_times', inplace=True, ascending=False)
+        cmt_result_csv_df.to_csv(self.CMT_RESULT_NAMES)
+
+    def calculate_like_rank(self):
+        pass
 
 if __name__ == '__main__':
     av = Average(use_redis=True, debug=True, file_name_head="maicius")
     av.calculate_all()
     av.format_output()
+    av.calculate_cmt_rank()

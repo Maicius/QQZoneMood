@@ -56,9 +56,9 @@ class QQZoneFriendMoodSpider(QQZoneSpider):
 
 
 if __name__ == '__main__':
-    qqfriend = QQZoneFriendMoodSpider(use_redis=True, debug=False, mood_begin=0, mood_num=-1,
+    qqfriend = QQZoneFriendMoodSpider(use_redis=True, debug=True, mood_begin=0, mood_num=-1,
                                       stop_time='-1',
-                                      download_small_image=False, download_big_image=False,
+                                      download_small_image=True, download_big_image=False,
                                       download_mood_detail=True, download_like_detail=True, download_like_names=True,
                                       recover=True)
     qqfriend.get_friend_mood()

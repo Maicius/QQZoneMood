@@ -126,10 +126,12 @@ class QQZoneSpider(object):
         ps = self.web.find_element_by_id('p')
         ps.send_keys(self.password)
         btn = self.web.find_element_by_id('login_button')
-        time.sleep(5)
+        time.sleep(1)
         btn.click()
-        time.sleep(5)
-        self.web.get('https://user.qzone.qq.com/{}'.format(self.username))
+        time.sleep(10)
+        print("begin..。。。")
+        # self.web.get('https://user.qzone.qq.com/{}'.format(self.username))
+        print("End。。。")
         cookie = ''
         # 获取cookie
         for elem in self.web.get_cookies():
@@ -291,16 +293,16 @@ class QQZoneSpider(object):
                 recover_index_split = recover_index % 20
         # 如果mood_num为-1，则下载全部的动态
         if self.mood_num == -1:
-            url__ = url_mood + '&pos=' + str(pos)
-            mood = self.req.get(url=url__, headers=self.headers).content.decode('utf-8')
+            url = url_mood + '&pos=' + str(pos)
+            mood = self.req.get(url=url, headers=self.headers).content.decode('utf-8')
             mood_json = json.loads(self.get_json(mood))
             self.mood_num = mood_json['usrinfo']['msgnum']
 
         while pos < self.mood_num and self.until_stop_time:
             print('正在爬取', pos, '...')
             try:
-                url__ = url_mood + '&pos=' + str(pos)
-                mood_list = self.req.get(url=url__, headers=self.headers)
+                url = url_mood + '&pos=' + str(pos)
+                mood_list = self.req.get(url=url, headers=self.headers)
                 print(mood_list.content)
                 try:
                     json_content = self.get_json(str(mood_list.content.decode('utf-8')))
@@ -309,15 +311,13 @@ class QQZoneSpider(object):
                 self.content.append(json_content)
                 # 获取每条动态的unikey
                 self.unikeys = self.get_unilikeKey_tid_and_smallpic(json_content)
-                # 从数据中恢复后，避免重复爬取相同数据
-                if recover_index_split != 0:
-                    self.unikeys = self.unikeys[recover_index_split:]
-                    recover_index_split = 0
-
-                # 获取数据
-                self.do_get_infos(self.unikeys)
-
-
+                if len(self.unikeys) != 0:
+                    # 从数据中恢复后，避免重复爬取相同数据
+                    if recover_index_split != 0:
+                        self.unikeys = self.unikeys[recover_index_split:]
+                        recover_index_split = 0
+                    # 获取数据
+                    self.do_get_infos(self.unikeys)
                 pos += 20
                 # 每抓100条保存一次数据
                 if pos % 100 == 0:
@@ -552,7 +552,8 @@ class QQZoneSpider(object):
         print(msg)
         print('ERROR===================')
         if self.debug:
-            raise e
+            # raise e
+            pass
 
 
     # 获得点赞的人
@@ -616,37 +617,43 @@ class QQZoneSpider(object):
     def get_unilikeKey_tid_and_smallpic(self, mood_detail):
         unikey_tid_list = []
         jsonData = json.loads(mood_detail)
-        for item in jsonData['msglist']:
-            tid = item['tid']
-            unikey = self.mood_host + tid + '.1'
-            if (self.debug):
-                print('unikey:' + unikey)
-            # 如果存在图片
-            pic_list = []
-            big_pic_list = []
+        try:
+            for item in jsonData['msglist']:
+                tid = item['tid']
+                unikey = self.mood_host + tid + '.1'
+                if (self.debug):
+                    print('unikey:' + unikey)
+                # 如果存在图片
+                pic_list = []
+                big_pic_list = []
 
-            if 'pic' in item:
-                item_key = item['pic']
-                # 保存所有图片的预览图下载地址
-                for i in range(len(item_key)):
-                    if 'smallurl' in item_key[i]:
-                        smallurl = item_key[i]['smallurl']
-                        pic_list.append(smallurl)
-                    if 'url2' in item_key[i]:
-                        big_url = item_key[i]['url2']
-                        big_pic_list.append(big_url)
+                if 'pic' in item:
+                    item_key = item['pic']
+                    # 保存所有图片的预览图下载地址
+                    for i in range(len(item_key)):
+                        if 'smallurl' in item_key[i]:
+                            smallurl = item_key[i]['smallurl']
+                            pic_list.append(smallurl)
+                        if 'url2' in item_key[i]:
+                            big_url = item_key[i]['url2']
+                            big_pic_list.append(big_url)
 
-                # 如果存在多张图片或没有图片
-                if len(item_key) != 1:
-                    curlikekey = unikey + "<.>" + unikey
+                    # 如果存在多张图片或没有图片
+                    if len(item_key) != 1:
+                        curlikekey = unikey + "<.>" + unikey
+                    else:
+                        curlikekey = item_key[0]['curlikekey']
+                    # curlikekey_list.append(curlikekey)
                 else:
-                    curlikekey = item_key[0]['curlikekey']
-                # curlikekey_list.append(curlikekey)
-            else:
-                curlikekey = unikey + "<.>" + unikey
+                    curlikekey = unikey + "<.>" + unikey
 
-            unikey_tid_list.append(
-                dict(unikey=unikey, tid=tid, small_pic_list=pic_list, curlikekey=curlikekey, big_pic_list=big_pic_list))
+                unikey_tid_list.append(
+                    dict(unikey=unikey, tid=tid, small_pic_list=pic_list, curlikekey=curlikekey,
+                         big_pic_list=big_pic_list))
+
+        except BaseException as e:
+            self.format_error(e)
+            pass
         return unikey_tid_list
 
     def download_image(self, url, name):
@@ -705,10 +712,10 @@ class QQZoneSpider(object):
 
 
 def capture_data():
-    sp = QQZoneSpider(use_redis=True, debug=True, mood_begin=0, mood_num=20,
+    sp = QQZoneSpider(use_redis=True, debug=True, mood_begin=0, mood_num=-1,
                       stop_time='-1',
                       download_small_image=False, download_big_image=False,
-                      download_mood_detail=True, download_like_detail=True, download_like_names=True, recover=False)
+                      download_mood_detail=True, download_like_detail=True, download_like_names=True, recover=True)
     sp.login()
     sp.get_mood_list()
 
