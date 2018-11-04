@@ -8,7 +8,7 @@ lxml==4.1.1
 matplotlib==1.5.3
 pandas==0.21.1
 redis
-requests==2.12.4
+requests>=2.20.0
 schedule==0.4.2
 selenium
 sha1==1.2

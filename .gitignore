@@ -98,3 +98,4 @@ qq_big_image
 *.csv
 error/*
 *.xlsx
+.DS_Store
