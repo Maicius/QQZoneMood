@@ -97,3 +97,5 @@ qq_big_image
 *.csv
 error/*
 *.xlsx
+*.json
+!QQZone/qq_big_image.json
