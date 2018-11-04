@@ -99,3 +99,5 @@ error/*
 *.xlsx
 *.json
 !QQZone/qq_big_image.json
+.DS_Store
+
