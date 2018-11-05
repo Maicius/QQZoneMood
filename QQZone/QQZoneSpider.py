@@ -21,7 +21,7 @@ import math
 class QQZoneSpider(object):
     def __init__(self, use_redis=False, debug=False, mood_begin=0, mood_num=-1, stop_time='-1',
                  download_small_image=False, download_big_image=False,
-                 download_mood_detail=True, download_like_detail=True, download_like_names=True, recover=False):
+                 download_mood_detail=True, download_like_detail=True, download_like_names=True, recover=False, file_name_head=''):
         """
         init method
         :param use_redis: If true, use redis and json file to save data, if false, use json file only.
@@ -58,6 +58,8 @@ class QQZoneSpider(object):
         self.use_redis = use_redis
         self.debug = debug
         self.username, self.password, self.file_name_head = self.get_username_password()
+        if file_name_head != '':
+            self.file_name_head = file_name_head
         self.mood_host = self.http_host + '/' + self.username + '/mood/'
         self.raw_username = deepcopy(self.username)
         self.headers = {
@@ -375,7 +377,7 @@ class QQZoneSpider(object):
                     mood_detail = self.get_mood_detail(self.unikey, self.tid)
                     mood = json.loads(mood_detail)
                     # 如果达到了设置的停止日期，退出循环
-                    if self.stop_time != -1 and self.check_time(mood) == False:
+                    if self.stop_time != -1 and self.check_time(mood, self.stop_time) == False:
                         break
                     cmt_num = self.check_comment_num(mood)
                     if cmt_num != -1:
@@ -691,16 +693,18 @@ class QQZoneSpider(object):
             print('Failed to connect redis')
             print('===================')
 
-    def check_time(self, mood):
+    def check_time(self, mood, stop_time):
 
         create_time = mood['created_time']
 
         if self.debug:
-            print('time:', create_time, self.stop_time)
-        if self.stop_time >= create_time:
+            print('time:', create_time, stop_time)
+        if stop_time >= create_time:
             self.until_stop_time = False
             print('达到设置的停止时间，即将退出爬虫')
             return False
+        else:
+            return True
 
     def check_comment_num(self, mood):
         cmt_num = mood['cmtnum']

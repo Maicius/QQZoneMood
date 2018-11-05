@@ -1,5 +1,6 @@
 import time
 import os
+import pandas as pd
 # %a 星期的简写。如 星期三为Web
 # %A 星期的全写。如 星期三为Wednesday
 # %b 月份的简写。如4月份为Apr
@@ -58,6 +59,53 @@ def get_month(date):
 def check_file_exist(dir):
     if os.path.exists(dir) == False:
         os.makedirs(dir)
+
+def open_file_list(path, open_data_frame = False):
+    path_dir = os.listdir(path)
+    if open_data_frame:
+        df = pd.DataFrame()
+    else:
+        page_list = []
+    for dir in path_dir:
+        file_name = path + dir
+        if open_data_frame:
+            data_df = do_read_csv(file_name)
+            df = pd.concat([df, data_df], axis=0)
+        else:
+            data = do_open_file(file_name=file_name)
+            page_list.append(data)
+
+    if open_data_frame:
+        return df
+    else:
+        return page_list
+
+
+
+
+def do_open_file(file_name):
+    with open(file_name, 'r', encoding='utf-8') as r:
+        try:
+            data = r.read()
+            print(file_name)
+            return data
+        except BaseException as e:
+            format_error(e, file_name + "file error")
+
+
+def do_read_csv(file_name):
+    if file_name.find('.csv') != -1:
+        data = pd.read_csv(file_name)
+        return data
+    else:
+        return pd.DataFrame()
+
+
+def format_error(e, msg=""):
+    print('ERROR===================')
+    print(e)
+    print(msg)
+    print('ERROR===================')
 
 if __name__ =='__main__':
     print(get_mktime('2018-09-6'))

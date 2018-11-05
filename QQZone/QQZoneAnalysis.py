@@ -8,20 +8,54 @@ from wordcloud import WordCloud, ImageColorGenerator, STOPWORDS
 from scipy.misc import imread
 import matplotlib.pyplot as plt
 from QQZone.QQZoneFriendSpider import QQZoneFriendSpider
+from QQZone.Average import Average
+from QQZone.util.util import get_mktime
+from QQZone.util.util import open_file_list
 
 class QQZoneAnalysis(QQZoneSpider):
-    def __init__(self, use_redis=False, debug=False, file_name_head='', analysis_friend=False):
-        QQZoneSpider.__init__(self, use_redis, debug, file_name_head)
+    def __init__(self, use_redis=False, debug=False, file_name_head='', analysis_friend=False, stop_time='2014-01-01', stop_num = 500):
+        QQZoneSpider.__init__(self, use_redis, debug, file_name_head=file_name_head)
         self.mood_data = []
-        self.MOOD_DATA_FILE_NAME = 'data/' + file_name_head + '_mood_data.csv'
-        self.MOOD_DATA_EXCEL_FILE_NAME = 'data/' + file_name_head + '_mood_data.xlsx'
+        self.stop_num = stop_num
+        self.file_name_head = file_name_head
+        self.MOOD_DATA_FILE_NAME = 'data/result/' + file_name_head + '_mood_data.csv'
+        self.MOOD_DATA_EXCEL_FILE_NAME = 'data/result/' + file_name_head + '_mood_data.xlsx'
         self.analysis_friend = analysis_friend
+        self.stop_time = get_mktime(stop_time)
         if self.analysis_friend:
             self.friend = QQZoneFriendSpider(analysis=True)
             self.friend.clean_friend_data()
+        self.av = Average(use_redis=False, file_name_head=file_name_head, analysis=True)
+        self.label_path = 'data/label/'
+        self.LABEL_FILE_CSV = 'data/label/' + file_name_head + '_label_data.csv'
+        self.LABEL_FILE_EXCEL = 'data/label/' + file_name_head + '_label_data.xlsx'
+        self.labels = '1: 旅游与运动；2：爱情与家庭；3：学习与工作；4：广告；5：生活日常；6.其他'
 
     def load_file_from_redis(self):
         self.do_recover_from_exist_data()
+
+    def export_all_label_data(self):
+        data_df = open_file_list('data/label/', open_data_frame=True)
+        data_df['label_type'] = self.labels
+        data_df.drop(['Unnamed: 0'],axis=1, inplace=True)
+        cols = ['user', 'type', 'content', 'label_type', 'tid']
+        data_df = data_df.ix[:, cols]
+        data_df.to_csv(self.label_path+'result/' + 'all.csv')
+        data_df.to_excel(self.label_path +'result/' + 'all.xlsx')
+
+    def export_label_data(self, df):
+        label_data = df.sample(frac=0.5)
+        if label_data.shape[0] > self.stop_num:
+            label_data = label_data.iloc[0:self.stop_num,:]
+        label_df = label_data[['tid', 'content', 'user']]
+        label_df['type'] = ''
+        label_df['label_type'] = self.labels
+        cols = ['user', 'type', 'content', 'label_type','tid']
+        label_df = label_df.ix[:, cols]
+        label_df.to_csv(self.LABEL_FILE_CSV)
+        label_df.to_excel(self.LABEL_FILE_EXCEL)
+        if self.debug:
+            print("导出待标注数据成功")
 
     def  check_data_shape(self):
         if len(self.mood_details) == len(self.like_list_names) == len(self.like_detail):
@@ -41,12 +75,22 @@ class QQZoneAnalysis(QQZoneSpider):
     def get_useful_info_from_json(self):
         self.load_file_from_redis()
         for i in range(len(self.mood_details)):
+            if not self.check_time(self.mood_details[i], self.stop_time):
+                break
             total_num, uin_list = self.parse_like_names(self.like_list_names[i])
             key, like_num, prd_num = self.parse_like_and_prd(self.like_detail[i])
             if total_num != like_num:
                 print('点赞数据有丢失:', total_num, like_num)
             like_num = max(total_num, like_num)
             self.parse_mood_detail(self.mood_details[i], key=key, uin_list=uin_list, like_num=like_num, prd_num=prd_num)
+        mood_data_df = pd.DataFrame(self.mood_data)
+        mood_data_df.drop_duplicates(['tid'], inplace=True)
+        n_E = self.av.calculate_E(mood_data_df)
+        mood_data_df['n_E'] = n_E
+        mood_data_df['user'] = self.file_name_head
+        self.mood_data = mood_data_df
+        self.export_label_data(mood_data_df)
+
 
     def parse_mood_detail(self, mood, key, uin_list, like_num, prd_num):
         try:
@@ -198,10 +242,11 @@ class QQZoneAnalysis(QQZoneSpider):
         words_text = " ".join(word_list2)
         return words_text
 
-
 if __name__ == '__main__':
-    analysis = QQZoneAnalysis(use_redis=True, debug=True, file_name_head='xiong')
-    print(analysis.check_data_shape())
-    analysis.get_useful_info_from_json()
-    analysis.save_data_to_csv()
-    analysis.save_data_to_excel()
+    name_list = ['maicius', 'fuyuko', 'chikuo', 'xiong']
+    analysis = QQZoneAnalysis(use_redis=True, debug=True, file_name_head='xxt', stop_time='2014-06-10', stop_num=500)
+    # print(analysis.check_data_shape())
+    # analysis.get_useful_info_from_json()
+    # analysis.save_data_to_csv()
+    # analysis.save_data_to_excel()
+    analysis.export_all_label_data()
