@@ -268,8 +268,8 @@ class QQZoneAnalysis(QQZoneSpider):
 
 
 if __name__ == '__main__':
-    name_list = ['maicius', 'fuyuko', 'chikuo', 'xiong', 'pylj', 'lsy']
-    analysis = QQZoneAnalysis(use_redis=True, debug=True, file_name_head='lsy', stop_time='2015-06-10',
+    name_list = ['maicius', 'fuyuko', 'chikuo', 'xiong', 'pylj', 'lsy', 'CiCi', 'tx']
+    analysis = QQZoneAnalysis(use_redis=True, debug=True, file_name_head='tx', stop_time='2015-06-10',
                               stop_num=500, analysis_friend=False)
     print(analysis.check_data_shape())
     analysis.get_useful_info_from_json()

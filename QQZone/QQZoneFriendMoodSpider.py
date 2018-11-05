@@ -51,13 +51,18 @@ class QQZoneFriendMoodSpider(QQZoneSpider):
     def get_friend_mood(self):
         self.login()
         for name in self.friend_name_list:
+            print("begin to capture:", name['friend_name'])
             self.change_username(name)
+            # 重新初始化参数
+            self.init_parameter()
+
             self.init_file_name(self.file_name_head)
+
             self.get_mood_list()
 
 
 if __name__ == '__main__':
-    qqfriend = QQZoneFriendMoodSpider(use_redis=True, debug=False, mood_begin=0, mood_num=-1,
+    qqfriend = QQZoneFriendMoodSpider(use_redis=True, debug=False, mood_begin=0, mood_num=500,
                                       stop_time='2015-06-01',
                                       download_small_image=False, download_big_image=True,
                                       download_mood_detail=True, download_like_detail=True, download_like_names=True,

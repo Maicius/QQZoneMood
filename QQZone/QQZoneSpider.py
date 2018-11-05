@@ -47,7 +47,7 @@ class QQZoneSpider(object):
         self.download_mood_detail = download_mood_detail
         self.download_like_detail = download_like_detail
         self.download_like_names = download_like_names
-        self.until_stop_time = True
+
         if stop_time != '-1':
             self.stop_time = get_mktime(stop_time)
         else:
@@ -73,10 +73,18 @@ class QQZoneSpider(object):
         self.req = requests.Session()
         self.cookies = {}
         self.qzonetoken = ""
-        self.content = []
-        self.unikeys = []
+        self.g_tk = 0
+        self.init_file_name(self.file_name_head)
+        self.init_parameter()
+
+        if (use_redis):
+            self.re = self.connect_redis()
+
+    def init_parameter(self):
         self.like_detail = []
         self.like_list_names = []
+        self.content = []
+        self.unikeys = []
         self.tid = ""
         self.mood_details = []
         self.error_like_detail_unikeys = []
@@ -85,11 +93,7 @@ class QQZoneSpider(object):
         self.error_like_detail = {}
         self.error_like_list = {}
         self.error_mood = {}
-        self.g_tk = 0
-        self.init_file_name(self.file_name_head)
-
-        if (use_redis):
-            self.re = self.connect_redis()
+        self.until_stop_time = True
 
     def init_file_name(self, file_name_head):
         self.CONTENT_FILE_NAME = 'data/' + file_name_head + '_QQ_content.json'
