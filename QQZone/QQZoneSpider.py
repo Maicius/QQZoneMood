@@ -17,6 +17,7 @@ from QQZone.util.util import get_mktime
 from copy import deepcopy
 from QQZone.util import util
 import math
+import logging
 
 class QQZoneSpider(object):
     def __init__(self, use_redis=False, debug=False, mood_begin=0, mood_num=-1, stop_time='-1',
@@ -76,6 +77,11 @@ class QQZoneSpider(object):
         self.g_tk = 0
         self.init_file_name(self.file_name_head)
         self.init_parameter()
+        logging.basicConfig(level=logging.DEBUG,
+                            format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
+                            datefmt='%a, %d %b %Y %H:%M:%S',
+                            filename='/Users/maicius/code/InterestingCrawler/QQZone/log',
+                            filemode='w+')
 
         if (use_redis):
             self.re = self.connect_redis()
@@ -96,6 +102,7 @@ class QQZoneSpider(object):
         self.until_stop_time = True
 
     def init_file_name(self, file_name_head):
+        logging.info('file_name_head:' + self.file_name_head)
         self.CONTENT_FILE_NAME = 'data/' + file_name_head + '_QQ_content.json'
         self.LIKE_DETAIL_FILE_NAME = 'data/' + file_name_head + '_QQ_like_detail' + '.json'
         self.LIKE_LIST_NAME_FILE_NAME = 'data/' + file_name_head + '_QQ_like_list_name' + '.json'
@@ -148,6 +155,7 @@ class QQZoneSpider(object):
         self.get_g_tk()
         self.headers['Cookie'] = self.cookies
         print("Login success")
+        logging.info("login_success")
         self.web.quit()
 
     def get_username_password(self):
@@ -307,6 +315,7 @@ class QQZoneSpider(object):
 
         while pos < self.mood_num and self.until_stop_time:
             print('正在爬取', pos, '...')
+            logging.info('正在爬取', pos, '...')
             try:
                 url = url_mood + '&pos=' + str(pos)
                 mood_list = self.req.get(url=url, headers=self.headers, timeout=20)
@@ -331,12 +340,14 @@ class QQZoneSpider(object):
                     self.save_data_to_redis(final_result=False)
             except BaseException as e:
                 print("ERROR===================")
+                logging.error('位置错误')
+                logging.error(e)
                 print("因错误导致爬虫终止....现在临时保存数据")
                 self.save_all_data_to_json()
                 print('已爬取的数据页数(20条一页):', pos)
                 print("保存临时数据成功")
                 print("ERROR===================")
-                raise e
+                # raise e
         # 保存所有数据到指定文件
         print('保存最终数据中...')
         if (self.debug):
@@ -557,11 +568,12 @@ class QQZoneSpider(object):
         print('ERROR===================')
         print(e)
         print(msg)
+        logging.error(e)
+        logging.error(msg)
         print('ERROR===================')
         if self.debug:
             # raise e
             pass
-
 
     # 获得点赞的人
     def get_like_list(self, unikey):
