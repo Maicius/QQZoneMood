@@ -258,7 +258,7 @@ class QQZoneSpider(object):
         like_url = self.get_like_detail_url(unikeys)
         if unikeys != '':
             try:
-                like_content = self.get_json(self.req.get(like_url, headers=self.headers).content.decode('utf-8'))
+                like_content = self.get_json(self.req.get(like_url, headers=self.headers, timeout=20).content.decode('utf-8'))
                 # like_content是所有的点赞信息，其中like字段为点赞数目，list是点赞的人列表，有的数据中list为空
                 return like_content
             except BaseException as e:
@@ -301,7 +301,7 @@ class QQZoneSpider(object):
         # 如果mood_num为-1，则下载全部的动态
         if self.mood_num == -1:
             url = url_mood + '&pos=' + str(pos)
-            mood = self.req.get(url=url, headers=self.headers).content.decode('utf-8')
+            mood = self.req.get(url=url, headers=self.headers, timeout=20).content.decode('utf-8')
             mood_json = json.loads(self.get_json(mood))
             self.mood_num = mood_json['usrinfo']['msgnum']
 
@@ -309,7 +309,7 @@ class QQZoneSpider(object):
             print('正在爬取', pos, '...')
             try:
                 url = url_mood + '&pos=' + str(pos)
-                mood_list = self.req.get(url=url, headers=self.headers)
+                mood_list = self.req.get(url=url, headers=self.headers, timeout=20)
                 print(mood_list.content)
                 try:
                     json_content = self.get_json(str(mood_list.content.decode('utf-8')))
@@ -666,7 +666,7 @@ class QQZoneSpider(object):
     def download_image(self, url, name):
         image_url = url
         try:
-            r = self.req.get(url=image_url, headers=self.headers)
+            r = self.req.get(url=image_url, headers=self.headers, timeout=20)
             image_content = (r.content)
             file_image = open(name + '.jpg', 'wb+')
             file_image.write(image_content)
