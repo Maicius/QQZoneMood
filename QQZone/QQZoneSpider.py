@@ -110,6 +110,7 @@ class QQZoneSpider(object):
         util.check_file_exist('error/')
         util.check_file_exist(self.SMALL_IMAGE_DIR)
         util.check_file_exist(self.BIG_IMAGE_DIR)
+        print("Init file Name:", file_name_head)
 
     def login(self):
         """
@@ -132,7 +133,7 @@ class QQZoneSpider(object):
         btn.click()
         time.sleep(10)
         print("begin..。。。")
-        # self.web.get('https://user.qzone.qq.com/{}'.format(self.username))
+        self.web.get('https://user.qzone.qq.com/{}'.format(self.username))
         print("End。。。")
         cookie = ''
         # 获取cookie
@@ -717,10 +718,10 @@ class QQZoneSpider(object):
 
 def capture_data():
     sp = QQZoneSpider(use_redis=True, debug=True, mood_begin=0, mood_num=-1,
-                      stop_time='-1',
-                      download_small_image=False, download_big_image=False,
+                      stop_time='2015-06-01',
+                      download_small_image=False, download_big_image=True,
                       download_mood_detail=True, download_like_detail=True,
-                      download_like_names=True, recover=True)
+                      download_like_names=True, recover=False)
     sp.login()
     sp.get_mood_list()
 

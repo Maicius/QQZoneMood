@@ -142,8 +142,8 @@ class QQZoneFriendSpider(QQZoneSpider):
 
 
 if __name__ == '__main__':
-    friend_spider = QQZoneFriendSpider(use_redis=True, debug=True, analysis=True)
-    # friend_spider.get_friend_detail()
+    friend_spider = QQZoneFriendSpider(use_redis=True, debug=True, analysis=False)
+    friend_spider.get_friend_detail()
     friend_spider.clean_friend_data()
-    friend_spider.calculate_friend_num_timeline(1411891250)
+    # friend_spider.calculate_friend_num_timeline(1411891250)
 

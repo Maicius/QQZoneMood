@@ -52,13 +52,14 @@ class QQZoneFriendMoodSpider(QQZoneSpider):
         self.login()
         for name in self.friend_name_list:
             self.change_username(name)
+            self.init_file_name(self.file_name_head)
             self.get_mood_list()
 
 
 if __name__ == '__main__':
-    qqfriend = QQZoneFriendMoodSpider(use_redis=True, debug=True, mood_begin=0, mood_num=-1,
-                                      stop_time='-1',
-                                      download_small_image=True, download_big_image=False,
+    qqfriend = QQZoneFriendMoodSpider(use_redis=True, debug=False, mood_begin=0, mood_num=-1,
+                                      stop_time='2015-06-01',
+                                      download_small_image=False, download_big_image=True,
                                       download_mood_detail=True, download_like_detail=True, download_like_names=True,
-                                      recover=True)
+                                      recover=False)
     qqfriend.get_friend_mood()

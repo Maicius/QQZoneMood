@@ -100,4 +100,7 @@ error/*
 *.json
 !QQZone/qq_big_image.json
 .DS_Store
+*_cmt_.jpg
+*_content_.jpg
+*_like_.jpg
 

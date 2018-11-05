@@ -33,6 +33,7 @@ class QQZoneAnalysis(QQZoneSpider):
         self.LABEL_FILE_CSV = 'data/label/' + file_name_head + '_label_data.csv'
         self.LABEL_FILE_EXCEL = 'data/label/' + file_name_head + '_label_data.xlsx'
         self.labels = '1: 旅游与运动；2：爱情与家庭；3：学习与工作；4：广告；5：生活日常；6.其他'
+        self.image_path = 'image/'
 
     def load_file_from_redis(self):
         self.do_recover_from_exist_data()
@@ -68,12 +69,10 @@ class QQZoneAnalysis(QQZoneSpider):
             return False
 
     def save_data_to_csv(self):
-        self.mood_data_df = pd.DataFrame(self.mood_data)
-        self.mood_data_df.to_csv(self.MOOD_DATA_FILE_NAME)
+        pd.DataFrame(self.mood_data).to_csv(self.MOOD_DATA_FILE_NAME)
 
     def save_data_to_excel(self):
-        self.mood_data_df = pd.DataFrame(self.mood_data)
-        self.mood_data_df.to_excel(self.MOOD_DATA_EXCEL_FILE_NAME)
+        pd.DataFrame(self.mood_data).to_excel(self.MOOD_DATA_EXCEL_FILE_NAME)
 
     def get_useful_info_from_json(self):
         self.load_file_from_redis()
@@ -228,7 +227,7 @@ class QQZoneAnalysis(QQZoneSpider):
         plt.imshow(my_wordcloud)
         plt.axis("off")
         # 保存图片
-        my_wordcloud.to_file(filename=filename + '.jpg')
+        my_wordcloud.to_file(filename=self.image_path + filename + '.jpg')
         plt.show()
 
     def get_jieba_words(self, content):
@@ -269,14 +268,14 @@ class QQZoneAnalysis(QQZoneSpider):
 
 
 if __name__ == '__main__':
-    name_list = ['maicius', 'fuyuko', 'chikuo', 'xiong']
-    analysis = QQZoneAnalysis(use_redis=True, debug=True, file_name_head='maicius', stop_time='2014-06-10',
-                              stop_num=500)
+    name_list = ['maicius', 'fuyuko', 'chikuo', 'xiong', 'pylj', 'lsy']
+    analysis = QQZoneAnalysis(use_redis=True, debug=True, file_name_head='lsy', stop_time='2015-06-10',
+                              stop_num=500, analysis_friend=False)
     print(analysis.check_data_shape())
     analysis.get_useful_info_from_json()
-    # analysis.save_data_to_csv()
-    # analysis.save_data_to_excel()
-    # analysis.export_label_data(analysis.mood_data_df)
+    analysis.save_data_to_csv()
+    analysis.save_data_to_excel()
+    analysis.export_label_data(analysis.mood_data_df)
     # analysis.export_all_label_data()
     analysis.calculate_content_cloud(analysis.mood_data_df)
     analysis.calculate_cmt_cloud(analysis.mood_data_df)
