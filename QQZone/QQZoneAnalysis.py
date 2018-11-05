@@ -12,10 +12,13 @@ from QQZone.Average import Average
 from QQZone.util.util import get_mktime
 from QQZone.util.util import open_file_list
 
+
 class QQZoneAnalysis(QQZoneSpider):
-    def __init__(self, use_redis=False, debug=False, file_name_head='', analysis_friend=False, stop_time='2014-01-01', stop_num = 500):
+    def __init__(self, use_redis=False, debug=False, file_name_head='', analysis_friend=False, stop_time='2014-01-01',
+                 stop_num=500):
         QQZoneSpider.__init__(self, use_redis, debug, file_name_head=file_name_head)
         self.mood_data = []
+        self.mood_data_df = pd.DataFrame()
         self.stop_num = stop_num
         self.file_name_head = file_name_head
         self.MOOD_DATA_FILE_NAME = 'data/result/' + file_name_head + '_mood_data.csv'
@@ -37,27 +40,27 @@ class QQZoneAnalysis(QQZoneSpider):
     def export_all_label_data(self):
         data_df = open_file_list('data/label/', open_data_frame=True)
         data_df['label_type'] = self.labels
-        data_df.drop(['Unnamed: 0'],axis=1, inplace=True)
+        data_df.drop(['Unnamed: 0'], axis=1, inplace=True)
         cols = ['user', 'type', 'content', 'label_type', 'tid']
         data_df = data_df.ix[:, cols]
-        data_df.to_csv(self.label_path+'result/' + 'all.csv')
-        data_df.to_excel(self.label_path +'result/' + 'all.xlsx')
+        data_df.to_csv(self.label_path + 'result/' + 'all.csv')
+        data_df.to_excel(self.label_path + 'result/' + 'all.xlsx')
 
     def export_label_data(self, df):
         label_data = df.sample(frac=0.5)
         if label_data.shape[0] > self.stop_num:
-            label_data = label_data.iloc[0:self.stop_num,:]
+            label_data = label_data.iloc[0:self.stop_num, :]
         label_df = label_data[['tid', 'content', 'user']]
         label_df['type'] = ''
         label_df['label_type'] = self.labels
-        cols = ['user', 'type', 'content', 'label_type','tid']
+        cols = ['user', 'type', 'content', 'label_type', 'tid']
         label_df = label_df.ix[:, cols]
         label_df.to_csv(self.LABEL_FILE_CSV)
         label_df.to_excel(self.LABEL_FILE_EXCEL)
         if self.debug:
             print("导出待标注数据成功")
 
-    def  check_data_shape(self):
+    def check_data_shape(self):
         if len(self.mood_details) == len(self.like_list_names) == len(self.like_detail):
             return True
         else:
@@ -88,9 +91,7 @@ class QQZoneAnalysis(QQZoneSpider):
         n_E = self.av.calculate_E(mood_data_df)
         mood_data_df['n_E'] = n_E
         mood_data_df['user'] = self.file_name_head
-        self.mood_data = mood_data_df
-        self.export_label_data(mood_data_df)
-
+        self.mood_data_df = mood_data_df
 
     def parse_mood_detail(self, mood, key, uin_list, like_num, prd_num):
         try:
@@ -159,7 +160,6 @@ class QQZoneAnalysis(QQZoneSpider):
                                                                    comment_reply_name=comment_reply_name,
                                                                    comment_reply_time=comment_reply_time))
 
-
                         cmt_total_num += comment_reply_num
                         cmt_list.append(
                             dict(comment_content=comment_content, comment_name=comment_name, comment_time=comment_time,
@@ -172,8 +172,9 @@ class QQZoneAnalysis(QQZoneSpider):
             else:
                 friend_num = -1
             self.mood_data.append(dict(tid=tid, content=content, time=time, time_stamp=time_stamp, pic_num=pic_num,
-                                   cmt_num=cmt_num, like_num=like_num, prd_num=prd_num, uin_list=uin_list, cmt_total_num=cmt_total_num,
-                                   cmt_list=cmt_list, friend_num=friend_num))
+                                       cmt_num=cmt_num, like_num=like_num, prd_num=prd_num, uin_list=uin_list,
+                                       cmt_total_num=cmt_total_num,
+                                       cmt_list=cmt_list, friend_num=friend_num))
 
     def parse_like_and_prd(self, like):
         try:
@@ -205,25 +206,29 @@ class QQZoneAnalysis(QQZoneSpider):
             uin_list.append(dict(nick=nick, gender=gender))
         return total_num, uin_list
 
-    def drawWordCloud(self, word_text, filename):
-        mask = imread('bike.jpg')
+    def drawWordCloud(self, word_text, filename, dict_type=False):
+        mask = imread('image/tom2.jpeg')
         my_wordcloud = WordCloud(
             background_color='white',  # 设置背景颜色
             mask=mask,  # 设置背景图片
             max_words=2000,  # 设置最大现实的字数
             stopwords=STOPWORDS,  # 设置停用词
-            font_path='/System/Library/Fonts/Hiragino Sans GB W6.ttc',  # 设置字体格式，如不设置显示不了中文
+            font_path='/System/Library/Fonts/Hiragino Sans GB.ttc',  # 设置字体格式，如不设置显示不了中文
             max_font_size=50,  # 设置字体最大值
             random_state=30,  # 设置有多少种随机生成状态，即有多少种配色方案
             scale=1.3
-        ).generate(word_text)
+        )
+        if not dict_type:
+            my_wordcloud = my_wordcloud.generate(word_text)
+        else:
+            my_wordcloud = my_wordcloud.fit_words(word_text)
         image_colors = ImageColorGenerator(mask)
         my_wordcloud.recolor(color_func=image_colors)
         # 以下代码显示图片
         plt.imshow(my_wordcloud)
         plt.axis("off")
         # 保存图片
-        my_wordcloud.to_file(filename=filename)
+        my_wordcloud.to_file(filename=filename + '.jpg')
         plt.show()
 
     def get_jieba_words(self, content):
@@ -236,17 +241,43 @@ class QQZoneAnalysis(QQZoneSpider):
                       "亲自、猛然、忽然、公然、连忙、赶紧、悄悄、暗暗、大力、稳步、阔步、单独、亲自难道、岂、究竟、偏偏、索性、简直、就、可、也许、难怪、大约、幸而、幸亏、" \
                       "反倒、反正、果然、居然、竟然、何尝、何必、明明、恰恰、未免、只好、不妨"
         for word in word_list:
-            print(word)
+            # print(word)
             if len(word) >= 2 and word.find('e') == -1 and waste_words.find(word) == -1:
                 word_list2.append(word)
         words_text = " ".join(word_list2)
         return words_text
 
+    def calculate_content_cloud(self, df):
+        content = df['content'].sum()
+        words = self.get_jieba_words(content)
+        self.drawWordCloud(words, self.file_name_head + '_content_')
+
+    def calculate_cmt_cloud(self, df):
+        cmt_df = self.av.calculate_cmt_rank(df)
+        cmt_dict = {x[0]: x[1] for x in cmt_df.values}
+        self.drawWordCloud(cmt_dict, self.file_name_head + '_cmt_', dict_type=True)
+
+    def calculate_like_cloud(self, df):
+        uin_list = df['uin_list']
+        all_uin_list = []
+        for item in uin_list:
+            all_uin_list.extend(item)
+        all_uin_df = pd.DataFrame(all_uin_list)
+        all_uin_count = all_uin_df.groupby(['nick']).count().reset_index()
+        all_uin_dict = {x[0]: x[1] for x in all_uin_count.values}
+        self.drawWordCloud(all_uin_dict, self.file_name_head + '_like_', dict_type=True)
+
+
 if __name__ == '__main__':
     name_list = ['maicius', 'fuyuko', 'chikuo', 'xiong']
-    analysis = QQZoneAnalysis(use_redis=True, debug=True, file_name_head='xxt', stop_time='2014-06-10', stop_num=500)
-    # print(analysis.check_data_shape())
-    # analysis.get_useful_info_from_json()
+    analysis = QQZoneAnalysis(use_redis=True, debug=True, file_name_head='maicius', stop_time='2014-06-10',
+                              stop_num=500)
+    print(analysis.check_data_shape())
+    analysis.get_useful_info_from_json()
     # analysis.save_data_to_csv()
     # analysis.save_data_to_excel()
-    analysis.export_all_label_data()
+    # analysis.export_label_data(analysis.mood_data_df)
+    # analysis.export_all_label_data()
+    # analysis.calculate_content_cloud(analysis.mood_data_df)
+    # analysis.calculate_cmt_cloud(analysis.mood_data_df)
+    analysis.calculate_like_cloud(analysis.mood_data_df)

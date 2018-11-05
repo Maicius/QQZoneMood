@@ -25,7 +25,7 @@ class Average(object):
         self.N_E_FILE_NAME = 'data/result/' + file_name_head + '_n_E_mood_data.csv'
         self.CMT_RESULT_NAMES = 'data/result/' + file_name_head + '_cmt_result_names.csv'
         if self.filename == '' and self.file_name_head != '':
-            self.filename = 'data/' + file_name_head + '_mood_data.csv'
+            self.filename = 'data/result/' + file_name_head + '_mood_data.csv'
 
         if not analysis:
             self.read_data_from_csv()
@@ -83,17 +83,21 @@ class Average(object):
         print("平均点赞数量:", self.like_num_average)
         print("平均浏览量:", self.prd_num_average)
 
-    def calculate_cmt_rank(self):
-        cmt_list = self.df['cmt_list']
+    def calculate_cmt_rank(self, df):
+        cmt_list = df['cmt_list']
         print(cmt_list.shape)
         cmt_list_csv = []
         wrong_count = 0
+
         for item in cmt_list.values:
-            item1 = item.replace("\"", "\”")
-            item2 = item1.replace("\'", "\"")
+            if type(cmt_list) == 'str':
+                item1 = item.replace("\"", "\”")
+                item2 = item1.replace("\'", "\"")
+                json_item = json.loads(item2)
+            else:
+                json_item = item
             # print(item2)
             try:
-                json_item = json.loads(item2)
                 cmt_list_csv.extend(json_item)
             except JSONDecodeError as e:
                 item3 = item2.replace("\\xa0", "")
@@ -117,8 +121,9 @@ class Average(object):
         cmt_result_csv_df = pd.DataFrame(cmt_result_csv)
         cmt_result_csv_df.sort_values(by='cmt_times', inplace=True, ascending=False)
         cmt_result_csv_df.to_csv(self.CMT_RESULT_NAMES)
+        return cmt_result_csv_df
 
-    def calculate_like_rank(self):
+    def calculate_like_rank(self, df):
         pass
 
 
@@ -126,4 +131,5 @@ if __name__ == '__main__':
     av = Average(use_redis=True, debug=True, file_name_head="maicius")
     av.calculate_E(av.df)
     av.format_output()
-    av.calculate_cmt_rank()
+    # av.calculate_cmt_rank(av.df)
+    av.calculate_like_rank(av.df)
