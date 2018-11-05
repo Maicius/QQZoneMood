@@ -278,6 +278,6 @@ if __name__ == '__main__':
     # analysis.save_data_to_excel()
     # analysis.export_label_data(analysis.mood_data_df)
     # analysis.export_all_label_data()
-    # analysis.calculate_content_cloud(analysis.mood_data_df)
-    # analysis.calculate_cmt_cloud(analysis.mood_data_df)
+    analysis.calculate_content_cloud(analysis.mood_data_df)
+    analysis.calculate_cmt_cloud(analysis.mood_data_df)
     analysis.calculate_like_cloud(analysis.mood_data_df)

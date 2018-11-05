@@ -719,7 +719,8 @@ def capture_data():
     sp = QQZoneSpider(use_redis=True, debug=True, mood_begin=0, mood_num=-1,
                       stop_time='-1',
                       download_small_image=False, download_big_image=False,
-                      download_mood_detail=True, download_like_detail=True, download_like_names=True, recover=True)
+                      download_mood_detail=True, download_like_detail=True,
+                      download_like_names=True, recover=True)
     sp.login()
     sp.get_mood_list()
 
