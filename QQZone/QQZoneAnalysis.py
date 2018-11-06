@@ -32,20 +32,21 @@ class QQZoneAnalysis(QQZoneSpider):
         self.label_path = 'data/label/'
         self.LABEL_FILE_CSV = 'data/label/' + file_name_head + '_label_data.csv'
         self.LABEL_FILE_EXCEL = 'data/label/' + file_name_head + '_label_data.xlsx'
-        self.labels = '1: 旅游与运动；2：爱情与家庭；3：学习与工作；4：广告；5：生活日常；6.其他'
+        self.labels = '1: 旅游与运动；2：爱情与家庭；3：学习与工作；4：广告；5：生活日常；6.其他；7.人生感悟'
         self.image_path = 'image/'
 
     def load_file_from_redis(self):
         self.do_recover_from_exist_data()
 
     def export_all_label_data(self):
-        data_df = open_file_list('data/label/', open_data_frame=True)
+        data_df = open_file_list('data/label/today/', open_data_frame=True)
         data_df['label_type'] = self.labels
         data_df.drop(['Unnamed: 0'], axis=1, inplace=True)
         cols = ['user', 'type', 'content', 'label_type', 'tid']
         data_df = data_df.ix[:, cols]
-        data_df.to_csv(self.label_path + 'result/' + 'all.csv')
-        data_df.to_excel(self.label_path + 'result/' + 'all.xlsx')
+        # data_df.drop(['user'],axis=1, inplace=True)
+        data_df.to_csv(self.label_path + 'result/' + 'all_20181106.csv')
+        data_df.to_excel(self.label_path + 'result/' + 'all_20181106.xlsx')
 
     def export_label_data(self, df):
         label_data = df.sample(frac=0.5)
@@ -271,19 +272,21 @@ if __name__ == '__main__':
     name_list = ['maicius', 'fuyuko', 'chikuo', 'xiong', 'pylj', 'lsy', 'CiCi', 'tx', 'cc', 'cj', 'yd', 'even',
                  'silence', 'tnm', 'ccc', 'cx', 'ag', 'muyang', 'bot', 'ymm', 'mtz', 'ldc', 'zeng', 'rhyme', 'my',
                  'rsg', 'rgg', 'bb', 'ssx', 'sj', 'yqr', 'kfg', 'xx', 'jtg', 'black', 'Thermal', 'sonja', 'Latham',
-                 'cwy', 'liuyh', 'admit', 'lzgz', 'bgjsj']
-    new_list = ['yqr', 'kfg', 'xx', 'jtg', 'black', 'Thermal', 'sonja', 'Latham', 'cwy', 'liuyh', 'admit', 'lzgz',
-                'bgjsj']
+                 'cwy', 'liuyh', 'admit', 'lzgz', 'bgjsj', 'zhdx', 'hjh', 'rzd', 'dsyy', 'sage', 'zq', 'lyx', 'tangt',
+                 'yml', 'xzf', 'jz', 'xyq', 'tel', 'lc', 'br', 'Eudemonia', 'luyux', 'xl', 'leisy', 'point', 'tym',
+                 'wangy', 'mj', 'zzy', 'meow']
+    new_list = ['fuyuko']
     for name in new_list:
         print(name + '====================')
         analysis = QQZoneAnalysis(use_redis=True, debug=True, file_name_head=name, stop_time='2014-06-10',
                                   stop_num=500, analysis_friend=False)
-        print(analysis.check_data_shape())
-        analysis.get_useful_info_from_json()
-        analysis.save_data_to_csv()
-        analysis.save_data_to_excel()
-        analysis.export_label_data(analysis.mood_data_df)
-        # analysis.export_all_label_data()
-        analysis.calculate_content_cloud(analysis.mood_data_df)
-        analysis.calculate_cmt_cloud(analysis.mood_data_df)
-        analysis.calculate_like_cloud(analysis.mood_data_df)
+        # print(analysis.check_data_shape())
+        # analysis.get_useful_info_from_json()
+        # analysis.save_data_to_csv()
+        # analysis.save_data_to_excel()
+        # analysis.export_label_data(analysis.mood_data_df)
+        #
+        # analysis.calculate_content_cloud(analysis.mood_data_df)
+        # analysis.calculate_cmt_cloud(analysis.mood_data_df)
+        # analysis.calculate_like_cloud(analysis.mood_data_df)
+        analysis.export_all_label_data()
