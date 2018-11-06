@@ -263,21 +263,27 @@ class QQZoneAnalysis(QQZoneSpider):
             all_uin_list.extend(item)
         all_uin_df = pd.DataFrame(all_uin_list)
         all_uin_count = all_uin_df.groupby(['nick']).count().reset_index()
-        all_uin_dict = {x[0]: x[1] for x in all_uin_count.values}
+        all_uin_dict = {str(x[0]): x[1] for x in all_uin_count.values}
         self.drawWordCloud(all_uin_dict, self.file_name_head + '_like_', dict_type=True)
 
 
 if __name__ == '__main__':
     name_list = ['maicius', 'fuyuko', 'chikuo', 'xiong', 'pylj', 'lsy', 'CiCi', 'tx', 'cc', 'cj', 'yd', 'even',
-                 'silence', 'tnm', 'ccc', 'cx', ]
-    analysis = QQZoneAnalysis(use_redis=True, debug=True, file_name_head='cx', stop_time='2015-06-10',
-                              stop_num=500, analysis_friend=False)
-    print(analysis.check_data_shape())
-    analysis.get_useful_info_from_json()
-    analysis.save_data_to_csv()
-    analysis.save_data_to_excel()
-    analysis.export_label_data(analysis.mood_data_df)
-    # analysis.export_all_label_data()
-    analysis.calculate_content_cloud(analysis.mood_data_df)
-    analysis.calculate_cmt_cloud(analysis.mood_data_df)
-    analysis.calculate_like_cloud(analysis.mood_data_df)
+                 'silence', 'tnm', 'ccc', 'cx', 'ag', 'muyang', 'bot', 'ymm', 'mtz', 'ldc', 'zeng', 'rhyme', 'my',
+                 'rsg', 'rgg', 'bb', 'ssx', 'sj', 'yqr', 'kfg', 'xx', 'jtg', 'black', 'Thermal', 'sonja', 'Latham',
+                 'cwy', 'liuyh', 'admit', 'lzgz', 'bgjsj']
+    new_list = ['yqr', 'kfg', 'xx', 'jtg', 'black', 'Thermal', 'sonja', 'Latham', 'cwy', 'liuyh', 'admit', 'lzgz',
+                'bgjsj']
+    for name in new_list:
+        print(name + '====================')
+        analysis = QQZoneAnalysis(use_redis=True, debug=True, file_name_head=name, stop_time='2014-06-10',
+                                  stop_num=500, analysis_friend=False)
+        print(analysis.check_data_shape())
+        analysis.get_useful_info_from_json()
+        analysis.save_data_to_csv()
+        analysis.save_data_to_excel()
+        analysis.export_label_data(analysis.mood_data_df)
+        # analysis.export_all_label_data()
+        analysis.calculate_content_cloud(analysis.mood_data_df)
+        analysis.calculate_cmt_cloud(analysis.mood_data_df)
+        analysis.calculate_like_cloud(analysis.mood_data_df)
