@@ -275,18 +275,18 @@ if __name__ == '__main__':
                  'cwy', 'liuyh', 'admit', 'lzgz', 'bgjsj', 'zhdx', 'hjh', 'rzd', 'dsyy', 'sage', 'zq', 'lyx', 'tangt',
                  'yml', 'xzf', 'jz', 'xyq', 'tel', 'lc', 'br', 'Eudemonia', 'luyux', 'xl', 'leisy', 'point', 'tym',
                  'wangy', 'mj', 'zzy', 'meow']
-    new_list = ['fuyuko']
+    new_list = ['archer']
     for name in new_list:
         print(name + '====================')
         analysis = QQZoneAnalysis(use_redis=True, debug=True, file_name_head=name, stop_time='2014-06-10',
                                   stop_num=500, analysis_friend=False)
-        # print(analysis.check_data_shape())
-        # analysis.get_useful_info_from_json()
-        # analysis.save_data_to_csv()
-        # analysis.save_data_to_excel()
-        # analysis.export_label_data(analysis.mood_data_df)
-        #
-        # analysis.calculate_content_cloud(analysis.mood_data_df)
-        # analysis.calculate_cmt_cloud(analysis.mood_data_df)
-        # analysis.calculate_like_cloud(analysis.mood_data_df)
-        analysis.export_all_label_data()
+        print(analysis.check_data_shape())
+        analysis.get_useful_info_from_json()
+        analysis.save_data_to_csv()
+        analysis.save_data_to_excel()
+        analysis.export_label_data(analysis.mood_data_df)
+
+        analysis.calculate_content_cloud(analysis.mood_data_df)
+        analysis.calculate_cmt_cloud(analysis.mood_data_df)
+        analysis.calculate_like_cloud(analysis.mood_data_df)
+        # analysis.export_all_label_data()
