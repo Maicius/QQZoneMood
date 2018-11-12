@@ -70,10 +70,10 @@ class QQZoneAnalysis(QQZoneSpider):
             return False
 
     def save_data_to_csv(self):
-        pd.DataFrame(self.mood_data).to_csv(self.MOOD_DATA_FILE_NAME)
+        pd.DataFrame(self.mood_data_df).to_csv(self.MOOD_DATA_FILE_NAME)
 
     def save_data_to_excel(self):
-        pd.DataFrame(self.mood_data).to_excel(self.MOOD_DATA_EXCEL_FILE_NAME)
+        pd.DataFrame(self.mood_data_df).to_excel(self.MOOD_DATA_EXCEL_FILE_NAME)
 
     def get_useful_info_from_json(self):
         self.load_file_from_redis()
@@ -267,15 +267,19 @@ class QQZoneAnalysis(QQZoneSpider):
         all_uin_dict = {str(x[0]): x[1] for x in all_uin_count.values}
         self.drawWordCloud(all_uin_dict, self.file_name_head + '_like_', dict_type=True)
 
+    def attach_image_score(self):
+        with open(self.IMAGE_SCORE_FILE_PATH, 'r', encoding='UTF-8') as r:
+            score_dict = json.load(r)
 
-if __name__ == '__main__':
+
+def clean_label_data():
     name_list = ['maicius', 'fuyuko', 'chikuo', 'xiong', 'pylj', 'lsy', 'CiCi', 'tx', 'cc', 'cj', 'yd', 'even',
                  'silence', 'tnm', 'ccc', 'cx', 'ag', 'muyang', 'bot', 'ymm', 'mtz', 'ldc', 'zeng', 'rhyme', 'my',
                  'rsg', 'rgg', 'bb', 'ssx', 'sj', 'yqr', 'kfg', 'xx', 'jtg', 'black', 'Thermal', 'sonja', 'Latham',
                  'cwy', 'liuyh', 'admit', 'lzgz', 'bgjsj', 'zhdx', 'hjh', 'rzd', 'dsyy', 'sage', 'zq', 'lyx', 'tangt',
                  'yml', 'xzf', 'jz', 'xyq', 'tel', 'lc', 'br', 'Eudemonia', 'luyux', 'xl', 'leisy', 'point', 'tym',
                  'wangy', 'mj', 'zzy', 'meow']
-    new_list = ['archer']
+    new_list = ['maicius']
     for name in new_list:
         print(name + '====================')
         analysis = QQZoneAnalysis(use_redis=True, debug=True, file_name_head=name, stop_time='2014-06-10',
@@ -284,9 +288,13 @@ if __name__ == '__main__':
         analysis.get_useful_info_from_json()
         analysis.save_data_to_csv()
         analysis.save_data_to_excel()
-        analysis.export_label_data(analysis.mood_data_df)
-
-        analysis.calculate_content_cloud(analysis.mood_data_df)
-        analysis.calculate_cmt_cloud(analysis.mood_data_df)
-        analysis.calculate_like_cloud(analysis.mood_data_df)
+        # analysis.export_label_data(analysis.mood_data_df)
+        # analysis.calculate_content_cloud(analysis.mood_data_df)
+        # analysis.calculate_cmt_cloud(analysis.mood_data_df)
+        # analysis.calculate_like_cloud(analysis.mood_data_df)
         # analysis.export_all_label_data()
+
+
+if __name__ == '__main__':
+    clean_label_data()
+

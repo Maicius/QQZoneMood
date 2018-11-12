@@ -92,6 +92,16 @@ def do_open_file(file_name):
         except BaseException as e:
             format_error(e, file_name + "file error")
 
+def get_file_full_path(path):
+    path_dir = os.listdir(path)
+    file_name_list = []
+    for dir in path_dir:
+        file_name = path + dir
+        file_name_list.append(file_name)
+    return file_name_list
+
+def get_file_list(path):
+    return os.listdir(path)
 
 def do_read_csv(file_name):
     if file_name.find('.csv') != -1:
