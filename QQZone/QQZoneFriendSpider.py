@@ -15,6 +15,7 @@ class QQZoneFriendSpider(QQZoneSpider):
         self.FRIEND_LIST_FILE_NAME = 'friend/' + self.file_name_head + '_friend_list.json'
         self.FRIEND_DETAIL_FILE_NAME = 'friend/' + self.file_name_head + '_friend_detail.json'
         self.FRIEND_DETAIL_LIST_FILE_NAME = 'friend/' + self.file_name_head + '_friend_detail_list.csv'
+        self.FRIEND_HEADER_IMAGE_PATH = 'friend/' + self.file_name_head + '/'
         self.friend_detail = []
         self.friend_list = []
         self.friend_df = None
@@ -29,6 +30,14 @@ class QQZoneFriendSpider(QQZoneSpider):
         self.save_data_to_json(self.friend_list, self.FRIEND_LIST_FILE_NAME)
         print('获取好友列表信息完成')
 
+    def download_head_image(self):
+        for item in self.friend_list:
+
+            url = item['img']
+            print(url)
+            name = item['uin']
+            self.download_image(url, self.FRIEND_HEADER_IMAGE_PATH + str(name))
+
     def get_friend_detail(self):
         self.get_friend_list()
         i = 0
@@ -39,7 +48,6 @@ class QQZoneFriendSpider(QQZoneSpider):
             print('正在爬取:', uin, '...')
             url = self.get_friend_detail_url(uin)
             content = self.get_json(self.req.get(url, headers=self.headers).content.decode('utf-8'))
-
             data = json.loads(content)
             try:
                 data = data['data']
@@ -101,10 +109,12 @@ class QQZoneFriendSpider(QQZoneSpider):
         friend_total_num = len(self.friend_list)
         # if friend_total_num != len(self.friend_detail):
         #     self.format_error('Friend Number is wrong')
+        friend_list_df = pd.DataFrame(self.friend_list)
         self.friend_detail_list = []
         for friend in self.friend_detail:
             friend_uin = friend['friendUin']
             add_friend_time = friend['addFriendTime']
+            img = friend_list_df.loc[friend_list_df['uin'] == friend_uin, 'img'].values[0]
             nick = friend['nick']
             nick_name = nick[str(friend_uin)]
             common_friend_num = len(friend['common']['friend'])
@@ -113,7 +123,7 @@ class QQZoneFriendSpider(QQZoneSpider):
             self.friend_detail_list.append(
                 dict(uin=self.username, friend_uin=friend_uin, add_friend_time=add_friend_time,
                      nick_name=nick_name, common_friend_num=common_friend_num,
-                     common_group_num=common_group_num, common_group_names=common_group_names))
+                     common_group_num=common_group_num, common_group_names=common_group_names, img=img))
         friend_df = pd.DataFrame(self.friend_detail_list)
         friend_df.sort_values(by='add_friend_time', inplace=True)
         friend_df.to_csv(self.FRIEND_DETAIL_LIST_FILE_NAME)
@@ -143,7 +153,8 @@ class QQZoneFriendSpider(QQZoneSpider):
 
 if __name__ == '__main__':
     friend_spider = QQZoneFriendSpider(use_redis=True, debug=True, analysis=False)
-    friend_spider.get_friend_detail()
-    friend_spider.clean_friend_data()
-    # friend_spider.calculate_friend_num_timeline(1411891250)
+    friend_spider.get_friend_list()
+    friend_spider.download_head_image()
+    # friend_spider.clean_friend_data()
+    friend_spider.calculate_friend_num_timeline(1411891250)
 

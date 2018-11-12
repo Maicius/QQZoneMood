@@ -142,7 +142,7 @@ class QQZoneSpider(object):
         btn = self.web.find_element_by_id('login_button')
         time.sleep(1)
         btn.click()
-        time.sleep(10)
+        time.sleep(20)
         print("begin..。。。")
         self.web.get('https://user.qzone.qq.com/{}'.format(self.username))
         print("End。。。")
