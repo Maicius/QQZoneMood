@@ -47,6 +47,10 @@ def get_standard_date2(date):
 def get_mktime(date_string):
     return time.mktime(time.strptime(date_string, '%Y-%m-%d'))
 
+# 将字符串时间转换为时间戳
+def get_mktime2(date_string):
+    return time.mktime(time.strptime(date_string, '%Y年%m月%d日'))
+
 # 将时间戳转化为标准时间
 def get_standard_time_from_mktime(mktime):
     return time.strftime("%Y-%m-%d", time.localtime(mktime))
@@ -67,6 +71,7 @@ def open_file_list(path, open_data_frame = False):
     else:
         page_list = []
     for dir in path_dir:
+        print('open dir:', dir, '...')
         file_name = path + dir
         if open_data_frame:
             data_df = do_read_csv(file_name)
@@ -106,6 +111,9 @@ def get_file_list(path):
 def do_read_csv(file_name):
     if file_name.find('.csv') != -1:
         data = pd.read_csv(file_name)
+        return data
+    elif file_name.find('.xlsx') != -1:
+        data = pd.read_excel(file_name)
         return data
     else:
         return pd.DataFrame()

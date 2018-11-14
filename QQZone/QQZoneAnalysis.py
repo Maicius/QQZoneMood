@@ -39,14 +39,15 @@ class QQZoneAnalysis(QQZoneSpider):
         self.do_recover_from_exist_data()
 
     def export_all_label_data(self):
-        data_df = open_file_list('data/label/today/', open_data_frame=True)
+        data_df = open_file_list('data/labeld/', open_data_frame=True)
         data_df['label_type'] = self.labels
         data_df.drop(['Unnamed: 0'], axis=1, inplace=True)
+        data_df = data_df[data_df.type.notna()]
         cols = ['user', 'type', 'content', 'label_type', 'tid']
         data_df = data_df.ix[:, cols]
         # data_df.drop(['user'],axis=1, inplace=True)
-        data_df.to_csv(self.label_path + 'result/' + 'all_20181106.csv')
-        data_df.to_excel(self.label_path + 'result/' + 'all_20181106.xlsx')
+        data_df.to_csv(self.label_path + 'result/' + 'all_20181114.csv')
+        data_df.to_excel(self.label_path + 'result/' + 'all_20181114.xlsx')
 
     def export_label_data(self, df):
         label_data = df.sample(frac=0.5)
@@ -267,10 +268,6 @@ class QQZoneAnalysis(QQZoneSpider):
         all_uin_dict = {str(x[0]): x[1] for x in all_uin_count.values}
         self.drawWordCloud(all_uin_dict, self.file_name_head + '_like_', dict_type=True)
 
-    def attach_image_score(self):
-        with open(self.IMAGE_SCORE_FILE_PATH, 'r', encoding='UTF-8') as r:
-            score_dict = json.load(r)
-
 
 def clean_label_data():
     name_list = ['maicius', 'fuyuko', 'chikuo', 'xiong', 'pylj', 'lsy', 'CiCi', 'tx', 'cc', 'cj', 'yd', 'even',
@@ -292,9 +289,13 @@ def clean_label_data():
         # analysis.calculate_content_cloud(analysis.mood_data_df)
         # analysis.calculate_cmt_cloud(analysis.mood_data_df)
         # analysis.calculate_like_cloud(analysis.mood_data_df)
-        # analysis.export_all_label_data()
+        analysis.export_all_label_data()
 
 
 if __name__ == '__main__':
-    clean_label_data()
+    analysis = QQZoneAnalysis(use_redis=True, debug=True, file_name_head='maicius', stop_time='2014-06-10',
+                              stop_num=500, analysis_friend=False)
+    analysis.export_all_label_data()
+    # clean_label_data()
+
 
