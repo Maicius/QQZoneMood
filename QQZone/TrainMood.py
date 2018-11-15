@@ -16,6 +16,8 @@ class TrainMood(QQZoneAnalysis):
         self.MOOD_DATA_SCORE_FILE_NAME = 'data/train/' + file_name_head + '_score_mood_data.csv'
         self.RE_DO_SENTIMENT_FILE_NAME = 'data/train/' + file_name_head + '_re_do_mood_data.csv'
         self.TEXT_LABEL_TRAIN_DATA = 'data/train/' + file_name_head + '_mood_text.csv'
+        self.TRAIN_DATA_AFTER_CLASSIFIC = 'data/train/' + file_name_head + '_mood_classific.csv'
+        self.TEXT_LABEL_RESULT_TRAIN_DATA = 'data/train/text_' +file_name_head + '_label.csv'
         self.TEXT_CLASSIFICATION_DATA_SET = 'data/train/'
         self.mood_data_df = pd.read_csv(self.MOOD_DATA_FILE_NAME)
 
@@ -137,6 +139,28 @@ class TrainMood(QQZoneAnalysis):
                 data_df.loc[i, 'sentiments'] = sentiment
         data_df.to_csv(self.RE_DO_SENTIMENT_FILE_NAME)
 
+    def export_classification_data(self):
+        """
+        导出待分类待的数据
+        :return:
+        """
+        data = pd.read_csv(self.RE_DO_SENTIMENT_FILE_NAME)
+        data_df = data[['content']]
+        data_df['Y'] = '旅游与运动'
+        data_df.fillna('空', inplace=True)
+        columns = ['Y', 'content']
+        data_df = data_df.ix[:, columns]
+        print(data_df.shape)
+        data_df.to_csv(self.TEXT_CLASSIFICATION_DATA_SET + 'text_maicius.csv',sep='\t')
+
+    def combine_text_type_data(self):
+        data = pd.read_csv(self.RE_DO_SENTIMENT_FILE_NAME)
+        label = pd.read_csv(self.TEXT_LABEL_RESULT_TRAIN_DATA)
+        label_y = label['Y']
+        data['type'] = label_y
+        data.to_csv(self.TRAIN_DATA_AFTER_CLASSIFIC)
+
+
 def remove_waste_emoji(text):
     text = re.subn(re.compile('\[em\].*?\[\/em\]'),'', text)[0]
     text = re.subn(re.compile('@\{.*?\}'), '', text)[0]
@@ -149,5 +173,7 @@ if __name__ == '__main__':
     # train.calculate_send_time()
     # train.calculate_sentiment()
     # train.export_df_after_clean()
-    train.re_do_sentiment()
+    # train.re_do_sentiment()
     # train.export_train_text()
+    # train.export_classification_data()
+    train.combine_text_type_data()
