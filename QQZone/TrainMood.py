@@ -2,7 +2,8 @@ from QQZone.QQZoneAnalysis import QQZoneAnalysis
 import json
 from QQZone.util.util import get_file_list, get_mktime2
 import pandas as pd
-
+import re
+from QQZone.SentimentClassify import SentimentClassify
 
 class TrainMood(QQZoneAnalysis):
     """
@@ -13,13 +14,14 @@ class TrainMood(QQZoneAnalysis):
                                 stop_num=500, analysis_friend=False)
         self.IMAGE_SCORE_FILE_PATH = '/Users/maicius/code/nima.pytorch/nima/result_dict.json'
         self.MOOD_DATA_SCORE_FILE_NAME = 'data/train/' + file_name_head + '_score_mood_data.csv'
+        self.RE_DO_SENTIMENT_FILE_NAME = 'data/train/' + file_name_head + '_re_do_mood_data.csv'
         self.TEXT_LABEL_TRAIN_DATA = 'data/train/' + file_name_head + '_mood_text.csv'
         self.TEXT_CLASSIFICATION_DATA_SET = 'data/train/'
         self.mood_data_df = pd.read_csv(self.MOOD_DATA_FILE_NAME)
 
         with open(self.IMAGE_SCORE_FILE_PATH, 'r', encoding='utf-8') as r:
             self.image_score_dict = json.load(r)
-
+        self.sc = SentimentClassify()
         self.image_score_df = pd.DataFrame(self.image_score_dict)
         self.mood_data_df['score'] = '-1'
         self.image_dir = '/Users/maicius/code/InterestingCrawler/QQZone/qq_big_image/maicius/'
@@ -68,7 +70,7 @@ class TrainMood(QQZoneAnalysis):
         time_state = time_diff.apply(lambda x: x // time_step)
         self.mood_data_df['time_state'] = time_state
 
-    def export_df_after_score(self):
+    def export_df_after_clean(self):
         self.mood_data_df.drop(['Unnamed: 0'], axis=1, inplace=True)
         self.mood_data_df.to_csv(self.MOOD_DATA_SCORE_FILE_NAME)
 
@@ -80,7 +82,9 @@ class TrainMood(QQZoneAnalysis):
         train_text.Y = train_text.Y.apply(lambda x: self.label_dict[str(int(x))])
         train_text.content = train_text.content.apply(lambda x: str(x).replace('\n', ''))
         train_text.content = train_text.content.apply(lambda x: str(x).replace(' ', ''))
-        train_dataset = train_text.sample(frac=0.7)
+        train_text.content = train_text.content.apply(lambda x: remove_waste_emoji(x))
+        train_text.fillna('空', inplace=True)
+        train_dataset = train_text.sample(frac=0.8)
         val_dataset = train_text.sample(frac=0.3)
         test_dataset = train_text.sample(frac=0.3)
 
@@ -92,19 +96,58 @@ class TrainMood(QQZoneAnalysis):
         train_dataset.to_csv(self.TEXT_CLASSIFICATION_DATA_SET + 'text_train.csv',sep='\t', index=None, header=None)
         val_dataset.to_csv(self.TEXT_CLASSIFICATION_DATA_SET + 'text_val.csv',sep='\t', index=None, header=None)
         test_dataset.to_csv(self.TEXT_CLASSIFICATION_DATA_SET + 'text_test.csv',sep='\t', index=None, header=None)
-
+        self.calculate_avg_length(train_text)
         # train_text.to_csv(self.TEXT_LABEL_TRAIN_DATA, sep=' ', index=None, header=None)
+    def calculate_avg_length(self, data_df):
+        num = data_df.shape[0]
+        content_list = data_df.content.sum()
+        print(len(content_list) / num)
+
+    def calculate_sentiment(self):
+        print("Begin to calculate sentiment...")
+        self.mood_data_df.content = self.mood_data_df.content.apply(lambda x: str(x).replace('\n', ''))
+        self.mood_data_df.content = self.mood_data_df.content.apply(lambda x: str(x).replace(' ', ''))
+        self.mood_data_df.content = self.mood_data_df.content.apply(lambda x: remove_waste_emoji(str(x)))
+        # 使用apply会导致超过qps限额
+        # sentiments = self.mood_data_df['content'].apply(lambda x: self.sc.get_sentiment_for_text(x))
+        # self.mood_data_df['sentiment'] = sentiments
+        self.mood_data_df['sentiments'] = -1
+        for i in range(self.mood_data_df.shape[0]):
+            content = self.mood_data_df.loc[i, 'content']
+            sentiment = self.sc.get_sentiment_for_text(content)
+            print('content:', content, 'senti:', sentiment)
+            self.mood_data_df.loc[i, 'sentiments'] = sentiment
 
     def print_label_dict(self, data_df):
         for item in self.label_dict.values():
             print(item, data_df.loc[data_df.Y == item, :].shape[0])
         print('==========')
 
+    def re_do_sentiment(self):
+        data_df = pd.read_csv(self.RE_DO_SENTIMENT_FILE_NAME)
+        for i in range(data_df.shape[0]):
+            sentiment = data_df.loc[i, 'sentiments']
+            content = data_df.loc[i, 'content']
+            if sentiment == -1:
+                content = content.replace('\u2207', '')
+                content = content.replace('\ue40c', '')
+                content = content.replace('\ue412', '')
+                content = content.replace('\ue056', '')
+                sentiment = self.sc.get_sentiment_for_text(str(content))
+                data_df.loc[i, 'sentiments'] = sentiment
+        data_df.to_csv(self.RE_DO_SENTIMENT_FILE_NAME)
 
+def remove_waste_emoji(text):
+    text = re.subn(re.compile('\[em\].*?\[\/em\]'),'', text)[0]
+    text = re.subn(re.compile('@\{.*?\}'), '', text)[0]
+
+    return text
 
 if __name__ == '__main__':
     train = TrainMood(use_redis=True, debug=True, file_name_head='maicius')
     # train.calculate_score_for_each_mood()
     # train.calculate_send_time()
-    # train.export_df_after_score()
-    train.export_train_text()
+    # train.calculate_sentiment()
+    # train.export_df_after_clean()
+    train.re_do_sentiment()
+    # train.export_train_text()
