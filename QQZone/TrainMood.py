@@ -5,22 +5,27 @@ import pandas as pd
 import re
 from QQZone.SentimentClassify import SentimentClassify
 
+
 class TrainMood(QQZoneAnalysis):
     """
     生成各种训练需要的数据集
     """
+
     def __init__(self, use_redis=False, debug=True, file_name_head='maicius'):
-        QQZoneAnalysis.__init__(self, use_redis=use_redis, debug=debug, file_name_head='maicius', stop_time='2014-06-10',
+        QQZoneAnalysis.__init__(self, use_redis=use_redis, debug=debug, file_name_head='maicius',
+                                stop_time='2014-06-10',
                                 stop_num=500, analysis_friend=False)
         self.IMAGE_SCORE_FILE_PATH = '/Users/maicius/code/nima.pytorch/nima/result_dict.json'
         self.MOOD_DATA_SCORE_FILE_NAME = 'data/train/' + file_name_head + '_score_mood_data.csv'
         self.RE_DO_SENTIMENT_FILE_NAME = 'data/train/' + file_name_head + '_re_do_mood_data.csv'
         self.TEXT_LABEL_TRAIN_DATA = 'data/train/' + file_name_head + '_mood_text.csv'
         self.TRAIN_DATA_AFTER_CLASSIFIC = 'data/train/' + file_name_head + '_mood_classific.csv'
-        self.TEXT_LABEL_RESULT_TRAIN_DATA = 'data/train/text_' +file_name_head + '_label.csv'
+        self.TEXT_LABEL_RESULT_TRAIN_DATA = 'data/train/text_' + file_name_head + '_label.csv'
         self.TEXT_CLASSIFICATION_DATA_SET = 'data/train/'
+        self.FINAL_RESULT_TRAIN_DATA = 'data/train/' + file_name_head + '_final_train.csv'
         self.mood_data_df = pd.read_csv(self.MOOD_DATA_FILE_NAME)
-
+        self.IMAGE_OBJECT_FILE_NAME = 'data/train/' + file_name_head + '_image_object.csv'
+        self.MOOD_DATA_AFTER_OBJECT = 'data/train/' + file_name_head + '_after_object.csv'
         with open(self.IMAGE_SCORE_FILE_PATH, 'r', encoding='utf-8') as r:
             self.image_score_dict = json.load(r)
         self.sc = SentimentClassify()
@@ -35,6 +40,7 @@ class TrainMood(QQZoneAnalysis):
                            '5': '生活日常',
                            '6': '其他',
                            '7': '人生感悟'}
+        self.label_dict_reverse = {v: k for k, v in self.label_dict.items()}
 
     def calculate_score_for_each_mood(self):
         """
@@ -50,6 +56,8 @@ class TrainMood(QQZoneAnalysis):
             if len(scores) > 0:
                 self.mood_data_df.loc[self.mood_data_df.tid == tid, 'score'] = round(scores.mean(), 2)
         self.mood_data_df.fillna(mean_score)
+        print("score shape:", self.mood_data_df.shape)
+        # self.mood_data_df.to_csv(self.MOOD_DATA_SCORE_FILE_NAME)
         # self.export_df_after_score()
 
     def calculate_send_time(self):
@@ -71,6 +79,7 @@ class TrainMood(QQZoneAnalysis):
         time_step = 60 * 60 * 4
         time_state = time_diff.apply(lambda x: x // time_step)
         self.mood_data_df['time_state'] = time_state
+        print('send time:', self.mood_data_df.shape)
 
     def export_df_after_clean(self):
         self.mood_data_df.drop(['Unnamed: 0'], axis=1, inplace=True)
@@ -95,11 +104,12 @@ class TrainMood(QQZoneAnalysis):
         self.print_label_dict(val_dataset)
         self.print_label_dict(test_dataset)
 
-        train_dataset.to_csv(self.TEXT_CLASSIFICATION_DATA_SET + 'text_train.csv',sep='\t', index=None, header=None)
-        val_dataset.to_csv(self.TEXT_CLASSIFICATION_DATA_SET + 'text_val.csv',sep='\t', index=None, header=None)
-        test_dataset.to_csv(self.TEXT_CLASSIFICATION_DATA_SET + 'text_test.csv',sep='\t', index=None, header=None)
+        train_dataset.to_csv(self.TEXT_CLASSIFICATION_DATA_SET + 'text_train.csv', sep='\t', index=None, header=None)
+        val_dataset.to_csv(self.TEXT_CLASSIFICATION_DATA_SET + 'text_val.csv', sep='\t', index=None, header=None)
+        test_dataset.to_csv(self.TEXT_CLASSIFICATION_DATA_SET + 'text_test.csv', sep='\t', index=None, header=None)
         self.calculate_avg_length(train_text)
         # train_text.to_csv(self.TEXT_LABEL_TRAIN_DATA, sep=' ', index=None, header=None)
+
     def calculate_avg_length(self, data_df):
         num = data_df.shape[0]
         content_list = data_df.content.sum()
@@ -119,14 +129,17 @@ class TrainMood(QQZoneAnalysis):
             sentiment = self.sc.get_sentiment_for_text(content)
             print('content:', content, 'senti:', sentiment)
             self.mood_data_df.loc[i, 'sentiments'] = sentiment
+        self.mood_data_df.drop(['Unnamed: 0'], axis=1, inplace=True)
+        self.mood_data_df = self.re_do_sentiment(self.mood_data_df)
+        print("text sentiment:", self.mood_data_df.shape)
 
     def print_label_dict(self, data_df):
         for item in self.label_dict.values():
             print(item, data_df.loc[data_df.Y == item, :].shape[0])
         print('==========')
 
-    def re_do_sentiment(self):
-        data_df = pd.read_csv(self.RE_DO_SENTIMENT_FILE_NAME)
+    def re_do_sentiment(self, data_df):
+        # data_df = pd.read_csv(self.MOOD_DATA_SCORE_FILE_NAME)
         for i in range(data_df.shape[0]):
             sentiment = data_df.loc[i, 'sentiments']
             content = data_df.loc[i, 'content']
@@ -138,6 +151,7 @@ class TrainMood(QQZoneAnalysis):
                 sentiment = self.sc.get_sentiment_for_text(str(content))
                 data_df.loc[i, 'sentiments'] = sentiment
         data_df.to_csv(self.RE_DO_SENTIMENT_FILE_NAME)
+        return data_df
 
     def export_classification_data(self):
         """
@@ -151,29 +165,88 @@ class TrainMood(QQZoneAnalysis):
         columns = ['Y', 'content']
         data_df = data_df.ix[:, columns]
         print(data_df.shape)
-        data_df.to_csv(self.TEXT_CLASSIFICATION_DATA_SET + 'text_maicius.csv',sep='\t')
+        data_df.to_csv(self.TEXT_CLASSIFICATION_DATA_SET + 'text_maicius.csv', sep='\t')
 
     def combine_text_type_data(self):
-        data = pd.read_csv(self.RE_DO_SENTIMENT_FILE_NAME)
+        data = pd.read_csv(self.MOOD_DATA_AFTER_OBJECT)
+        print('mood_after_object_data:', data.shape)
         label = pd.read_csv(self.TEXT_LABEL_RESULT_TRAIN_DATA)
+        print('label data:', label.shape)
         label_y = label['Y']
         data['type'] = label_y
         data.to_csv(self.TRAIN_DATA_AFTER_CLASSIFIC)
 
+    def attach_image_object_for_each_mood(self):
+        with open('qq_big_image.json', 'r', encoding='utf-8') as r:
+            data = json.load(r)
+
+        with open('category.json', 'r', encoding='utf-8') as r:
+            category = json.load(r)
+
+        category_df = pd.DataFrame(category)
+        image_object_df = pd.DataFrame(
+            columns=['tid', 'person', 'vehicle', 'outdoor', 'animal', 'accessory', 'sports', 'kitchen', 'food',
+                     'furniture',
+                     'electronic', 'appliance', 'indoor'])
+        i = 0
+        for key, value in data.items():
+            tid = key.split('--')[0].split('/')[-1]
+            if image_object_df.loc[image_object_df.tid == tid].shape[0] == 0:
+                image_object_df.loc[i, 'tid'] = tid
+                i +=1
+            for item in value:
+                item = item.split(' ')[0]
+                super_cate = category_df.loc[category_df.name.str.contains(item), 'supercategory']
+                if len(super_cate) > 0:
+                    print(super_cate)
+                    image_object_df.loc[image_object_df.tid == tid, super_cate.values[0]] = 1
+        image_object_df.fillna(0, inplace=True)
+        image_object_df['vector'] = 0
+        image_object_df['vector'] = image_object_df['tid'].apply(lambda x: image_object_df.loc[image_object_df.tid == x,'person':].values[0])
+        image_object_df.to_csv(self.IMAGE_OBJECT_FILE_NAME)
+
+    def combine_image_object(self):
+        image_object_df = pd.read_csv(self.IMAGE_OBJECT_FILE_NAME)
+        mood_data_df = pd.read_csv(self.RE_DO_SENTIMENT_FILE_NAME)
+        mood_data_df.drop(['vector'], axis=1, inplace=True)
+        image_object = image_object_df[['tid', 'vector']]
+        print(image_object_df.shape, mood_data_df.shape)
+        result = pd.merge(mood_data_df, image_object, on='tid')
+        print(result.shape)
+        result.to_csv(self.MOOD_DATA_AFTER_OBJECT)
+
+    def export_final_train_data(self):
+        data = pd.read_csv(self.TRAIN_DATA_AFTER_CLASSIFIC)
+        train = data[['n_E', 'score', 'time_state', 'sentiments', 'type', 'vector']]
+        train = train.loc[6:, :]
+        self.mean_score = self.image_score_df[self.image_score_df['score'] != -1].mean()[0]
+        train.score = train['score'].apply(lambda x: self.change_neg_image_score(x))
+        train.type = train['type'].map(self.label_dict_reverse)
+        train.sort_values(by='n_E', inplace=True, ascending=False)
+        train.to_csv(self.FINAL_RESULT_TRAIN_DATA)
+
+    def change_neg_image_score(self, score):
+        if score == -1:
+            return self.mean_score
+        else:
+            return score
+
 
 def remove_waste_emoji(text):
-    text = re.subn(re.compile('\[em\].*?\[\/em\]'),'', text)[0]
+    text = re.subn(re.compile('\[em\].*?\[\/em\]'), '', text)[0]
     text = re.subn(re.compile('@\{.*?\}'), '', text)[0]
-
     return text
+
 
 if __name__ == '__main__':
     train = TrainMood(use_redis=True, debug=True, file_name_head='maicius')
-    # train.calculate_score_for_each_mood()
-    # train.calculate_send_time()
-    # train.calculate_sentiment()
-    # train.export_df_after_clean()
-    # train.re_do_sentiment()
+    train.calculate_score_for_each_mood()
+    train.calculate_send_time()
+    train.calculate_sentiment()
+    train.export_df_after_clean()
     # train.export_train_text()
     # train.export_classification_data()
+    # train.attach_image_object_for_each_mood()
+    train.combine_image_object()
     train.combine_text_type_data()
+    train.export_final_train_data()
