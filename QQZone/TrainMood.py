@@ -20,11 +20,11 @@ class TrainMood(QQZoneAnalysis):
         self.RE_DO_SENTIMENT_FILE_NAME = 'data/train/' + file_name_head + '_re_do_mood_data.csv'
         self.TEXT_LABEL_TRAIN_DATA = 'data/train/' + file_name_head + '_mood_text.csv'
         self.TRAIN_DATA_AFTER_CLASSIFIC = 'data/train/' + file_name_head + '_mood_classific.csv'
-        self.TEXT_LABEL_RESULT_TRAIN_DATA = 'data/train/text_' + file_name_head + '_label.csv'
+        self.TEXT_LABEL_RESULT_TRAIN_DATA = 'data/train3/text_' + file_name_head + '_label.csv'
         self.TEXT_CLASSIFICATION_DATA_SET = 'data/train/'
         self.FINAL_RESULT_TRAIN_DATA = 'data/train/' + file_name_head + '_final_train.csv'
         self.mood_data_df = pd.read_csv(self.MOOD_DATA_FILE_NAME)
-        self.IMAGE_OBJECT_FILE_NAME = 'data/train/' + file_name_head + '_image_object.csv'
+        self.IMAGE_OBJECT_FILE_NAME = 'data/train3/' + file_name_head + '_image_object.csv'
         self.MOOD_DATA_AFTER_OBJECT = 'data/train/' + file_name_head + '_after_object.csv'
         with open(self.IMAGE_SCORE_FILE_PATH, 'r', encoding='utf-8') as r:
             self.image_score_dict = json.load(r)
@@ -82,7 +82,10 @@ class TrainMood(QQZoneAnalysis):
         print('send time:', self.mood_data_df.shape)
 
     def export_df_after_clean(self):
-        self.mood_data_df.drop(['Unnamed: 0'], axis=1, inplace=True)
+        try:
+            self.mood_data_df.drop(['Unnamed: 0'], axis=1, inplace=True)
+        except BaseException as e:
+            print(e)
         self.mood_data_df.to_csv(self.MOOD_DATA_SCORE_FILE_NAME)
 
     def export_train_text(self):
@@ -129,8 +132,13 @@ class TrainMood(QQZoneAnalysis):
             sentiment = self.sc.get_sentiment_for_text(content)
             print('content:', content, 'senti:', sentiment)
             self.mood_data_df.loc[i, 'sentiments'] = sentiment
-        self.mood_data_df.drop(['Unnamed: 0'], axis=1, inplace=True)
+
         self.mood_data_df = self.re_do_sentiment(self.mood_data_df)
+        try:
+            self.mood_data_df.drop(['Unnamed: 0'], axis=1, inplace=True)
+        except BaseException as e:
+            print(e)
+        self.mood_data_df.to_csv('after_sentiment.csv')
         print("text sentiment:", self.mood_data_df.shape)
 
     def print_label_dict(self, data_df):
@@ -168,7 +176,7 @@ class TrainMood(QQZoneAnalysis):
         data_df.to_csv(self.TEXT_CLASSIFICATION_DATA_SET + 'text_maicius.csv', sep='\t')
 
     def combine_text_type_data(self):
-        data = pd.read_csv(self.MOOD_DATA_AFTER_OBJECT)
+        data = pd.read_csv(self.MOOD_DATA_SCORE_FILE_NAME)
         print('mood_after_object_data:', data.shape)
         label = pd.read_csv(self.TEXT_LABEL_RESULT_TRAIN_DATA)
         print('label data:', label.shape)
@@ -207,21 +215,26 @@ class TrainMood(QQZoneAnalysis):
 
     def combine_image_object(self):
         image_object_df = pd.read_csv(self.IMAGE_OBJECT_FILE_NAME)
-        mood_data_df = pd.read_csv(self.RE_DO_SENTIMENT_FILE_NAME)
-        mood_data_df.drop(['vector'], axis=1, inplace=True)
+        mood_data_df = pd.read_csv(self.TRAIN_DATA_AFTER_CLASSIFIC)
+        try:
+            mood_data_df.drop(['vector'], axis=1, inplace=True)
+        except BaseException as e:
+            print(e)
         image_object = image_object_df[['tid', 'vector']]
         print(image_object_df.shape, mood_data_df.shape)
-        result = pd.merge(mood_data_df, image_object, on='tid')
+        result = pd.merge(mood_data_df, image_object, on='tid', how='left')
         print(result.shape)
         result.to_csv(self.MOOD_DATA_AFTER_OBJECT)
 
     def export_final_train_data(self):
-        data = pd.read_csv(self.TRAIN_DATA_AFTER_CLASSIFIC)
+        data = pd.read_csv(self.MOOD_DATA_AFTER_OBJECT)
         train = data[['n_E', 'score', 'time_state', 'sentiments', 'type', 'vector']]
         train = train.loc[6:, :]
         self.mean_score = self.image_score_df[self.image_score_df['score'] != -1].mean()[0]
         train.score = train['score'].apply(lambda x: self.change_neg_image_score(x))
         train.type = train['type'].map(self.label_dict_reverse)
+        train.vector.fillna('[0 0 0 0 0 0 0 0 0 0 0 0 0]', inplace=True)
+        train.vector = train.vector.apply(lambda x: self.change_vector_to_int(x))
         train.sort_values(by='n_E', inplace=True, ascending=False)
         train.to_csv(self.FINAL_RESULT_TRAIN_DATA)
 
@@ -230,6 +243,15 @@ class TrainMood(QQZoneAnalysis):
             return self.mean_score
         else:
             return score
+
+    def change_vector_to_int(self, vector):
+        vector = re.findall(re.compile('[0-9]'), vector)
+        str_vector = "".join(vector)
+        sum = 0
+        length = len(str_vector)
+        for i in range(length):
+            sum += int(str_vector[i]) **(length - 1)
+        return sum
 
 
 def remove_waste_emoji(text):
@@ -240,13 +262,14 @@ def remove_waste_emoji(text):
 
 if __name__ == '__main__':
     train = TrainMood(use_redis=True, debug=True, file_name_head='maicius')
-    train.calculate_score_for_each_mood()
-    train.calculate_send_time()
-    train.calculate_sentiment()
-    train.export_df_after_clean()
+    # train.calculate_score_for_each_mood()
+    # train.calculate_send_time()
+    # train.calculate_sentiment()
+    # train.export_df_after_clean()
     # train.export_train_text()
     # train.export_classification_data()
     # train.attach_image_object_for_each_mood()
-    train.combine_image_object()
+
     train.combine_text_type_data()
+    train.combine_image_object()
     train.export_final_train_data()
