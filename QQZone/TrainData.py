@@ -24,7 +24,7 @@ class TrainData(TrainMood):
         xgb_model = xgb.XGBModel()
         params = {
             'booster': ['gblinear'],
-            'silent': [0],
+            'silent': [1],
             'learning_rate': [x for x in np.round(np.linspace(0.01, 1, 20), 2)],
             'reg_lambda': [lambd for lambd in np.logspace(0, 3, 50)],
             'objective': ['reg:linear']
