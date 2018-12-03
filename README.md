@@ -3,13 +3,58 @@
 ![QQ空间说说历史曲线图](https://github.com/Maicius/InterestingCrawler/blob/master/QQZone/image/history.png)  
 ![QQ空间说说按点赞和评论数分类图](https://github.com/Maicius/InterestingCrawler/blob/master/QQZone/image/shuoshuoPie.png)  
 
-- 目前包含两个个爬虫 
- 
-	> 1.爬取QQ空间说说内容（包括评论和点赞）     
-	> 2.爬取微信好友列表  
-
-
 ## 抓取QQ空间说说内容并进行分析
+
+### 已实现功能
+
+##### 1.基本功能
+
+> 这部分主要是获取数据和进行基本的统计分析
+
+- QQ空间动态爬取
+	
+	> 包括用户和好友，但是为了保护隐私，没有提供一键爬取所有好友动态的功能
+	
+- QQ空间好友基本信息爬取
+
+	> 包括共同好友数量、共同群组、添加好友时间
+
+- QQ空间中各种基本信息统计
+
+	> 包括各种点赞排行、评论排行、发送时间统计等
+
+- 数据可视化
+
+	> 包括各种词云图、关系图
+
+##### 2.衍生功能
+
+> 这部分的目标是推算什么样的动态内容更受好友欢迎，但是很遗憾，最终获得的数据价值有限
+
+- QQ空间动态内容分类
+
+	> 分为7大类，自己标注的数据集(7231条数据)，使用RNN进行分类
+
+- QQ空间动态情感检测
+
+	> 基于[百度自然语言处理API](http://ai.baidu.com/tech/nlp/sentiment_classify),可免费使用
+
+- QQ空间照片评分
+	
+	> 基于[Google NIMA模型](https://modelzoo.co/model/nima)
+	
+- QQ空间照片内容检测
+	
+	> 基于Fast R-CNN
+
+- QQ空间中动态受好友的欢迎程度与动态内容的关系模型拟合
+
+	> 将从动态中抽取的文字内容、图片内容转化为离散型或连续型变量，并将动态的点赞量、评论量、浏览量转化为热度作为标签，使用xgboost对以上数据进行拟合
+
+- QQ空间好友关系演变图
+	
+	> [戳这里查看视频演示](https://v.youku.com/v_show/id_XMzkxMDQ0NTcyMA==.html?spm=a2hzp.8253869.0.0)
+
 
 ### 爬虫文件
 
@@ -24,9 +69,8 @@
 	> 2. 每条说说的详细信息（比1中的信息更全面，1中数据只显示每条说说的前10个评论）  
 	> 3. 每条说说的点赞人列表
 	> 4. 更加详细的点赞人列表（3中获取的数据有很多被清空了，这里能稳定获取到点赞的人数量、浏览量和评论量）
-	> 5. 所有说说的缩略图  
+	> 5. 所有说说的图片（可选择是下载大图、缩略图还是都下载）
 	> 6. 用户好友数据(可计算出用户在每个时间的好友数量)
-	> 7. 指定好友的QQ空间动态数据
 
 - 存储方式：
 
@@ -124,50 +168,3 @@
 
 ![Image](QQZone/image/relation.png)
 > 好友关系图
-
-## 抓取微信好友信息
-- 好友列表里所有好友，删除了公众号信息
-
-### 爬虫文件
-###  ReadWechatFrinedsInfo.py
-
-- python版本： 3.6  
-- 抓取到的信息格式如下：
-
->（用户名被加密过）   
-{
-"Uin": 0,  
-"UserName": "@01535fb7d3f2626efda79395a24a281106c2094e987efb41b243337d9f4fbf46",  
-"NickName": "HCG",  
-"HeadImgUrl": "/cgi-bin/mmwebwx-bin/webwxgeticon?seq=659005699&username=@01535fb7d3f2626efda79395a24a281106c2094e987efb41b243337d9f4fbf46&skey=@crypt_731e3859_a77aa23f9d062c6d5c5fa3634412924a",  
-"ContactFlag": 3,  
-"MemberCount": 0,  
-"MemberList": [],  
-"RemarkName": "",  
-"HideInputBarFlag": 0,  
-"Sex": 1,  
-"Signature": "",  
-"VerifyFlag": 0,  
-"OwnerUin": 0,  
-"PYInitial": "HCG",  
-"PYQuanPin": "HCG",  
-"RemarkPYInitial": "",  
-"RemarkPYQuanPin": "",  
-"StarFriend": 0,  
-"AppAccountFlag": 0,  
-"Statues": 0,  
-"AttrStatus":  36961,  
-"Province": "广东",  
-"City": "佛山",  
-"Alias": "",  
-"SnsFlag": 17,  
-"UniFriend": 0,  
-"DisplayName": "",  
-"ChatRoomId": 0,  
-"KeyWord": "",  
-"EncryChatRoomId": "",  
-"IsOwner": 0  
-}
-
-- 此外还下载了所有好友的头像
-

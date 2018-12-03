@@ -1,4 +1,4 @@
-from QQZone.QQZoneSpider import QQZoneSpider
+from QQZone.spider.QQZoneSpider import QQZoneSpider
 import re
 import json
 import pandas as pd
@@ -6,8 +6,8 @@ import jieba
 from wordcloud import WordCloud, ImageColorGenerator, STOPWORDS
 from scipy.misc import imread
 import matplotlib.pyplot as plt
-from QQZone.QQZoneFriendSpider import QQZoneFriendSpider
-from QQZone.Average import Average
+from QQZone.spider.QQZoneFriendSpider import QQZoneFriendSpider
+from QQZone.analysis.Average import Average
 from QQZone.util.util import get_mktime
 from QQZone.util.util import open_file_list
 
@@ -20,25 +20,25 @@ class QQZoneAnalysis(QQZoneSpider):
         self.mood_data_df = pd.DataFrame()
         self.stop_num = stop_num
         self.file_name_head = file_name_head
-        self.MOOD_DATA_FILE_NAME = 'data/result/' + file_name_head + '_mood_data.csv'
-        self.MOOD_DATA_EXCEL_FILE_NAME = 'data/result/' + file_name_head + '_mood_data.xlsx'
+        self.MOOD_DATA_FILE_NAME = '../data/result/' + file_name_head + '_mood_data.csv'
+        self.MOOD_DATA_EXCEL_FILE_NAME = '../data/result/' + file_name_head + '_mood_data.xlsx'
         self.analysis_friend = analysis_friend
         self.stop_time = get_mktime(stop_time)
         if self.analysis_friend:
             self.friend = QQZoneFriendSpider(analysis=True)
             self.friend.clean_friend_data()
         self.av = Average(use_redis=False, file_name_head=file_name_head, analysis=True)
-        self.label_path = 'data/label/'
-        self.LABEL_FILE_CSV = 'data/label/' + file_name_head + '_label_data.csv'
-        self.LABEL_FILE_EXCEL = 'data/label/' + file_name_head + '_label_data.xlsx'
+        self.label_path = '../data/label/'
+        self.LABEL_FILE_CSV = '../data/label/' + file_name_head + '_label_data.csv'
+        self.LABEL_FILE_EXCEL = '../data/label/' + file_name_head + '_label_data.xlsx'
         self.labels = '1: 旅游与运动；2：爱情与家庭；3：学习与工作；4：广告；5：生活日常；6.其他；7.人生感悟'
-        self.image_path = 'image/'
+        self.image_path = '../image/'
 
     def load_file_from_redis(self):
         self.do_recover_from_exist_data()
 
     def export_all_label_data(self):
-        data_df = open_file_list('data/labeld/', open_data_frame=True)
+        data_df = open_file_list('../data/labeld/', open_data_frame=True)
         data_df['label_type'] = self.labels
         data_df.drop(['Unnamed: 0'], axis=1, inplace=True)
         data_df = data_df[data_df.type.notna()]

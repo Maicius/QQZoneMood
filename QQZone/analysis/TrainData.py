@@ -1,4 +1,4 @@
-from QQZone.TrainMood import TrainMood
+from QQZone.analysis.TrainMood import TrainMood
 import numpy as np
 import xgboost as xgb
 from sklearn.model_selection import GridSearchCV

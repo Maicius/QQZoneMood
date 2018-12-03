@@ -22,10 +22,10 @@ class Average(object):
         self.df = None
         self.filename = filename
         self.file_name_head = file_name_head
-        self.N_E_FILE_NAME = 'data/result/' + file_name_head + '_n_E_mood_data.csv'
-        self.CMT_RESULT_NAMES = 'data/result/' + file_name_head + '_cmt_result_names.csv'
+        self.N_E_FILE_NAME = '../data/result/' + file_name_head + '_n_E_mood_data.csv'
+        self.CMT_RESULT_NAMES = '../data/result/' + file_name_head + '_cmt_result_names.csv'
         if self.filename == '' and self.file_name_head != '':
-            self.filename = 'data/result/' + file_name_head + '_mood_data.csv'
+            self.filename = '../data/result/' + file_name_head + '_mood_data.csv'
 
         if not analysis:
             self.read_data_from_csv()

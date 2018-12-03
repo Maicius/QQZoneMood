@@ -1,9 +1,9 @@
-from QQZone.QQZoneAnalysis import QQZoneAnalysis
+from QQZone.analysis.QQZoneAnalysis import QQZoneAnalysis
 import json
 from QQZone.util.util import get_file_list, get_mktime2
 import pandas as pd
 import re
-from QQZone.SentimentClassify import SentimentClassify
+from QQZone.analysis.SentimentClassify import SentimentClassify
 
 
 class TrainMood(QQZoneAnalysis):
@@ -16,16 +16,16 @@ class TrainMood(QQZoneAnalysis):
                                 stop_time='2014-06-10',
                                 stop_num=500, analysis_friend=False)
         self.IMAGE_SCORE_FILE_PATH = '/Users/maicius/code/nima.pytorch/nima/result_dict.json'
-        self.MOOD_DATA_SCORE_FILE_NAME = 'data/train/' + file_name_head + '_score_mood_data.csv'
-        self.RE_DO_SENTIMENT_FILE_NAME = 'data/train/' + file_name_head + '_re_do_mood_data.csv'
-        self.TEXT_LABEL_TRAIN_DATA = 'data/train/' + file_name_head + '_mood_text.csv'
-        self.TRAIN_DATA_AFTER_CLASSIFIC = 'data/train/' + file_name_head + '_mood_classific.csv'
-        self.TEXT_LABEL_RESULT_TRAIN_DATA = 'data/train3/text_' + file_name_head + '_label.csv'
-        self.TEXT_CLASSIFICATION_DATA_SET = 'data/train/'
-        self.FINAL_RESULT_TRAIN_DATA = 'data/train/' + file_name_head + '_final_train.csv'
+        self.MOOD_DATA_SCORE_FILE_NAME = '../data/train/' + file_name_head + '_score_mood_data.csv'
+        self.RE_DO_SENTIMENT_FILE_NAME = '../data/train/' + file_name_head + '_re_do_mood_data.csv'
+        self.TEXT_LABEL_TRAIN_DATA = '../data/train/' + file_name_head + '_mood_text.csv'
+        self.TRAIN_DATA_AFTER_CLASSIFIC = '../data/train/' + file_name_head + '_mood_classific.csv'
+        self.TEXT_LABEL_RESULT_TRAIN_DATA = '../data/train3/text_' + file_name_head + '_label.csv'
+        self.TEXT_CLASSIFICATION_DATA_SET = '../data/train/'
+        self.FINAL_RESULT_TRAIN_DATA = '../data/train/' + file_name_head + '_final_train.csv'
         self.mood_data_df = pd.read_csv(self.MOOD_DATA_FILE_NAME)
-        self.IMAGE_OBJECT_FILE_NAME = 'data/train3/' + file_name_head + '_image_object.csv'
-        self.MOOD_DATA_AFTER_OBJECT = 'data/train/' + file_name_head + '_after_object.csv'
+        self.IMAGE_OBJECT_FILE_NAME = '../data/train3/' + file_name_head + '_image_object.csv'
+        self.MOOD_DATA_AFTER_OBJECT = '../data/train/' + file_name_head + '_after_object.csv'
         with open(self.IMAGE_SCORE_FILE_PATH, 'r', encoding='utf-8') as r:
             self.image_score_dict = json.load(r)
         self.sc = SentimentClassify()

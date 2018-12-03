@@ -7,7 +7,7 @@ class SentimentClassify(object):
         self.sc_url = 'https://aip.baidubce.com/rpc/2.0/nlp/v1/sentiment_classify'
 
     def get_api_keys(self):
-        with open('api_key.json', 'r', encoding='utf-8') as r:
+        with open('../config/api_key.json', 'r', encoding='utf-8') as r:
             keys = json.load(r)
         return keys['AppId'], keys['ApiKey'], keys['SecretKey']
 

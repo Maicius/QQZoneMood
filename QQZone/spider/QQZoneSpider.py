@@ -159,7 +159,7 @@ class QQZoneSpider(object):
         self.web.quit()
 
     def get_username_password(self):
-        with open('userinfo.json', 'r', encoding='utf-8') as r:
+        with open('../config/userinfo.json', 'r', encoding='utf-8') as r:
             userinfo = json.load(r)
         return userinfo['username'], userinfo['password'], userinfo['file_name_head']
 
