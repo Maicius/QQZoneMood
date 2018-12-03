@@ -1,9 +1,6 @@
 # Interesting Crawler
 
-![QQ空间说说历史曲线图](https://github.com/Maicius/InterestingCrawler/blob/master/QQZone/image/history.png)  
-![QQ空间说说按点赞和评论数分类图](https://github.com/Maicius/InterestingCrawler/blob/master/QQZone/image/shuoshuoPie.png)  
-
-## 抓取QQ空间说说内容并进行分析
+-  抓取QQ空间说说内容并进行分析
 
 ### 已实现功能
 
@@ -33,7 +30,7 @@
 
 - QQ空间动态内容分类
 
-	> 分为7大类，自己标注的数据集(7231条数据)，使用RNN进行分类
+	> 分为7大类，自己标注的数据集(7231条数据,未公开，如有需要请邮件联系并说明原因)，使用RNN进行分类
 
 - QQ空间动态情感检测
 
@@ -164,6 +161,9 @@
 ![Image3](https://github.com/Maicius/wexinFriendInfo/blob/master/QQZone/image/comment_content.jpg)
 ![Image](https://github.com/Maicius/wexinFriendInfo/blob/master/QQZone/image/agree.jpg)
 ![Image](QQZone/image/bike2.png)
+![QQ空间说说历史曲线图](QQZone/image/history.png)  
+![QQ空间说说按点赞和评论数分类图](QQZone/image/shuoshuoPie.png)  
+
 > QQ动态关键字词云
 
 ![Image](QQZone/image/relation.png)
