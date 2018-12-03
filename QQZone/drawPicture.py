@@ -11,7 +11,6 @@ class drawPicture():
         print(data['n_E'])
 
     def draw_time(self):
-        # self.data.loc[self.data.sentiments == -1, 'sentiments'] = 0
         data = self.data.groupby(['time_state'], axis=0).mean().reset_index()
         print(data['n_E'])
 

@@ -1,6 +1,5 @@
 from QQZone.QQZoneSpider import QQZoneSpider
 import json
-from copy import deepcopy
 from urllib import parse
 
 class QQZoneFriendMoodSpider(QQZoneSpider):

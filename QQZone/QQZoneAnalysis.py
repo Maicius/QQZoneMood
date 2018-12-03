@@ -1,4 +1,3 @@
-import redis
 from QQZone.QQZoneSpider import QQZoneSpider
 import re
 import json

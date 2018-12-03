@@ -3,8 +3,6 @@ import numpy as np
 import xgboost as xgb
 from sklearn.model_selection import GridSearchCV
 import pandas as pd
-from sklearn import utils
-from sklearn import ensemble
 from sklearn import preprocessing
 
 class TrainData(TrainMood):
