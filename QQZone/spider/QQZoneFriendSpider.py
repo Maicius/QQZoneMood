@@ -12,10 +12,10 @@ class QQZoneFriendSpider(QQZoneSpider):
         QQZoneSpider.__init__(self, use_redis=use_redis, debug=debug)
         if self.g_tk == 0 and analysis == False:
             self.login()
-        self.FRIEND_LIST_FILE_NAME = 'friend/' + self.file_name_head + '_friend_list.json'
-        self.FRIEND_DETAIL_FILE_NAME = 'friend/' + self.file_name_head + '_friend_detail.json'
-        self.FRIEND_DETAIL_LIST_FILE_NAME = 'friend/' + self.file_name_head + '_friend_detail_list.csv'
-        self.FRIEND_HEADER_IMAGE_PATH = 'friend/' + self.file_name_head + '/'
+        self.FRIEND_LIST_FILE_NAME = '../friend/' + self.file_name_head + '_friend_list.json'
+        self.FRIEND_DETAIL_FILE_NAME = '../friend/' + self.file_name_head + '_friend_detail.json'
+        self.FRIEND_DETAIL_LIST_FILE_NAME = '../friend/' + self.file_name_head + '_friend_detail_list.csv'
+        self.FRIEND_HEADER_IMAGE_PATH = '../friend/' + self.file_name_head + '/'
         self.friend_detail = []
         self.friend_list = []
         self.friend_df = None

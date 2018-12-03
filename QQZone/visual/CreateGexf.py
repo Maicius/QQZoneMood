@@ -6,8 +6,6 @@ from QQZone.spider.QQZoneFriendSpider import QQZoneFriendSpider
 # 根据好友数据生成gexf
 class CreateGexf(QQZoneFriendSpider):
     def __init__(self, file_name_head=""):
-
-
         QQZoneFriendSpider.__init__(self, analysis=True)
         if file_name_head != "":
             self.file_name_head = file_name_head
@@ -15,9 +13,9 @@ class CreateGexf(QQZoneFriendSpider):
         self.data = pd.read_csv(self.FRIEND_DETAIL_LIST_FILE_NAME)
         self.remove_waste_index()
         print("获取文件：", self.FRIEND_DETAIL_LIST_FILE_NAME)
-        self.SOURCE_TARGET_FILE_NAME = 'data/' + self.file_name_head + '_source_targets.csv'
-        self.NODE_FILE_NAME = 'data/' + self.file_name_head + '_node.csv'
-        self.RELATION_FILE_NAME = 'data/' + self.file_name_head + '_relation.csv'
+        self.SOURCE_TARGET_FILE_NAME = '../data/' + self.file_name_head + '_source_targets.csv'
+        self.NODE_FILE_NAME = '../data/' + self.file_name_head + '_node.csv'
+        self.RELATION_FILE_NAME = '../data/' + self.file_name_head + '_relation.csv'
         name = self.data['common_group_names']
         group_name = pd.DataFrame([name])
         self.people_name = self.data['nick_name'].values
