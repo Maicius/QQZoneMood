@@ -156,10 +156,8 @@
 
 - 运行结果例图：
 
-![Image](https://github.com/Maicius/wexinFriendInfo/blob/master/QQZone/image/final2.jpg)
-![Image2](https://github.com/Maicius/wexinFriendInfo/blob/master/QQZone/image/comment.jpg)
-![Image3](https://github.com/Maicius/wexinFriendInfo/blob/master/QQZone/image/comment_content.jpg)
-![Image](https://github.com/Maicius/wexinFriendInfo/blob/master/QQZone/image/agree.jpg)
+![Image](QQZone/image/comment.jpg)
+![Image3](QQZone/image/comment_content.jpg)
 ![Image](QQZone/image/bike2.png)
 ![QQ空间说说历史曲线图](QQZone/image/history.png)  
 ![QQ空间说说按点赞和评论数分类图](QQZone/image/shuoshuoPie.png)  
