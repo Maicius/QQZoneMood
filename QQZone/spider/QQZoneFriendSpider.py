@@ -127,21 +127,27 @@ class QQZoneFriendSpider(QQZoneSpider):
         friend_total_num = len(self.friend_list)
         # if friend_total_num != len(self.friend_detail):
         #     self.format_error('Friend Number is wrong')
+        print("friend num:", friend_total_num)
         friend_list_df = pd.DataFrame(self.friend_list)
         self.friend_detail_list = []
         for friend in self.friend_detail:
-            friend_uin = friend['friendUin']
-            add_friend_time = friend['addFriendTime']
-            img = friend_list_df.loc[friend_list_df['uin'] == friend_uin, 'img'].values[0]
-            nick = friend['nick']
-            nick_name = nick[str(friend_uin)]
-            common_friend_num = len(friend['common']['friend'])
-            common_group_num = len(friend['common']['group'])
-            common_group_names = friend['common']['group']
-            self.friend_detail_list.append(
-                dict(uin=self.username, friend_uin=friend_uin, add_friend_time=add_friend_time,
-                     nick_name=nick_name, common_friend_num=common_friend_num,
-                     common_group_num=common_group_num, common_group_names=common_group_names, img=img))
+            try:
+                friend_uin = friend['friendUin']
+                add_friend_time = friend['addFriendTime']
+                img = friend_list_df.loc[friend_list_df['uin'] == friend_uin, 'img'].values[0]
+                nick = friend['nick']
+                nick_name = nick[str(friend_uin)]
+                common_friend_num = len(friend['common']['friend'])
+                common_group_num = len(friend['common']['group'])
+                common_group_names = friend['common']['group']
+                self.friend_detail_list.append(
+                    dict(uin=self.username, friend_uin=friend_uin, add_friend_time=add_friend_time,
+                         nick_name=nick_name, common_friend_num=common_friend_num,
+                         common_group_num=common_group_num, common_group_names=common_group_names, img=img))
+
+            except BaseException as e:
+                print("Error in friend list, please check:", friend)
+                print(e)
         friend_df = pd.DataFrame(self.friend_detail_list)
         friend_df.sort_values(by='add_friend_time', inplace=True)
         friend_df.to_csv(self.FRIEND_DETAIL_LIST_FILE_NAME)
