@@ -9,6 +9,12 @@ class QQZoneFriendSpider(QQZoneSpider):
     爬取自己的好友的数量等基本信息（不是爬好友的动态）
     """
     def __init__(self, use_redis=False, debug=False, analysis=False):
+        """
+
+        :param use_redis: 是否使用redis
+        :param debug: 是否开启debug模式
+        :param analysis: 如果为true, 会执行爬虫程序，再执行分析程序，如果为false，只执行分析程序
+        """
         QQZoneSpider.__init__(self, use_redis=use_redis, debug=debug)
         if self.g_tk == 0 and analysis == False:
             self.login()
@@ -22,6 +28,10 @@ class QQZoneFriendSpider(QQZoneSpider):
         self.re = self.connect_redis()
 
     def get_friend_list(self):
+        """
+        获取好友列表信息
+        :return:
+        """
         friend_list_url = self.get_friend_list_url()
         friend_content = self.get_json(self.req.get(url=friend_list_url, headers=self.headers).content.decode('utf-8'))
         self.friend_list = json.loads(friend_content)['data']['items']
@@ -39,6 +49,10 @@ class QQZoneFriendSpider(QQZoneSpider):
             self.download_image(url, self.FRIEND_HEADER_IMAGE_PATH + str(name))
 
     def get_friend_detail(self):
+        """
+        根据好友列表获取好友详情
+        :return:
+        """
         self.get_friend_list()
         i = 0
         for friend in self.friend_list:
@@ -104,6 +118,10 @@ class QQZoneFriendSpider(QQZoneSpider):
 
 
     def clean_friend_data(self):
+        """
+        清洗好友数据，生成csv
+        :return:
+        """
         if len(self.friend_list) == 0:
             self.load_friend_data()
         friend_total_num = len(self.friend_list)
@@ -153,8 +171,8 @@ class QQZoneFriendSpider(QQZoneSpider):
 
 if __name__ == '__main__':
     friend_spider = QQZoneFriendSpider(use_redis=True, debug=True, analysis=False)
-    friend_spider.get_friend_list()
+    friend_spider.get_friend_detail()
     friend_spider.download_head_image()
-    # friend_spider.clean_friend_data()
+    friend_spider.clean_friend_data()
     friend_spider.calculate_friend_num_timeline(1411891250)
 
