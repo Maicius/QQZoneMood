@@ -98,7 +98,7 @@ qq_big_image
 error/*
 *.xlsx
 *.json
-!QQZone/qq_big_image.json
+!QQZone/resource/qq_big_image.json
 .DS_Store
 *_cmt_.jpg
 *_content_.jpg

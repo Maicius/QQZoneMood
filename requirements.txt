@@ -13,6 +13,3 @@ selenium
 sha1
 urllib3
 wordcloud
-xlrd
-XlsxWriter
-xlwt
