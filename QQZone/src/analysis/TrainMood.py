@@ -17,7 +17,7 @@ class TrainMood(QQZoneAnalysis):
                                 stop_num=500, analysis_friend=False)
 
         TRAIN_BASE_DIR = self.BASE_DIR + 'data/train/' + file_name_head
-        self.IMAGE_SCORE_FILE_PATH = '/Users/maicius/code/nima.pytorch/nima/result_dict.json'
+
         self.MOOD_DATA_SCORE_FILE_NAME = TRAIN_BASE_DIR + '_score_mood_data.csv'
         self.RE_DO_SENTIMENT_FILE_NAME = TRAIN_BASE_DIR + '_re_do_mood_data.csv'
         self.TEXT_LABEL_TRAIN_DATA = TRAIN_BASE_DIR + '_mood_text.csv'
@@ -29,13 +29,11 @@ class TrainMood(QQZoneAnalysis):
         self.mood_data_df = pd.read_csv(self.MOOD_DATA_FILE_NAME)
         self.IMAGE_OBJECT_FILE_NAME = '../data/train3/' + file_name_head + '_image_object.csv'
         self.MOOD_DATA_AFTER_OBJECT = '../data/train/' + file_name_head + '_after_object.csv'
-        with open(self.IMAGE_SCORE_FILE_PATH, 'r', encoding='utf-8') as r:
-            self.image_score_dict = json.load(r)
+
+
         self.sc = SentimentClassify()
-        self.image_score_df = pd.DataFrame(self.image_score_dict)
+
         self.mood_data_df['score'] = '-1'
-        self.image_dir = '/Users/maicius/code/InterestingCrawler/QQZone/qq_big_image/maicius/'
-        self.image_file_list = get_file_list(self.image_dir)
         self.label_dict = {'1': '旅游与运动',
                            '2': '爱情与家庭',
                            '3': '学习与工作',
@@ -47,10 +45,20 @@ class TrainMood(QQZoneAnalysis):
 
     def calculate_score_for_each_mood(self):
         """
+        利用谷歌nima模型对图片进行评分
+        paper: https://arxiv.org/abs/1709.05424
+        pytorch model: https://github.com/truskovskiyk/nima.pytorch.git
+
         计算每条说说中图片的平均分
         对于没有图片的按均值进行填充
         :return:
         """
+        # nima模型预测结果文件
+        self.IMAGE_SCORE_FILE_PATH = '/Users/maicius/code/nima.pytorch/nima/result_dict.json'
+        with open(self.IMAGE_SCORE_FILE_PATH, 'r', encoding='utf-8') as r:
+            self.image_score_dict = json.load(r)
+        self.image_score_df = pd.DataFrame(self.image_score_dict)
+
         mean_score = self.image_score_df[self.image_score_df['score'] != -1].mean()[0]
         self.image_score_df.loc[self.image_score_df.score == -1, 'score'] = mean_score
         tid_list = self.mood_data_df['tid'].values
@@ -60,8 +68,7 @@ class TrainMood(QQZoneAnalysis):
                 self.mood_data_df.loc[self.mood_data_df.tid == tid, 'score'] = round(scores.mean(), 2)
         self.mood_data_df.fillna(mean_score)
         print("score shape:", self.mood_data_df.shape)
-        # self.mood_data_df.to_csv(self.MOOD_DATA_SCORE_FILE_NAME)
-        # self.export_df_after_score()
+        self.mood_data_df.to_csv(self.MOOD_DATA_SCORE_FILE_NAME)
 
     def calculate_send_time(self):
         """

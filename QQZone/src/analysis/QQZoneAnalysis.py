@@ -10,6 +10,7 @@ from QQZone.src.spider.QQZoneFriendSpider import QQZoneFriendSpider
 from QQZone.src.analysis.Average import Average
 from QQZone.src.util.util import get_mktime
 from QQZone.src.util.util import open_file_list
+from QQZone.src.util import util
 
 
 class QQZoneAnalysis(QQZoneSpider):
@@ -22,14 +23,13 @@ class QQZoneAnalysis(QQZoneSpider):
         self.file_name_head = file_name_head
 
         self.analysis_friend = analysis_friend
-        self.stop_time = get_mktime(stop_time)
+        self.stop_time = util.get_mktime(stop_time)
         if self.analysis_friend:
             self.friend = QQZoneFriendSpider(analysis=True)
             self.friend.clean_friend_data()
         self.av = Average(use_redis=False, file_name_head=file_name_head, analysis=True)
-        self.label_path = '../data/label/'
         self.labels = '1: 旅游与运动；2：爱情与家庭；3：学习与工作；4：广告；5：生活日常；6.其他；7.人生感悟'
-        self.image_path = '../image/'
+
         self.init_analysis_path()
 
     def init_analysis_path(self):
@@ -39,13 +39,15 @@ class QQZoneAnalysis(QQZoneSpider):
         LABEL_BASE_DIR = self.BASE_DIR + "data/label/" + self.file_name_head
         self.LABEL_FILE_CSV = LABEL_BASE_DIR + '_label_data.csv'
         self.LABEL_FILE_EXCEL = LABEL_BASE_DIR + '_label_data.xlsx'
+        self.label_path = self.BASE_DIR + 'data/label/'
+        self.image_path = self.BASE_DIR + '/image/'
 
 
     def load_file_from_redis(self):
         self.do_recover_from_exist_data()
 
     def export_all_label_data(self):
-        data_df = open_file_list('../data/labeld/', open_data_frame=True)
+        data_df = util.open_file_list(self.BASE_DIR + 'data/labeld/', open_data_frame=True)
         data_df['label_type'] = self.labels
         data_df.drop(['Unnamed: 0'], axis=1, inplace=True)
         data_df = data_df[data_df.type.notna()]

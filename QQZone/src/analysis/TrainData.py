@@ -10,7 +10,6 @@ class TrainData(TrainMood):
         TrainMood.__init__(self, use_redis=True, debug=True, file_name_head='maicius')
         self.train_data = pd.read_csv(self.FINAL_RESULT_TRAIN_DATA)
 
-
     # 计算MSE
     def cal_MSE(self, y_predict, y_real):
         n = len(y_predict)
