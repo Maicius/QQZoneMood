@@ -1,4 +1,4 @@
-from QQZone.src.spider import QQZoneSpider
+from QQZone.src.spider.QQZoneSpider import QQZoneSpider
 import json
 from urllib import parse
 
@@ -16,11 +16,12 @@ class QQZoneFriendMoodSpider(QQZoneSpider):
                               download_like_names=download_like_names,
                               recover=recover)
         self.friend_name_list = self.get_friend_username()
-
+        self.base_dir = ''
 
     def get_friend_username(self):
+        config_path = self.BASE_DIR + 'config/friend_info.json'
         try:
-            with open('friend_info.json', 'r', encoding='utf-8') as r:
+            with open(config_path, 'r', encoding='utf-8') as r:
                 friend_info = json.load(r)
             return friend_info
         except BaseException as e:

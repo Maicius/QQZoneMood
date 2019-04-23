@@ -13,7 +13,6 @@ import redis
 import json
 import copy
 import datetime
-from QQZone.src.util.util import get_mktime
 from copy import deepcopy
 from QQZone.src.util import util
 import math
@@ -48,9 +47,9 @@ class QQZoneSpider(object):
         self.download_mood_detail = download_mood_detail
         self.download_like_detail = download_like_detail
         self.download_like_names = download_like_names
-
+        self.BASE_DIR = '../../resource/'
         if stop_time != '-1':
-            self.stop_time = get_mktime(stop_time)
+            self.stop_time = util.get_mktime(stop_time)
         else:
             self.stop_time = -1
         self.begin_time = datetime.datetime.now()
@@ -103,25 +102,28 @@ class QQZoneSpider(object):
 
     def init_file_name(self, file_name_head):
         logging.info('file_name_head:' + self.file_name_head)
-        self.CONTENT_FILE_NAME = 'data/' + file_name_head + '_QQ_content.json'
-        self.LIKE_DETAIL_FILE_NAME = 'data/' + file_name_head + '_QQ_like_detail' + '.json'
-        self.LIKE_LIST_NAME_FILE_NAME = 'data/' + file_name_head + '_QQ_like_list_name' + '.json'
-        self.MOOD_DETAIL_FILE_NAME = 'data/' + file_name_head + '_QQ_mood_detail' + '.json'
+        DATA_DIR_HEAD = self.BASE_DIR + 'data/' + file_name_head
+        self.CONTENT_FILE_NAME = DATA_DIR_HEAD + '_QQ_content.json'
+        self.LIKE_DETAIL_FILE_NAME = DATA_DIR_HEAD + '_QQ_like_detail' + '.json'
+        self.LIKE_LIST_NAME_FILE_NAME = DATA_DIR_HEAD + '_QQ_like_list_name' + '.json'
+        self.MOOD_DETAIL_FILE_NAME = DATA_DIR_HEAD + '_QQ_mood_detail' + '.json'
 
-        self.ERROR_LIKE_DETAIL_FILE_NAME = 'error/' + file_name_head + '_QQ_like_detail_error' + '.json'
-        self.ERROR_LIKE_LIST_NAME_FILE_NAME = 'error/' + file_name_head + '_QQ_like_list_name_error' + '.json'
-        self.ERROR_MOOD_DETAIL_FILE_NAME = 'error/' + file_name_head + '_QQ_mood_detail_error' + '.json'
+        ERROR_DIR_HEAD = self.BASE_DIR + 'error/' + file_name_head
+        self.ERROR_LIKE_DETAIL_FILE_NAME = ERROR_DIR_HEAD + '_QQ_like_detail_error' + '.json'
+        self.ERROR_LIKE_LIST_NAME_FILE_NAME = ERROR_DIR_HEAD + '_QQ_like_list_name_error' + '.json'
+        self.ERROR_MOOD_DETAIL_FILE_NAME = ERROR_DIR_HEAD + '_QQ_mood_detail_error' + '.json'
+        self.ERROR_LIKE_DETAIL_UNIKEY_FILE_NAME = ERROR_DIR_HEAD + '_QQ_like_detail_error_unikey' + '.txt'
+        self.ERROR_LIKE_LIST_NAME_UNIKEY_FILE_NAME = ERROR_DIR_HEAD + '_QQ_like_list_error_unikey' + '.txt'
+        self.ERROR_MOOD_DETAIL_UNIKEY_FILE_NAME = ERROR_DIR_HEAD + '_QQ_mood_detail_error_unikey' + '.txt'
 
-        self.ERROR_LIKE_DETAIL_UNIKEY_FILE_NAME = 'error/' + file_name_head + '_QQ_like_detail_error_unikey' + '.txt'
-        self.ERROR_LIKE_LIST_NAME_UNIKEY_FILE_NAME = 'error/' + file_name_head + '_QQ_like_list_error_unikey' + '.txt'
-        self.ERROR_MOOD_DETAIL_UNIKEY_FILE_NAME = 'error/' + file_name_head + '_QQ_mood_detail_error_unikey' + '.txt'
-        self.SMALL_IMAGE_DIR = 'qq_image/' + file_name_head + '/'
-        self.BIG_IMAGE_DIR = 'qq_big_image/' + file_name_head + '/'
-        util.check_file_exist('data/')
-        util.check_file_exist('error/')
+
+        self.SMALL_IMAGE_DIR = self.BASE_DIR + 'qq_image/' + file_name_head + '/'
+        self.BIG_IMAGE_DIR = self.BASE_DIR + 'qq_big_image/' + file_name_head + '/'
+        util.check_file_exist(DATA_DIR_HEAD)
+        util.check_file_exist(ERROR_DIR_HEAD)
         util.check_file_exist(self.SMALL_IMAGE_DIR)
         util.check_file_exist(self.BIG_IMAGE_DIR)
-        print("Init file Name:", file_name_head)
+        print("Init file Name Finish:", file_name_head)
 
     def login(self):
         """
@@ -143,9 +145,9 @@ class QQZoneSpider(object):
         time.sleep(1)
         btn.click()
         time.sleep(20)
-        print("begin..。。。")
+        print("begin...")
         self.web.get('https://user.qzone.qq.com/{}'.format(self.username))
-        print("End。。。")
+        print("End...")
         cookie = ''
         # 获取cookie
         for elem in self.web.get_cookies():
@@ -159,9 +161,17 @@ class QQZoneSpider(object):
         self.web.quit()
 
     def get_username_password(self):
-        with open('../config/userinfo.json', 'r', encoding='utf-8') as r:
-            userinfo = json.load(r)
-        return userinfo['username'], userinfo['password'], userinfo['file_name_head']
+        config_path = self.BASE_DIR + 'config/userinfo.json'
+        try:
+            with open(config_path, 'r', encoding='utf-8') as r:
+                userinfo = json.load(r)
+            return userinfo['username'], userinfo['password'], userinfo['file_name_head']
+        except:
+            print("Error: File Not Found==============")
+            print("请检查配置文件是否正确配置!!!!")
+            print("Please check config file")
+            print("Path:", config_path)
+            exit(1)
 
     # 构造获取动态的URL
     def get_mood_url(self):
@@ -222,7 +232,6 @@ class QQZoneSpider(object):
     # 由于有的比较老旧的说说的点赞信息被清空了，需要从这里获取点赞的数目
     def get_like_detail_url(self, unikey):
         """
-
         :param unikeys:
         :return:
         """

@@ -1,4 +1,4 @@
-from QQZone.src.spider import QQZoneSpider
+from QQZone.src.spider.QQZoneSpider import QQZoneSpider
 from urllib import parse
 import json
 import pandas as pd
@@ -19,10 +19,13 @@ class QQZoneFriendSpider(QQZoneSpider):
         QQZoneSpider.__init__(self, use_redis=use_redis, debug=debug)
         if self.g_tk == 0 and analysis == False:
             self.login()
-        self.FRIEND_LIST_FILE_NAME = '../friend/' + self.file_name_head + '_friend_list.json'
-        self.FRIEND_DETAIL_FILE_NAME = '../friend/' + self.file_name_head + '_friend_detail.json'
-        self.FRIEND_DETAIL_LIST_FILE_NAME = '../friend/' + self.file_name_head + '_friend_detail_list.csv'
-        self.FRIEND_HEADER_IMAGE_PATH = '../friend/' + self.file_name_head + '/'
+        FRIEND_DIR_HEAD = self.BASE_DIR + 'friend/' + self.file_name_head
+        self.FRIEND_LIST_FILE_NAME = FRIEND_DIR_HEAD + '_friend_list.json'
+        self.FRIEND_DETAIL_FILE_NAME = FRIEND_DIR_HEAD + '_friend_detail.json'
+        self.FRIEND_DETAIL_LIST_FILE_NAME = FRIEND_DIR_HEAD + '_friend_detail_list.csv'
+        self.FRIEND_HEADER_IMAGE_PATH = FRIEND_DIR_HEAD + '/header/'
+
+        util.check_file_exist(self.FRIEND_HEADER_IMAGE_PATH)
         self.friend_detail = []
         self.friend_list = []
         self.friend_df = None
@@ -43,7 +46,6 @@ class QQZoneFriendSpider(QQZoneSpider):
 
     def download_head_image(self):
         for item in self.friend_list:
-
             url = item['img']
             print(url)
             name = item['uin']
@@ -108,10 +110,11 @@ class QQZoneFriendSpider(QQZoneSpider):
                 raise BaseException
         except BaseException as e:
             self.format_error(e, "Failed to load data from redis")
-            print("Now, try to load data from json")
+            print("try to load data from json now")
             try:
                 self.friend_detail = self.load_data_from_json(self.FRIEND_DETAIL_FILE_NAME)
                 self.friend_list = self.load_data_from_json(self.FRIEND_LIST_FILE_NAME)
+                print("Success to load data from json")
             except BaseException as e:
                 self.format_error(e, "Failed to load data from json, Make sure the correct filename")
                 exit(1)
@@ -126,8 +129,6 @@ class QQZoneFriendSpider(QQZoneSpider):
         if len(self.friend_list) == 0:
             self.load_friend_data()
         friend_total_num = len(self.friend_list)
-        # if friend_total_num != len(self.friend_detail):
-        #     self.format_error('Friend Number is wrong')
         print("friend num:", friend_total_num)
         friend_list_df = pd.DataFrame(self.friend_list)
         self.friend_detail_list = []
@@ -163,9 +164,8 @@ class QQZoneFriendSpider(QQZoneSpider):
 
     def calculate_friend_num_timeline(self, timestamp):
         """
-
         :param timestamp: 传入时间戳
-        :return: 用户在那个时间点的好友数量
+        :return: 用户在给定时间点的好友数量
         """
         if self.friend_df is None:
             self.friend_df = pd.read_csv(self.FRIEND_DETAIL_LIST_FILE_NAME)
