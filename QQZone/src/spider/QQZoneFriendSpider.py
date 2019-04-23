@@ -1,8 +1,9 @@
-from QQZone.spider.QQZoneSpider import QQZoneSpider
+from QQZone.src.spider import QQZoneSpider
 from urllib import parse
 import json
 import pandas as pd
-from QQZone.util import util
+from QQZone.src.util import util
+
 
 class QQZoneFriendSpider(QQZoneSpider):
     """
@@ -176,9 +177,9 @@ class QQZoneFriendSpider(QQZoneSpider):
 
 
 if __name__ == '__main__':
-    friend_spider = QQZoneFriendSpider(use_redis=True, debug=True, analysis=False)
-    friend_spider.get_friend_detail()
-    friend_spider.download_head_image()
+    friend_spider = QQZoneFriendSpider(use_redis=True, debug=True, analysis=True)
+    # friend_spider.get_friend_detail()
+    # friend_spider.download_head_image()
     friend_spider.clean_friend_data()
     friend_spider.calculate_friend_num_timeline(1411891250)
 

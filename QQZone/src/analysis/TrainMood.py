@@ -1,9 +1,9 @@
-from QQZone.analysis.QQZoneAnalysis import QQZoneAnalysis
+from QQZone.src.analysis import QQZoneAnalysis
 import json
-from QQZone.util.util import get_file_list, get_mktime2
+from QQZone.src.util.util import get_file_list, get_mktime2
 import pandas as pd
 import re
-from QQZone.analysis.SentimentClassify import SentimentClassify
+from QQZone.src.analysis import SentimentClassify
 
 
 class TrainMood(QQZoneAnalysis):

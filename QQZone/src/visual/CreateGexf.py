@@ -1,7 +1,7 @@
 import pandas as pd
 import json
 import csv
-from QQZone.spider.QQZoneFriendSpider import QQZoneFriendSpider
+from QQZone.src.spider import QQZoneFriendSpider
 
 # 根据好友数据生成gexf
 class CreateGexf(QQZoneFriendSpider):

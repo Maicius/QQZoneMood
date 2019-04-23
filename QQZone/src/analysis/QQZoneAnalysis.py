@@ -1,4 +1,4 @@
-from QQZone.spider.QQZoneSpider import QQZoneSpider
+from QQZone.src.spider import QQZoneSpider
 import re
 import json
 import pandas as pd
@@ -6,10 +6,10 @@ import jieba
 from wordcloud import WordCloud, ImageColorGenerator, STOPWORDS
 from scipy.misc import imread
 import matplotlib.pyplot as plt
-from QQZone.spider.QQZoneFriendSpider import QQZoneFriendSpider
-from QQZone.analysis.Average import Average
-from QQZone.util.util import get_mktime
-from QQZone.util.util import open_file_list
+from QQZone.src.spider import QQZoneFriendSpider
+from QQZone.src.analysis import Average
+from QQZone.src.util.util import get_mktime
+from QQZone.src.util.util import open_file_list
 
 
 class QQZoneAnalysis(QQZoneSpider):
@@ -288,7 +288,7 @@ def clean_label_data():
                                   stop_num=500, analysis_friend=False)
         # print(analysis.check_data_shape())
         analysis.get_useful_info_from_json()
-        # analysis.save_data_to_csv()
+        analysis.save_data_to_csv()
         # analysis.save_data_to_excel()
         # analysis.export_label_data(analysis.mood_data_df)
         analysis.calculate_content_cloud(analysis.mood_data_df)

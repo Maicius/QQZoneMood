@@ -1,4 +1,4 @@
-from QQZone.spider.QQZoneSpider import QQZoneSpider
+from QQZone.src.spider import QQZoneSpider
 import json
 from urllib import parse
 

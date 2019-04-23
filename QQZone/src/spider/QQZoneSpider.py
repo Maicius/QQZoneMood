@@ -13,9 +13,9 @@ import redis
 import json
 import copy
 import datetime
-from QQZone.util.util import get_mktime
+from QQZone.src.util.util import get_mktime
 from copy import deepcopy
-from QQZone.util import util
+from QQZone.src.util import util
 import math
 import logging
 
