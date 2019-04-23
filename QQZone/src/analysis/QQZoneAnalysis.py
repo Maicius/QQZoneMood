@@ -1,4 +1,4 @@
-from QQZone.src.spider import QQZoneSpider
+from QQZone.src.spider.QQZoneSpider import QQZoneSpider
 import re
 import json
 import pandas as pd
@@ -6,8 +6,8 @@ import jieba
 from wordcloud import WordCloud, ImageColorGenerator, STOPWORDS
 from scipy.misc import imread
 import matplotlib.pyplot as plt
-from QQZone.src.spider import QQZoneFriendSpider
-from QQZone.src.analysis import Average
+from QQZone.src.spider.QQZoneFriendSpider import QQZoneFriendSpider
+from QQZone.src.analysis.Average import Average
 from QQZone.src.util.util import get_mktime
 from QQZone.src.util.util import open_file_list
 
@@ -20,8 +20,7 @@ class QQZoneAnalysis(QQZoneSpider):
         self.mood_data_df = pd.DataFrame()
         self.stop_num = stop_num
         self.file_name_head = file_name_head
-        self.MOOD_DATA_FILE_NAME = '../data/result/' + file_name_head + '_mood_data.csv'
-        self.MOOD_DATA_EXCEL_FILE_NAME = '../data/result/' + file_name_head + '_mood_data.xlsx'
+
         self.analysis_friend = analysis_friend
         self.stop_time = get_mktime(stop_time)
         if self.analysis_friend:
@@ -29,10 +28,18 @@ class QQZoneAnalysis(QQZoneSpider):
             self.friend.clean_friend_data()
         self.av = Average(use_redis=False, file_name_head=file_name_head, analysis=True)
         self.label_path = '../data/label/'
-        self.LABEL_FILE_CSV = '../data/label/' + file_name_head + '_label_data.csv'
-        self.LABEL_FILE_EXCEL = '../data/label/' + file_name_head + '_label_data.xlsx'
         self.labels = '1: 旅游与运动；2：爱情与家庭；3：学习与工作；4：广告；5：生活日常；6.其他；7.人生感悟'
         self.image_path = '../image/'
+        self.init_analysis_path()
+
+    def init_analysis_path(self):
+        RESULT_BASE_DIR = self.BASE_DIR + "data/result/" + self.file_name_head
+        self.MOOD_DATA_FILE_NAME = RESULT_BASE_DIR + '_mood_data.csv'
+        self.MOOD_DATA_EXCEL_FILE_NAME = RESULT_BASE_DIR + '_mood_data.xlsx'
+        LABEL_BASE_DIR = self.BASE_DIR + "data/label/" + self.file_name_head
+        self.LABEL_FILE_CSV = LABEL_BASE_DIR + '_label_data.csv'
+        self.LABEL_FILE_EXCEL = LABEL_BASE_DIR + '_label_data.xlsx'
+
 
     def load_file_from_redis(self):
         self.do_recover_from_exist_data()
@@ -240,13 +247,13 @@ class QQZoneAnalysis(QQZoneSpider):
         #               "水、赶紧、仍然、还是、屡次、依然、重新、还、再、再三、偶尔都、总、共、总共、统统、只、仅仅、单、净、光、一齐、一概、一律、单单、就大肆、肆意、特意、" \
         #               "亲自、猛然、忽然、公然、连忙、赶紧、悄悄、暗暗、大力、稳步、阔步、单独、亲自难道、岂、究竟、偏偏、索性、简直、就、可、也许、难怪、大约、幸而、幸亏、" \
         #               "反倒、反正、果然、居然、竟然、何尝、何必、明明、恰恰、未免、只好、不妨"
-        with open('中文停用词库.txt', 'r', encoding='gbk') as r:
+
+        with open('../../resource/中文停用词库.txt', 'r', encoding='gbk') as r:
             waste_words = r.readlines()
         waste_words = list(map(lambda x: x.strip(), waste_words))
         waste_words.extend(['uin', 'nick'])
         waste_words = set(waste_words)
         for word in word_list:
-            # print(word)
             if len(word) >= 2 and word.find('e') == -1 and word not in waste_words:
                 word_list2.append(word)
         words_text = " ".join(word_list2)
@@ -275,12 +282,7 @@ class QQZoneAnalysis(QQZoneSpider):
 
 
 def clean_label_data():
-    name_list = ['maicius', 'fuyuko', 'chikuo', 'xiong', 'pylj', 'lsy', 'CiCi', 'tx', 'cc', 'cj', 'yd', 'even',
-                 'silence', 'tnm', 'ccc', 'cx', 'ag', 'muyang', 'bot', 'ymm', 'mtz', 'ldc', 'zeng', 'rhyme', 'my',
-                 'rsg', 'rgg', 'bb', 'ssx', 'sj', 'yqr', 'kfg', 'xx', 'jtg', 'black', 'Thermal', 'sonja', 'Latham',
-                 'cwy', 'liuyh', 'admit', 'lzgz', 'bgjsj', 'zhdx', 'hjh', 'rzd', 'dsyy', 'sage', 'zq', 'lyx', 'tangt',
-                 'yml', 'xzf', 'jz', 'xyq', 'tel', 'lc', 'br', 'Eudemonia', 'luyux', 'xl', 'leisy', 'point', 'tym',
-                 'wangy', 'mj', 'zzy', 'meow']
+
     new_list = ['maicius']
     for name in new_list:
         print(name + '====================')

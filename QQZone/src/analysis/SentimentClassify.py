@@ -1,5 +1,6 @@
 from aip import AipNlp
 import json
+
 class SentimentClassify(object):
     def __init__(self):
         APP_ID, API_KEY, SECRET_KEY = self.get_api_keys()
@@ -7,7 +8,8 @@ class SentimentClassify(object):
         self.sc_url = 'https://aip.baidubce.com/rpc/2.0/nlp/v1/sentiment_classify'
 
     def get_api_keys(self):
-        with open('../config/api_key.json', 'r', encoding='utf-8') as r:
+        config_path = '../../resource/config/api_key.json'
+        with open(config_path, 'r', encoding='utf-8') as r:
             keys = json.load(r)
         return keys['AppId'], keys['ApiKey'], keys['SecretKey']
 

@@ -1,9 +1,9 @@
-from QQZone.src.analysis import QQZoneAnalysis
+from QQZone.src.analysis.QQZoneAnalysis import QQZoneAnalysis
 import json
 from QQZone.src.util.util import get_file_list, get_mktime2
 import pandas as pd
 import re
-from QQZone.src.analysis import SentimentClassify
+from QQZone.src.analysis.SentimentClassify import SentimentClassify
 
 
 class TrainMood(QQZoneAnalysis):
@@ -15,11 +15,14 @@ class TrainMood(QQZoneAnalysis):
         QQZoneAnalysis.__init__(self, use_redis=use_redis, debug=debug, file_name_head='maicius',
                                 stop_time='2014-06-10',
                                 stop_num=500, analysis_friend=False)
+
+        TRAIN_BASE_DIR = self.BASE_DIR + 'data/train/' + file_name_head
         self.IMAGE_SCORE_FILE_PATH = '/Users/maicius/code/nima.pytorch/nima/result_dict.json'
-        self.MOOD_DATA_SCORE_FILE_NAME = '../data/train/' + file_name_head + '_score_mood_data.csv'
-        self.RE_DO_SENTIMENT_FILE_NAME = '../data/train/' + file_name_head + '_re_do_mood_data.csv'
-        self.TEXT_LABEL_TRAIN_DATA = '../data/train/' + file_name_head + '_mood_text.csv'
-        self.TRAIN_DATA_AFTER_CLASSIFIC = '../data/train/' + file_name_head + '_mood_classific.csv'
+        self.MOOD_DATA_SCORE_FILE_NAME = TRAIN_BASE_DIR + '_score_mood_data.csv'
+        self.RE_DO_SENTIMENT_FILE_NAME = TRAIN_BASE_DIR + '_re_do_mood_data.csv'
+        self.TEXT_LABEL_TRAIN_DATA = TRAIN_BASE_DIR + '_mood_text.csv'
+        self.TRAIN_DATA_AFTER_CLASSIFIC = TRAIN_BASE_DIR + '_mood_classific.csv'
+
         self.TEXT_LABEL_RESULT_TRAIN_DATA = '../data/train3/text_' + file_name_head + '_label.csv'
         self.TEXT_CLASSIFICATION_DATA_SET = '../data/train/'
         self.FINAL_RESULT_TRAIN_DATA = '../data/train/' + file_name_head + '_final_train.csv'
