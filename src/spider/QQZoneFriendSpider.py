@@ -1,8 +1,8 @@
-from QQZone.src.spider.QQZoneSpider import QQZoneSpider
+from src.spider.QQZoneSpider import QQZoneSpider
 from urllib import parse
 import json
 import pandas as pd
-from QQZone.src.util import util
+from src.util import util
 
 
 class QQZoneFriendSpider(QQZoneSpider):

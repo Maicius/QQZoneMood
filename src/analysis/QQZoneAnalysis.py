@@ -1,4 +1,4 @@
-from QQZone.src.spider.QQZoneSpider import QQZoneSpider
+from src.spider.QQZoneSpider import QQZoneSpider
 import re
 import json
 import pandas as pd
@@ -6,11 +6,9 @@ import jieba
 from wordcloud import WordCloud, ImageColorGenerator, STOPWORDS
 from scipy.misc import imread
 import matplotlib.pyplot as plt
-from QQZone.src.spider.QQZoneFriendSpider import QQZoneFriendSpider
-from QQZone.src.analysis.Average import Average
-from QQZone.src.util.util import get_mktime
-from QQZone.src.util.util import open_file_list
-from QQZone.src.util import util
+from src.spider.QQZoneFriendSpider import QQZoneFriendSpider
+from src.analysis.Average import Average
+from src.util import util
 
 
 class QQZoneAnalysis(QQZoneSpider):

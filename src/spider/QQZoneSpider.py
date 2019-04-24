@@ -14,7 +14,7 @@ import json
 import copy
 import datetime
 from copy import deepcopy
-from QQZone.src.util import util
+from src.util import util
 import math
 import logging
 
