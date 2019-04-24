@@ -3,7 +3,7 @@ import json
 from src.util.util import get_mktime2
 import pandas as pd
 import re
-from src.analysis import SentimentClassify
+from src.analysis.SentimentClassify import SentimentClassify
 
 
 class TrainMood(QQZoneAnalysis):

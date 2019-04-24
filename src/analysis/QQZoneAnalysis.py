@@ -26,7 +26,6 @@ class QQZoneAnalysis(QQZoneSpider):
             self.friend = QQZoneFriendSpider(analysis=True)
             self.friend.clean_friend_data()
         self.av = Average(use_redis=False, file_name_head=file_name_head, analysis=True)
-        self.labels = '1: 旅游与运动；2：爱情与家庭；3：学习与工作；4：广告；5：生活日常；6.其他；7.人生感悟'
 
         self.init_analysis_path()
 
@@ -43,31 +42,6 @@ class QQZoneAnalysis(QQZoneSpider):
 
     def load_file_from_redis(self):
         self.do_recover_from_exist_data()
-
-    def export_all_label_data(self):
-        data_df = util.open_file_list(self.BASE_DIR + 'data/labeld/', open_data_frame=True)
-        data_df['label_type'] = self.labels
-        data_df.drop(['Unnamed: 0'], axis=1, inplace=True)
-        data_df = data_df[data_df.type.notna()]
-        cols = ['user', 'type', 'content', 'label_type', 'tid']
-        data_df = data_df.ix[:, cols]
-        # data_df.drop(['user'],axis=1, inplace=True)
-        data_df.to_csv(self.label_path + 'result/' + 'all_20181114.csv')
-        data_df.to_excel(self.label_path + 'result/' + 'all_20181114.xlsx')
-
-    def export_label_data(self, df):
-        label_data = df.sample(frac=0.5)
-        if label_data.shape[0] > self.stop_num:
-            label_data = label_data.iloc[0:self.stop_num, :]
-        label_df = label_data[['tid', 'content', 'user']]
-        label_df['type'] = ''
-        label_df['label_type'] = self.labels
-        cols = ['user', 'type', 'content', 'label_type', 'tid']
-        label_df = label_df.ix[:, cols]
-        label_df.to_csv(self.LABEL_FILE_CSV)
-        label_df.to_excel(self.LABEL_FILE_EXCEL)
-        if self.debug:
-            print("导出待标注数据成功")
 
     def check_data_shape(self):
         if len(self.mood_details) == len(self.like_list_names) == len(self.like_detail):
@@ -302,7 +276,7 @@ def clean_label_data():
 if __name__ == '__main__':
     analysis = QQZoneAnalysis(use_redis=True, debug=True, file_name_head='maicius', stop_time='2014-06-10',
                               stop_num=500, analysis_friend=False)
-    # analysis.export_all_label_data()
-    clean_label_data()
+
+
 
 
