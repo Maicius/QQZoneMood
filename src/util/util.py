@@ -60,7 +60,7 @@ def get_month(date):
     time_array = time.strptime(str(date), "%Y-%m-%d")
     return time.strftime("%Y-%m", time_array)
 
-def check_file_exist(dir):
+def check_dir_exist(dir):
     if os.path.exists(dir) == False:
         os.makedirs(dir)
 

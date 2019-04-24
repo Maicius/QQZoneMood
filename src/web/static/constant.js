@@ -1,0 +1,1 @@
+const HISTORY_DOM = 'history_dom';

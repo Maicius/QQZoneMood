@@ -15,6 +15,7 @@ import copy
 import datetime
 from copy import deepcopy
 from src.util import util
+from src.util.constant import BASE_DIR
 import math
 import logging
 
@@ -47,7 +48,7 @@ class QQZoneSpider(object):
         self.download_mood_detail = download_mood_detail
         self.download_like_detail = download_like_detail
         self.download_like_names = download_like_names
-        self.BASE_DIR = '../../resource/'
+
         if stop_time != '-1':
             self.stop_time = util.get_mktime(stop_time)
         else:
@@ -102,13 +103,13 @@ class QQZoneSpider(object):
 
     def init_file_name(self, file_name_head):
         logging.info('file_name_head:' + self.file_name_head)
-        DATA_DIR_HEAD = self.BASE_DIR + 'data/' + file_name_head
+        DATA_DIR_HEAD = BASE_DIR + 'data/' + file_name_head
         self.CONTENT_FILE_NAME = DATA_DIR_HEAD + '_QQ_content.json'
         self.LIKE_DETAIL_FILE_NAME = DATA_DIR_HEAD + '_QQ_like_detail' + '.json'
         self.LIKE_LIST_NAME_FILE_NAME = DATA_DIR_HEAD + '_QQ_like_list_name' + '.json'
         self.MOOD_DETAIL_FILE_NAME = DATA_DIR_HEAD + '_QQ_mood_detail' + '.json'
 
-        ERROR_DIR_HEAD = self.BASE_DIR + 'error/' + file_name_head
+        ERROR_DIR_HEAD = BASE_DIR + 'error/' + file_name_head
         self.ERROR_LIKE_DETAIL_FILE_NAME = ERROR_DIR_HEAD + '_QQ_like_detail_error' + '.json'
         self.ERROR_LIKE_LIST_NAME_FILE_NAME = ERROR_DIR_HEAD + '_QQ_like_list_name_error' + '.json'
         self.ERROR_MOOD_DETAIL_FILE_NAME = ERROR_DIR_HEAD + '_QQ_mood_detail_error' + '.json'
@@ -117,12 +118,12 @@ class QQZoneSpider(object):
         self.ERROR_MOOD_DETAIL_UNIKEY_FILE_NAME = ERROR_DIR_HEAD + '_QQ_mood_detail_error_unikey' + '.txt'
 
 
-        self.SMALL_IMAGE_DIR = self.BASE_DIR + 'qq_image/' + file_name_head + '/'
-        self.BIG_IMAGE_DIR = self.BASE_DIR + 'qq_big_image/' + file_name_head + '/'
-        util.check_file_exist(DATA_DIR_HEAD)
-        util.check_file_exist(ERROR_DIR_HEAD)
-        util.check_file_exist(self.SMALL_IMAGE_DIR)
-        util.check_file_exist(self.BIG_IMAGE_DIR)
+        self.SMALL_IMAGE_DIR = BASE_DIR + 'qq_image/' + file_name_head + '/'
+        self.BIG_IMAGE_DIR = BASE_DIR + 'qq_big_image/' + file_name_head + '/'
+        util.check_dir_exist(DATA_DIR_HEAD)
+        util.check_dir_exist(ERROR_DIR_HEAD)
+        util.check_dir_exist(self.SMALL_IMAGE_DIR)
+        util.check_dir_exist(self.BIG_IMAGE_DIR)
         print("Init file Name Finish:", file_name_head)
 
     def login(self):
@@ -161,7 +162,7 @@ class QQZoneSpider(object):
         self.web.quit()
 
     def get_username_password(self):
-        config_path = self.BASE_DIR + 'config/userinfo.json'
+        config_path = BASE_DIR + 'config/userinfo.json'
         try:
             with open(config_path, 'r', encoding='utf-8') as r:
                 userinfo = json.load(r)
@@ -744,7 +745,7 @@ class QQZoneSpider(object):
 def capture_data():
     sp = QQZoneSpider(use_redis=True, debug=True, mood_begin=0, mood_num=-1,
                       stop_time='2015-06-01',
-                      download_small_image=False, download_big_image=True,
+                      download_small_image=False, download_big_image=False,
                       download_mood_detail=True, download_like_detail=True,
                       download_like_names=True, recover=False)
     sp.login()

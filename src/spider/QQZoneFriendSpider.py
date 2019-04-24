@@ -25,7 +25,7 @@ class QQZoneFriendSpider(QQZoneSpider):
         self.FRIEND_DETAIL_LIST_FILE_NAME = FRIEND_DIR_HEAD + '_friend_detail_list.csv'
         self.FRIEND_HEADER_IMAGE_PATH = FRIEND_DIR_HEAD + '/header/'
 
-        util.check_file_exist(self.FRIEND_HEADER_IMAGE_PATH)
+        util.check_dir_exist(self.FRIEND_HEADER_IMAGE_PATH)
         self.friend_detail = []
         self.friend_list = []
         self.friend_df = None

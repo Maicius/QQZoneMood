@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 from src.spider.QQZoneFriendSpider import QQZoneFriendSpider
 from src.analysis.Average import Average
 from src.util import util
-
+from src.util.constant import BASE_DIR
 
 class QQZoneAnalysis(QQZoneSpider):
     def __init__(self, use_redis=False, debug=False, file_name_head='', analysis_friend=False, stop_time='2014-01-01',
@@ -19,7 +19,6 @@ class QQZoneAnalysis(QQZoneSpider):
         self.mood_data_df = pd.DataFrame()
         self.stop_num = stop_num
         self.file_name_head = file_name_head
-
         self.analysis_friend = analysis_friend
         self.stop_time = util.get_mktime(stop_time)
         if self.analysis_friend:
@@ -30,14 +29,15 @@ class QQZoneAnalysis(QQZoneSpider):
         self.init_analysis_path()
 
     def init_analysis_path(self):
-        RESULT_BASE_DIR = self.BASE_DIR + "data/result/" + self.file_name_head
+
+        RESULT_BASE_DIR = BASE_DIR + "data/result/" + self.file_name_head
         self.MOOD_DATA_FILE_NAME = RESULT_BASE_DIR + '_mood_data.csv'
         self.MOOD_DATA_EXCEL_FILE_NAME = RESULT_BASE_DIR + '_mood_data.xlsx'
-        LABEL_BASE_DIR = self.BASE_DIR + "data/label/" + self.file_name_head
+        LABEL_BASE_DIR = BASE_DIR + "data/label/" + self.file_name_head
         self.LABEL_FILE_CSV = LABEL_BASE_DIR + '_label_data.csv'
         self.LABEL_FILE_EXCEL = LABEL_BASE_DIR + '_label_data.xlsx'
-        self.label_path = self.BASE_DIR + 'data/label/'
-        self.image_path = self.BASE_DIR + '/image/'
+        self.label_path = BASE_DIR + 'data/label/'
+        self.image_path = BASE_DIR + '/image/'
 
 
     def load_file_from_redis(self):
@@ -272,6 +272,12 @@ def clean_label_data():
         # analysis.calculate_like_cloud(analysis.mood_data_df)
         # analysis.export_all_label_data()
 
+def get_mood_df(name):
+    analysis = QQZoneAnalysis(use_redis=True, debug=True, file_name_head=name, stop_time='2014-06-10',
+                              stop_num=500, analysis_friend=False)
+    analysis.get_useful_info_from_json()
+    analysis.save_data_to_csv()
+    return analysis.mood_data_df
 
 if __name__ == '__main__':
     analysis = QQZoneAnalysis(use_redis=True, debug=True, file_name_head='maicius', stop_time='2014-06-10',
