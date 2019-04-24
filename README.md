@@ -158,13 +158,13 @@
 
 - 运行结果例图：
 
-![Image](QQZone/image/comment.jpg)
-![Image3](QQZone/image/comment_content.jpg)
-![Image](QQZone/image/bike2.png)
-![QQ空间说说历史曲线图](QQZone/image/history.png)  
-![QQ空间说说按点赞和评论数分类图](QQZone/image/shuoshuoPie.png)  
+![Image](resource/image/comment.jpg)
+![Image3](resource/image/comment_content.jpg)
+![Image](resource/image/bike2.png)
+![QQ空间说说历史曲线图](resource/image/history.png)  
+![QQ空间说说按点赞和评论数分类图](resource/image/shuoshuoPie.png)  
 
 > QQ动态关键字词云
 
-![Image](QQZone/image/relation.png)
+![Image](resource/image/relation.png)
 > 好友关系图
