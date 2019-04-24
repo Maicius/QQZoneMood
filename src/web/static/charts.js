@@ -18,6 +18,8 @@ function draw_history_line(domName, result, chartName) {
         var serie = {
             name: legendData[v],
             type: 'line',
+            symbol: "circle",
+            symbolSize: 1,
             data: metaDate[v]
         };
         serieData.push(serie)
@@ -38,7 +40,7 @@ function draw_history_line(domName, result, chartName) {
 
         legend: {
             show: true, left: "right", data: legendData, y: "5%",
-            itemWidth: 18, itemHeight: 12, textStyle: {color: "#fff", fontSize: 14},
+            textStyle: {color: "#fff", fontSize: 14},
         },
         dataZoom: [{
             startValue: '2017-06-01 00:00:00',
@@ -64,11 +66,11 @@ function draw_history_line(domName, result, chartName) {
             formatter: function (params) {
                 var text = params[0].name.split(":");
                 sub_text = '';
-                for(var i=1; i < text.length; i++){
-                    for (var j=0; j < text[i].length; j++){
-                        if (j % 30 === 0 && j !== 0){
+                for (var i = 1; i < text.length; i++) {
+                    for (var j = 0; j < text[i].length; j++) {
+                        if (j % 30 === 0 && j !== 0) {
                             sub_text = sub_text + text[i][j] + '<br />'
-                        }else{
+                        } else {
                             sub_text = sub_text + text[i][j]
                         }
 
@@ -85,7 +87,7 @@ function draw_history_line(domName, result, chartName) {
             {
                 type: 'category',
                 axisLine: {show: true, lineStyle: {color: '#6173A3'}},
-                axisLabel: {show: false, interval: 0, textStyle: {color: '#9ea7c4', fontSize: 14}},
+                axisLabel: {show: false, interval: 0},
                 axisTick: {show: false},
                 data: xAxisData,
             },
