@@ -68,7 +68,7 @@ class QQZoneSpider(object):
         self.mood_host = self.http_host + '/' + self.username + '/mood/'
         self.raw_username = deepcopy(self.username)
         self.headers = {
-            'host': 'h5.qzone.qq.com',
+            'host': 'user.qzone.qq.com',
             'accept-encoding': 'gzip, deflate, br',
             'accept-language': 'zh-CN,zh;q=0.8',
             'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
@@ -89,7 +89,10 @@ class QQZoneSpider(object):
 
         if (use_redis):
             self.re = self.connect_redis()
-        self.user_info = UserInfo()
+
+        self.user_info = UserInfo().load()
+        if self.user_info is None:
+            self.user_info = UserInfo()
         self.user_info.QQ = self.username
         self.user_info.nickname = self.file_name_head
 
@@ -851,7 +854,7 @@ def capture_data():
     sp.login()
     sp.get_main_page_info()
     sp.get_mood_list()
-    sp.user_info.save()
+    sp.user_info.save_user()
 
 
 if __name__ == '__main__':

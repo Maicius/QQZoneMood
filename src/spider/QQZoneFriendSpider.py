@@ -9,16 +9,17 @@ class QQZoneFriendSpider(QQZoneSpider):
     """
     爬取自己的好友的数量等基本信息（不是爬好友的动态）
     """
-    def __init__(self, use_redis=False, debug=False, analysis=False):
+    def __init__(self, use_redis=False, debug=False, analysis=False, file_name_head=''):
         """
 
         :param use_redis: 是否使用redis
         :param debug: 是否开启debug模式
         :param analysis: 如果为true, 会执行爬虫程序，再执行分析程序，如果为false，只执行分析程序
         """
-        QQZoneSpider.__init__(self, use_redis=use_redis, debug=debug)
+        QQZoneSpider.__init__(self, use_redis=use_redis, debug=debug, file_name_head=file_name_head)
         if self.g_tk == 0 and analysis == False:
             self.login()
+
         FRIEND_DIR_HEAD = BASE_DIR + 'friend/' + self.file_name_head
         self.FRIEND_LIST_FILE_NAME = FRIEND_DIR_HEAD + '_friend_list.json'
         self.FRIEND_DETAIL_FILE_NAME = FRIEND_DIR_HEAD + '_friend_detail.json'
@@ -30,6 +31,7 @@ class QQZoneFriendSpider(QQZoneSpider):
         self.friend_list = []
         self.friend_df = None
         self.re = self.connect_redis()
+
 
     def get_friend_list(self):
         """
@@ -157,7 +159,6 @@ class QQZoneFriendSpider(QQZoneSpider):
         print("File Name:", self.FRIEND_DETAIL_LIST_FILE_NAME)
 
     def get_friend_total_num(self):
-
         self.load_friend_data()
         friend_total_num = len(self.friend_list)
         return friend_total_num
@@ -175,11 +176,21 @@ class QQZoneFriendSpider(QQZoneSpider):
         print(util.get_standard_time_from_mktime(timestamp), friend_time_num)
         return friend_time_num
 
+    def get_friend_result_file_name(self):
+        return self.FRIEND_DETAIL_LIST_FILE_NAME
+
+    def get_friend_info(self):
+        if self.friend_df is None:
+            self.friend_df = pd.read_csv(self.FRIEND_DETAIL_LIST_FILE_NAME)
+        friend_total_num = self.friend_df.shape[0]
+
+
+
 
 if __name__ == '__main__':
-    friend_spider = QQZoneFriendSpider(use_redis=True, debug=True, analysis=True)
+    friend_spider = QQZoneFriendSpider(use_redis=True, debug=True, analysis=True, file_name_head='1272082503')
     friend_spider.get_friend_detail()
     # friend_spider.download_head_image()
     friend_spider.clean_friend_data()
-    friend_spider.calculate_friend_num_timeline(1411891250)
+    # friend_spider.calculate_friend_num_timeline(1411891250)
 

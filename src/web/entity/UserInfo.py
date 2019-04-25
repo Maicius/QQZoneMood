@@ -25,7 +25,16 @@ class UserInfo(object):
                     first_friend=self.first_friend, years=self.years, like_friend_nam=self.like_friend_name,
                     cmt_friend_name=self.cmt_friend_name)
 
-    def save(self):
-        info = self.to_dict()
+    def save_user(self):
+        data = self.to_dict()
         with open(self.temp_dir + self.QQ + ".json", 'w', encoding='utf-8') as w:
-            json.dump(info, w)
+            json.dump(data, w)
+
+    def load(self):
+        try:
+            with open(self.temp_dir + self.QQ + ".json", 'r', encoding='utf-8') as r:
+                user = json.load(r)
+            user = self.__dict__.update(user)
+            return user
+        except BaseException as e:
+            return None
