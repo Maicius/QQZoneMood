@@ -29,7 +29,6 @@ class QQZoneAnalysis(QQZoneSpider):
         self.init_analysis_path()
 
     def init_analysis_path(self):
-
         RESULT_BASE_DIR = BASE_DIR + "data/result/" + self.file_name_head
         self.MOOD_DATA_FILE_NAME = RESULT_BASE_DIR + '_mood_data.csv'
         self.MOOD_DATA_EXCEL_FILE_NAME = RESULT_BASE_DIR + '_mood_data.xlsx'
@@ -38,7 +37,6 @@ class QQZoneAnalysis(QQZoneSpider):
         self.LABEL_FILE_EXCEL = LABEL_BASE_DIR + '_label_data.xlsx'
         self.label_path = BASE_DIR + 'data/label/'
         self.image_path = BASE_DIR + '/image/'
-
 
     def load_file_from_redis(self):
         self.do_recover_from_exist_data()
@@ -55,6 +53,20 @@ class QQZoneAnalysis(QQZoneSpider):
 
     def save_data_to_excel(self):
         pd.DataFrame(self.mood_data_df).to_excel(self.MOOD_DATA_EXCEL_FILE_NAME)
+
+    def load_mood_data(self):
+        try:
+            self.mood_data_df = pd.read_csv(self.MOOD_DATA_FILE_NAME)
+            self.mood_data_df['uin_list'] = self.mood_data_df['uin_list'].apply(
+                lambda x: json.loads(x.replace('\'', '\"')))
+        except:
+            try:
+                self.mood_data_df = pd.read_excel(self.MOOD_DATA_EXCEL_FILE_NAME)
+                self.mood_data_df['uin_list'] = self.mood_data_df['uin_list'].apply(
+                    lambda x: json.loads(x.replace('\'', '\"')))
+            except BaseException as e:
+                print("加载mood_data_df失败，开始重新清洗数据")
+                self.get_useful_info_from_json()
 
     def get_useful_info_from_json(self):
         """
@@ -249,19 +261,22 @@ class QQZoneAnalysis(QQZoneSpider):
         cmt_dict = {x[0]: x[1] for x in cmt_df.values}
         self.drawWordCloud(cmt_dict, self.file_name_head + '_cmt_', dict_type=True)
 
-    def calculate_like_cloud(self, df):
+    def rank_like_people(self, df):
         uin_list = df['uin_list']
         all_uin_list = []
         for item in uin_list:
             all_uin_list.extend(item)
         all_uin_df = pd.DataFrame(all_uin_list)
         all_uin_count = all_uin_df.groupby(['nick']).count().reset_index()
+        return all_uin_count
+
+    def calculate_like_cloud(self, df):
+        all_uin_count = self.rank_like_people(df)
         all_uin_dict = {str(x[0]): x[1] for x in all_uin_count.values}
         self.drawWordCloud(all_uin_dict, self.file_name_head + '_like_', dict_type=True)
 
 
 def clean_label_data():
-
     new_list = ['maicius']
     for name in new_list:
         print(name + '====================')
@@ -272,10 +287,25 @@ def clean_label_data():
         analysis.save_data_to_csv()
         # analysis.save_data_to_excel()
         # analysis.export_label_data(analysis.mood_data_df)
-        analysis.calculate_content_cloud(analysis.mood_data_df)
+        # analysis.calculate_content_cloud(analysis.mood_data_df)
         # analysis.calculate_cmt_cloud(analysis.mood_data_df)
-        # analysis.calculate_like_cloud(analysis.mood_data_df)
+        analysis.calculate_like_cloud(analysis.mood_data_df)
         # analysis.export_all_label_data()
+
+
+def get_most_people(file_name_head):
+    analysis = QQZoneAnalysis(use_redis=True, debug=True, file_name_head=file_name_head, analysis_friend=False)
+    # analysis.load_mood_data()
+    analysis.get_useful_info_from_json()
+    all_uin_count = analysis.rank_like_people(analysis.mood_data_df)
+    all_uin_count = all_uin_count.sort_values(by="gender", ascending=False).reset_index()
+    most_like_name = all_uin_count.loc[0, 'nick']
+
+    cmt_df = analysis.av.calculate_cmt_rank(analysis.mood_data_df)
+    most_cmt_name = cmt_df.loc[0, 'cmt_name']
+    analysis.user_info.cmt_friend_name = most_cmt_name
+    analysis.user_info.like_friend_name = most_like_name
+    analysis.user_info.save_user(analysis.username)
 
 def get_mood_df(file_name_head, export_csv=True, export_excel=False):
     """
@@ -294,10 +324,10 @@ def get_mood_df(file_name_head, export_csv=True, export_excel=False):
         analysis.save_data_to_excel()
     return analysis.mood_data_df
 
+
 if __name__ == '__main__':
     analysis = QQZoneAnalysis(use_redis=True, debug=True, file_name_head='maicius', stop_time='2014-06-10',
                               stop_num=500, analysis_friend=False)
-
-
-
-
+    # get_mood_df("1272082503")
+    get_most_people("1272082503")
+    # clean_label_data()

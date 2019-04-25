@@ -13,6 +13,8 @@ class UserInfo(object):
     first_time = 0
     years = 0
 
+    first_mood_time = ''
+
     first_friend_time = ''
     first_friend = ''
     first_friend_header = ''
@@ -26,7 +28,6 @@ class UserInfo(object):
     temp_dir = BASE_DIR + 'temp/'
     is_none = True
     def __init__(self):
-
         check_dir_exist(self.temp_dir)
 
     def to_dict(self):
@@ -35,7 +36,7 @@ class UserInfo(object):
                     first_friend=self.first_friend, first_friend_time=self.first_friend_time,
                     years=self.years, first_friend_header = self.first_friend_header,
                     like_friend_name=self.like_friend_name, like_friend_header=self.like_friend_header,
-                    cmt_friend_name_header=self.cmt_friend_name_header,
+                    cmt_friend_name_header=self.cmt_friend_name_header, first_mood_time=self.first_mood_time,
                     cmt_friend_name=self.cmt_friend_name)
 
     def save_user(self, QQ):
@@ -48,6 +49,7 @@ class UserInfo(object):
             with open(self.temp_dir + QQ + ".json", 'r', encoding='utf-8') as r:
                 user = json.load(r)
             self.change_dict_to_object(user)
+            self.is_none = False
             return self
         except BaseException as e:
             print(e)
@@ -69,3 +71,4 @@ class UserInfo(object):
         self.like_friend_header = data['like_friend_header']
         self.cmt_friend_name_header = data['cmt_friend_name_header']
         self.cmt_friend_name = data['cmt_friend_name']
+        self.first_mood_time = data['first_mood_time']

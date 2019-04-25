@@ -149,6 +149,7 @@ class QQZoneSpider(object):
             self.auto_get_cookie()
         # 根据cookie计算g_tk值
         self.get_g_tk()
+        print("finish to calculate g_tk")
         self.headers['cookie'] = self.cookies
 
     def auto_get_cookie(self):
@@ -165,7 +166,7 @@ class QQZoneSpider(object):
         btn = self.web.find_element_by_id('login_button')
         time.sleep(1)
         btn.click()
-        time.sleep(1)
+        time.sleep(10)
         print("begin...")
         self.web.get('https://user.qzone.qq.com/{}/main'.format(self.username))
         time.sleep(3)
@@ -341,14 +342,19 @@ class QQZoneSpider(object):
             if recover_index is not None:
                 pos = recover_index // 20 * 20
                 recover_index_split = recover_index % 20
+
+
+        url = url_mood + '&pos=' + str(pos)
+        res = self.req.get(url=url, headers=self.headers, timeout=20)
+        mood = res.content.decode('utf-8')
+        print(res.status_code)
+        mood_json = json.loads(self.get_json(mood))
+        mood_num = mood_json['usrinfo']['msgnum']
+        self.get_first_mood(mood_num, url_mood)
         # 如果mood_num为-1，则下载全部的动态
         if self.mood_num == -1:
-            url = url_mood + '&pos=' + str(pos)
-            res = self.req.get(url=url, headers=self.headers, timeout=20)
-            mood = res.content.decode('utf-8')
-            print(res.status_code)
-            mood_json = json.loads(self.get_json(mood))
-            self.mood_num = mood_json['usrinfo']['msgnum']
+            self.mood_num = mood_num
+
 
         while pos < self.mood_num and self.until_stop_time:
             print('正在爬取', pos, '...')
@@ -394,6 +400,29 @@ class QQZoneSpider(object):
         self.save_all_data_to_json()
         self.result_report()
         print("finish===================")
+
+    def get_first_mood(self, mood_num, url_mood):
+        """
+        获取用户最早的一条动态的发表时间
+        :param mood_num:
+        :param url_mood:
+        :return:
+        """
+        try:
+            last_page = mood_num // 20
+            pos = 20 * last_page
+            url = url_mood + '&pos=' + str(pos)
+
+            mood_list = self.req.get(url=url, headers=self.headers, timeout=20)
+            if self.debug:
+                print("第一次动态发表时间:", mood_list.status_code)
+            json_content = json.loads(self.get_json(str(mood_list.content.decode('utf-8'))))
+            last_mood = json_content['msglist'][-1]
+            self.user_info.first_mood_time = last_mood['createTime']
+
+        except BaseException as e:
+            self.format_error(e, "获取第一次发表动态时间出错")
+
 
     def get_all_cmt_num(self, cmt_num, tid):
         top_id = self.username + '_' + tid
@@ -837,10 +866,10 @@ class QQZoneSpider(object):
     def get_qzone_token(self):
         url = 'https://user.qzone.qq.com/' + self.raw_username + '/main'
         print(url)
-        headers = deepcopy(self.headers)
-        headers['host'] = 'user.qzone.qq.com'
-        headers['TE'] = 'Trailers'
-        res = self.req.get(url=url, headers=headers)
+        # headers = deepcopy(self.headers)
+        # headers['host'] = 'user.qzone.qq.com'
+        # headers['TE'] = 'Trailers'
+        res = self.req.get(url=url, headers=self.headers)
         if self.debug:
             print("qzone token main page:", res.status_code)
         content = res.content.decode("utf-8")
@@ -849,18 +878,16 @@ class QQZoneSpider(object):
         print("qzone_token:", qzonetoken)
 
 def capture_data():
-    cookie_text = 'pgv_pvi=452072448; RK=+o+S14A/VT; tvfe_boss_uuid=7c5128d923ccdd6b; pac_uid=1_1272082503; ptcz=807bc32de0d90e8dbcdc3613231e3df03cb3ccfbf9013edf246be81ff3e0f51c; QZ_FE_WEBP_SUPPORT=1; pgv_pvid=4928238618; o_cookie=1272082503; __Q_w_s__QZN_TodoMsgCnt=1; _ga=amp-Iuo327Mw3_0w5xOcJY0tIA; zzpaneluin=; zzpanelkey=; pgv_si=s6639420416; ptisp=ctc; Loading=Yes; qz_screen=1920x1080; pgv_info=ssid=s5183597124; __Q_w_s_hat_seed=1; ptui_loginuin=1272082503; uin=o1272082503; skey=@fhH7NaoJt; p_uin=o1272082503; pt4_token=lEBHmP1fIIvnojhCSu0RAgRXO-Z15u3RO26LqkJgcGQ_; p_skey=umDCHZIM28UDW0AvaRyUw7loOuY*JuOcNtNPVe5CU30_; cpu_performance_v8=5'
-    cookie_text3 = 'pgv_pvi=9055134720; RK=+o+S14A/VT; ptcz=ce5105773ba3d41984ba433869ab7d909bf983124c856912c57f196ecbcc9721; pgv_pvid=942255861; QZ_FE_WEBP_SUPPORT=1; cpu_performance_v8=2; tvfe_boss_uuid=7a7c85e0ffdd9e02; o_cookie=1272082503; pac_uid=1_1272082503; qz_screen=1920x1080; __Q_w_s_hat_seed=1; __Q_w_s__QZN_TodoMsgCnt=1; qb_qua=; qb_guid=816f4f96f48945d890b6ef04080c5866; Q-H5-GUID=816f4f96f48945d890b6ef04080c5866; NetType=; pgv_si=s5382409216; uin=o1272082503; skey=@4p7LS0gZR; ptisp=ctc; p_uin=o1272082503; pt4_token=6dge60bJFq7Rh-T*uIOSJu4B-WC4cFpe712pUN2c8vY_; p_skey=i13luoXYiO2fkyYain-pURrI5BjPjpZqWPXkcoUHDjc_; zzpaneluin=; zzpanelkey=; Loading=Yes; pgv_info=ssid=s303278480'
-
+    cookie_text = 'pgv_pvi=452072448; RK=+o+S14A/VT; tvfe_boss_uuid=7c5128d923ccdd6b; pac_uid=1_1272082503; ptcz=807bc32de0d90e8dbcdc3613231e3df03cb3ccfbf9013edf246be81ff3e0f51c; QZ_FE_WEBP_SUPPORT=1; pgv_pvid=4928238618; o_cookie=1272082503; __Q_w_s__QZN_TodoMsgCnt=1; _ga=amp-Iuo327Mw3_0w5xOcJY0tIA; zzpaneluin=; zzpanelkey=; pgv_si=s6639420416; ptisp=ctc; pgv_info=ssid=s5183597124; __Q_w_s_hat_seed=1; ptui_loginuin=458546290; uin=o1272082503; skey=@75zEGXDpq; p_uin=o1272082503; pt4_token=iZsuFaop-9xgKzmH*PutQD-7a53lK4QXxLtuqmo45*w_; p_skey=XfSZBQvgcy4NZ1UXwWcYX8OCkt8m8zMqUg25Y2bxdMQ_; x-stgw-ssl-info=518753a70b1a27f6bbecf101009fb3cf|0.150|1556213105.488|15|r|I|TLSv1.2|ECDHE-RSA-AES128-GCM-SHA256|43500|h2|0; qz_screen=2560x1440; cpu_performance_v8=1'
     sp = QQZoneSpider(use_redis=True, debug=True, mood_begin=0, mood_num=-1,
-                      stop_time='2015-06-01',
+                      stop_time='2016-06-01',
                       download_small_image=False, download_big_image=False,
                       download_mood_detail=True, download_like_detail=True,
                       download_like_names=True, recover=False, cookie_text=None,
                       file_name_head='1272082503')
     sp.login()
     sp.get_main_page_info()
-    # sp.get_mood_list()
+    sp.get_mood_list()
     sp.user_info.save_user(sp.username)
 
 def get_user_basic_info():

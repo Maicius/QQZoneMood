@@ -103,4 +103,8 @@ error/*
 *_cmt_.jpg
 *_content_.jpg
 *_like_.jpg
+/header/*
+
+
+
 
