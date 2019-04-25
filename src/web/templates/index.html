@@ -7,17 +7,27 @@
                                      initial-scale=1.0,
                                      maximum-scale=1.0,
                                      user-scalable=no">
+    <script src="https://cdn.bootcss.com/avalon.js/2.0s/avalon.min.js"></script>
+
 </head>
 <body ms-controller="qqzone">
 <div class="wrapper">
     <nav class="navbar navbar-dark bg-dark">
         <a class="navbar-brand" href="#">QQ空间数据分析</a>
     </nav>
+
     <div class="main_container col-lg-8 col-md-12">
+        <div class="welcome">
+
+            <p>Hello, {{user}}</p>
+
+        </div>
+
         <div class="large_dom" id="history_dom">
             hello
         </div>
     </div>
+
 </div>
 </body>
 <script src="../static/constant.js"></script>
@@ -25,7 +35,7 @@
 <script src="https://cdn.bootcss.com/echarts/3.8.5/echarts.min.js"></script>
 <link href="https://cdn.bootcss.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://cdn.bootcss.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
-<script src="https://cdn.bootcss.com/avalon.js/2.0s/avalon.min.js"></script>
+
 <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 <link href="../static/style.css" rel="stylesheet">
 <script src="../static/charts.js"></script>

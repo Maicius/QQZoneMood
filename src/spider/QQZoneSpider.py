@@ -22,7 +22,8 @@ import logging
 class QQZoneSpider(object):
     def __init__(self, use_redis=False, debug=False, mood_begin=0, mood_num=-1, stop_time='-1',
                  download_small_image=False, download_big_image=False,
-                 download_mood_detail=True, download_like_detail=True, download_like_names=True, recover=False, file_name_head=''):
+                 download_mood_detail=True, download_like_detail=True, download_like_names=True, recover=False,
+                 file_name_head='', cookie_text=None):
         """
         init method
         :param use_redis: If true, use redis and json file to save data, if false, use json file only.
@@ -58,6 +59,7 @@ class QQZoneSpider(object):
         self.http_host = 'http://user.qzone.qq.com'
         self.use_redis = use_redis
         self.debug = debug
+        self.cookie_text = cookie_text
         self.username, self.password, self.file_name_head = self.get_username_password()
         if file_name_head != '':
             self.file_name_head = file_name_head
@@ -128,10 +130,18 @@ class QQZoneSpider(object):
 
     def login(self):
         """
-        模拟登陆， 需要selenium
-        登陆成功后获取cookie，并存在self.cookie中
+        提供两种登陆的方法，一是使用selenium自动模拟点击登陆，二是手动登陆后添加cookie文件
         :return:
         """
+        if self.cookie_text:
+            self.manu_get_cookie(self.cookie_text)
+        else:
+            self.auto_get_cookie()
+        # 根据cookie计算g_tk值
+        self.get_g_tk()
+        self.headers['Cookie'] = self.cookies
+
+    def auto_get_cookie(self):
         self.web = webdriver.Chrome()
         self.web.get(self.host)
         self.web.switch_to.frame('login_frame')
@@ -145,7 +155,7 @@ class QQZoneSpider(object):
         btn = self.web.find_element_by_id('login_button')
         time.sleep(1)
         btn.click()
-        time.sleep(20)
+        time.sleep(1)
         print("begin...")
         self.web.get('https://user.qzone.qq.com/{}'.format(self.username))
         print("End...")
@@ -154,12 +164,15 @@ class QQZoneSpider(object):
         for elem in self.web.get_cookies():
             cookie += elem["name"] + "=" + elem["value"] + ";"
         self.cookies = cookie
-        # 根据cookie计算g_tk值
-        self.get_g_tk()
-        self.headers['Cookie'] = self.cookies
         print("Login success")
         logging.info("login_success")
-        self.web.quit()
+        # self.web.quit()
+
+    def manu_get_cookie(self, cookie_text):
+        cookie = ''
+        # 获取cookie
+
+        self.cookies = cookie_text
 
     def get_username_password(self):
         config_path = BASE_DIR + 'config/userinfo.json'
@@ -319,7 +332,9 @@ class QQZoneSpider(object):
         # 如果mood_num为-1，则下载全部的动态
         if self.mood_num == -1:
             url = url_mood + '&pos=' + str(pos)
-            mood = self.req.get(url=url, headers=self.headers, timeout=20).content.decode('utf-8')
+            res = self.req.get(url=url, headers=self.headers, timeout=20)
+            mood = res.content.decode('utf-8')
+            print(res.status_code)
             mood_json = json.loads(self.get_json(mood))
             self.mood_num = mood_json['usrinfo']['msgnum']
 
@@ -376,9 +391,11 @@ class QQZoneSpider(object):
         for i in range(1, page):
 
             start = i * 20
-            print(start)
+
+
             url = self.get_cmt_detail_url(start=start, top_id=top_id)
             if self.debug:
+                print(start)
                 print('获取超过20的评论的人信息:', cmt_num, url)
             content = self.req.get(url, headers=self.headers).content
             try:
@@ -743,11 +760,15 @@ class QQZoneSpider(object):
 
 
 def capture_data():
+    cookie_text = 'pgv_pvi=452072448; RK=+o+S14A/VT; tvfe_boss_uuid=7c5128d923ccdd6b; pac_uid=1_1272082503; ptcz=807bc32de0d90e8dbcdc3613231e3df03cb3ccfbf9013edf246be81ff3e0f51c; QZ_FE_WEBP_SUPPORT=1; pgv_pvid=4928238618; o_cookie=1272082503; __Q_w_s__QZN_TodoMsgCnt=1; _ga=amp-Iuo327Mw3_0w5xOcJY0tIA; zzpaneluin=; zzpanelkey=; pgv_si=s6639420416; ptisp=ctc; Loading=Yes; qz_screen=1920x1080; pgv_info=ssid=s5183597124; __Q_w_s_hat_seed=1; ptui_loginuin=1272082503; uin=o1272082503; skey=@fhH7NaoJt; p_uin=o1272082503; pt4_token=lEBHmP1fIIvnojhCSu0RAgRXO-Z15u3RO26LqkJgcGQ_; p_skey=umDCHZIM28UDW0AvaRyUw7loOuY*JuOcNtNPVe5CU30_; cpu_performance_v8=5'
+    cookie_text2 = 'pgv_pvi=452072448; RK=+o+S14A/VT; tvfe_boss_uuid=7c5128d923ccdd6b; pac_uid=1_1272082503; ptcz=807bc32de0d90e8dbcdc3613231e3df03cb3ccfbf9013edf246be81ff3e0f51c; QZ_FE_WEBP_SUPPORT=1; pgv_pvid=4928238618; o_cookie=1272082503; cpu_performance_v8=19; __Q_w_s__QZN_TodoMsgCnt=1; _ga=amp-Iuo327Mw3_0w5xOcJY0tIA; zzpaneluin=; zzpanelkey=; pgv_si=s6639420416; ptisp=ctc; Loading=Yes; qz_screen=1920x1080; pgv_info=ssid=s5183597124; __Q_w_s_hat_seed=1; _qz_referrer=i.qq.com; ptui_loginuin=1272082503; uin=o1272082503; skey=@fhH7NaoJt; p_uin=o1272082503; pt4_token=lEBHmP1fIIvnojhCSu0RAgRXO-Z15u3RO26LqkJgcGQ_; p_skey=umDCHZIM28UDW0AvaRyUw7loOuY*JuOcNtNPVe5CU30_'
+    cookie_text3 = 'zzpaneluin=; zzpanelkey=; pgv_pvi=2824239104; pgv_si=s4958578688; ptisp=ctc; ptui_loginuin=1272082503; uin=o1272082503; skey=@fhH7NaoJt; RK=rg6Yh4AsUT; ptcz=2b1673e485021cff8bc419167bdbb6feb54bb66bb8b6978dc8e5c0c5e7c85e1d; p_uin=o1272082503; pt4_token=iLrrbukbOwjk15NlhY1ChK2QjFj6Pkb0BaamySWuAiQ_; p_skey=qAf9Q23ClaQG9fOaQEo5yuyMCM36iPY5XQTRe9P5ci4_; Loading=Yes; qz_screen=1680x1050; pgv_pvid=6249006964; pgv_info=ssid=s2754290126; QZ_FE_WEBP_SUPPORT=1'
     sp = QQZoneSpider(use_redis=True, debug=True, mood_begin=0, mood_num=-1,
                       stop_time='2015-06-01',
                       download_small_image=False, download_big_image=False,
                       download_mood_detail=True, download_like_detail=True,
-                      download_like_names=True, recover=False)
+                      download_like_names=True, recover=False, cookie_text=cookie_text,
+                      file_name_head='1272082503')
     sp.login()
     sp.get_mood_list()
 
