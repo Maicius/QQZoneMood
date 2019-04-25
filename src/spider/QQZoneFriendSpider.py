@@ -24,7 +24,8 @@ class QQZoneFriendSpider(QQZoneSpider):
         self.FRIEND_LIST_FILE_NAME = FRIEND_DIR_HEAD + '_friend_list.json'
         self.FRIEND_DETAIL_FILE_NAME = FRIEND_DIR_HEAD + '_friend_detail.json'
         self.FRIEND_DETAIL_LIST_FILE_NAME = FRIEND_DIR_HEAD + '_friend_detail_list.csv'
-        self.FRIEND_HEADER_IMAGE_PATH = FRIEND_DIR_HEAD + '/header/'
+        # 头像下载到web的static文件夹，以便在web中调用
+        self.FRIEND_HEADER_IMAGE_PATH = '../web/static/image/header/'
 
         util.check_dir_exist(self.FRIEND_HEADER_IMAGE_PATH)
         self.friend_detail = []
@@ -183,14 +184,23 @@ class QQZoneFriendSpider(QQZoneSpider):
         if self.friend_df is None:
             self.friend_df = pd.read_csv(self.FRIEND_DETAIL_LIST_FILE_NAME)
         friend_total_num = self.friend_df.shape[0]
-
-
-
+        zero_index = self.friend_df[self.friend_df['add_friend_time'] == 0].index
+        self.friend_df.drop(index=zero_index, axis=0, inplace=True)
+        self.friend_df.reset_index(inplace=True)
+        early_time = self.friend_df.loc[0,'add_friend_time']
+        early_nick = self.friend_df.loc[0, 'nick_name']
+        first_header_url = self.FRIEND_HEADER_IMAGE_PATH + str(self.friend_df.loc[0, 'uin']) + '.jpg'
+        self.user_info.first_friend = early_nick
+        self.user_info.first_friend_time = early_time
+        self.user_info.cmt_friend_name_header = first_header_url
+        self.user_info.friend_num = friend_total_num
+        self.user_info.save_user()
 
 if __name__ == '__main__':
     friend_spider = QQZoneFriendSpider(use_redis=True, debug=True, analysis=True, file_name_head='1272082503')
-    friend_spider.get_friend_detail()
-    # friend_spider.download_head_image()
+    # friend_spider.get_friend_detail()
+    friend_spider.download_head_image()
     friend_spider.clean_friend_data()
+    friend_spider.get_friend_info()
     # friend_spider.calculate_friend_num_timeline(1411891250)
 

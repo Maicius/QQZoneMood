@@ -768,12 +768,15 @@ class QQZoneSpider(object):
         except BaseException as e:
             self.format_error(e, "获取主页信息失败")
         try:
+            """
+            这里由未知原因可能会导致失败，如果出现403可以重复几次试一下
+            """
             res = self.req.get(url=url2, headers=self.headers)
             if self.debug:
                 print("获取登陆时间状态:", res.status_code)
             content = json.loads(self.get_json(res.content.decode("utf-8")))
             data = content['data']
-            self.user_info.first_time = data['firstlogin']
+            self.user_info.first_time = util.get_standard_time_from_mktime(data['firstlogin'])
             if self.debug:
                 print("Finish to get first time")
 
@@ -853,7 +856,7 @@ def capture_data():
                       file_name_head='1272082503')
     sp.login()
     sp.get_main_page_info()
-    sp.get_mood_list()
+    # sp.get_mood_list()
     sp.user_info.save_user()
 
 
