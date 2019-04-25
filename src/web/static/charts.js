@@ -59,6 +59,11 @@ function draw_history_line(domName, result, chartName) {
             type: 'inside'
         }],
         color: colors,
+        toolbox: {
+            feature: {
+                saveAsImage: {}
+            }
+        },
         tooltip: {
             trigger: 'axis',
             axisPointer: {type: 'shadow'},
