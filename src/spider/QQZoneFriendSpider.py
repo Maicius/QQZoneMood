@@ -3,7 +3,7 @@ from urllib import parse
 import json
 import pandas as pd
 from src.util import util
-
+from src.util.constant import BASE_DIR
 
 class QQZoneFriendSpider(QQZoneSpider):
     """
@@ -19,7 +19,7 @@ class QQZoneFriendSpider(QQZoneSpider):
         QQZoneSpider.__init__(self, use_redis=use_redis, debug=debug)
         if self.g_tk == 0 and analysis == False:
             self.login()
-        FRIEND_DIR_HEAD = self.BASE_DIR + 'friend/' + self.file_name_head
+        FRIEND_DIR_HEAD = BASE_DIR + 'friend/' + self.file_name_head
         self.FRIEND_LIST_FILE_NAME = FRIEND_DIR_HEAD + '_friend_list.json'
         self.FRIEND_DETAIL_FILE_NAME = FRIEND_DIR_HEAD + '_friend_detail.json'
         self.FRIEND_DETAIL_LIST_FILE_NAME = FRIEND_DIR_HEAD + '_friend_detail_list.csv'
@@ -178,7 +178,7 @@ class QQZoneFriendSpider(QQZoneSpider):
 
 if __name__ == '__main__':
     friend_spider = QQZoneFriendSpider(use_redis=True, debug=True, analysis=True)
-    # friend_spider.get_friend_detail()
+    friend_spider.get_friend_detail()
     # friend_spider.download_head_image()
     friend_spider.clean_friend_data()
     friend_spider.calculate_friend_num_timeline(1411891250)

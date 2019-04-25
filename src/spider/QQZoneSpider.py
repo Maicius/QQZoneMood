@@ -90,6 +90,8 @@ class QQZoneSpider(object):
         if (use_redis):
             self.re = self.connect_redis()
         self.user_info = UserInfo()
+        self.user_info.QQ = self.username
+        self.user_info.nickname = self.file_name_head
 
     def init_parameter(self):
         self.like_detail = []
@@ -751,10 +753,9 @@ class QQZoneSpider(object):
         try:
             res = self.req.get(url=url, headers=self.headers)
             if self.debug:
-                print("主页信息:", res.status_code)
+                print("主页信息状态:", res.status_code)
             content = json.loads(self.get_json(res.content.decode("utf-8")))
             data = content['data']['module_16']['data']
-
             self.user_info.mood_num = data['SS']
             self.user_info.photo_num = data['XC']
             self.user_info.rz_num = data['RZ']
@@ -766,12 +767,13 @@ class QQZoneSpider(object):
         try:
             res = self.req.get(url=url2, headers=self.headers)
             if self.debug:
-                print("获取登陆时间:", res.status_code)
+                print("获取登陆时间状态:", res.status_code)
             content = json.loads(self.get_json(res.content.decode("utf-8")))
             data = content['data']
             self.user_info.first_time = data['firstlogin']
             if self.debug:
                 print("Finish to get first time")
+
         except BaseException as e:
             self.format_error(e, "获取第一次登陆时间失败")
 
@@ -800,9 +802,7 @@ class QQZoneSpider(object):
             print('===================')
 
     def check_time(self, mood, stop_time):
-
         create_time = mood['created_time']
-
         if self.debug:
             print('time:', create_time, stop_time)
         if stop_time >= create_time:
@@ -848,10 +848,10 @@ def capture_data():
                       download_mood_detail=True, download_like_detail=True,
                       download_like_names=True, recover=False, cookie_text=None,
                       file_name_head='1272082503')
-
     sp.login()
     sp.get_main_page_info()
     sp.get_mood_list()
+    sp.user_info.save()
 
 
 if __name__ == '__main__':
