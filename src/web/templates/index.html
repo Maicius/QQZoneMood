@@ -18,10 +18,11 @@
 
     <div class="main_container col-lg-8 col-md-12">
         <div class="welcome">
-            <p>Hello, {{user.name}}</p>
+            <p>Hello, {{user.nickname}}</p>
             <p>{{user.first_time}}, 你第一次登陆了QQ空间</p>
-            <p>{{user.years}}年来，你一共写了{{user.ss_num}}条说说，并上传了{{user.p_num}}张照片</p>
-            <p>你在{{user.first_friend_time}}添加了第一个QQ好友{{user.first_friend}}</p>
+            <p>{{user.first_mood_time}}, 你发表了第一条动态</p>
+            <p>{{user.years}}年来，你一共写了{{user.mood_num}}条说说，并上传了{{user.photo_num}}张照片</p>
+            <p>你在{{user.first_friend_time}}添加了第一位好友{{user.first_friend}}</p>
             <p>至今已拥有{{user.friend_num}}位好友</p>
             <p>其中给你点赞最多的是{{user.like_friend_name}}，给你评论最多的是{{user.cmt_friend_name}}</p>
         </div>

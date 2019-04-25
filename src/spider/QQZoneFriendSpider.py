@@ -4,7 +4,7 @@ import json
 import pandas as pd
 from src.util import util
 from src.util.constant import BASE_DIR
-
+import time
 class QQZoneFriendSpider(QQZoneSpider):
     """
     爬取自己的好友的数量等基本信息（不是爬好友的动态）
@@ -133,6 +133,7 @@ class QQZoneFriendSpider(QQZoneSpider):
             self.load_friend_data()
         friend_total_num = len(self.friend_list)
         print("friend num:", friend_total_num)
+        self.user_info.friend_num = friend_total_num
         friend_list_df = pd.DataFrame(self.friend_list)
         self.friend_detail_list = []
         for friend in self.friend_detail:
@@ -183,22 +184,23 @@ class QQZoneFriendSpider(QQZoneSpider):
     def get_friend_info(self):
         if self.friend_df is None:
             self.friend_df = pd.read_csv(self.FRIEND_DETAIL_LIST_FILE_NAME)
-        friend_total_num = self.friend_df.shape[0]
+
         zero_index = self.friend_df[self.friend_df['add_friend_time'] == 0].index
         self.friend_df.drop(index=zero_index, axis=0, inplace=True)
         self.friend_df.reset_index(inplace=True)
-        early_time = self.friend_df.loc[0,'add_friend_time']
+        early_time = util.get_standard_time_from_mktime(self.friend_df.loc[0,'add_friend_time'])
+
         early_nick = self.friend_df.loc[0, 'nick_name']
-        first_header_url = self.FRIEND_HEADER_IMAGE_PATH + str(self.friend_df.loc[0, 'uin']) + '.jpg'
+        first_header_url = self.FRIEND_HEADER_IMAGE_PATH + str(int(self.friend_df.loc[0, 'friend_uin'])) + '.jpg'
         self.user_info.first_friend = early_nick
         self.user_info.first_friend_time = early_time
-        self.user_info.cmt_friend_name_header = first_header_url
-        self.user_info.friend_num = friend_total_num
-        self.user_info.save_user()
+        self.user_info.first_friend_header = first_header_url
+
+        self.user_info.save_user(self.username)
 
 if __name__ == '__main__':
-    friend_spider = QQZoneFriendSpider(use_redis=True, debug=True, analysis=True, file_name_head='1272082503')
-    # friend_spider.get_friend_detail()
+    friend_spider = QQZoneFriendSpider(use_redis=True, debug=True, analysis=False, file_name_head='1272082503')
+    friend_spider.get_friend_detail()
     friend_spider.download_head_image()
     friend_spider.clean_friend_data()
     friend_spider.get_friend_info()

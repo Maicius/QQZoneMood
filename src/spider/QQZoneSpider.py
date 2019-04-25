@@ -62,7 +62,7 @@ class QQZoneSpider(object):
         self.use_redis = use_redis
         self.debug = debug
         self.cookie_text = cookie_text
-        self.username, self.password, self.file_name_head = self.get_username_password()
+        self.username, self.password, self.file_name_head, self.nick_name = self.get_username_password()
         if file_name_head != '':
             self.file_name_head = file_name_head
         self.mood_host = self.http_host + '/' + self.username + '/mood/'
@@ -90,11 +90,11 @@ class QQZoneSpider(object):
         if (use_redis):
             self.re = self.connect_redis()
 
-        self.user_info = UserInfo().load()
+        self.user_info = UserInfo().load(self.username)
         if self.user_info is None:
             self.user_info = UserInfo()
         self.user_info.QQ = self.username
-        self.user_info.nickname = self.file_name_head
+        self.user_info.nickname = self.nick_name
 
     def init_parameter(self):
         self.like_detail = []
@@ -190,7 +190,7 @@ class QQZoneSpider(object):
         try:
             with open(config_path, 'r', encoding='utf-8') as r:
                 userinfo = json.load(r)
-            return userinfo['username'], userinfo['password'], userinfo['file_name_head']
+            return userinfo['username'], userinfo['password'], userinfo['file_name_head'], userinfo['nick_name']
         except:
             print("Error: File Not Found==============")
             print("请检查配置文件是否正确配置!!!!")
@@ -752,7 +752,7 @@ class QQZoneSpider(object):
     def get_main_page_info(self):
         """获取主页信息"""
         url, url2 = self.get_main_page_url()
-        self.headers['host'] = 'user.qzone.qq.com'
+        # self.headers['host'] = 'user.qzone.qq.com'
         try:
             res = self.req.get(url=url, headers=self.headers)
             if self.debug:
@@ -777,6 +777,10 @@ class QQZoneSpider(object):
             content = json.loads(self.get_json(res.content.decode("utf-8")))
             data = content['data']
             self.user_info.first_time = util.get_standard_time_from_mktime(data['firstlogin'])
+            today = int(datetime.datetime.now().year)
+            first_year = int(self.user_info.first_time.split('-')[0])
+            years = today - first_year
+            self.user_info.years = years
             if self.debug:
                 print("Finish to get first time")
 
@@ -857,7 +861,23 @@ def capture_data():
     sp.login()
     sp.get_main_page_info()
     # sp.get_mood_list()
-    sp.user_info.save_user()
+    sp.user_info.save_user(sp.username)
+
+def get_user_basic_info():
+    sp = QQZoneSpider(use_redis=True, debug=True, mood_begin=0, mood_num=-1,
+                      stop_time='2015-06-01',
+                      download_small_image=False, download_big_image=False,
+                      download_mood_detail=True, download_like_detail=True,
+                      download_like_names=True, recover=False, cookie_text=None,
+                      file_name_head='1272082503')
+
+    if sp.user_info.is_none:
+        sp.login()
+        sp.get_main_page_info()
+        sp.user_info.save_user(sp.username)
+        return sp.user_info
+    else:
+        return sp.user_info
 
 
 if __name__ == '__main__':
