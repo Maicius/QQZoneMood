@@ -30,7 +30,6 @@ function draw_history_line(domName, result, chartName) {
         title: {
             text: chartName,
             x: 'center',
-            y: 'top',
             textStyle: {
                 color: '#98a0c4',
                 fontWeight: 'bolder',

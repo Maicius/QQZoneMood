@@ -57,6 +57,11 @@ class QQZoneAnalysis(QQZoneSpider):
         pd.DataFrame(self.mood_data_df).to_excel(self.MOOD_DATA_EXCEL_FILE_NAME)
 
     def get_useful_info_from_json(self):
+        """
+        从原始动态数据中清洗出有用的信息
+        结果存储在self.mood_data_df中
+        :return:
+        """
         self.load_file_from_redis()
         for i in range(len(self.mood_details)):
             if not self.check_time(self.mood_details[i], self.stop_time):
@@ -272,11 +277,21 @@ def clean_label_data():
         # analysis.calculate_like_cloud(analysis.mood_data_df)
         # analysis.export_all_label_data()
 
-def get_mood_df(name):
-    analysis = QQZoneAnalysis(use_redis=True, debug=True, file_name_head=name, stop_time='2014-06-10',
+def get_mood_df(file_name_head, export_csv=True, export_excel=False):
+    """
+    根据传入的文件名前缀清洗原始数据，导出csv和excel表
+    :param file_name_head:
+    :param export_csv:
+    :param export_excel:
+    :return:
+    """
+    analysis = QQZoneAnalysis(use_redis=True, debug=True, file_name_head=file_name_head, stop_time='2014-06-10',
                               stop_num=500, analysis_friend=False)
     analysis.get_useful_info_from_json()
-    analysis.save_data_to_csv()
+    if export_csv:
+        analysis.save_data_to_csv()
+    if export_excel:
+        analysis.save_data_to_excel()
     return analysis.mood_data_df
 
 if __name__ == '__main__':
