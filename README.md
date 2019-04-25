@@ -157,11 +157,10 @@
 	> [可选]历史事件抽取（自然语言处理、事件抽取）
 
 - 运行结果例图：
-
+![Image](resource/image/web.png)
 ![Image](resource/image/comment.jpg)
 ![Image3](resource/image/comment_content.jpg)
 ![Image](resource/image/bike2.png)
-![QQ空间说说历史曲线图](resource/image/history.png)  
 ![QQ空间说说按点赞和评论数分类图](resource/image/shuoshuoPie.png)  
 
 > QQ动态关键字词云
