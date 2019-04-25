@@ -15,9 +15,11 @@ import copy
 import datetime
 from copy import deepcopy
 from src.util import util
-from src.util.constant import BASE_DIR
+from src.util.constant import BASE_DIR,qzone_jother2
 import math
 import logging
+from src.web.entity.UserInfo import UserInfo
+import execjs
 
 class QQZoneSpider(object):
     def __init__(self, use_redis=False, debug=False, mood_begin=0, mood_num=-1, stop_time='-1',
@@ -70,7 +72,7 @@ class QQZoneSpider(object):
             'accept-encoding': 'gzip, deflate, br',
             'accept-language': 'zh-CN,zh;q=0.8',
             'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
-            'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36',
+            'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:66.0) Gecko/20100101 Firefox/66.0',
             'connection': 'keep-alive'
         }
         self.req = requests.Session()
@@ -87,6 +89,7 @@ class QQZoneSpider(object):
 
         if (use_redis):
             self.re = self.connect_redis()
+        self.user_info = UserInfo()
 
     def init_parameter(self):
         self.like_detail = []
@@ -102,6 +105,7 @@ class QQZoneSpider(object):
         self.error_like_list = {}
         self.error_mood = {}
         self.until_stop_time = True
+
 
     def init_file_name(self, file_name_head):
         logging.info('file_name_head:' + self.file_name_head)
@@ -135,11 +139,12 @@ class QQZoneSpider(object):
         """
         if self.cookie_text:
             self.manu_get_cookie(self.cookie_text)
+            self.get_qzone_token()
         else:
             self.auto_get_cookie()
         # 根据cookie计算g_tk值
         self.get_g_tk()
-        self.headers['Cookie'] = self.cookies
+        self.headers['cookie'] = self.cookies
 
     def auto_get_cookie(self):
         self.web = webdriver.Chrome()
@@ -157,21 +162,22 @@ class QQZoneSpider(object):
         btn.click()
         time.sleep(1)
         print("begin...")
-        self.web.get('https://user.qzone.qq.com/{}'.format(self.username))
-        print("End...")
+        self.web.get('https://user.qzone.qq.com/{}/main'.format(self.username))
+        time.sleep(3)
+        content = self.web.page_source
+        qzonetoken = re.findall(re.compile("g_qzonetoken = \(function\(\)\{ try\{return \"(.*)?\""), content)[0]
+        self.qzonetoken = qzonetoken
         cookie = ''
         # 获取cookie
         for elem in self.web.get_cookies():
             cookie += elem["name"] + "=" + elem["value"] + ";"
         self.cookies = cookie
+        print(cookie)
         print("Login success")
         logging.info("login_success")
-        # self.web.quit()
+        self.web.quit()
 
     def manu_get_cookie(self, cookie_text):
-        cookie = ''
-        # 获取cookie
-
         self.cookies = cookie_text
 
     def get_username_password(self):
@@ -282,6 +288,7 @@ class QQZoneSpider(object):
             'uin': self.raw_username
         }
         return url + parse.urlencode(params)
+
 
     def get_like_detail(self, curlikekey):
         # unikeys = "<|>".join(curlikekey)
@@ -713,6 +720,61 @@ class QQZoneSpider(object):
         except BaseException as e:
             self.format_error(e, 'Failed to download image:' + name)
 
+    def get_main_page_url(self):
+        base_url = 'https://user.qzone.qq.com/proxy/domain/r.qzone.qq.com/cgi-bin/main_page_cgi?'
+        params = {
+            "uin": self.raw_username,
+            "g_tk": self.g_tk,
+            "param": "3_" + self.raw_username + "_0|8_8_" + self.raw_username + "_0_1_0_0_1|16",
+            "qzonetoken":""
+        }
+        url = base_url + parse.urlencode(params)
+
+        base_url2 = 'https://user.qzone.qq.com/proxy/domain/g.qzone.qq.com/fcg-bin/cgi_emotion_list.fcg?'
+        params2 = {
+            "uin": self.raw_username,
+            "g_tk": self.g_tk,
+            "login_uin": self.raw_username,
+            "rd":'',
+            "num": 3,
+            "noflower": 1,
+            "qzonetoken": self.qzonetoken
+        }
+        url2 = base_url2 + parse.urlencode(params2)
+        return url, url2
+
+
+    def get_main_page_info(self):
+        """获取主页信息"""
+        url, url2 = self.get_main_page_url()
+        self.headers['host'] = 'user.qzone.qq.com'
+        try:
+            res = self.req.get(url=url, headers=self.headers)
+            if self.debug:
+                print("主页信息:", res.status_code)
+            content = json.loads(self.get_json(res.content.decode("utf-8")))
+            data = content['data']['module_16']['data']
+
+            self.user_info.mood_num = data['SS']
+            self.user_info.photo_num = data['XC']
+            self.user_info.rz_num = data['RZ']
+            if self.debug:
+                print(self.user_info.mood_num)
+                print("Finish to get main page info")
+        except BaseException as e:
+            self.format_error(e, "获取主页信息失败")
+        try:
+            res = self.req.get(url=url2, headers=self.headers)
+            if self.debug:
+                print("获取登陆时间:", res.status_code)
+            content = json.loads(self.get_json(res.content.decode("utf-8")))
+            data = content['data']
+            self.user_info.first_time = data['firstlogin']
+            if self.debug:
+                print("Finish to get first time")
+        except BaseException as e:
+            self.format_error(e, "获取第一次登陆时间失败")
+
     def result_report(self):
         print("#######################")
         print('爬取用户:', self.username)
@@ -757,19 +819,38 @@ class QQZoneSpider(object):
         else:
             return -1
 
+    def calculate_qzone_token(self):
+        ctx = execjs.compile(
+            '''function qzonetoken(){ location = 'http://user.qzone.qq.com/%s'; return %s}''' % (self.raw_username, qzone_jother2))
+        return ctx.call("qzonetoken")
 
+    def get_qzone_token(self):
+        url = 'https://user.qzone.qq.com/' + self.raw_username + '/main'
+        print(url)
+        headers = deepcopy(self.headers)
+        headers['host'] = 'user.qzone.qq.com'
+        headers['TE'] = 'Trailers'
+        res = self.req.get(url=url, headers=headers)
+        if self.debug:
+            print("qzone token main page:", res.status_code)
+        content = res.content.decode("utf-8")
+        qzonetoken = re.findall(re.compile("g_qzonetoken = \(function\(\)\{ try\{return \"(.*)?\""), content)[0]
+        self.qzonetoken = qzonetoken
+        print("qzone_token:", qzonetoken)
 
 def capture_data():
     cookie_text = 'pgv_pvi=452072448; RK=+o+S14A/VT; tvfe_boss_uuid=7c5128d923ccdd6b; pac_uid=1_1272082503; ptcz=807bc32de0d90e8dbcdc3613231e3df03cb3ccfbf9013edf246be81ff3e0f51c; QZ_FE_WEBP_SUPPORT=1; pgv_pvid=4928238618; o_cookie=1272082503; __Q_w_s__QZN_TodoMsgCnt=1; _ga=amp-Iuo327Mw3_0w5xOcJY0tIA; zzpaneluin=; zzpanelkey=; pgv_si=s6639420416; ptisp=ctc; Loading=Yes; qz_screen=1920x1080; pgv_info=ssid=s5183597124; __Q_w_s_hat_seed=1; ptui_loginuin=1272082503; uin=o1272082503; skey=@fhH7NaoJt; p_uin=o1272082503; pt4_token=lEBHmP1fIIvnojhCSu0RAgRXO-Z15u3RO26LqkJgcGQ_; p_skey=umDCHZIM28UDW0AvaRyUw7loOuY*JuOcNtNPVe5CU30_; cpu_performance_v8=5'
-    cookie_text2 = 'pgv_pvi=452072448; RK=+o+S14A/VT; tvfe_boss_uuid=7c5128d923ccdd6b; pac_uid=1_1272082503; ptcz=807bc32de0d90e8dbcdc3613231e3df03cb3ccfbf9013edf246be81ff3e0f51c; QZ_FE_WEBP_SUPPORT=1; pgv_pvid=4928238618; o_cookie=1272082503; cpu_performance_v8=19; __Q_w_s__QZN_TodoMsgCnt=1; _ga=amp-Iuo327Mw3_0w5xOcJY0tIA; zzpaneluin=; zzpanelkey=; pgv_si=s6639420416; ptisp=ctc; Loading=Yes; qz_screen=1920x1080; pgv_info=ssid=s5183597124; __Q_w_s_hat_seed=1; _qz_referrer=i.qq.com; ptui_loginuin=1272082503; uin=o1272082503; skey=@fhH7NaoJt; p_uin=o1272082503; pt4_token=lEBHmP1fIIvnojhCSu0RAgRXO-Z15u3RO26LqkJgcGQ_; p_skey=umDCHZIM28UDW0AvaRyUw7loOuY*JuOcNtNPVe5CU30_'
-    cookie_text3 = 'zzpaneluin=; zzpanelkey=; pgv_pvi=2824239104; pgv_si=s4958578688; ptisp=ctc; ptui_loginuin=1272082503; uin=o1272082503; skey=@fhH7NaoJt; RK=rg6Yh4AsUT; ptcz=2b1673e485021cff8bc419167bdbb6feb54bb66bb8b6978dc8e5c0c5e7c85e1d; p_uin=o1272082503; pt4_token=iLrrbukbOwjk15NlhY1ChK2QjFj6Pkb0BaamySWuAiQ_; p_skey=qAf9Q23ClaQG9fOaQEo5yuyMCM36iPY5XQTRe9P5ci4_; Loading=Yes; qz_screen=1680x1050; pgv_pvid=6249006964; pgv_info=ssid=s2754290126; QZ_FE_WEBP_SUPPORT=1'
+    cookie_text3 = 'pgv_pvi=9055134720; RK=+o+S14A/VT; ptcz=ce5105773ba3d41984ba433869ab7d909bf983124c856912c57f196ecbcc9721; pgv_pvid=942255861; QZ_FE_WEBP_SUPPORT=1; cpu_performance_v8=2; tvfe_boss_uuid=7a7c85e0ffdd9e02; o_cookie=1272082503; pac_uid=1_1272082503; qz_screen=1920x1080; __Q_w_s_hat_seed=1; __Q_w_s__QZN_TodoMsgCnt=1; qb_qua=; qb_guid=816f4f96f48945d890b6ef04080c5866; Q-H5-GUID=816f4f96f48945d890b6ef04080c5866; NetType=; pgv_si=s5382409216; uin=o1272082503; skey=@4p7LS0gZR; ptisp=ctc; p_uin=o1272082503; pt4_token=6dge60bJFq7Rh-T*uIOSJu4B-WC4cFpe712pUN2c8vY_; p_skey=i13luoXYiO2fkyYain-pURrI5BjPjpZqWPXkcoUHDjc_; zzpaneluin=; zzpanelkey=; Loading=Yes; pgv_info=ssid=s303278480'
+
     sp = QQZoneSpider(use_redis=True, debug=True, mood_begin=0, mood_num=-1,
                       stop_time='2015-06-01',
                       download_small_image=False, download_big_image=False,
                       download_mood_detail=True, download_like_detail=True,
-                      download_like_names=True, recover=False, cookie_text=cookie_text,
+                      download_like_names=True, recover=False, cookie_text=None,
                       file_name_head='1272082503')
+
     sp.login()
+    sp.get_main_page_info()
     sp.get_mood_list()
 
 

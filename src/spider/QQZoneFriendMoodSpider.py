@@ -1,6 +1,7 @@
 from src.spider.QQZoneSpider import QQZoneSpider
 import json
 from urllib import parse
+from src.util.constant import BASE_DIR
 
 class QQZoneFriendMoodSpider(QQZoneSpider):
     """
@@ -19,7 +20,7 @@ class QQZoneFriendMoodSpider(QQZoneSpider):
         self.base_dir = ''
 
     def get_friend_username(self):
-        config_path = self.BASE_DIR + 'config/friend_info.json'
+        config_path = BASE_DIR + 'config/friend_info.json'
         try:
             with open(config_path, 'r', encoding='utf-8') as r:
                 friend_info = json.load(r)
