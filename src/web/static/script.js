@@ -5,7 +5,7 @@ let history_dom = echarts.init(document.getElementById(HISTORY_DOM));
 
 let vm = avalon.define({
     $id: 'qqzone',
-    user: '',
+
     fetch_history_data: function () {
         $.ajax({
             url: '/get_history/1272082503/maicius',
@@ -20,5 +20,5 @@ let vm = avalon.define({
 
 
 $(document).ready(function () {
-    vm.fetch_history_data();
+    //vm.fetch_history_data();
 });
