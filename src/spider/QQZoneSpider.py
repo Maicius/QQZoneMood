@@ -61,7 +61,7 @@ class QQZoneSpider(BaseSpider):
         """
         if self.cookie_text:
             self.manu_get_cookie(self.cookie_text)
-            self.get_qzone_token()
+            # self.get_qzone_token()
         else:
             self.auto_get_cookie()
         # 根据cookie计算g_tk值
@@ -130,7 +130,8 @@ class QQZoneSpider(BaseSpider):
             "notice": 0,
             "format": "jsonp",
             "need_private_comment": 1,
-            "g_tk": self.g_tk
+            "g_tk": self.g_tk,
+            "qzonetoken": self.qzonetoken
         }
         url = url + parse.urlencode(params)
         return url
@@ -152,9 +153,12 @@ class QQZoneSpider(BaseSpider):
                 pos = recover_index // 20 * 20
                 recover_index_split = recover_index % 20
         url = url_mood + '&pos=' + str(pos)
+        print("url", url)
         res = self.req.get(url=url, headers=self.headers, timeout=20)
         mood = res.content.decode('utf-8')
-        print(res.status_code)
+        if self.debug:
+            print(res.status_code)
+        # print(mood)
         mood_json = json.loads(self.get_json(mood))
         mood_num = mood_json['usrinfo']['msgnum']
         self.get_first_mood(mood_num, url_mood)

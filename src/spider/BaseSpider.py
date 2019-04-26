@@ -14,7 +14,7 @@ class BaseSpider(object):
     """
     def __init__(self, use_redis=False, debug=False, mood_begin=0, mood_num=-1, stop_time='-1',
                  download_small_image=False, download_big_image=False,
-                 download_mood_detail=True, download_like_detail=True, download_like_names=True, recover=True,
+                 download_mood_detail=True, download_like_detail=True, download_like_names=True, recover=False,
                  cookie_text=None, from_web=False, username='', nick_name=''):
         # 初始化下载项
         self.mood_begin = mood_begin
