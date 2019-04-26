@@ -75,8 +75,8 @@
                 <input type="checkbox" class="form-check-input" id="no_delete" ms-duplex-checked="@no_delete">
                 <label class="form-check-label" for="no_delete">数据永久存储(开发者选项，普通用户勿选)</label>
             </div>
-            <button class="btn btn-primary" :click="@submit_data()" disabled="disabled" id="start_get">开始获取</button>
-            <button class="btn btn-danger" :click="@clear_cache()" style="margin-left: 10px">清除缓存</button>
+            <button type="button" class="btn btn-primary" :click="@submit_data()" disabled="disabled" id="start_get">开始获取</button>
+            <button type="button" class="btn btn-danger" :click="@clear_cache()" style="margin-left: 10px">清除缓存</button>
         </form>
     </div>
 </div>

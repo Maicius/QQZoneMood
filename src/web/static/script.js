@@ -26,12 +26,14 @@ let vm = avalon.define({
     submit_data: function () {
         if (agree) {
             $.ajax({
-                url: "/test",
+                url: "/start_spider",
+                type: 'post',
                 data: {
                     nick_name: vm.nick_name,
                     qq: vm.qq_id,
-                    stop_date: vm.stop_date,
-                    stop_num: vm.stop_num
+                    stop_time: vm.stop_date,
+                    mood_num: vm.stop_num,
+                    cookie: vm.qq_cookie
                 },
                 success: function (data) {
                     console.log(data);

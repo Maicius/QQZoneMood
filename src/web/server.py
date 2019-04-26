@@ -3,6 +3,8 @@ from flask import Flask, render_template
 import json
 from src.web.entity.QQUser import QQUser
 from src.web.entity.UserInfo import UserInfo
+from flask import request
+from src.spider.main import web_interface
 app = Flask(__name__)
 
 @app.route('/data')
@@ -14,6 +16,21 @@ def data():
 @app.route('/')
 def config():
     return render_template("config.html")
+
+@app.route('/start_spider', methods=['GET','POST'])
+def start_spider():
+    if request.method == 'POST':
+
+        nick_name = request.form['nick_name']
+        qq = request.form['qq']
+        stop_time = request.form['stop_time']
+        mood_num = request.form['mood_num']
+        cookie = request.form['cookie']
+        print("begin spider:", qq)
+        web_interface(qq, nick_name, stop_time=stop_time, mood_num=mood_num, cookie=cookie)
+    else:
+        return "test"
+
 
 @app.route('/get_history/<QQ>/<name>')
 def get_history(QQ, name=''):
