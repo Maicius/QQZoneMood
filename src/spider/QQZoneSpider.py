@@ -16,9 +16,10 @@ from copy import deepcopy
 import logging
 from src.spider.BaseSpider import BaseSpider
 from src.util import util
-from src.util.constant import BASE_DIR,qzone_jother2
+from src.util.constant import qzone_jother2
 import math
 import execjs
+import threading
 
 class QQZoneSpider(BaseSpider):
     def __init__(self, use_redis=False, debug=False, mood_begin=0, mood_num=-1, stop_time='-1',
@@ -39,7 +40,7 @@ class QQZoneSpider(BaseSpider):
         :param download_like_detail:是否下载点赞的详情，包括点赞数量、评论数量、浏览量，该数据未被清除
         :param download_like_names:是否下载点赞的详情，主要包含点赞的人员列表，该数据有很多都被清空了
         """
-        BaseSpider.__init__(self, use_redis=use_redis, debug=debug, mood_begin=mood_begin, mood_num=-1, stop_time='-1',
+        BaseSpider.__init__(self, use_redis=use_redis, debug=debug, mood_begin=mood_begin, mood_num=mood_num, stop_time=stop_time,
                             download_small_image=download_small_image, download_big_image=download_big_image,
                             download_mood_detail=download_mood_detail, download_like_detail=download_like_detail,
                             download_like_names=download_like_names, recover=recover, cookie_text=cookie_text)
@@ -133,12 +134,103 @@ class QQZoneSpider(BaseSpider):
         url = url + parse.urlencode(params)
         return url
 
+    # 获取动态详情列表
+    def get_mood_list(self):
+        """
+         # 获取动态详情列表（一页20个）并存储到本地
+        :return:
+        """
+        url_mood = self.get_mood_url()
+        url_mood = url_mood + '&uin=' + str(self.username)
+        pos = self.mood_begin
+        recover_index_split = 0
+
+        if self.recover:
+            recover_index = self.do_recover_from_exist_data()
+            if recover_index is not None:
+                pos = recover_index // 20 * 20
+                recover_index_split = recover_index % 20
+        url = url_mood + '&pos=' + str(pos)
+        res = self.req.get(url=url, headers=self.headers, timeout=20)
+        mood = res.content.decode('utf-8')
+        print(res.status_code)
+        mood_json = json.loads(self.get_json(mood))
+        mood_num = mood_json['usrinfo']['msgnum']
+        self.get_first_mood(mood_num, url_mood)
+        # 如果mood_num为-1，则下载全部的动态
+        if self.mood_num == -1:
+            self.mood_num = mood_num
+
+        step = self.mood_num // self.thread_num
+        for i in range(0, self.thread_num):
+            # pos必须为20的倍数
+            start_pos = i * step
+            stop_pos = (i + 1) * step if i + 1 < self.thread_num else self.mood_num
+            t = threading.Thread(target=self.get_mood_in_range, args=(start_pos, stop_pos, recover_index_split, url_mood, True))
+            self.thread_list.append(t)
+
+        for t in self.thread_list:
+            t.setDaemon(False)
+            t.start()
+            print("开始线程:", t.getName())
+
+        # 等待全部子线程结束
+        for t in self.thread_list:
+            t.join()
+
+        # 保存所有数据到指定文件
+        print('保存最终数据中...')
+        if (self.debug):
+            print('Error Unikeys Num:', len(self.error_like_detail_unikeys))
+            print('Retry to get them...')
+        self.retry_error_unikey()
+        self.save_all_data_to_json()
+        self.result_report()
+        print("finish===================")
+
+    def get_mood_in_range(self, pos, mood_num, recover_index_split, url_mood, until_stop_time):
+        print("进入线程:", mood_num, until_stop_time)
+        while pos < mood_num and until_stop_time:
+            print('正在爬取', pos, '...')
+            try:
+                url = url_mood + '&pos=' + str(pos)
+                mood_list = self.req.get(url=url, headers=self.headers, timeout=20)
+                # print(mood_list.content)
+                try:
+                    json_content = self.get_json(str(mood_list.content.decode('utf-8')))
+                except BaseException as e:
+                    json_content = self.get_json(mood_list.text)
+                self.content.append(json_content)
+                # 获取每条动态的unikey
+                unikeys = self.get_unilikeKey_tid_and_smallpic(json_content)
+                if len(unikeys) != 0:
+                    # 从数据中恢复后，避免重复爬取相同数据
+                    if recover_index_split != 0:
+                        unikeys = unikeys[recover_index_split:]
+                        recover_index_split = 0
+                    # 获取数据
+                    until_stop_time = self.do_get_infos(unikeys, until_stop_time)
+                pos += 20
+                # 每抓100条保存一次数据
+                if pos % 100 == 0:
+                    self.save_data_to_redis(final_result=False)
+            except BaseException as e:
+                print("ERROR===================")
+                logging.error('位置错误')
+                logging.error(e)
+                print("因错误导致爬虫终止....现在临时保存数据")
+                self.save_all_data_to_json()
+                print('已爬取的数据页数(20条一页):', pos)
+                print("保存临时数据成功")
+                print("ERROR===================")
+                # raise e
+        pass
     # 构造点赞的人的URL
     def get_aggree_url(self, unikey):
         url = 'https://user.qzone.qq.com/proxy/domain/users.qzone.qq.com/cgi-bin/likes/get_like_list_app?'
         params = {
             "uin": self.username,
-            "unikey": self.unikey,
+            "unikey": unikey,
             "begin_uin": 0,
             "query_count": 60,
             "if_first_page": 1,
@@ -232,78 +324,6 @@ class QQZoneSpider(BaseSpider):
             self.error_like_detail_unikeys.append(unikeys)
             return {}
 
-    # 获取动态详情列表
-    def get_mood_list(self):
-        """
-         # 获取动态详情列表（一页20个）并存储到本地
-        :return:
-        """
-        url_mood = self.get_mood_url()
-        url_mood = url_mood + '&uin=' + str(self.username)
-        pos = self.mood_begin
-        recover_index_split = 0
-        if self.recover:
-            recover_index = self.do_recover_from_exist_data()
-            if recover_index is not None:
-                pos = recover_index // 20 * 20
-                recover_index_split = recover_index % 20
-        url = url_mood + '&pos=' + str(pos)
-        res = self.req.get(url=url, headers=self.headers, timeout=20)
-        mood = res.content.decode('utf-8')
-        print(res.status_code)
-        mood_json = json.loads(self.get_json(mood))
-        mood_num = mood_json['usrinfo']['msgnum']
-        self.get_first_mood(mood_num, url_mood)
-        # 如果mood_num为-1，则下载全部的动态
-        if self.mood_num == -1:
-            self.mood_num = mood_num
-
-
-        while pos < self.mood_num and self.until_stop_time:
-            print('正在爬取', pos, '...')
-            logging.info('正在爬取', pos, '...')
-            try:
-                url = url_mood + '&pos=' + str(pos)
-                mood_list = self.req.get(url=url, headers=self.headers, timeout=20)
-                print(mood_list.content)
-                try:
-                    json_content = self.get_json(str(mood_list.content.decode('utf-8')))
-                except BaseException as e:
-                    json_content = self.get_json(mood_list.text)
-                self.content.append(json_content)
-                # 获取每条动态的unikey
-                self.unikeys = self.get_unilikeKey_tid_and_smallpic(json_content)
-                if len(self.unikeys) != 0:
-                    # 从数据中恢复后，避免重复爬取相同数据
-                    if recover_index_split != 0:
-                        self.unikeys = self.unikeys[recover_index_split:]
-                        recover_index_split = 0
-                    # 获取数据
-                    self.do_get_infos(self.unikeys)
-                pos += 20
-                # 每抓100条保存一次数据
-                if pos % 100 == 0:
-                    self.save_data_to_redis(final_result=False)
-            except BaseException as e:
-                print("ERROR===================")
-                logging.error('位置错误')
-                logging.error(e)
-                print("因错误导致爬虫终止....现在临时保存数据")
-                self.save_all_data_to_json()
-                print('已爬取的数据页数(20条一页):', pos)
-                print("保存临时数据成功")
-                print("ERROR===================")
-                # raise e
-        # 保存所有数据到指定文件
-        print('保存最终数据中...')
-        if (self.debug):
-            print('Error Unikeys Num:', len(self.error_like_detail_unikeys))
-            print('Retry to get them...')
-        self.retry_error_unikey()
-        self.save_all_data_to_json()
-        self.result_report()
-        print("finish===================")
-
     # 获取第一条动态
     def get_first_mood(self, mood_num, url_mood):
         """
@@ -313,10 +333,9 @@ class QQZoneSpider(BaseSpider):
         :return:
         """
         try:
-            last_page = mood_num // 20
+            last_page = math.ceil(mood_num / 20) - 1
             pos = 20 * last_page
             url = url_mood + '&pos=' + str(pos)
-
             mood_list = self.req.get(url=url, headers=self.headers, timeout=20)
             if self.debug:
                 print("第一次动态发表时间:", mood_list.status_code)
@@ -340,33 +359,37 @@ class QQZoneSpider(BaseSpider):
                 print(start)
                 print('获取超过20的评论的人信息:', cmt_num, url)
             content = self.req.get(url, headers=self.headers).content
+            print(content)
             try:
                 content_json = self.get_json(content.decode('utf-8'))
                 content_json = json.loads(content_json)
                 comments = content_json['data']['comments']
+
                 cmt_list.extend(comments)
             except BaseException as e:
                 print(content)
                 self.format_error(e, content)
+                raise e
         return cmt_list
 
-    def do_get_infos(self, unikeys):
+    def do_get_infos(self, unikeys, until_stop_time):
         for unikey in unikeys:
             if (self.debug):
                 print('unikey:' + unikey['unikey'])
-            self.unikey = unikey['unikey']
-            self.tid = unikey['tid']
+            key = unikey['unikey']
+            tid = unikey['tid']
             # 获取动态详情
             try:
                 if self.download_mood_detail:
-                    mood_detail = self.get_mood_detail(self.unikey, self.tid)
+                    mood_detail = self.get_mood_detail(key, tid)
                     mood = json.loads(mood_detail)
                     # 如果达到了设置的停止日期，退出循环
-                    if self.stop_time != -1 and self.check_time(mood, self.stop_time) == False:
+                    until_stop_time = self.check_time(mood, self.stop_time, until_stop_time)
+                    if self.stop_time != -1 and until_stop_time == False:
                         break
                     cmt_num = self.check_comment_num(mood)
                     if cmt_num != -1:
-                        extern_cmt = self.get_all_cmt_num(cmt_num, self.tid)
+                        extern_cmt = self.get_all_cmt_num(cmt_num, tid)
                         mood['commentlist'].extend(extern_cmt)
                     self.mood_details.append(mood)
                 # 获取点赞详情（方法一）
@@ -378,7 +401,7 @@ class QQZoneSpider(BaseSpider):
                 # 获取点赞详情（方法二）
                 # 此方法能稳定获取到点赞的人的昵称，但是有的数据已经被清空了
                 if self.download_like_names:
-                    like_list_name = self.get_like_list(self.unikey)
+                    like_list_name = self.get_like_list(key)
                     self.like_list_names.append(like_list_name)
 
                 if self.download_small_image:
@@ -393,10 +416,11 @@ class QQZoneSpider(BaseSpider):
                         file_name = self.tid + '--' + big_pic_url.split('/')[-1]
                         self.download_image(big_pic_url, self.BIG_IMAGE_DIR + file_name)
 
-
             except BaseException as e:
                 self.format_error(e, 'continue to capture...')
                 continue
+
+        return until_stop_time
 
     def retry_error_unikey(self):
         """

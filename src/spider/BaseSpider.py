@@ -25,7 +25,8 @@ class BaseSpider(object):
         self.download_mood_detail = download_mood_detail
         self.download_like_detail = download_like_detail
         self.download_like_names = download_like_names
-
+        self.thread_num = 5
+        self.thread_list = []
         if stop_time != '-1':
             self.stop_time = util.get_mktime(stop_time)
         else:
@@ -51,7 +52,7 @@ class BaseSpider(object):
         logging.basicConfig(level=logging.DEBUG,
                             format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
                             datefmt='%a, %d %b %Y %H:%M:%S',
-                            filename='/Users/maicius/code/InterestingCrawler/QQZone/log',
+                            filename=BASE_DIR + 'log/' + self.username + '.log',
                             filemode='w+')
         if (use_redis):
             self.re = self.connect_redis()
@@ -83,6 +84,7 @@ class BaseSpider(object):
             json += arr[i]
         return json
 
+    # 从本地恢复数据（用于爬虫意外中断之后的数据恢复）
     def do_recover_from_exist_data(self):
         if self.use_redis:
             try:
@@ -256,16 +258,16 @@ class BaseSpider(object):
             print('Failed to connect redis')
             print('===================')
 
-    def check_time(self, mood, stop_time):
+    def check_time(self, mood, stop_time, until_stop_time=True):
         create_time = mood['created_time']
         if self.debug:
             print('time:', create_time, stop_time)
         if stop_time >= create_time:
-            self.until_stop_time = False
+            until_stop_time = False
             print('达到设置的停止时间，即将退出爬虫')
-            return False
+            return until_stop_time
         else:
-            return True
+            return until_stop_time
 
     def check_comment_num(self, mood):
         cmt_num = mood['cmtnum']

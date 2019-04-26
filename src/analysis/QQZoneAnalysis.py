@@ -76,7 +76,7 @@ class QQZoneAnalysis(QQZoneSpider):
         """
         self.load_file_from_redis()
         for i in range(len(self.mood_details)):
-            if not self.check_time(self.mood_details[i], self.stop_time):
+            if not self.check_time(self.mood_details[i], self.stop_time, True):
                 break
             total_num, uin_list = self.parse_like_names(self.like_list_names[i])
             key, like_num, prd_num = self.parse_like_and_prd(self.like_detail[i])
