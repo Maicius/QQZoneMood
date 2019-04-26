@@ -7,7 +7,7 @@
                                      initial-scale=1.0,
                                      maximum-scale=1.0,
                                      user-scalable=no">
-    <script src="https://cdn.bootcss.com/avalon.js/2.0s/avalon.min.js"></script>
+<!--    <script src="https://cdn.bootcss.com/avalon.js/2.0s/avalon.min.js"></script>-->
 
 </head>
 <body ms-controller="qqzone">
@@ -21,11 +21,11 @@
             <div class="form-group row">
                 <div class="col-lg-6 col-md-12 row my_form">
                     <label for="nickname" class="col-lg-3 col-md-3 label_text" title="怎么称呼您？">昵称</label>
-                    <input type="text" class="form-control col-lg-8 col-md-12" id="nickname" placeholder="怎么称呼您？">
+                    <input type="text" class="form-control col-lg-8 col-md-12" id="nickname" placeholder="怎么称呼您？" ms-duplex="@nick_name">
                 </div>
                 <div class="col-lg-6 col-md-12 row my_form">
                     <label for="qq_id" class="col-lg-3 col-md-3 label_text">QQ号</label>
-                    <input type="text" class="form-control col-lg-8 col-md-12" id="qq_id" placeholder="12XXXXX">
+                    <input type="text" class="form-control col-lg-8 col-md-12" id="qq_id" placeholder="12XXXXX" ms-duplex="@qq_id">
                 </div>
             </div>
             <div class="form-group row">
@@ -33,11 +33,11 @@
                     <label for="stop_num" class="col-lg-3 col-md-3 label_text"
                            title="爬取动态的数量，如果值为-1表示爬取全部动态">停止数量</label>
                     <input type="text" class="form-control col-lg-8 col-md-12" id="stop_num"
-                           title="爬取动态的数量，如果值为-1表示爬取全部动态" placeholder="-1">
+                           title="爬取动态的数量，如果值为-1表示爬取全部动态" placeholder="-1" ms-duplex="@stop_num">
                 </div>
                 <div class="col-lg-6 col-md-12 row my_form">
                     <label for="stop_date" class="col-lg-3 col-md-3 label_text" title="只会爬取停止日期前的动态，如果值为-1则表示爬取全部动态">停止日期</label>
-                    <input type="text" class="form-control col-lg-8 col-md-12" id="stop_date"
+                    <input type="text" class="form-control col-lg-8 col-md-12" id="stop_date" ms-duplex="@stop_date"
                            placeholder="2010-01-01" title="只会爬取停止日期前的动态，如果值为-1则表示爬取全部动态">
                 </div>
             </div>
@@ -45,7 +45,7 @@
                 <label for="cookie">Cookie</label>
 
                 <textarea class="form-control" id="cookie" rows="3"
-                          placeholder="请在网页上登陆QQ空间并复制cookie到此处."></textarea>
+                          placeholder="请在网页上登陆QQ空间并复制cookie到此处" ms-duplex="@qq_cookie"></textarea>
                 <a href="#">cookie是什么？怎么获取cookie？</a>
             </div>
             <div class="card col-lg-8 col-md-12 my_card">
@@ -68,18 +68,17 @@
                 </div>
             </div>
             <div class="form-check">
-                <input type="checkbox" class="form-check-input" id="agree">
-                <label class="form-check-label" for="agree">我已仔细阅读并知晓风险</label>
+                <input type="checkbox" class="form-check-input" id="agree" ms-duplex-checked="@agree">
+                <label class="form-check-label" for="agree" >我已仔细阅读并知晓风险</label>
             </div>
             <div class="form-check">
-                <input type="checkbox" class="form-check-input" id="no_delete">
+                <input type="checkbox" class="form-check-input" id="no_delete" ms-duplex-checked="@no_delete">
                 <label class="form-check-label" for="no_delete">数据永久存储(开发者选项，普通用户勿选)</label>
             </div>
-            <button class="btn btn-primary">开始获取</button>
-            <button class="btn btn-danger">清除缓存</button>
+            <button class="btn btn-primary" :click="@submit_data()" disabled="disabled" id="start_get">开始获取</button>
+            <button class="btn btn-danger" :click="@clear_cache()" style="margin-left: 10px">清除缓存</button>
         </form>
     </div>
-
 </div>
 </body>
 <script src="../static/constant.js"></script>
@@ -89,6 +88,7 @@
 <script src="https://cdn.bootcss.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
 
 <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+<script src="../static/avalon.js"></script>
 <link href="../static/style.css" rel="stylesheet">
 <script src="../static/charts.js"></script>
 <script src="../static/script.js"></script>
