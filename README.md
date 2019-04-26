@@ -1,8 +1,10 @@
 # QQZoneMood
 
 -  抓取QQ空间说说内容并进行分析
+
 ![Image](resource/image/text.png)
-![Image](resource/image/web.png)
+
+![Image](resource/image/web2.png)
 
 ## 代码重构中...
 
