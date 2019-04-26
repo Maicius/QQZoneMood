@@ -327,16 +327,14 @@ class QQZoneSpider(BaseSpider):
         except BaseException as e:
             self.format_error(e, "获取第一次发表动态时间出错")
 
+    # 评论数量超过20的说说需要再循环爬取
     def get_all_cmt_num(self, cmt_num, tid):
         top_id = self.username + '_' + tid
         # 向上取整
         page = math.ceil(cmt_num / 20)
         cmt_list = []
         for i in range(1, page):
-
             start = i * 20
-
-
             url = self.get_cmt_detail_url(start=start, top_id=top_id)
             if self.debug:
                 print(start)
@@ -588,19 +586,6 @@ class QQZoneSpider(BaseSpider):
         except BaseException as e:
             self.format_error(e, "获取第一次登陆时间失败")
 
-    def result_report(self):
-        print("#######################")
-        print('爬取用户:', self.username)
-        print('总耗时:', (datetime.datetime.now() - self.begin_time).seconds / 60, '分钟')
-        print('QQ空间动态数据数量:', len(self.mood_details))
-        print('最终失败的数据量:')
-        print('--------------')
-        print('动态:', len(self.error_mood_unikeys))
-        print('点赞详情（包括浏览量）:', len(self.error_like_detail_unikeys))
-        print('点赞好友列表:', len(self.error_like_list_unikeys))
-        print('--------------')
-        print("########################")
-
     def calculate_qzone_token(self):
         ctx = execjs.compile(
             '''function qzonetoken(){ location = 'http://user.qzone.qq.com/%s'; return %s}''' % (self.raw_username, qzone_jother2))
@@ -608,10 +593,8 @@ class QQZoneSpider(BaseSpider):
 
     def get_qzone_token(self):
         url = 'https://user.qzone.qq.com/' + self.raw_username + '/main'
-        print(url)
-        # headers = deepcopy(self.headers)
-        # headers['host'] = 'user.qzone.qq.com'
-        # headers['TE'] = 'Trailers'
+        if self.debug:
+            print(url)
         res = self.req.get(url=url, headers=self.headers)
         if self.debug:
             print("qzone token main page:", res.status_code)

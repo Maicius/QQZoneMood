@@ -273,3 +273,16 @@ class BaseSpider(object):
             return cmt_num
         else:
             return -1
+
+    def result_report(self):
+        print("#######################")
+        print('爬取用户:', self.username)
+        print('总耗时:', (datetime.datetime.now() - self.begin_time).seconds / 60, '分钟')
+        print('QQ空间动态数据数量:', len(self.mood_details))
+        print('最终失败的数据量:')
+        print('--------------')
+        print('动态:', len(self.error_mood_unikeys))
+        print('点赞详情（包括浏览量）:', len(self.error_like_detail_unikeys))
+        print('点赞好友列表:', len(self.error_like_list_unikeys))
+        print('--------------')
+        print("########################")
