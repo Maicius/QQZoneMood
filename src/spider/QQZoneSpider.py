@@ -307,28 +307,30 @@ class QQZoneSpider(BaseSpider):
         return url + parse.urlencode(params)
 
     # 获取点赞的人的详情
-    def get_like_detail(self, curlikekey):
+    def get_like_detail(self, curlikekey, tid):
         # unikeys = "<|>".join(curlikekey)
         unikeys = curlikekey
         like_url = self.get_like_detail_url(unikeys)
         if unikeys != '':
             try:
-                like_content = self.get_json(self.req.get(like_url, headers=self.headers, timeout=20).content.decode('utf-8'))
+                like_content = json.loads(self.get_json(self.req.get(like_url, headers=self.headers, timeout=20).content.decode('utf-8')))
                 # like_content是所有的点赞信息，其中like字段为点赞数目，list是点赞的人列表，有的数据中list为空
+                like_content['tid'] = tid
                 return like_content
             except BaseException as e:
                 # 因为这里错误较多，所以进行一次retry，如果不行则保留unikey
                 self.format_error(e, 'Retry to get like_url:' + unikeys)
                 try:
-                    like_content = self.get_json(self.req.get(like_url, headers=self.headers).content.decode('utf-8'))
+                    like_content = json.loads(self.get_json(self.req.get(like_url, headers=self.headers).content.decode('utf-8')))
+                    like_content['tid'] = tid
                     return like_content
                 except BaseException as e:
                     self.error_like_detail_unikeys.append(unikeys)
                     self.format_error(e, 'Failed to get like_url:' + unikeys)
-                    return {}
+                    return dict(unikey=tid)
         else:
             self.error_like_detail_unikeys.append(unikeys)
-            return {}
+            return dict(tid=tid)
 
     # 获取第一条动态
     def get_first_mood(self, mood_num, url_mood):
@@ -401,13 +403,13 @@ class QQZoneSpider(BaseSpider):
                 # 获取点赞详情（方法一）
                 # 此方法有时候不能获取到点赞的人的昵称，但是点赞的数量这个数据一直存在
                 if self.download_like_detail:
-                    like_detail = self.get_like_detail(unikey['curlikekey'])
+                    like_detail = self.get_like_detail(unikey['curlikekey'], tid)
                     self.like_detail.append(like_detail)
 
                 # 获取点赞详情（方法二）
                 # 此方法能稳定获取到点赞的人的昵称，但是有的数据已经被清空了
                 if self.download_like_names:
-                    like_list_name = self.get_like_list(key)
+                    like_list_name = self.get_like_list(key, tid)
                     self.like_list_names.append(like_list_name)
 
                 if self.download_small_image:
@@ -424,6 +426,8 @@ class QQZoneSpider(BaseSpider):
 
             except BaseException as e:
                 self.format_error(e, 'continue to capture...')
+                if self.debug:
+                    raise e
                 continue
 
         return until_stop_time
@@ -454,23 +458,25 @@ class QQZoneSpider(BaseSpider):
             self.error_like_list[error_like_list_unikey] = like_list
 
     # 获得点赞的人
-    def get_like_list(self, unikey):
+    def get_like_list(self, unikey, tid):
         url = self.get_aggree_url(unikey)
         if (self.debug):
             print('获取点赞的人', url)
         try:
             like_list = self.req.get(url=url, headers=self.headers)
-            like_list_detail = self.get_json(like_list.content.decode('utf-8'))
+            like_list_detail = json.loads(self.get_json(like_list.content.decode('utf-8')))
+            like_list_detail['tid'] = tid
             return like_list_detail
         except BaseException:
             try:
                 like_list = self.req.get(url=url, headers=self.headers)
-                like_list_detail = self.get_json(like_list.content.decode('utf-8'))
+                like_list_detail = json.loads(self.get_json(like_list.content.decode('utf-8')))
+                like_list_detail['tid'] = tid
                 return like_list_detail
             except BaseException as e:
                 self.format_error(e, 'Failed to get agree:' + url)
                 self.error_like_list_unikeys.append(unikey)
-                return {}
+                return dict(tid=tid)
 
     # 获得每一条说说的详细内容
     def get_mood_detail(self, unikey, tid):
@@ -543,17 +549,6 @@ class QQZoneSpider(BaseSpider):
             self.format_error(e)
             pass
         return unikey_tid_list
-
-    def download_image(self, url, name):
-        image_url = url
-        try:
-            r = self.req.get(url=image_url, headers=self.headers, timeout=20)
-            image_content = (r.content)
-            file_image = open(name + '.jpg', 'wb+')
-            file_image.write(image_content)
-            file_image.close()
-        except BaseException as e:
-            self.format_error(e, 'Failed to download image:' + name)
 
     def get_main_page_url(self):
         base_url = 'https://user.qzone.qq.com/proxy/domain/r.qzone.qq.com/cgi-bin/main_page_cgi?'
@@ -632,3 +627,14 @@ class QQZoneSpider(BaseSpider):
         qzonetoken = re.findall(re.compile("g_qzonetoken = \(function\(\)\{ try\{return \"(.*)?\""), content)[0]
         self.qzonetoken = qzonetoken
         print("qzone_token:", qzonetoken)
+
+    def download_image(self, url, name):
+        image_url = url
+        try:
+            r = self.req.get(url=image_url, headers=self.headers, timeout=20)
+            image_content = (r.content)
+            file_image = open(name + '.jpg', 'wb+')
+            file_image.write(image_content)
+            file_image.close()
+        except BaseException as e:
+            self.format_error(e, 'Failed to download image:' + name)

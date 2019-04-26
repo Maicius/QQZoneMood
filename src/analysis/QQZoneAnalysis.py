@@ -11,16 +11,20 @@ from src.analysis.Average import Average
 from src.util import util
 from src.util.constant import BASE_DIR
 
+
 class QQZoneAnalysis(QQZoneSpider):
     def __init__(self, use_redis=False, debug=False, file_name_head='', analysis_friend=False, stop_time='2014-01-01',
                  stop_num=500):
         QQZoneSpider.__init__(self, use_redis, debug)
         self.mood_data = []
         self.mood_data_df = pd.DataFrame()
+        self.like_detail_df = []
+        self.like_list_names_df = []
         self.stop_num = stop_num
         self.file_name_head = file_name_head
         self.analysis_friend = analysis_friend
         self.stop_time = util.get_mktime(stop_time)
+
         if self.analysis_friend:
             self.friend = QQZoneFriendSpider(analysis=True)
             self.friend.clean_friend_data()
@@ -75,107 +79,124 @@ class QQZoneAnalysis(QQZoneSpider):
         """
         self.load_file_from_redis()
         for i in range(len(self.mood_details)):
-            if not self.check_time(self.mood_details[i], self.stop_time, True):
-                break
-            total_num, uin_list = self.parse_like_names(self.like_list_names[i])
-            key, like_num, prd_num = self.parse_like_and_prd(self.like_detail[i])
-            if total_num != like_num:
-                print('点赞数据有丢失:', total_num, like_num)
-            like_num = max(total_num, like_num)
-            self.parse_mood_detail(self.mood_details[i], key=key, uin_list=uin_list, like_num=like_num, prd_num=prd_num)
-        mood_data_df = pd.DataFrame(self.mood_data)
-        mood_data_df.drop_duplicates(['tid'], inplace=True)
-        n_E = self.av.calculate_E(mood_data_df)
-        mood_data_df['n_E'] = n_E
-        mood_data_df['user'] = self.file_name_head
-        self.mood_data_df = mood_data_df
+            self.parse_mood_detail(self.mood_details[i])
 
-    def parse_mood_detail(self, mood, key, uin_list, like_num, prd_num):
+        for i in range(len(self.like_list_names)):
+            self.parse_like_names(self.like_list_names[i])
+
+        for i in range(len(self.like_detail)):
+            self.parse_like_and_prd(self.like_detail[i])
+
+        # if total_num != like_num:
+        #     print('点赞数据有丢失:', total_num, like_num)
+        # like_num = max(total_num, like_num)
+
+        mood_data_df = pd.DataFrame(self.mood_data)
+        like_detail_df = pd.DataFrame(self.like_detail_df)
+        like_list_df = pd.DataFrame(self.like_list_names_df)
+        data_df = pd.merge(left=mood_data_df, right=like_detail_df, how='inner', left_on='tid', right_on='tid')
+        data_df = pd.merge(left=data_df, right=like_list_df, how='inner', left_on='tid',right_on='tid')
+
+        data_df.drop_duplicates(['tid'], inplace=True)
+        data_df.drop('total_num',axis=1, inplace=True)
+        # data_df['like_num']
+        n_E = self.av.calculate_E(data_df)
+        # mood_data_df['n_E'] = n_E
+        # mood_data_df['user'] = self.file_name_head
+        self.mood_data_df = data_df
+
+    def parse_mood_detail(self, mood):
         try:
             msglist = json.loads(mood)
         except BaseException:
             msglist = mood
         tid = msglist['tid']
-        if key == tid:
-            print('Correct')
-        else:
-            print('Wrong tid and key:', tid, key)
-
-        secret = msglist['secret']
-        # 过滤私密说说
-        if secret:
-            pass
-        else:
-            content = msglist['content']
-            time = msglist['createTime']
-            time_stamp = msglist['created_time']
-
-            if 'pictotal' in msglist:
-                pic_num = msglist['pictotal']
+        try:
+            secret = msglist['secret']
+            # 过滤私密说说
+            if secret:
+                pass
             else:
-                pic_num = 0
-            cmt_num = msglist['cmtnum']
-            cmt_list = []
-            cmt_total_num = cmt_num
-            if 'commentlist' in msglist:
-                comment_list = msglist['commentlist'] if msglist['commentlist'] is not None else []
+                content = msglist['content']
+                time = msglist['createTime']
+                time_stamp = msglist['created_time']
 
-                for i in range(len(comment_list)):
-                    try:
-                        comment = comment_list[i]
-                        comment_content = comment['content']
-                        if i < 20:
-                            comment_name = comment['name']
-                            comment_time = comment['createTime2']
-                            comment_reply_num = comment['replyNum']
-                            comment_reply_list = []
-                            if comment_reply_num > 0:
-                                for comment_reply in comment['list_3']:
-                                    comment_reply_content = comment_reply['content']
-                                    # 去掉 @{uin:117557,nick:16,who:1,auto:1} 这种文字
-                                    comment_reply_content = re.subn(re.compile('\@\{.*?\}'), '', comment_reply_content)[
-                                        0].strip()
-                                    comment_reply_name = comment_reply['name']
-                                    comment_reply_time = comment_reply['createTime2']
-                                    comment_reply_list.append(dict(comment_reply_content=comment_reply_content,
-                                                                   comment_reply_name=comment_reply_name,
-                                                                   comment_reply_time=comment_reply_time))
-                        else:
-                            comment_name = comment['poster']['name']
-                            comment_time = comment['postTime']
-                            comment_reply_num = comment['extendData']['replyNum']
-                            comment_reply_list = []
-                            if comment_reply_num > 0:
-                                for comment_reply in comment['replies']:
-                                    comment_reply_content = comment_reply['content']
-                                    # 去掉 @{uin:117557,nick:16,who:1,auto:1} 这种文字
-                                    comment_reply_content = re.subn(re.compile('\@\{.*?\}'), '', comment_reply_content)[
-                                        0].strip()
-                                    comment_reply_name = comment_reply['poster']['name']
-                                    comment_reply_time = comment_reply['postTime']
-                                    comment_reply_list.append(dict(comment_reply_content=comment_reply_content,
-                                                                   comment_reply_name=comment_reply_name,
-                                                                   comment_reply_time=comment_reply_time))
+                if 'pictotal' in msglist:
+                    pic_num = msglist['pictotal']
+                else:
+                    pic_num = 0
+                cmt_num = msglist['cmtnum']
+                cmt_list = []
+                cmt_total_num = cmt_num
+                if 'commentlist' in msglist:
+                    comment_list = msglist['commentlist'] if msglist['commentlist'] is not None else []
 
-                        cmt_total_num += comment_reply_num
-                        cmt_list.append(
-                            dict(comment_content=comment_content, comment_name=comment_name, comment_time=comment_time,
-                                 comment_reply_num=comment_reply_num, comment_reply_list=comment_reply_list))
-                    except BaseException as e:
-                        self.format_error(e, comment)
+                    for i in range(len(comment_list)):
+                        try:
+                            comment = comment_list[i]
+                            comment_content = comment['content']
+                            if i < 20:
+                                comment_name = comment['name']
+                                comment_time = comment['createTime2']
+                                comment_reply_num = comment['replyNum']
+                                comment_reply_list = []
+                                if comment_reply_num > 0:
+                                    for comment_reply in comment['list_3']:
+                                        comment_reply_content = comment_reply['content']
+                                        # 去掉 @{uin:117557,nick:16,who:1,auto:1} 这种文字
+                                        comment_reply_content = \
+                                        re.subn(re.compile('\@\{.*?\}'), '', comment_reply_content)[
+                                            0].strip()
+                                        comment_reply_name = comment_reply['name']
+                                        comment_reply_time = comment_reply['createTime2']
+                                        comment_reply_list.append(dict(comment_reply_content=comment_reply_content,
+                                                                       comment_reply_name=comment_reply_name,
+                                                                       comment_reply_time=comment_reply_time))
+                            else:
+                                comment_name = comment['poster']['name']
+                                comment_time = comment['postTime']
+                                comment_reply_num = comment['extendData']['replyNum']
+                                comment_reply_list = []
+                                if comment_reply_num > 0:
+                                    for comment_reply in comment['replies']:
+                                        comment_reply_content = comment_reply['content']
+                                        # 去掉 @{uin:117557,nick:16,who:1,auto:1} 这种文字
+                                        comment_reply_content = \
+                                        re.subn(re.compile('\@\{.*?\}'), '', comment_reply_content)[
+                                            0].strip()
+                                        comment_reply_name = comment_reply['poster']['name']
+                                        comment_reply_time = comment_reply['postTime']
+                                        comment_reply_list.append(dict(comment_reply_content=comment_reply_content,
+                                                                       comment_reply_name=comment_reply_name,
+                                                                       comment_reply_time=comment_reply_time))
 
-            if self.analysis_friend:
-                friend_num = self.friend.calculate_friend_num_timeline(time_stamp)
-            else:
-                friend_num = -1
-            self.mood_data.append(dict(tid=tid, content=content, time=time, time_stamp=time_stamp, pic_num=pic_num,
-                                       cmt_num=cmt_num, like_num=like_num, prd_num=prd_num, uin_list=uin_list,
-                                       cmt_total_num=cmt_total_num,
-                                       cmt_list=cmt_list, friend_num=friend_num))
+                            cmt_total_num += comment_reply_num
+                            cmt_list.append(
+                                dict(comment_content=comment_content, comment_name=comment_name,
+                                     comment_time=comment_time,
+                                     comment_reply_num=comment_reply_num, comment_reply_list=comment_reply_list))
+                        except BaseException as e:
+                            self.format_error(e, comment)
+
+                if self.analysis_friend:
+                    friend_num = self.friend.calculate_friend_num_timeline(time_stamp)
+                else:
+                    friend_num = -1
+                self.mood_data.append(dict(tid=tid, content=content, time=time, time_stamp=time_stamp, pic_num=pic_num,
+                                           cmt_num=cmt_num,
+                                           cmt_total_num=cmt_total_num,
+                                           cmt_list=cmt_list, friend_num=friend_num))
+        except BaseException as e:
+            self.format_error(e, "Error in parse mood:" + str(msglist))
+            self.mood_data.append(dict(tid=tid, content=msglist['message'], time="", time_stamp="", pic_num=0,
+                                       cmt_num=0,
+                                       cmt_total_num=0,
+                                       cmt_list=[], friend_num=-1))
+
 
     def parse_like_and_prd(self, like):
         try:
-            data = json.loads(like)['data'][0]
+            data = like['data'][0]
             current = data['current']
             key = current['key'].split('/')[-1]
             newdata = current['newdata']
@@ -184,24 +205,33 @@ class QQZoneAnalysis(QQZoneSpider):
                 like_num = newdata['LIKE']
                 # 浏览数
                 prd_num = newdata['PRD']
-                return key, like_num, prd_num
+                if key == like['tid']:
+                    print("correct like tid")
+                else:
+                    print("wrong like tid")
+                self.like_detail_df.append(dict(tid=like['tid'], like_num=like_num, prd_num=prd_num))
             else:
-                return key, 0, 0
+                self.like_detail_df.append(dict(tid=like['tid'], like_num=0, prd_num=0))
         except BaseException as e:
             print(like)
             self.format_error(e, 'Error in like, return 0')
-            return 0, 0, 0
+            self.like_detail_df.append(dict(tid=like['tid'], like_num=0, prd_num=0))
 
     def parse_like_names(self, like):
-        data = json.loads(like)['data']
-        total_num = data['total_number']
-        like_uin_info = data['like_uin_info']
-        uin_list = []
-        for uin in like_uin_info:
-            nick = uin['nick']
-            gender = uin['gender']
-            uin_list.append(dict(nick=nick, gender=gender))
-        return total_num, uin_list
+        try:
+            data = like['data']
+            total_num = data['total_number']
+            like_uin_info = data['like_uin_info']
+            uin_list = []
+
+            for uin in like_uin_info:
+                nick = uin['nick']
+                gender = uin['gender']
+                uin_list.append(dict(nick=nick, gender=gender))
+            self.like_list_names_df.append(dict(total_num=total_num, uin_list=uin_list, tid=like['tid']))
+        except BaseException as e:
+            self.format_error(e, "Error in parse like names")
+            self.like_list_names_df.append(dict(total_num=0, uin_list=[], tid=like['tid']))
 
     def drawWordCloud(self, word_text, filename, dict_type=False):
         mask = imread('image/tom2.jpeg')
@@ -305,6 +335,7 @@ def get_most_people(file_name_head):
     analysis.user_info.cmt_friend_name = most_cmt_name
     analysis.user_info.like_friend_name = most_like_name
     analysis.user_info.save_user(analysis.username)
+
 
 def get_mood_df(file_name_head, export_csv=True, export_excel=False):
     """
