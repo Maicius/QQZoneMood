@@ -14,7 +14,7 @@ def capture_data():
     sp.user_info.save_user(sp.username)
 
 def get_user_basic_info():
-    sp = QQZoneSpider(use_redis=True, debug=True, mood_begin=0, mood_num=-1,
+    sp = QQZoneSpider(use_redis=True, debug=False, mood_begin=0, mood_num=-1,
                       stop_time='2015-06-01',
                       download_small_image=False, download_big_image=False,
                       download_mood_detail=True, download_like_detail=True,
@@ -28,5 +28,23 @@ def get_user_basic_info():
     else:
         return sp.user_info
 
+def array_test():
+    step = 1102 // 4
+    for i in range(0, 4):
+        print(i * step)
+
+def test_step():
+    sp = QQZoneSpider(use_redis=True, debug=True, mood_begin=0, mood_num=1000,
+                      stop_time='-1',
+                      download_small_image=False, download_big_image=False,
+                      download_mood_detail=True, download_like_detail=True,
+                      download_like_names=True, recover=False, cookie_text=None)
+    sp.find_best_step(1100, 5)
+    sp.find_best_step(1222, 5)
+    sp.find_best_step(2222, 10)
+
+
 if __name__ == '__main__':
     capture_data()
+    # test_step()
+
