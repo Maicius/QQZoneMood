@@ -9,14 +9,14 @@ class QQZoneFriendSpider(QQZoneSpider):
     """
     爬取自己的好友的数量等基本信息（不是爬好友的动态）
     """
-    def __init__(self, use_redis=False, debug=False, analysis=False):
+    def __init__(self, use_redis=False, debug=False, analysis=False, recover=False):
         """
 
         :param use_redis: 是否使用redis
         :param debug: 是否开启debug模式
         :param analysis: 如果为true, 会执行爬虫程序，再执行分析程序，如果为false，只执行分析程序
         """
-        QQZoneSpider.__init__(self, use_redis=use_redis, debug=debug)
+        QQZoneSpider.__init__(self, use_redis=use_redis, debug=debug, recover=recover)
         if self.g_tk == 0 and analysis == False:
             self.login()
 
@@ -159,23 +159,24 @@ class QQZoneFriendSpider(QQZoneSpider):
         friend_df.to_csv(self.FRIEND_DETAIL_LIST_FILE_NAME)
         print("Finish to clean friend data...")
         print("File Name:", self.FRIEND_DETAIL_LIST_FILE_NAME)
+        return friend_df
 
     def get_friend_total_num(self):
         self.load_friend_data()
         friend_total_num = len(self.friend_list)
         return friend_total_num
 
-    def calculate_friend_num_timeline(self, timestamp):
+    def calculate_friend_num_timeline(self, timestamp, friend_df):
         """
         :param timestamp: 传入时间戳
         :return: 用户在给定时间点的好友数量
         """
-        if self.friend_df is None:
-            self.friend_df = pd.read_csv(self.FRIEND_DETAIL_LIST_FILE_NAME)
-        friend_total_num = self.friend_df.shape[0]
-        friend_df_time = self.friend_df[self.friend_df['add_friend_time'] > timestamp]
+
+        friend_total_num = friend_df.shape[0]
+        friend_df_time = friend_df[friend_df['add_friend_time'] > timestamp]
         friend_time_num = friend_total_num - friend_df_time.shape[0]
-        print(util.get_standard_time_from_mktime(timestamp), friend_time_num)
+        if self.debug:
+            print(util.get_standard_time_from_mktime(timestamp), friend_time_num)
         return friend_time_num
 
     def get_friend_result_file_name(self):
@@ -197,6 +198,7 @@ class QQZoneFriendSpider(QQZoneSpider):
         self.user_info.first_friend_header = first_header_url
 
         self.user_info.save_user(self.username)
+
 
 if __name__ == '__main__':
     friend_spider = QQZoneFriendSpider(use_redis=True, debug=True, analysis=False)

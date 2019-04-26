@@ -10,24 +10,27 @@ from src.spider.QQZoneFriendSpider import QQZoneFriendSpider
 from src.analysis.Average import Average
 from src.util import util
 from src.util.constant import BASE_DIR
-
+import os
 
 class QQZoneAnalysis(QQZoneSpider):
-    def __init__(self, use_redis=False, debug=False, file_name_head='', analysis_friend=False, stop_time='2014-01-01',
-                 stop_num=500):
-        QQZoneSpider.__init__(self, use_redis, debug)
+    def __init__(self, use_redis=False, debug=False, file_name_head='', analysis_friend=False):
+        QQZoneSpider.__init__(self, use_redis, debug, recover=False)
         self.mood_data = []
         self.mood_data_df = pd.DataFrame()
         self.like_detail_df = []
         self.like_list_names_df = []
-        self.stop_num = stop_num
         self.file_name_head = file_name_head
         self.analysis_friend = analysis_friend
-        self.stop_time = util.get_mktime(stop_time)
+
+        friend_dir = BASE_DIR + 'friend/' + self.file_name_head + '_friend_detail_list.csv'
 
         if self.analysis_friend:
-            self.friend = QQZoneFriendSpider(analysis=True)
-            self.friend.clean_friend_data()
+            if not os.path.exists(friend_dir):
+                self.analysis_friend = False
+            else:
+                self.friend_df = pd.read_csv(friend_dir)
+                self.friend = QQZoneFriendSpider(analysis=True)
+
         self.av = Average(use_redis=False, file_name_head=file_name_head, analysis=True)
         self.init_analysis_path()
 
@@ -43,13 +46,6 @@ class QQZoneAnalysis(QQZoneSpider):
 
     def load_file_from_redis(self):
         self.do_recover_from_exist_data()
-
-    def check_data_shape(self):
-        if len(self.mood_details) == len(self.like_list_names) == len(self.like_detail):
-            return True
-        else:
-            print(len(self.mood_details), len(self.like_list_names), len(self.like_detail))
-            return False
 
     def save_data_to_csv(self):
         pd.DataFrame(self.mood_data_df).to_csv(self.MOOD_DATA_FILE_NAME)
@@ -77,6 +73,7 @@ class QQZoneAnalysis(QQZoneSpider):
         结果存储在self.mood_data_df中
         :return:
         """
+
         self.load_file_from_redis()
         for i in range(len(self.mood_details)):
             self.parse_mood_detail(self.mood_details[i])
@@ -87,22 +84,18 @@ class QQZoneAnalysis(QQZoneSpider):
         for i in range(len(self.like_detail)):
             self.parse_like_and_prd(self.like_detail[i])
 
-        # if total_num != like_num:
-        #     print('点赞数据有丢失:', total_num, like_num)
-        # like_num = max(total_num, like_num)
-
         mood_data_df = pd.DataFrame(self.mood_data)
         like_detail_df = pd.DataFrame(self.like_detail_df)
         like_list_df = pd.DataFrame(self.like_list_names_df)
         data_df = pd.merge(left=mood_data_df, right=like_detail_df, how='inner', left_on='tid', right_on='tid')
         data_df = pd.merge(left=data_df, right=like_list_df, how='inner', left_on='tid',right_on='tid')
 
-        data_df.drop_duplicates(['tid'], inplace=True)
-        data_df.drop('total_num',axis=1, inplace=True)
-        # data_df['like_num']
+        data_df = data_df.sort_values(by='time_stamp', ascending=False).reset_index()
+
+        data_df.drop(['total_num', 'index'],axis=1, inplace=True)
         n_E = self.av.calculate_E(data_df)
-        # mood_data_df['n_E'] = n_E
-        # mood_data_df['user'] = self.file_name_head
+        mood_data_df['n_E'] = n_E
+        mood_data_df['user'] = self.file_name_head
         self.mood_data_df = data_df
 
     def parse_mood_detail(self, mood):
@@ -179,7 +172,7 @@ class QQZoneAnalysis(QQZoneSpider):
                             self.format_error(e, comment)
 
                 if self.analysis_friend:
-                    friend_num = self.friend.calculate_friend_num_timeline(time_stamp)
+                    friend_num = self.friend.calculate_friend_num_timeline(time_stamp, self.friend_df)
                 else:
                     friend_num = -1
                 self.mood_data.append(dict(tid=tid, content=content, time=time, time_stamp=time_stamp, pic_num=pic_num,
@@ -193,7 +186,6 @@ class QQZoneAnalysis(QQZoneSpider):
                                        cmt_total_num=0,
                                        cmt_list=[], friend_num=-1))
 
-
     def parse_like_and_prd(self, like):
         try:
             data = like['data'][0]
@@ -205,10 +197,12 @@ class QQZoneAnalysis(QQZoneSpider):
                 like_num = newdata['LIKE']
                 # 浏览数
                 prd_num = newdata['PRD']
-                if key == like['tid']:
-                    print("correct like tid")
-                else:
-                    print("wrong like tid")
+
+                if self.debug:
+                    if key == like['tid']:
+                        print("correct like tid")
+                    else:
+                        print("wrong like tid")
                 self.like_detail_df.append(dict(tid=like['tid'], like_num=like_num, prd_num=prd_num))
             else:
                 self.like_detail_df.append(dict(tid=like['tid'], like_num=0, prd_num=0))
@@ -309,8 +303,7 @@ def clean_label_data():
     new_list = ['maicius']
     for name in new_list:
         print(name + '====================')
-        analysis = QQZoneAnalysis(use_redis=True, debug=True, file_name_head=name, stop_time='2014-06-10',
-                                  stop_num=500, analysis_friend=False)
+        analysis = QQZoneAnalysis(use_redis=True, debug=True, file_name_head=name, analysis_friend=False)
         # print(analysis.check_data_shape())
         analysis.get_useful_info_from_json()
         analysis.save_data_to_csv()
@@ -345,8 +338,8 @@ def get_mood_df(file_name_head, export_csv=True, export_excel=False):
     :param export_excel:
     :return:
     """
-    analysis = QQZoneAnalysis(use_redis=True, debug=True, file_name_head=file_name_head, stop_time='2014-06-10',
-                              stop_num=500, analysis_friend=False)
+    analysis = QQZoneAnalysis(use_redis=True, debug=True, file_name_head=file_name_head,
+                              analysis_friend=True)
     analysis.get_useful_info_from_json()
     if export_csv:
         analysis.save_data_to_csv()
@@ -356,8 +349,6 @@ def get_mood_df(file_name_head, export_csv=True, export_excel=False):
 
 
 if __name__ == '__main__':
-    analysis = QQZoneAnalysis(use_redis=True, debug=True, file_name_head='1272082503', stop_time='2014-06-10',
-                              stop_num=500, analysis_friend=False)
     get_mood_df("1272082503")
     # get_most_people("1272082503")
     # clean_label_data()

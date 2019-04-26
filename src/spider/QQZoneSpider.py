@@ -24,7 +24,7 @@ import threading
 class QQZoneSpider(BaseSpider):
     def __init__(self, use_redis=False, debug=False, mood_begin=0, mood_num=-1, stop_time='-1',
                  download_small_image=False, download_big_image=False,
-                 download_mood_detail=True, download_like_detail=True, download_like_names=True, recover=False,
+                 download_mood_detail=True, download_like_detail=True, download_like_names=True, recover=True,
                  cookie_text=None):
         """
         init method
