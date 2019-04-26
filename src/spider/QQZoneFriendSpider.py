@@ -9,14 +9,14 @@ class QQZoneFriendSpider(QQZoneSpider):
     """
     爬取自己的好友的数量等基本信息（不是爬好友的动态）
     """
-    def __init__(self, use_redis=False, debug=False, analysis=False, file_name_head=''):
+    def __init__(self, use_redis=False, debug=False, analysis=False):
         """
 
         :param use_redis: 是否使用redis
         :param debug: 是否开启debug模式
         :param analysis: 如果为true, 会执行爬虫程序，再执行分析程序，如果为false，只执行分析程序
         """
-        QQZoneSpider.__init__(self, use_redis=use_redis, debug=debug, file_name_head=file_name_head)
+        QQZoneSpider.__init__(self, use_redis=use_redis, debug=debug)
         if self.g_tk == 0 and analysis == False:
             self.login()
 
@@ -199,7 +199,7 @@ class QQZoneFriendSpider(QQZoneSpider):
         self.user_info.save_user(self.username)
 
 if __name__ == '__main__':
-    friend_spider = QQZoneFriendSpider(use_redis=True, debug=True, analysis=False, file_name_head='1272082503')
+    friend_spider = QQZoneFriendSpider(use_redis=True, debug=True, analysis=False)
     friend_spider.get_friend_detail()
     friend_spider.download_head_image()
     friend_spider.clean_friend_data()

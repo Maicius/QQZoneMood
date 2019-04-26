@@ -8,7 +8,7 @@ app = Flask(__name__)
 @app.route('/')
 def data():
     user = UserInfo()
-    user.load("1272082503")
+    user.load("850053825")
     return render_template("index.html", user=user)
 
 @app.route('/get_history/<QQ>/<name>')

@@ -14,7 +14,7 @@ from src.util.constant import BASE_DIR
 class QQZoneAnalysis(QQZoneSpider):
     def __init__(self, use_redis=False, debug=False, file_name_head='', analysis_friend=False, stop_time='2014-01-01',
                  stop_num=500):
-        QQZoneSpider.__init__(self, use_redis, debug, file_name_head=file_name_head)
+        QQZoneSpider.__init__(self, use_redis, debug)
         self.mood_data = []
         self.mood_data_df = pd.DataFrame()
         self.stop_num = stop_num
@@ -301,7 +301,7 @@ def get_most_people(file_name_head):
     all_uin_count = all_uin_count.sort_values(by="gender", ascending=False).reset_index()
     most_like_name = all_uin_count.loc[0, 'nick']
 
-    cmt_df = analysis.av.calculate_cmt_rank(analysis.mood_data_df)
+    cmt_df = analysis.av.calculate_cmt_rank(analysis.mood_data_df).reset_index()
     most_cmt_name = cmt_df.loc[0, 'cmt_name']
     analysis.user_info.cmt_friend_name = most_cmt_name
     analysis.user_info.like_friend_name = most_like_name
@@ -326,8 +326,8 @@ def get_mood_df(file_name_head, export_csv=True, export_excel=False):
 
 
 if __name__ == '__main__':
-    analysis = QQZoneAnalysis(use_redis=True, debug=True, file_name_head='maicius', stop_time='2014-06-10',
+    analysis = QQZoneAnalysis(use_redis=True, debug=True, file_name_head='1272082503', stop_time='2014-06-10',
                               stop_num=500, analysis_friend=False)
-    # get_mood_df("1272082503")
+    get_mood_df("1272082503")
     get_most_people("1272082503")
     # clean_label_data()
