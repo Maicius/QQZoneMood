@@ -1,8 +1,15 @@
 # QQZoneMood
 
 -  抓取QQ空间说说内容并进行分析
+![Image](resource/image/text.png)
+![Image](resource/image/web.png)
 
 ## 代码重构中...
+
+### TO DO...
+
+- 多线程优化
+- Web展示界面优化
 
 ### 已实现功能
 
@@ -157,7 +164,6 @@
 	> [可选]历史事件抽取（自然语言处理、事件抽取）
 
 - 运行结果例图：
-![Image](resource/image/web.png)
 ![Image](resource/image/comment.jpg)
 ![Image3](resource/image/comment_content.jpg)
 ![Image](resource/image/bike2.png)

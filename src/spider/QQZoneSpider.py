@@ -29,7 +29,6 @@ class QQZoneSpider(BaseSpider):
         init method
         :param use_redis: If true, use redis and json file to save data, if false, use json file only.
         :param debug: If true, print info in console
-        :param file_name_head: 文件名的前缀
         :param mood_begin: 开始下载的动态序号，0表示从第0条动态开始下载
         :param mood_num: 下载的动态数量，最好设置为20的倍数
         :param stop_time: 停止下载的时间，-1表示全部数据；注意，这里是倒序，比如，stop_time="2016-01-01",表示爬取当前时间到2016年1月1日前的数据
@@ -77,6 +76,7 @@ class QQZoneSpider(BaseSpider):
         print('g_tk', h & 2147483647)
         self.g_tk = h & 2147483647
 
+    # 使用selenium自动登陆并获取cookie
     def auto_get_cookie(self):
         self.web = webdriver.Chrome()
         self.web.get(self.host)
@@ -108,6 +108,7 @@ class QQZoneSpider(BaseSpider):
         logging.info("login_success")
         self.web.quit()
 
+    # 手动添加cookie完成登陆
     def manu_get_cookie(self, cookie_text):
         self.cookies = cookie_text
 
