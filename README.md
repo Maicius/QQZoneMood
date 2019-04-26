@@ -6,11 +6,9 @@
 
 ![Image](resource/image/web2.png)
 
-## 代码重构中...
 
 ### TO DO...
 
-- 多线程优化
 - Web展示界面优化
 
 ### 已实现功能
