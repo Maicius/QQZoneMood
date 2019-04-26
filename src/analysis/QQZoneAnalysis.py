@@ -25,7 +25,6 @@ class QQZoneAnalysis(QQZoneSpider):
             self.friend = QQZoneFriendSpider(analysis=True)
             self.friend.clean_friend_data()
         self.av = Average(use_redis=False, file_name_head=file_name_head, analysis=True)
-
         self.init_analysis_path()
 
     def init_analysis_path(self):
@@ -329,5 +328,5 @@ if __name__ == '__main__':
     analysis = QQZoneAnalysis(use_redis=True, debug=True, file_name_head='1272082503', stop_time='2014-06-10',
                               stop_num=500, analysis_friend=False)
     get_mood_df("1272082503")
-    get_most_people("1272082503")
+    # get_most_people("1272082503")
     # clean_label_data()

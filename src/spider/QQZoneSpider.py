@@ -162,6 +162,7 @@ class QQZoneSpider(BaseSpider):
             self.mood_num = mood_num
 
         step = self.mood_num // self.thread_num
+        step = self.find_best_step(self.mood_num, self.thread_num)
         for i in range(0, self.thread_num):
             # pos必须为20的倍数
             start_pos = i * step
@@ -187,6 +188,11 @@ class QQZoneSpider(BaseSpider):
         self.save_all_data_to_json()
         self.result_report()
         print("finish===================")
+
+    def find_best_step(self, mood_num, thread_num):
+        step = int(mood_num / thread_num // 20 * 20)
+        print("Best Step:", step)
+        return step
 
     def get_mood_in_range(self, pos, mood_num, recover_index_split, url_mood, until_stop_time):
         print("进入线程:", mood_num, until_stop_time)
