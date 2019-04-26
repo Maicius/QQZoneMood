@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>QQ空间数据分析-小麦冬</title>
+    <meta name="viewport" content="width=device-width,
+                                     initial-scale=1.0,
+                                     maximum-scale=1.0,
+                                     user-scalable=no">
+    <script src="https://cdn.bootcss.com/avalon.js/2.0s/avalon.min.js"></script>
+
+</head>
+<body ms-controller="qqzone">
+<div class="wrapper">
+    <nav class="navbar navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">QQ空间数据分析</a>
+    </nav>
+
+    <div class="main_container col-lg-8 col-md-12">
+        <form>
+            <div class="form-group row">
+                <div class="col-lg-6 col-md-12 row my_form">
+                    <label for="nickname" class="col-lg-3 col-md-3 label_text" title="怎么称呼您？">昵称</label>
+                    <input type="text" class="form-control col-lg-8 col-md-12" id="nickname" placeholder="怎么称呼您？">
+                </div>
+                <div class="col-lg-6 col-md-12 row my_form">
+                    <label for="qq_id" class="col-lg-3 col-md-3 label_text">QQ号</label>
+                    <input type="text" class="form-control col-lg-8 col-md-12" id="qq_id" placeholder="12XXXXX">
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-lg-6 col-md-12 row my_form">
+                    <label for="stop_num" class="col-lg-3 col-md-3 label_text"
+                           title="爬取动态的数量，如果值为-1表示爬取全部动态">停止数量</label>
+                    <input type="text" class="form-control col-lg-8 col-md-12" id="stop_num"
+                           title="爬取动态的数量，如果值为-1表示爬取全部动态" placeholder="-1">
+                </div>
+                <div class="col-lg-6 col-md-12 row my_form">
+                    <label for="stop_date" class="col-lg-3 col-md-3 label_text" title="只会爬取停止日期前的动态，如果值为-1则表示爬取全部动态">停止日期</label>
+                    <input type="text" class="form-control col-lg-8 col-md-12" id="stop_date"
+                           placeholder="2010-01-01" title="只会爬取停止日期前的动态，如果值为-1则表示爬取全部动态">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="cookie">Cookie</label>
+
+                <textarea class="form-control" id="cookie" rows="3"
+                          placeholder="请在网页上登陆QQ空间并复制cookie到此处."></textarea>
+                <a href="#">cookie是什么？怎么获取cookie？</a>
+            </div>
+            <div class="card col-lg-8 col-md-12 my_card">
+                <div class="card-body">
+                    <h5 class="card-title">用户须知</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">请务必完整的阅读</h6>
+                    <p class="card-text">此程序为QQ空间爬虫</p>
+                    <p class="card-text">程序会根据输入的QQ号和cookie自动获取用户的QQ空间里的内容</p>
+                    <p class="card-text">包括说说内容、点赞的人、评论的人、用户好友等信息并进行数据分析和可视化</p>
+                    <a class="card-text" href="https://github.com/Maicius/QQZoneMood/blob/master/README.md"
+                       target="_blank">点此查看具体功能</a>
+                    <p class="card-text danger">因涉及大量数据分析，所有数据不得不缓存在服务器上！！！</p>
+                    <p class="card-text danger">缓存日期为24小时(24小时后会自动删除)</p>
+                    <p class="card-text danger">我只能保证我不会滥用数据，但无法保证网站不会被攻击</p>
+                    <p class="card-text danger">所以为避免造成隐私泄漏，普通用户请在离开网页时点击下方清除缓存！！！</p>
+                    <a href="https://github.com/Maicius/QQZoneMood" class="card-link" target="_blank">开源项目地址</a>
+                    <a href="http://www.xiaomaidong.com" class="card-link" target="_blank">开发者简介</a>
+                </div>
+            </div>
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" id="agree">
+                <label class="form-check-label" for="agree">我已仔细阅读并知晓风险</label>
+            </div>
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" id="no_delete">
+                <label class="form-check-label" for="no_delete">数据永久存储(开发者选项，普通用户勿选)</label>
+            </div>
+            <button class="btn btn-primary">开始获取</button>
+            <button class="btn btn-danger">清除缓存</button>
+        </form>
+    </div>
+
+</div>
+</body>
+<script src="../static/constant.js"></script>
+<script src="https://cdn.bootcss.com/jquery/3.2.0/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/echarts/3.8.5/echarts.min.js"></script>
+<link href="https://cdn.bootcss.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.bootcss.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
+
+<link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+<link href="../static/style.css" rel="stylesheet">
+<script src="../static/charts.js"></script>
+<script src="../static/script.js"></script>
+</html>

@@ -5,11 +5,15 @@ from src.web.entity.QQUser import QQUser
 from src.web.entity.UserInfo import UserInfo
 app = Flask(__name__)
 
-@app.route('/')
+@app.route('/data')
 def data():
     user = UserInfo()
     user.load("1272082503")
-    return render_template("index.html", user=user)
+    return render_template("data.html", user=user)
+
+@app.route('/')
+def config():
+    return render_template("config.html")
 
 @app.route('/get_history/<QQ>/<name>')
 def get_history(QQ, name=''):
