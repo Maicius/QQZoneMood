@@ -54,12 +54,12 @@
                     <h6 class="card-subtitle mb-2 text-muted">请务必完整的阅读</h6>
                     <p class="card-text">此程序为QQ空间爬虫</p>
                     <p class="card-text">程序会根据输入的QQ号和cookie自动获取用户的QQ空间里的内容</p>
-                    <p class="card-text">包括说说内容、点赞的人、评论的人、用户好友等信息并进行数据分析和可视化</p>
+                    <p class="card-text">可以对QQ空间的数据进行备份和可视化</p>
                     <a class="card-text" href="https://github.com/Maicius/QQZoneMood/blob/master/README.md"
                        target="_blank">点此查看具体功能</a>
                     <p class="card-text danger">因涉及大量数据分析，所有数据不得不缓存在服务器上！！！</p>
-                    <p class="card-text danger">缓存日期为24小时(24小时后会自动删除)</p>
-                    <p class="card-text danger">我只能保证我不会滥用数据，但无法保证网站不会被攻击</p>
+                    <p class="card-text danger">缓存时间为24小时(24小时后会自动删除)</p>
+                    <p class="card-text danger">开发者只能保证不会滥用数据，但无法保证网站不会被攻击</p>
                     <p class="card-text danger">所以为避免造成隐私泄漏，普通用户请在离开网页时点击下方清除缓存！！！</p>
                     <p class="card-text">受限于网络带宽和服务器，许多功能并未开放</p>
                     <p class="card-text">开发者可以自行运行项目源代码</p>
@@ -72,7 +72,7 @@
                 <label class="form-check-label" for="agree" >我已仔细阅读并知晓风险</label>
             </div>
             <div class="form-check">
-                <input type="checkbox" class="form-check-input" id="no_delete" ms-duplex-checked="@no_delete">
+                <input type="checkbox" class="form-check-input" id="no_delete" ms-duplex-checked="@no_delete" disabled="disabled">
                 <label class="form-check-label" for="no_delete">数据永久存储(开发者选项，普通用户勿选)</label>
             </div>
             <button type="button" class="btn btn-primary" :click="@submit_data()" disabled="disabled" id="start_get">开始获取</button>
