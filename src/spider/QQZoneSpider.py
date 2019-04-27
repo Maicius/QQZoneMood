@@ -599,6 +599,7 @@ class QQZoneSpider(BaseSpider):
             """
             这里由未知原因可能会导致失败，如果出现403可以重复几次试一下
             """
+            self.headers['referer'] = 'https://user.qzone.qq.com/1272082503/main'
             res = self.req.get(url=url2, headers=self.headers)
             if self.debug:
                 print("获取登陆时间状态:", res.status_code)
