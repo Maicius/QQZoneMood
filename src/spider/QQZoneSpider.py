@@ -61,7 +61,7 @@ class QQZoneSpider(BaseSpider):
         """
         if self.cookie_text:
             self.manu_get_cookie(self.cookie_text)
-            # self.get_qzone_token()
+            self.get_qzone_token()
         else:
             self.auto_get_cookie()
         # 根据cookie计算g_tk值
@@ -113,6 +113,7 @@ class QQZoneSpider(BaseSpider):
     # 手动添加cookie完成登陆
     def manu_get_cookie(self, cookie_text):
         self.cookies = cookie_text
+        self.headers['cookie'] = self.cookies
 
     # 构造获取动态的URL
     def get_mood_url(self):
@@ -146,7 +147,6 @@ class QQZoneSpider(BaseSpider):
         url_mood = url_mood + '&uin=' + str(self.username)
         pos = self.mood_begin
         recover_index_split = 0
-
         if self.recover:
             recover_index = self.do_recover_from_exist_data()
             if recover_index is not None:

@@ -5,6 +5,8 @@ from src.web.entity.QQUser import QQUser
 from src.web.entity.UserInfo import UserInfo
 from flask import request
 from src.spider.main import web_interface
+import multiprocessing
+
 app = Flask(__name__)
 
 @app.route('/data')

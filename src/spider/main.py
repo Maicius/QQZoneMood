@@ -24,7 +24,6 @@ def web_interface(username, nick_name, mood_num, stop_time, cookie):
     sp.get_main_page_info()
     sp.get_mood_list()
     sp.user_info.save_user(sp.username)
-    pass
 
 def get_user_basic_info():
     sp = QQZoneSpider(use_redis=True, debug=False, mood_begin=0, mood_num=-1,
