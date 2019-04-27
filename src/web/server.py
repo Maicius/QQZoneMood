@@ -1,12 +1,12 @@
 from flask import Flask, render_template
-from src.util.constant import WEB_SPIDER_INFO, MOOD_NUM_PRE, MOOD_COUNT_KEY
+from src.util.constant import WEB_SPIDER_INFO, MOOD_NUM_PRE, MOOD_COUNT_KEY, STOP_SPIDER_KEY, SPIDER_FLAG, STOP_SPIDER_FLAG, FINISH_ALL_INFO
 import json
 from src.web.entity.QQUser import QQUser
 from src.web.entity.UserInfo import UserInfo
 from flask import request
 from src.spider.main import web_interface
 import threading
-
+from time import sleep
 import redis
 
 pool = redis.ConnectionPool(host="127.0.0.1", port=6379, decode_responses=True)
@@ -46,6 +46,10 @@ def start_spider():
         try:
             t = threading.Thread(target=web_interface, args=(qq, nick_name, stop_time, mood_num, cookie, no_delete))
             t.start()
+            pool = get_pool()
+            # 设置标记位，以便停止爬虫的时候使用
+            conn = redis.Redis(connection_pool=pool)
+            conn.set(STOP_SPIDER_KEY + qq, SPIDER_FLAG)
             result = dict(result=1)
             return json.dumps(result, ensure_ascii=False)
         except BaseException as e:
@@ -94,6 +98,23 @@ def query_spider_num(QQ,mood_num):
         finish = 1
     return json.dumps(dict(num=info, finish=finish))
 
+@app.route('/stop_spider/<QQ>')
+def stop_spider(QQ):
+    pool = get_pool()
+    conn = redis.Redis(connection_pool=pool)
+    # 更新标记位，停止爬虫
+    conn.set(STOP_SPIDER_KEY + QQ, STOP_SPIDER_FLAG)
+    stop = 0
+    # 等待数据保存
+    while True:
+        finish_info = conn.get(STOP_SPIDER_KEY)
+        if finish_info == FINISH_ALL_INFO:
+            stop = 1
+            break
+        else:
+            sleep(0.1)
+    num = conn.get(MOOD_COUNT_KEY + str(QQ))
+    return json.dumps(dict(num=num, finish=stop))
 
 if __name__ == '__main__':
     app.run(debug=True)

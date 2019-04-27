@@ -22,6 +22,9 @@ let vm = avalon.define({
     spider_num: 0,
     show_process: 0,
     process_width: 0,
+    spider_text: SPIDER_TEXT.DOING,
+
+    spider_state: SPIDER_STATE.CONFIG,
     fetch_history_data: function () {
         $.ajax({
             url: '/get_history/1272082503/maicius',
@@ -82,15 +85,28 @@ let vm = avalon.define({
                     }, 1000);
                 } else {
                     vm.spider_info.push(data.info);
-                    if (vm.spider_info.length > 15) {
-                        vm.spider_info.pop(0);
-                    }
                 }
             }
         })
     },
-
-    query_spider_num: function(QQ){
+    stop_spider: function () {
+        //避免用户多次点击停止爬虫导致保存数据出错
+        if (vm.spider_text !== SPIDER_TEXT.STOP) {
+            vm.spider_text = SPIDER_TEXT.STOP;
+            $.ajax({
+                url: '/stop_spider/' + vm.qq_id,
+                type: 'get',
+                success: function (data) {
+                    if (data.result) {
+                        clearInterval(vm.query_num);
+                        vm.spider_state = SPIDER_STATE.FINISH;
+                        vm.spider_num = parseInt(data.num);
+                    }
+                }
+            });
+        }
+    },
+    query_spider_num: function (QQ) {
         $.ajax({
             url: '/query_spider_num/' + QQ + '/' + vm.true_mood_num,
             type: 'GET',
@@ -100,10 +116,11 @@ let vm = avalon.define({
                 vm.process_width = Math.ceil(parseInt(vm.spider_num) / parseInt(vm.true_mood_num) * 100) + "%";
                 if (data.finish === 1) {
                     clearInterval(vm.query_num);
+                    vm.spider_state = SPIDER_STATE.FINISH;
                 }
 
             }
-         })
+        })
     },
     clear_cache: function () {
 
@@ -118,6 +135,16 @@ vm.$watch("agree", function (new_v, old_v) {
         case false:
             $('#start_get').attr("disabled", "true");
             break;
+    }
+});
+
+vm.$watch("spider_state", function (new_v, old_v) {
+    switch (new_v) {
+        case SPIDER_STATE.FINISH:
+            vm.spider_text = SPIDER_TEXT.FINISH;
+            break;
+        case SPIDER_STATE.SPIDER:
+            vm.spider_text = SPIDER_TEXT.DOING;
     }
 });
 

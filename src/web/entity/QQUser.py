@@ -7,8 +7,6 @@ class QQUser(object):
     """
     生成User实体
     """
-
-
     def __init__(self, QQ='', name=''):
         RESULT_BASE_DIR = BASE_DIR + "data/result/" + QQ + '_mood_data.csv'
         if os.path.exists(RESULT_BASE_DIR):

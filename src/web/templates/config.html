@@ -17,7 +17,7 @@
     </nav>
 
     <div class="main_container col-lg-8 col-md-12">
-        <form :visible="@show_process == 0">
+        <form :visible="@show_process == 0" ms-visible="@spider_state != 1">
             <div class="form-group row">
                 <div class="col-lg-6 col-md-12 row my_form">
                     <label for="nickname" class="col-lg-3 col-md-3 label_text" title="怎么称呼您？">昵称</label>
@@ -47,7 +47,7 @@
             <div class="form-group">
                 <label for="cookie">Cookie</label>
 
-                <textarea class="form-control" id="cookie" rows="2"
+                <textarea class="form-control col-md-12 col-lg-8" id="cookie" rows="8" style="margin: 20px auto"
                           placeholder="请在网页上登陆QQ空间并复制cookie到此处" ms-duplex="@qq_cookie"></textarea>
                 <a href="#">cookie是什么？怎么获取cookie？</a>
             </div>
@@ -85,16 +85,19 @@
             <button type="button" class="btn btn-danger" :click="@clear_cache()" style="margin-left: 10px">清除缓存</button>
         </form>
 
-        <div class="spider_phase" ms-visible="@show_process == 1">
+        <div class="spider_phase" ms-visible="@spider_state != 0">
             <div class="my_process col-lg-8 col-md-12">
-                <H3>正在获取:{$spider_num$} / {$true_mood_num$} ...</H3>
+                <!--ms-for: info in @spider_info-->
+                <p>{$info$}</p>
+                 <!--ms-for-end:-->
+                <H3>{{spider_text}}{$spider_num$} / {$true_mood_num$} ...</H3>
                 <div class="progress">
-                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
+                    <div :class="['progress-bar',(@spider_state == 1 ? ('progress-bar-animated', 'progress-bar-striped'): 'bg-success')]" role="progressbar"
                          aria-valuemin="0" aria-valuemax="100" :css="{width: @process_width}">
                     </div>
                 </div>
             </div>
-            <button type="button" class="btn btn-primary" :click="@submit_data()" disabled="disabled" id="stop_spider">
+            <button type="button" class="btn btn-primary" :click="@stop_spider()" id="stop_spider" title="立即停止爬虫并保存数据" ms-visible="@spider_state==2">
                 停止
             </button>
         </div>
