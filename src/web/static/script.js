@@ -69,7 +69,13 @@ let vm = avalon.define({
             type: 'GET',
             success: function (data) {
                 data = JSON.parse(data);
-                vm.spider_info.push(data.info);
+                if (data.info){
+                    vm.spider_info.push(data.info);
+                }
+
+                if(vm.spider_info.length > 15) {
+                    vm.spider_info.pop(0);
+                }
                 if (data.finish === 1) {
                     clearInterval(vm.query_interval);
                 } else {

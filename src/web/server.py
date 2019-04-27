@@ -5,7 +5,6 @@ from src.web.entity.QQUser import QQUser
 from src.web.entity.UserInfo import UserInfo
 from flask import request
 from src.spider.main import web_interface
-import multiprocessing
 import threading
 
 import redis
@@ -52,10 +51,8 @@ def start_spider():
         except BaseException as e:
             result = dict(result=e)
             return json.dumps(result, ensure_ascii=False)
-        # web_interface(qq, nick_name, stop_time=stop_time, mood_num=mood_num, cookie=cookie, no_delete=no_delete)
     else:
-        return "test"
-
+        return "老哥你干嘛？"
 
 @app.route('/get_history/<QQ>/<name>')
 def get_history(QQ, name=''):
@@ -75,11 +72,15 @@ def get_basic_info(QQ, name):
 def query_spider_info(QQ):
     pool = get_pool()
     conn = redis.Redis(connection_pool=pool)
-    info = conn.lpop(WEB_SPIDER_INFO + QQ)
+    length = conn.llen(WEB_SPIDER_INFO + QQ)
+    info = conn.lrange(WEB_SPIDER_INFO + QQ, 0, length)
+    conn.ltrim(WEB_SPIDER_INFO + QQ, length + 1, -1)
+
     finish = 0
     if info is not None:
         if FINISH_ALL_INFO in info:
             finish = 1
+        info = ";   ".join(info)
     result = dict(info=info, finish=finish)
     return json.dumps(result, ensure_ascii=False)
 
