@@ -20,11 +20,10 @@ def config():
 @app.route('/start_spider', methods=['GET','POST'])
 def start_spider():
     if request.method == 'POST':
-
         nick_name = request.form['nick_name']
         qq = request.form['qq']
         stop_time = request.form['stop_time']
-        mood_num = request.form['mood_num']
+        mood_num = int(request.form['mood_num'])
         cookie = request.form['cookie']
         print("begin spider:", qq)
         web_interface(qq, nick_name, stop_time=stop_time, mood_num=mood_num, cookie=cookie)

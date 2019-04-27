@@ -2,12 +2,12 @@ from src.spider.QQZoneSpider import QQZoneSpider
 
 
 def capture_data():
-    cookie_text = 'pgv_pvi=452072448; RK=+o+S14A/VT; tvfe_boss_uuid=7c5128d923ccdd6b; pac_uid=1_1272082503; ptcz=807bc32de0d90e8dbcdc3613231e3df03cb3ccfbf9013edf246be81ff3e0f51c; QZ_FE_WEBP_SUPPORT=1; pgv_pvid=4928238618; o_cookie=1272082503; __Q_w_s__QZN_TodoMsgCnt=1; _ga=amp-Iuo327Mw3_0w5xOcJY0tIA; zzpaneluin=; zzpanelkey=; pgv_si=s6639420416; ptisp=ctc; pgv_info=ssid=s5183597124; __Q_w_s_hat_seed=1; ptui_loginuin=458546290; qz_screen=2560x1440; cpu_performance_v8=8; uin=o1272082503; skey=@k3wOTLDQl; p_uin=o1272082503; pt4_token=uNhVHONTplEzVB8z0O5UECv190s7p3*T-tzGGurG8Ng_; p_skey=GHBj-VqQppp1aeqnHqUp5hdn-QISVh-jirIUgLvHhqM_'
+    cookie_text = 'pt4_token=Z*nb-cKKnns9yRPYW2QmxoqmyUoeyoxIBlaX3F633fk_; qz_screen=1680x1050;p_uin=o1272082503; skey=@o2SNoJaYR;ptcz=5a97b8fad1cb09b348872c553606d62b5cfc844e90821792e7d5fd6256a868d7; uin=o1272082503;pgv_info=ssid=s5126892128;p_skey=6ceHegv*zTS43EQ*ojrE8e5*DfVp4Vt2IFeXzcPnT*Y_;pgv_si=s8873467904;pgv_pvid=2724037632;QZ_FE_WEBP_SUPPORT=1;ptui_loginuin=1272082503;pgv_pvi=1374842880;zzpanelkey=;RK=wg7Q0YANVz;zzpaneluin=;'
     sp = QQZoneSpider(use_redis=True, debug=True, mood_begin=0, mood_num=-1,
                       stop_time='-1',
                       download_small_image=False, download_big_image=False,
                       download_mood_detail=True, download_like_detail=True,
-                      download_like_names=True, recover=False, cookie_text=None)
+                      download_like_names=True, recover=False, cookie_text=cookie_text)
     sp.login()
     sp.get_main_page_info()
     sp.get_mood_list()

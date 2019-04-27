@@ -93,7 +93,7 @@ class QQZoneSpider(BaseSpider):
         btn = self.web.find_element_by_id('login_button')
         time.sleep(1)
         btn.click()
-        time.sleep(1)
+        time.sleep(10)
         print("begin...")
         self.web.get('https://user.qzone.qq.com/{}/main'.format(self.username))
         time.sleep(3)
@@ -372,7 +372,6 @@ class QQZoneSpider(BaseSpider):
                 print(start)
                 print('获取超过20的评论的人信息:', cmt_num, url)
             content = self.req.get(url, headers=self.headers).content
-            print(content)
             try:
                 content_json = self.get_json(content.decode('utf-8'))
                 content_json = json.loads(content_json)
