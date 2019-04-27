@@ -33,7 +33,8 @@ let vm = avalon.define({
                     qq: vm.qq_id,
                     stop_time: vm.stop_date,
                     mood_num: vm.stop_num,
-                    cookie: vm.qq_cookie
+                    cookie: vm.qq_cookie,
+                    no_delete: vm.no_delete
                 },
                 success: function (data) {
                     console.log(data);
