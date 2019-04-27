@@ -17,7 +17,7 @@
     </nav>
 
     <div class="main_container col-lg-8 col-md-12">
-        <form :visible="@show_process == 0">
+        <form>
             <div class="form-group row">
                 <div class="col-lg-6 col-md-12 row my_form">
                     <label for="nickname" class="col-lg-3 col-md-3 label_text" title="怎么称呼您？">昵称</label>
@@ -47,11 +47,11 @@
             <div class="form-group">
                 <label for="cookie">Cookie</label>
 
-                <textarea class="form-control" id="cookie" rows="2"
+                <textarea class="form-control col-md-12 col-lg-8" id="cookie" rows="8" style="margin: 20px auto"
                           placeholder="请在网页上登陆QQ空间并复制cookie到此处" ms-duplex="@qq_cookie"></textarea>
                 <a href="#">cookie是什么？怎么获取cookie？</a>
             </div>
-            <div :class="['card', 'col-lg-8', 'col-md-12', 'my_card']" ms-visible="@begin_spider == 0">
+            <div :class="['card', 'col-lg-8', 'col-md-12', 'my_card']" ms-visible="@spider_state == 0">
                 <div class="card-body">
                     <h5 class="card-title">用户须知</h5>
                     <h6 class="card-subtitle mb-2 text-muted">请务必完整的阅读</h6>
@@ -72,7 +72,7 @@
             </div>
             <div class="form-check">
                 <input type="checkbox" class="form-check-input" id="agree" ms-duplex-checked="@agree">
-                <label class="form-check-label" for="agree">我已仔细阅读并知晓风险</label>
+                <label class="form-check-label" for="agree">我已仔细阅读用户须知并知晓风险</label>
             </div>
             <div class="form-check">
                 <input type="checkbox" class="form-check-input" id="no_delete" ms-duplex-checked="@no_delete"
@@ -82,23 +82,30 @@
             <button type="button" class="btn btn-primary" :click="@submit_data()" disabled="disabled" id="start_get">
                 开始获取
             </button>
-            <button type="button" class="btn btn-danger" :click="@clear_cache()" style="margin-left: 10px">清除缓存</button>
+            <button type="button" class="btn btn-danger" :click="@clear_cache()" id="delete_cache" style="margin-left: 10px">清除缓存</button>
         </form>
 
-        <div class="spider_phase" ms-visible="@show_process == 1">
+        <div class="spider_phase" ms-visible="@spider_state != 0">
             <div class="my_process col-lg-8 col-md-12">
-                <H3>正在获取:{$spider_num$} / {$true_mood_num$} ...</H3>
+                <!--ms-for: info in @spider_info-->
+                <p>{$info$}</p>
+                 <!--ms-for-end:-->
+                <H3>{$spider_text$}{$spider_num$} / {$true_mood_num$} ...</H3>
                 <div class="progress">
-                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
+                    <div :class="['progress-bar',(@spider_state == 1 ? ('progress-bar-animated', 'progress-bar-striped'): 'bg-success')]" role="progressbar"
                          aria-valuemin="0" aria-valuemax="100" :css="{width: @process_width}">
                     </div>
                 </div>
             </div>
-            <button type="button" class="btn btn-primary" :click="@submit_data()" disabled="disabled" id="stop_spider">
+            <button type="button" class="btn btn-primary" :click="@stop_spider()" id="stop_spider" title="立即停止爬虫并保存数据" ms-visible="@spider_state==1">
                 停止
             </button>
         </div>
-
+        <div class="spider_finish" ms-visible="@spider_state == 2">
+            <div class="col-lg-8 col-md-12" style="margin: 0 auto">
+                <p style="text-align: center">{$clean_data_text$}</p>
+            </div>
+        </div>
     </div>
 </div>
 </body>

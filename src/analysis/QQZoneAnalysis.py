@@ -330,7 +330,7 @@ def get_most_people(file_name_head):
     analysis.user_info.save_user(analysis.username)
 
 
-def get_mood_df(file_name_head, export_csv=True, export_excel=False):
+def get_mood_df(file_name_head, export_csv=True, export_excel=False, analysis_friend=False):
     """
     根据传入的文件名前缀清洗原始数据，导出csv和excel表
     :param file_name_head:
@@ -338,8 +338,8 @@ def get_mood_df(file_name_head, export_csv=True, export_excel=False):
     :param export_excel:
     :return:
     """
-    analysis = QQZoneAnalysis(use_redis=True, debug=True, file_name_head=file_name_head,
-                              analysis_friend=True)
+    analysis = QQZoneAnalysis(use_redis=True, debug=False, file_name_head=file_name_head,
+                              analysis_friend=analysis_friend)
     analysis.get_useful_info_from_json()
     if export_csv:
         analysis.save_data_to_csv()

@@ -19,7 +19,7 @@ from src.util.constant import qzone_jother2
 import math
 import execjs
 import threading
-from src.util.constant import WEB_SPIDER_INFO, FINISH_ALL_INFO, MOOD_COUNT_KEY
+from src.util.constant import WEB_SPIDER_INFO, FINISH_ALL_INFO, MOOD_COUNT_KEY, STOP_SPIDER_KEY, STOP_SPIDER_FLAG
 
 class QQZoneSpider(BaseSpider):
     def __init__(self, use_redis=False, debug=False, mood_begin=0, mood_num=-1, stop_time='-1',
@@ -186,13 +186,13 @@ class QQZoneSpider(BaseSpider):
 
         # 保存所有数据到指定文件
         print('保存最终数据中...')
+        self.re.set(STOP_SPIDER_KEY + self.username, FINISH_ALL_INFO)
         if (self.debug):
             print('Error Unikeys Num:', len(self.error_like_detail_unikeys))
             print('Retry to get them...')
         self.retry_error_unikey()
         self.save_all_data_to_json()
         self.result_report()
-        self.re.lpush(WEB_SPIDER_INFO + self.username, FINISH_ALL_INFO)
         print("finish===================")
 
     def find_best_step(self, mood_num, thread_num):
@@ -224,6 +224,7 @@ class QQZoneSpider(BaseSpider):
                         recover_index_split = 0
                     # 获取数据
                     until_stop_time = self.do_get_infos(unikeys, until_stop_time)
+                    until_stop_time = False if self.re.get(STOP_SPIDER_KEY+ str(self.username)) == STOP_SPIDER_FLAG else True
                 pos += 20
                 # 每抓100条保存一次数据
                 if pos % 100 == 0:

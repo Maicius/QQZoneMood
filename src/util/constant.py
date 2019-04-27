@@ -16,3 +16,9 @@ MOOD_COUNT_KEY = 'mood_count_'
 
 MOOD_NUM_PRE = '动态数目'
 
+STOP_SPIDER_KEY = 'stop_spider_'
+STOP_SPIDER_FLAG = 'stop'
+SPIDER_FLAG = 'continue'
+
+CLEAN_DATA_KEY = 'clean_data_'
+
