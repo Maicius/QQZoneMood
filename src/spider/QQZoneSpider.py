@@ -12,7 +12,6 @@ import re
 import json
 import copy
 import datetime
-from copy import deepcopy
 import logging
 from src.spider.BaseSpider import BaseSpider
 from src.util import util

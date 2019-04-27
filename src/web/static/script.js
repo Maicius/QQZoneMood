@@ -13,6 +13,7 @@ let vm = avalon.define({
     agree: false,
     disable: 'false',
     qq_cookie: '',
+
     fetch_history_data: function () {
         $.ajax({
             url: '/get_history/1272082503/maicius',
@@ -38,7 +39,8 @@ let vm = avalon.define({
                         no_delete: vm.no_delete
                     },
                     success: function (data) {
-                        if (data.result == 1) {
+                        data = JSON.parse(data);
+                        if (data.result === 1) {
                             alert("success");
                             vm.query_interval = setInterval(function () {
                                 vm.query_spider_info(vm.qq_id);
@@ -60,7 +62,8 @@ let vm = avalon.define({
             url: '/query_spider_info/' + QQ,
             type: 'GET',
             success: function (data) {
-                if (data.finish == 1) {
+                data = JSON.parse(data);
+                if (data.finish === 1) {
                     clearInterval(vm.query_interval);
                 }else{
                     console.log(data.info);
