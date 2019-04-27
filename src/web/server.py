@@ -76,12 +76,13 @@ def query_spider_info(QQ):
     pool = get_pool()
     conn = redis.Redis(connection_pool=pool)
     info = conn.lpop(WEB_SPIDER_INFO + QQ)
-    if FINISH_ALL_INFO in info:
-        finish = 1
-    else:
-        finish = 0
+    finish = 0
+    if info is not None:
+        if FINISH_ALL_INFO in info:
+            finish = 1
     result = dict(info=info, finish=finish)
     return json.dumps(result, ensure_ascii=False)
+
 
 if __name__ == '__main__':
     app.run(debug=True)

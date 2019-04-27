@@ -3,6 +3,9 @@
 //     interpolate: ["[[","]]"]
 // });
 let history_dom;
+avalon.config({
+    interpolate: ['{$', '$}']
+});
 let vm = avalon.define({
     $id: 'qqzone',
     nick_name: '',
@@ -13,7 +16,8 @@ let vm = avalon.define({
     agree: false,
     disable: 'false',
     qq_cookie: '',
-
+    begin_spider: 0,
+    spider_info: [],
     fetch_history_data: function () {
         $.ajax({
             url: '/get_history/1272082503/maicius',
@@ -41,10 +45,12 @@ let vm = avalon.define({
                     success: function (data) {
                         data = JSON.parse(data);
                         if (data.result === 1) {
-                            alert("success");
+                            //alert("success");
+                            vm.begin_spider = 1;
                             vm.query_interval = setInterval(function () {
                                 vm.query_spider_info(vm.qq_id);
                             }, 1000);
+
                         } else {
                             alert("未知错误:" + data.result)
                         }
@@ -63,9 +69,10 @@ let vm = avalon.define({
             type: 'GET',
             success: function (data) {
                 data = JSON.parse(data);
+                vm.spider_info.push(data.info);
                 if (data.finish === 1) {
                     clearInterval(vm.query_interval);
-                }else{
+                } else {
                     console.log(data.info);
                 }
             }

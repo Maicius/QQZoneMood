@@ -36,6 +36,11 @@
     text-align: center;
     position: relative;
     margin: 10px auto;
+
+}
+.show_spider_info {
+    height: 40vh;
+    overflow-y: scroll;
 }
 .danger {
     color: red;
