@@ -144,7 +144,6 @@ let vm = avalon.define({
         })
     },
     clear_cache: function () {
-
     }
 });
 

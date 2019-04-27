@@ -46,15 +46,7 @@ def start_spider():
 
         try:
             t = threading.Thread(target=web_interface, args=(qq, nick_name, stop_time, mood_num, cookie, no_delete))
-
-            pool = get_pool()
-
-            conn = redis.Redis(connection_pool=pool)
-            conn.delete(WEB_SPIDER_INFO + qq)
-            conn.set(MOOD_COUNT_KEY + qq, 0)
-            # 设置标记位，以便停止爬虫的时候使用
-            conn.set(STOP_SPIDER_KEY + qq, SPIDER_FLAG)
-            conn.set(CLEAN_DATA_KEY + qq, 0)
+            init_redis_key(qq)
             t.start()
             result = dict(result=1)
             return json.dumps(result, ensure_ascii=False)
@@ -133,6 +125,15 @@ def query_clean_data(QQ):
         else:
             sleep(0.1)
     return json.dumps(dict(finish=key))
+
+def init_redis_key(qq):
+    pool = get_pool()
+    conn = redis.Redis(connection_pool=pool)
+    conn.delete(WEB_SPIDER_INFO + qq)
+    conn.set(MOOD_COUNT_KEY + qq, 0)
+    # 设置标记位，以便停止爬虫的时候使用
+    conn.set(STOP_SPIDER_KEY + qq, SPIDER_FLAG)
+    conn.set(CLEAN_DATA_KEY + qq, 0)
 
 if __name__ == '__main__':
     app.run(debug=True)
