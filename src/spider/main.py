@@ -1,8 +1,9 @@
 from src.spider.QQZoneSpider import QQZoneSpider
-
+from src.util.constant import WEB_SPIDER_INFO, MOOD_NUM_PRE
+import multiprocessing
 
 def capture_data():
-    cookie_text = 'pt4_token=Z*nb-cKKnns9yRPYW2QmxoqmyUoeyoxIBlaX3F633fk_; qz_screen=1680x1050;p_uin=o1272082503; skey=@o2SNoJaYR;ptcz=5a97b8fad1cb09b348872c553606d62b5cfc844e90821792e7d5fd6256a868d7; uin=o1272082503;pgv_info=ssid=s5126892128;p_skey=6ceHegv*zTS43EQ*ojrE8e5*DfVp4Vt2IFeXzcPnT*Y_;pgv_si=s8873467904;pgv_pvid=2724037632;QZ_FE_WEBP_SUPPORT=1;ptui_loginuin=1272082503;pgv_pvi=1374842880;zzpanelkey=;RK=wg7Q0YANVz;zzpaneluin=;'
+    cookie_text = 'pgv_pvi=452072448; RK=+o+S14A/VT; tvfe_boss_uuid=7c5128d923ccdd6b; pac_uid=1_1272082503; ptcz=807bc32de0d90e8dbcdc3613231e3df03cb3ccfbf9013edf246be81ff3e0f51c; QZ_FE_WEBP_SUPPORT=1; pgv_pvid=4928238618; o_cookie=1272082503; __Q_w_s__QZN_TodoMsgCnt=1; _ga=amp-Iuo327Mw3_0w5xOcJY0tIA; zzpaneluin=; zzpanelkey=; pgv_si=s6639420416; ptisp=ctc; pgv_info=ssid=s5183597124; __Q_w_s_hat_seed=1; ptui_loginuin=458546290; Loading=Yes; qz_screen=1680x1050; uin=o1272082503; skey=@Zk9eLB4j3; p_uin=o1272082503; pt4_token=eBFNsKN*j6lVpXCbI0-QrlQqZTYr6Epvj9RnyDD7zhc_; p_skey=3ZsWdJ6j-bvIBFpN31E78aKG06MVSG6WQRKQ5f7X7*U_; cpu_performance_v8=2'
     sp = QQZoneSpider(use_redis=True, debug=True, mood_begin=0, mood_num=-1,
                       stop_time='-1',
                       download_small_image=False, download_big_image=False,
@@ -13,15 +14,27 @@ def capture_data():
     sp.get_mood_list()
     sp.user_info.save_user(sp.username)
 
-def web_interface(username, nick_name, mood_num, stop_time, cookie):
+def web_interface(username, nick_name, stop_time, mood_num, cookie, no_delete):
+    # 多线程情况下不能用recover
+    recover = False
     sp = QQZoneSpider(use_redis=True, debug=False, mood_begin=0, mood_num=mood_num,
                       stop_time=stop_time,
                       download_small_image=False, download_big_image=False,
                       download_mood_detail=True, download_like_detail=True,
-                      download_like_names=True, recover=False, cookie_text=cookie,
-                      from_web=True, username=username, nick_name=nick_name)
-    sp.login()
-    sp.get_main_page_info()
+                      download_like_names=True, recover=recover, cookie_text=cookie,
+                      from_web=True, username=username, nick_name=nick_name, no_delete=no_delete)
+    try:
+        sp.login()
+        sp.re.lpush(WEB_SPIDER_INFO + username, "用户" + str(sp.username) + "登陆成功")
+    except BaseException as e:
+        sp.re.rpush(WEB_SPIDER_INFO + username, "登陆失败，请检查QQ号和cookie是否正确")
+    try:
+        sp.get_main_page_info()
+        sp.re.lpush(WEB_SPIDER_INFO + username, "获取主页信息成功")
+        sp.re.lpush(WEB_SPIDER_INFO + username, MOOD_NUM_PRE + ":" + str(sp.mood_num))
+    except BaseException as e:
+        sp.re.lpush(WEB_SPIDER_INFO + username,  "获取主页信息失败")
+
     sp.get_mood_list()
     sp.user_info.save_user(sp.username)
 

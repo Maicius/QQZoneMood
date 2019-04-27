@@ -2,7 +2,7 @@ import datetime
 from src.util import util
 from copy import deepcopy
 import json
-from src.util.constant import BASE_DIR
+from src.util.constant import BASE_DIR, EXPIRE_TIME_IN_SECONDS
 import re
 import logging
 import redis
@@ -15,7 +15,7 @@ class BaseSpider(object):
     def __init__(self, use_redis=False, debug=False, mood_begin=0, mood_num=-1, stop_time='-1',
                  download_small_image=False, download_big_image=False,
                  download_mood_detail=True, download_like_detail=True, download_like_names=True, recover=False,
-                 cookie_text=None, from_web=False, username='', nick_name=''):
+                 cookie_text=None, from_web=False, username='', nick_name='', no_delete=True):
         # 初始化下载项
         self.mood_begin = mood_begin
         self.mood_num = mood_num
@@ -27,6 +27,7 @@ class BaseSpider(object):
         self.download_like_names = download_like_names
         self.thread_num = 10
         self.thread_list = []
+        self.no_delete = no_delete
         if stop_time != '-1':
             self.stop_time = util.get_mktime(stop_time)
         else:
@@ -93,10 +94,10 @@ class BaseSpider(object):
     def do_recover_from_exist_data(self):
         if self.use_redis:
             try:
-                self.content = json.loads(self.re.get(self.CONTENT_FILE_NAME[5:]))
-                self.like_list_names = json.loads(self.re.get(self.LIKE_LIST_NAME_FILE_NAME[5:]))
-                self.mood_details = json.loads(self.re.get(self.MOOD_DETAIL_FILE_NAME[5:]))
-                self.like_detail = json.loads(self.re.get(self.LIKE_DETAIL_FILE_NAME[5:]))
+                self.content = json.loads(self.re.get(self.CONTENT_FILE_NAME))
+                self.like_list_names = json.loads(self.re.get(self.LIKE_LIST_NAME_FILE_NAME))
+                self.mood_details = json.loads(self.re.get(self.MOOD_DETAIL_FILE_NAME))
+                self.like_detail = json.loads(self.re.get(self.LIKE_DETAIL_FILE_NAME))
                 if self.debug:
                     print('Finish to recover data from redis:')
                     print('content:', len(self.content))
@@ -123,6 +124,7 @@ class BaseSpider(object):
             pass
 
     def init_parameter(self):
+        self.mood_count = 0
         self.like_detail = []
         self.like_list_names = []
         self.content = []
@@ -188,32 +190,45 @@ class BaseSpider(object):
                 self.re.set(self.CONTENT_FILE_NAME[5:], json.dumps(self.content, ensure_ascii=False))
 
                 if self.download_like_names:
-                    self.re.set(self.LIKE_LIST_NAME_FILE_NAME[5:],
+                    self.re.set(self.LIKE_LIST_NAME_FILE_NAME,
                                 json.dumps(self.like_list_names, ensure_ascii=False))
 
                 if self.download_mood_detail:
-                    self.re.set(self.MOOD_DETAIL_FILE_NAME[5:],
+                    self.re.set(self.MOOD_DETAIL_FILE_NAME,
                                 json.dumps(self.mood_details, ensure_ascii=False))
 
                 if self.download_like_detail:
-                    self.re.set(self.LIKE_DETAIL_FILE_NAME[5:],
+                    self.re.set(self.LIKE_DETAIL_FILE_NAME,
                                 json.dumps(self.like_detail, ensure_ascii=False))
+
+                if not self.no_delete:
+                    self.re.expire(self.LIKE_LIST_NAME_FILE_NAME, EXPIRE_TIME_IN_SECONDS)
+                    self.re.expire(self.MOOD_DETAIL_FILE_NAME, EXPIRE_TIME_IN_SECONDS)
+                    self.re.expire(self.LIKE_DETAIL_FILE_NAME, EXPIRE_TIME_IN_SECONDS)
 
                 if final_result:
                     if self.download_like_detail:
-                        self.re.set(self.ERROR_LIKE_DETAIL_FILE_NAME[6:],
+                        self.re.set(self.ERROR_LIKE_DETAIL_FILE_NAME,
                                     json.dumps(self.error_like_detail, ensure_ascii=False))
                         self.re.set(self.ERROR_LIKE_DETAIL_UNIKEY_FILE_NAME, "==".join(self.error_like_detail_unikeys))
 
                     if self.download_like_names:
-                        self.re.set(self.ERROR_LIKE_LIST_NAME_FILE_NAME[6:],
+                        self.re.set(self.ERROR_LIKE_LIST_NAME_FILE_NAME,
                                     json.dumps(self.error_like_list, ensure_ascii=False))
                         self.re.set(self.ERROR_LIKE_LIST_NAME_UNIKEY_FILE_NAME, "==".join(self.error_like_list_unikeys))
 
                     if self.download_mood_detail:
-                        self.re.set(self.ERROR_MOOD_DETAIL_FILE_NAME[6:],
+                        self.re.set(self.ERROR_MOOD_DETAIL_FILE_NAME,
                                     json.dumps(self.error_mood, ensure_ascii=False))
                         self.re.set(self.ERROR_MOOD_DETAIL_UNIKEY_FILE_NAME, "==".join(self.error_mood_unikeys))
+
+                    if not self.no_delete:
+                        self.re.expire(self.ERROR_LIKE_DETAIL_FILE_NAME, EXPIRE_TIME_IN_SECONDS)
+                        self.re.expire(self.ERROR_LIKE_DETAIL_UNIKEY_FILE_NAME, EXPIRE_TIME_IN_SECONDS)
+                        self.re.expire(self.ERROR_LIKE_LIST_NAME_FILE_NAME, EXPIRE_TIME_IN_SECONDS)
+                        self.re.expire(self.ERROR_LIKE_LIST_NAME_UNIKEY_FILE_NAME, EXPIRE_TIME_IN_SECONDS)
+                        self.re.expire(self.ERROR_MOOD_DETAIL_FILE_NAME, EXPIRE_TIME_IN_SECONDS)
+                        self.re.expire(self.ERROR_MOOD_DETAIL_UNIKEY_FILE_NAME, EXPIRE_TIME_IN_SECONDS)
 
         except BaseException as e:
             self.format_error(e, 'Faild to save data in redis')

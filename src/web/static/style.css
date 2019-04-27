@@ -36,7 +36,18 @@
     text-align: center;
     position: relative;
     margin: 10px auto;
+
+}
+.show_spider_info {
+    height: 30vh;
+    overflow-y: scroll;
 }
 .danger {
     color: red;
+}
+.my_process {
+    margin: 20px auto;
+}
+.spider_phase {
+    margin-top: 50px;
 }
