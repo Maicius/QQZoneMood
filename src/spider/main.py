@@ -1,5 +1,6 @@
 from src.spider.QQZoneSpider import QQZoneSpider
-
+from src.util.constant import WEB_SPIDER_INFO
+import multiprocessing
 
 def capture_data():
     cookie_text = 'pt4_token=Z*nb-cKKnns9yRPYW2QmxoqmyUoeyoxIBlaX3F633fk_; qz_screen=1680x1050;p_uin=o1272082503; skey=@o2SNoJaYR;ptcz=5a97b8fad1cb09b348872c553606d62b5cfc844e90821792e7d5fd6256a868d7; uin=o1272082503;pgv_info=ssid=s5126892128;p_skey=6ceHegv*zTS43EQ*ojrE8e5*DfVp4Vt2IFeXzcPnT*Y_;pgv_si=s8873467904;pgv_pvid=2724037632;QZ_FE_WEBP_SUPPORT=1;ptui_loginuin=1272082503;pgv_pvi=1374842880;zzpanelkey=;RK=wg7Q0YANVz;zzpaneluin=;'
@@ -13,15 +14,24 @@ def capture_data():
     sp.get_mood_list()
     sp.user_info.save_user(sp.username)
 
-def web_interface(username, nick_name, mood_num, stop_time, cookie, no_delete):
+def web_interface(username, nick_name, stop_time, mood_num, cookie, no_delete):
     sp = QQZoneSpider(use_redis=True, debug=False, mood_begin=0, mood_num=mood_num,
                       stop_time=stop_time,
                       download_small_image=False, download_big_image=False,
                       download_mood_detail=True, download_like_detail=True,
                       download_like_names=True, recover=False, cookie_text=cookie,
                       from_web=True, username=username, nick_name=nick_name, no_delete=no_delete)
-    sp.login()
-    sp.get_main_page_info()
+    try:
+        sp.login()
+        sp.re.rpush(WEB_SPIDER_INFO + username, username + "登陆成功")
+    except BaseException as e:
+        sp.re.rpush(WEB_SPIDER_INFO + username, "登陆失败，请检查QQ号和cookie是否正确")
+    try:
+        sp.get_main_page_info()
+        sp.re.lpush(WEB_SPIDER_INFO + username, "获取主页信息成功")
+    except BaseException as e:
+        sp.re.lpush(WEB_SPIDER_INFO + username,  "获取主页信息失败")
+
     sp.get_mood_list()
     sp.user_info.save_user(sp.username)
 

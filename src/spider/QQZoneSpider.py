@@ -20,6 +20,7 @@ from src.util.constant import qzone_jother2
 import math
 import execjs
 import threading
+from src.util.constant import WEB_SPIDER_INFO, FINISH_ALL_INFO
 
 class QQZoneSpider(BaseSpider):
     def __init__(self, use_redis=False, debug=False, mood_begin=0, mood_num=-1, stop_time='-1',
@@ -166,8 +167,9 @@ class QQZoneSpider(BaseSpider):
         if self.mood_num == -1:
             self.mood_num = mood_num
 
-        step = self.mood_num // self.thread_num
         step = self.find_best_step(self.mood_num, self.thread_num)
+        self.re.lpush(WEB_SPIDER_INFO + self.username, "准备获取" + str(self.mood_num) + "条动态...")
+
         for i in range(0, self.thread_num):
             # pos必须为20的倍数
             start_pos = i * step
@@ -192,6 +194,7 @@ class QQZoneSpider(BaseSpider):
         self.retry_error_unikey()
         self.save_all_data_to_json()
         self.result_report()
+        self.re.lpush(WEB_SPIDER_INFO + self.username, FINISH_ALL_INFO)
         print("finish===================")
 
     def find_best_step(self, mood_num, thread_num):
@@ -203,6 +206,7 @@ class QQZoneSpider(BaseSpider):
         print("进入线程:", mood_num, until_stop_time)
         while pos < mood_num and until_stop_time:
             print('正在爬取', pos, '...')
+            self.re.lpush(WEB_SPIDER_INFO + self.username, "正在爬取" + str(pos) + "...")
             try:
                 url = url_mood + '&pos=' + str(pos)
                 mood_list = self.req.get(url=url, headers=self.headers, timeout=20)

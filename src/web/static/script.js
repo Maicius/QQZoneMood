@@ -38,14 +38,35 @@ let vm = avalon.define({
                         no_delete: vm.no_delete
                     },
                     success: function (data) {
-                        console.log(data);
+                        if (data.result == 1) {
+                            alert("success");
+                            vm.query_interval = setInterval(function () {
+                                vm.query_spider_info(vm.qq_id);
+                            }, 1000);
+                        } else {
+                            alert("未知错误:" + data.result)
+                        }
                     }
                 })
             }
-        }else{
+        } else {
             alert("昵称、QQ号、Cookie不能为空");
         }
 
+    },
+
+    query_spider_info: function (QQ) {
+        $.ajax({
+            url: '/query_spider_info/' + QQ,
+            type: 'GET',
+            success: function (data) {
+                if (data.finish == 1) {
+                    clearInterval(vm.query_interval);
+                }else{
+                    console.log(data.info);
+                }
+            }
+        })
     },
     clear_cache: function () {
 
