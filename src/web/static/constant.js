@@ -11,3 +11,13 @@ const SPIDER_TEXT = {
     DOING : '正在获取:',
     FINISH: '成功获取数据:'
 };
+
+const CLEAN_DATA_TEXT = {
+    DOING: '数据分析中...',
+    FINISH: '数据分析完成，点击下面链接查看数据'
+};
+
+const CLEAN_DATA_STATE = {
+    DOING: 0,
+    FINISH: 1
+};

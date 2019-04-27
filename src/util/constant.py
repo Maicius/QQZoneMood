@@ -20,3 +20,5 @@ STOP_SPIDER_KEY = 'stop_spider_'
 STOP_SPIDER_FLAG = 'stop'
 SPIDER_FLAG = 'continue'
 
+CLEAN_DATA_KEY = 'clean_data_'
+

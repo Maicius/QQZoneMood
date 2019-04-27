@@ -51,3 +51,8 @@
 .spider_phase {
     margin-top: 50px;
 }
+
+.spider_finish {
+    margin: 20px auto;
+    text-align: center;
+}

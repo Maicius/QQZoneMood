@@ -186,13 +186,13 @@ class QQZoneSpider(BaseSpider):
 
         # 保存所有数据到指定文件
         print('保存最终数据中...')
+        self.re.set(STOP_SPIDER_KEY + self.username, FINISH_ALL_INFO)
         if (self.debug):
             print('Error Unikeys Num:', len(self.error_like_detail_unikeys))
             print('Retry to get them...')
         self.retry_error_unikey()
         self.save_all_data_to_json()
         self.result_report()
-        self.re.set(STOP_SPIDER_KEY + self.username, FINISH_ALL_INFO)
         print("finish===================")
 
     def find_best_step(self, mood_num, thread_num):

@@ -1,5 +1,6 @@
 from flask import Flask, render_template
-from src.util.constant import WEB_SPIDER_INFO, MOOD_NUM_PRE, MOOD_COUNT_KEY, STOP_SPIDER_KEY, SPIDER_FLAG, STOP_SPIDER_FLAG, FINISH_ALL_INFO
+from src.util.constant import WEB_SPIDER_INFO, MOOD_NUM_PRE, MOOD_COUNT_KEY, STOP_SPIDER_KEY, SPIDER_FLAG, \
+    STOP_SPIDER_FLAG, FINISH_ALL_INFO, CLEAN_DATA_KEY
 import json
 from src.web.entity.QQUser import QQUser
 from src.web.entity.UserInfo import UserInfo
@@ -22,10 +23,10 @@ def get_pool():
 
 app = Flask(__name__)
 
-@app.route('/data')
-def data():
+@app.route('/data/<QQ>/<Key>')
+def data(QQ, Key):
     user = UserInfo()
-    user.load("1272082503")
+    user.load(QQ)
     return render_template("data.html", user=user)
 
 @app.route('/')
@@ -45,11 +46,16 @@ def start_spider():
 
         try:
             t = threading.Thread(target=web_interface, args=(qq, nick_name, stop_time, mood_num, cookie, no_delete))
-            t.start()
+
             pool = get_pool()
-            # 设置标记位，以便停止爬虫的时候使用
+
             conn = redis.Redis(connection_pool=pool)
+            conn.delete(WEB_SPIDER_INFO + qq)
+            conn.set(MOOD_COUNT_KEY + qq, 0)
+            # 设置标记位，以便停止爬虫的时候使用
             conn.set(STOP_SPIDER_KEY + qq, SPIDER_FLAG)
+            conn.set(CLEAN_DATA_KEY + qq, 0)
+            t.start()
             result = dict(result=1)
             return json.dumps(result, ensure_ascii=False)
         except BaseException as e:
@@ -70,14 +76,13 @@ def get_history(QQ, name=''):
 def get_basic_info(QQ, name):
     user = UserInfo()
     user.load(QQ)
-    return render_template("index.html", user=user)
+    return render_template("data.html", user=user)
 
 @app.route('/query_spider_info/<QQ>')
 def query_spider_info(QQ):
     pool = get_pool()
     conn = redis.Redis(connection_pool=pool)
     info = conn.lpop(WEB_SPIDER_INFO + QQ)
-
     finish = 0
     mood_num = -1
     if info is not None:
@@ -107,14 +112,27 @@ def stop_spider(QQ):
     stop = 0
     # 等待数据保存
     while True:
-        finish_info = conn.get(STOP_SPIDER_KEY)
+        finish_info = conn.get(STOP_SPIDER_KEY + QQ)
         if finish_info == FINISH_ALL_INFO:
             stop = 1
             break
         else:
             sleep(0.1)
+
     num = conn.get(MOOD_COUNT_KEY + str(QQ))
     return json.dumps(dict(num=num, finish=stop))
+
+@app.route('/query_clean_data/<QQ>')
+def query_clean_data(QQ):
+    pool = get_pool()
+    conn = redis.Redis(connection_pool=pool)
+    while True:
+        key = conn.get(CLEAN_DATA_KEY + QQ)
+        if key == '1':
+            break
+        else:
+            sleep(0.1)
+    return json.dumps(dict(finish=key))
 
 if __name__ == '__main__':
     app.run(debug=True)
