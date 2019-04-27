@@ -18,6 +18,10 @@ let vm = avalon.define({
     qq_cookie: '',
     begin_spider: 0,
     spider_info: [],
+    true_mood_num: -1,
+    spider_num: 0,
+    show_process: 0,
+    process_width: 0,
     fetch_history_data: function () {
         $.ajax({
             url: '/get_history/1272082503/maicius',
@@ -69,20 +73,37 @@ let vm = avalon.define({
             type: 'GET',
             success: function (data) {
                 data = JSON.parse(data);
-                if (data.info){
-                    vm.spider_info.push(data.info);
-                }
-
-                if(vm.spider_info.length > 15) {
-                    vm.spider_info.pop(0);
-                }
                 if (data.finish === 1) {
+                    vm.show_process = 1;
+                    vm.true_mood_num = data.mood_num;
                     clearInterval(vm.query_interval);
+                    vm.query_num = setInterval(function () {
+                        vm.query_spider_num(vm.qq_id);
+                    }, 1000);
                 } else {
-                    console.log(data.info);
+                    vm.spider_info.push(data.info);
+                    if (vm.spider_info.length > 15) {
+                        vm.spider_info.pop(0);
+                    }
                 }
             }
         })
+    },
+
+    query_spider_num: function(QQ){
+        $.ajax({
+            url: '/query_spider_num/' + QQ + '/' + vm.true_mood_num,
+            type: 'GET',
+            success: function (data) {
+                data = JSON.parse(data);
+                vm.spider_num = data.num;
+                vm.process_width = Math.ceil(parseInt(vm.spider_num) / parseInt(vm.true_mood_num) * 100) + "%";
+                if (data.finish === 1) {
+                    clearInterval(vm.query_num);
+                }
+
+            }
+         })
     },
     clear_cache: function () {
 

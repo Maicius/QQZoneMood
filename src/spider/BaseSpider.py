@@ -124,6 +124,7 @@ class BaseSpider(object):
             pass
 
     def init_parameter(self):
+        self.mood_count = 0
         self.like_detail = []
         self.like_list_names = []
         self.content = []

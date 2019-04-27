@@ -6,9 +6,13 @@ qzone_jother2 = "(function(){ try{return \"78b6507aba9a886c50d4e4c3974620ffa36c5
 
 EXPIRE_TIME_IN_SECONDS = 24 * 60 * 60
 
-WEB_SPIDER_INFO = "web_redis_info"
+WEB_SPIDER_INFO = "web_redis_info_"
 
 LOGIN_SUCCESS = "获取主页信息成功"
 
 FINISH_ALL_INFO = "获取全部信息完成"
+
+MOOD_COUNT_KEY = 'mood_count_'
+
+MOOD_NUM_PRE = '动态数目'
 

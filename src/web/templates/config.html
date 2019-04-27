@@ -17,7 +17,7 @@
     </nav>
 
     <div class="main_container col-lg-8 col-md-12">
-        <form>
+        <form :visible="@show_process == 0">
             <div class="form-group row">
                 <div class="col-lg-6 col-md-12 row my_form">
                     <label for="nickname" class="col-lg-3 col-md-3 label_text" title="怎么称呼您？">昵称</label>
@@ -70,15 +70,6 @@
                     <a href="http://www.xiaomaidong.com" class="card-link" target="_blank">开发者简介</a>
                 </div>
             </div>
-            <div :class="['card', 'col-lg-8', 'col-md-12', 'show_spider_info', 'my_card']"
-                 ms-visible="@begin_spider == 1">
-                <div class="card-body">
-                    <h5 class="card-title">正在爬取...</h5>
-                    <!--ms-for: info in @spider_info -->
-                    <p>info:{$info$}</p>
-                    <!--ms-for-end:-->
-                </div>
-            </div>
             <div class="form-check">
                 <input type="checkbox" class="form-check-input" id="agree" ms-duplex-checked="@agree">
                 <label class="form-check-label" for="agree">我已仔细阅读并知晓风险</label>
@@ -93,6 +84,21 @@
             </button>
             <button type="button" class="btn btn-danger" :click="@clear_cache()" style="margin-left: 10px">清除缓存</button>
         </form>
+
+        <div class="spider_phase" ms-visible="@show_process == 1">
+            <div class="my_process col-lg-8 col-md-12">
+                <H3>正在获取:{$spider_num$} / {$true_mood_num$} ...</H3>
+                <div class="progress">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
+                         aria-valuemin="0" aria-valuemax="100" :css="{width: @process_width}">
+                    </div>
+                </div>
+            </div>
+            <button type="button" class="btn btn-primary" :click="@submit_data()" disabled="disabled" id="stop_spider">
+                停止
+            </button>
+        </div>
+
     </div>
 </div>
 </body>

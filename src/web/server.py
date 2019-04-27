@@ -1,5 +1,5 @@
 from flask import Flask, render_template
-from src.util.constant import WEB_SPIDER_INFO, FINISH_ALL_INFO
+from src.util.constant import WEB_SPIDER_INFO, MOOD_NUM_PRE, MOOD_COUNT_KEY
 import json
 from src.web.entity.QQUser import QQUser
 from src.web.entity.UserInfo import UserInfo
@@ -72,17 +72,27 @@ def get_basic_info(QQ, name):
 def query_spider_info(QQ):
     pool = get_pool()
     conn = redis.Redis(connection_pool=pool)
-    length = conn.llen(WEB_SPIDER_INFO + QQ)
-    info = conn.lrange(WEB_SPIDER_INFO + QQ, 0, length)
-    conn.ltrim(WEB_SPIDER_INFO + QQ, length + 1, -1)
+    info = conn.lpop(WEB_SPIDER_INFO + QQ)
 
     finish = 0
+    mood_num = -1
     if info is not None:
-        if FINISH_ALL_INFO in info:
+        if info.find(MOOD_NUM_PRE) != -1:
             finish = 1
-        info = ";   ".join(info)
-    result = dict(info=info, finish=finish)
+            mood_num = info.split(':')[1]
+
+    result = dict(info=info, finish=finish, mood_num=mood_num)
     return json.dumps(result, ensure_ascii=False)
+
+@app.route('/query_spider_num/<QQ>/<mood_num>')
+def query_spider_num(QQ,mood_num):
+    pool = get_pool()
+    conn = redis.Redis(connection_pool=pool)
+    info = conn.get(MOOD_COUNT_KEY + str(QQ))
+    finish = 0
+    if int(info) >= int(mood_num):
+        finish = 1
+    return json.dumps(dict(num=info, finish=finish))
 
 
 if __name__ == '__main__':

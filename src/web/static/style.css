@@ -39,9 +39,15 @@
 
 }
 .show_spider_info {
-    height: 40vh;
+    height: 30vh;
     overflow-y: scroll;
 }
 .danger {
     color: red;
+}
+.my_process {
+    margin: 20px auto;
+}
+.spider_phase {
+    margin-top: 50px;
 }

@@ -19,12 +19,12 @@ from src.util.constant import qzone_jother2
 import math
 import execjs
 import threading
-from src.util.constant import WEB_SPIDER_INFO, FINISH_ALL_INFO
+from src.util.constant import WEB_SPIDER_INFO, FINISH_ALL_INFO, MOOD_COUNT_KEY
 
 class QQZoneSpider(BaseSpider):
     def __init__(self, use_redis=False, debug=False, mood_begin=0, mood_num=-1, stop_time='-1',
                  download_small_image=False, download_big_image=False,
-                 download_mood_detail=True, download_like_detail=True, download_like_names=True, recover=True,
+                 download_mood_detail=True, download_like_detail=True, download_like_names=True, recover=False,
                  cookie_text=None, from_web=False, username='', nick_name='', no_delete=True):
         """
         init method
@@ -167,7 +167,6 @@ class QQZoneSpider(BaseSpider):
             self.mood_num = mood_num
 
         step = self.find_best_step(self.mood_num, self.thread_num)
-        self.re.lpush(WEB_SPIDER_INFO + self.username, "准备获取" + str(self.mood_num) + "条动态...")
 
         for i in range(0, self.thread_num):
             # pos必须为20的倍数
@@ -205,7 +204,7 @@ class QQZoneSpider(BaseSpider):
         print("进入线程:", mood_num, until_stop_time)
         while pos < mood_num and until_stop_time:
             print('正在爬取', pos, '...')
-            self.re.lpush(WEB_SPIDER_INFO + self.username, "正在爬取" + str(pos) + "...")
+            # self.re.lpush(WEB_SPIDER_INFO + self.username, "正在爬取" + str(pos) + "...")
             try:
                 url = url_mood + '&pos=' + str(pos)
                 mood_list = self.req.get(url=url, headers=self.headers, timeout=20)
@@ -215,6 +214,7 @@ class QQZoneSpider(BaseSpider):
                 except BaseException as e:
                     json_content = self.get_json(mood_list.text)
                 self.content.append(json_content)
+
                 # 获取每条动态的unikey
                 unikeys = self.get_unilikeKey_tid_and_smallpic(json_content)
                 if len(unikeys) != 0:
@@ -389,6 +389,7 @@ class QQZoneSpider(BaseSpider):
 
     def do_get_infos(self, unikeys, until_stop_time):
         for unikey in unikeys:
+
             if (self.debug):
                 print('unikey:' + unikey['unikey'])
             key = unikey['unikey']
@@ -430,6 +431,10 @@ class QQZoneSpider(BaseSpider):
                             print('大图地址:', big_pic_url)
                         file_name = self.tid + '--' + big_pic_url.split('/')[-1]
                         self.download_image(big_pic_url, self.BIG_IMAGE_DIR + file_name)
+
+                # 计数，反馈给前端
+                self.mood_count += 1
+                self.re.set(MOOD_COUNT_KEY + str(self.username), self.mood_count)
 
             except BaseException as e:
                 self.format_error(e, 'continue to capture...')
@@ -593,15 +598,14 @@ class QQZoneSpider(BaseSpider):
             self.user_info.mood_num = data['SS']
             self.user_info.photo_num = data['XC']
             self.user_info.rz_num = data['RZ']
+            self.mood_num = self.user_info.mood_num if self.mood_num == -1 else self.mood_num
+
             if self.debug:
                 print(self.user_info.mood_num)
                 print("Finish to get main page info")
         except BaseException as e:
             self.format_error(e, "获取主页信息失败")
         try:
-            """
-            这里由未知原因可能会导致失败，如果出现403可以重复几次试一下
-            """
             self.headers['referer'] = 'https://user.qzone.qq.com/1272082503/main'
             res = self.req.get(url=url2, headers=self.headers)
             if self.debug:
