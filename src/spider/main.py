@@ -13,13 +13,13 @@ def capture_data():
     sp.get_mood_list()
     sp.user_info.save_user(sp.username)
 
-def web_interface(username, nick_name, mood_num, stop_time, cookie):
+def web_interface(username, nick_name, mood_num, stop_time, cookie, no_delete):
     sp = QQZoneSpider(use_redis=True, debug=False, mood_begin=0, mood_num=mood_num,
                       stop_time=stop_time,
                       download_small_image=False, download_big_image=False,
                       download_mood_detail=True, download_like_detail=True,
                       download_like_names=True, recover=False, cookie_text=cookie,
-                      from_web=True, username=username, nick_name=nick_name)
+                      from_web=True, username=username, nick_name=nick_name, no_delete=no_delete)
     sp.login()
     sp.get_main_page_info()
     sp.get_mood_list()

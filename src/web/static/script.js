@@ -24,26 +24,31 @@ let vm = avalon.define({
     },
 
     submit_data: function () {
-        if (agree) {
-            $.ajax({
-                url: "/start_spider",
-                type: 'post',
-                data: {
-                    nick_name: vm.nick_name,
-                    qq: vm.qq_id,
-                    stop_time: vm.stop_date,
-                    mood_num: vm.stop_num,
-                    cookie: vm.qq_cookie,
-                    no_delete: vm.no_delete
-                },
-                success: function (data) {
-                    console.log(data);
-                }
-            })
+        if (vm.qq_id !== '' && vm.nick_name !== '' && vm.cookie !== '') {
+            if (agree) {
+                $.ajax({
+                    url: "/start_spider",
+                    type: 'post',
+                    data: {
+                        nick_name: vm.nick_name,
+                        qq: vm.qq_id,
+                        stop_time: vm.stop_date,
+                        mood_num: vm.stop_num,
+                        cookie: vm.qq_cookie,
+                        no_delete: vm.no_delete
+                    },
+                    success: function (data) {
+                        console.log(data);
+                    }
+                })
+            }
+        }else{
+            alert("昵称、QQ号、Cookie不能为空");
         }
+
     },
     clear_cache: function () {
-        
+
     }
 });
 

@@ -27,8 +27,10 @@ def start_spider():
         stop_time = request.form['stop_time']
         mood_num = int(request.form['mood_num'])
         cookie = request.form['cookie']
+        no_delete = False if request.form['no_delete'] == 'false' else True
         print("begin spider:", qq)
-        web_interface(qq, nick_name, stop_time=stop_time, mood_num=mood_num, cookie=cookie)
+
+        web_interface(qq, nick_name, stop_time=stop_time, mood_num=mood_num, cookie=cookie, no_delete=no_delete)
     else:
         return "test"
 
