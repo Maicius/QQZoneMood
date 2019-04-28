@@ -93,6 +93,7 @@ class QQZoneAnalysis(QQZoneSpider):
         data_df = data_df.sort_values(by='time_stamp', ascending=False).reset_index()
 
         data_df.drop(['total_num', 'index'],axis=1, inplace=True)
+        # data_df.drop_duplicate()
         n_E = self.av.calculate_E(data_df)
         mood_data_df['n_E'] = n_E
         mood_data_df['user'] = self.file_name_head
@@ -350,5 +351,5 @@ def get_mood_df(file_name_head, export_csv=True, export_excel=True, analysis_fri
 
 if __name__ == '__main__':
     get_mood_df("1272082503")
-    # get_most_people("1272082503")
+    get_most_people("1272082503")
     # clean_label_data()

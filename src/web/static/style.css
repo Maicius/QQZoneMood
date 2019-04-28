@@ -64,3 +64,8 @@
     margin: 20px auto;
     text-align: center;
 }
+
+.btn_href {
+    color: white;
+    cursor: pointer;
+}

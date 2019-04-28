@@ -14,7 +14,7 @@ const SPIDER_TEXT = {
 
 const CLEAN_DATA_TEXT = {
     DOING: '数据分析中...',
-    FINISH: '数据分析完成，点击下方按钮查看数据'
+    FINISH: '数据分析完成，请点击查看数据按钮'
 };
 
 const CLEAN_DATA_STATE = {

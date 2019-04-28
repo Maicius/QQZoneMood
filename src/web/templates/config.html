@@ -76,7 +76,6 @@
                         <p class="card-text">受限于网络带宽和服务器，许多功能并未开放</p>
                         <p class="card-text">开发者可以自行运行项目源代码</p>
                         <a href="https://github.com/Maicius/QQZoneMood" class="card-link" target="_blank">开源项目地址</a>
-                        <a href="http://www.xiaomaidong.com" class="card-link" target="_blank">开发者简介</a>
                     </div>
                 </div>
                 <div class="form-check">
@@ -94,6 +93,10 @@
                 </button>
                 <button type="button" class="btn btn-danger" :click="@clear_cache()" id="delete_cache"
                         style="margin-left: 10px">清除缓存
+                </button>
+                <button type="button" class="btn btn-primary" :click="@view_data()" id="view_data" title="查看数据"
+                        style="margin-left: 10px">
+                    查看数据
                 </button>
             </form>
 
@@ -120,15 +123,11 @@
                 <div class="col-lg-8 col-md-12" style="margin: 20px auto 50px auto">
                     <p style="text-align: center">{$clean_data_text$}</p>
                 </div>
-                <button type="button" class="btn btn-primary" :click="@view_data()" id="view_data" title="查看数据"
-                        ms-visible="@spider_state==2">
-                    查看数据
-                </button>
             </div>
         </div>
     </div>
     <div ms-visible="@view_data_state == 1">
-        <div class="main_container">
+        <div class="main_container col-lg-8 col-md-12">
             <div class="welcome">
                 <p>Hello, {$user.nickname$}</p>
                 <p>{$user.first_time$}, 你第一次登陆了QQ空间</p>
@@ -142,13 +141,19 @@
             <div class="large_dom" id="history_dom">
                 hello
             </div>
-            <a class="btn btn-primary" :attr="{href:'/download_excel/' + @qq_id + '/' + @encrypt()}" id="download_excel" title="下载数据"
-               ms-visible="@spider_state==2">
-                下载数据(Excel)
-            </a>
+            <div class="btn-group row" style="margin-top: 20px">
+                <a class="btn btn-primary" :attr="{href:'/download_excel/' + @qq_id + '/' + @encrypt()}"
+                   id="download_excel"
+                   title="下载数据">
+                    下载数据(Excel)
+                </a>
+                <a class="btn btn-primary btn_href" :click="@return_config()" id="return_config"
+                   title="返回配置" style="margin-left: 20px;color: white; cursor: pointer">
+                    返回配置
+                </a>
+            </div>
         </div>
     </div>
-</div>
 </body>
 <script src="../static/constant.js"></script>
 <script src="https://cdn.bootcss.com/jquery/3.2.0/jquery.min.js"></script>

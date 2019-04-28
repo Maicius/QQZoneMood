@@ -1,4 +1,4 @@
-from src.analysis.QQZoneAnalysis import get_mood_df
+from src.analysis.QQZoneAnalysis import get_mood_df, get_most_people
 from src.spider.QQZoneSpider import QQZoneSpider
 from src.util.constant import WEB_SPIDER_INFO, MOOD_NUM_PRE, CLEAN_DATA_KEY, GET_MAIN_PAGE_FAILED, LOGIN_FAILED, \
     USER_MAP_KEY
@@ -43,6 +43,7 @@ def web_interface(username, nick_name, stop_time, mood_num, cookie, no_delete, p
     sp.user_info.save_user(username)
     # 清洗数据
     get_mood_df(username)
+    get_most_people(username)
     sp.re.set(CLEAN_DATA_KEY + username, 1)
 
 

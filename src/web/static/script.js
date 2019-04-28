@@ -27,24 +27,34 @@ let vm = avalon.define({
     password: '',
     view_data_state: VIEW_DATA_STATE.config,
     user: {},
-    view_data: function(){
-        $.ajax({
-            url: '/data/' + vm.qq_id + '/' + sha1(vm.password),
-            type: 'GET',
-            success: function (res) {
-                res= JSON.parse(res);
-                if (res.finish){
-                    vm.view_data_state = VIEW_DATA_STATE.data;
-                    vm.user = res.user;
-                    vm.fetch_history_data();
-                }
+    view_data: function () {
 
-            }
-         })
+        if (vm.qq_id.length === 0 && vm.password.length === 0 && vm.nick_name.length === 0) {
+            alert("QQ号、用户名和验证码不能为空");
+        } else {
+            $.ajax({
+                url: '/data/' + vm.qq_id + '/' + vm.nick_name + '/' + sha1(vm.password),
+                type: 'GET',
+
+                success: function (res) {
+                    clearInterval(vm.query_num);
+                    res = JSON.parse(res);
+                    if (res.finish) {
+                        vm.view_data_state = VIEW_DATA_STATE.data;
+                        vm.user = res.user;
+                        vm.fetch_history_data();
+                    }else{
+                        alert("暂无该用户数据, 请先运行爬虫");
+                    }
+
+                }
+            })
+        }
     },
 
     submit_data: function () {
         if (vm.qq_id !== '' && vm.nick_name !== '' && vm.cookie !== '') {
+
             if (agree) {
                 $.ajax({
                     url: "/start_spider",
@@ -102,7 +112,7 @@ let vm = avalon.define({
                     vm.show_process = 0;
                     vm.spider_state = SPIDER_STATE.CONFIG;
                     clearInterval(vm.query_interval);
-                } else if(data.finish === -2){
+                } else if (data.finish === -2) {
                     clearInterval(vm.query_interval);
                     alert("识别码与QQ不匹配");
                 }
@@ -123,7 +133,7 @@ let vm = avalon.define({
                         vm.spider_state = SPIDER_STATE.FINISH;
                         vm.spider_num = parseInt(data.num);
                         vm.query_clean_state();
-                    }else{
+                    } else {
                         alert("识别码与QQ不匹配");
                     }
                 }
@@ -143,7 +153,7 @@ let vm = avalon.define({
                     vm.spider_state = SPIDER_STATE.FINISH;
                     vm.data_state = CLEAN_DATA_STATE.DOING;
                     vm.query_clean_state();
-                }else if (data.finish === -2){
+                } else if (data.finish === -2) {
                     alert("识别码与QQ不匹配");
                     clearInterval(vm.query_num);
                 }
@@ -159,21 +169,31 @@ let vm = avalon.define({
                 data = JSON.parse(data);
                 if (data.finish === '1') {
                     vm.data_state = CLEAN_DATA_STATE.FINISH;
-                }else if (data.finish === -2){
+                } else if (data.finish === -2) {
                     alert("识别码与QQ不匹配");
                 }
             }
         })
     },
     clear_cache: function () {
+        clearInterval(vm.query_num);
+        $.ajax({
+            url: '/clear_cache/' + vm.qq_id + '/' + sha1(vm.password),
+            type: 'GET',
+            success: function (data) {
+                if (data.finish){
+                    alert("清除缓存成功");
+                }
+            }
+        })
     },
     fetch_history_data: function () {
         $.ajax({
-            url: '/get_history/'+ vm.qq_id +'/' + vm.nick_name + '/' + sha1(vm.password),
+            url: '/get_history/' + vm.qq_id + '/' + vm.nick_name + '/' + sha1(vm.password),
             success: function (result) {
                 console.log(result);
                 result = JSON.parse(result);
-                if (result.finish){
+                if (result.finish) {
                     data = result.data;
                     draw_history_line(history_dom, data, "QQ空间说说历史曲线图");
                 }
@@ -181,17 +201,12 @@ let vm = avalon.define({
             }
         })
     },
-    encrypt: function(){
+    encrypt: function () {
         return sha1(vm.password);
     },
-    download_excel: function () {
-        $.ajax({
-            url: '/download_excel/' +vm.qq_id + '/' + sha1(vm.password),
-            type: 'get',
-            success: function () {
-                
-            }
-        })
+
+    return_config: function () {
+        vm.view_data_state = VIEW_DATA_STATE.config;
     }
 });
 
@@ -213,6 +228,7 @@ vm.$watch("spider_state", function (new_v, old_v) {
             $('#start_get').removeAttr("disabled");
             $('#delete_cache').removeAttr("disabled");
             $('#qq_id').removeAttr("disabled");
+            $('#view_data').removeAttr("disabled");
             vm.agree = false;
             break;
         case SPIDER_STATE.SPIDER:
@@ -221,10 +237,12 @@ vm.$watch("spider_state", function (new_v, old_v) {
             $('#delete_cache').attr("disabled", "true");
             $('#password').attr("disabled", "true");
             $('#qq_id').attr("disabled", "true");
+            $('#view_data').attr("disabled", "true");
             break;
         case SPIDER_STATE.CONFIG:
             $('#password').removeAttr("disabled");
             $('#qq_id').removeAttr("disabled");
+            $('#view_data').removeAttr("disabled");
     }
 });
 

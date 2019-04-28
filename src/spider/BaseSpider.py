@@ -179,6 +179,11 @@ class BaseSpider(object):
         except  BaseException as e:
             self.format_error(e, 'Failed to load data ' + file_name)
 
+    def delete_cache(self):
+        self.re.delete(self.LIKE_LIST_NAME_FILE_NAME)
+        self.re.delete(self.MOOD_DETAIL_FILE_NAME)
+        self.re.delete(self.LIKE_DETAIL_FILE_NAME)
+
     def save_data_to_redis(self, final_result=False):
         """
         保存数据到redis中
@@ -187,7 +192,7 @@ class BaseSpider(object):
         """
         try:
             if self.use_redis:
-                self.re.set(self.CONTENT_FILE_NAME[5:], json.dumps(self.content, ensure_ascii=False))
+                self.re.set(self.CONTENT_FILE_NAME, json.dumps(self.content, ensure_ascii=False))
 
                 if self.download_like_names:
                     self.re.set(self.LIKE_LIST_NAME_FILE_NAME,
