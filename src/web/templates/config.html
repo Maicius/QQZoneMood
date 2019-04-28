@@ -44,6 +44,14 @@
                            placeholder="2010-01-01" title="只会爬取停止日期前的动态，如果值为-1则表示爬取全部动态">
                 </div>
             </div>
+            <div class="form-group row">
+                <div class="col-lg-6 col-md-12 row my_form">
+                    <label for="password" class="col-lg-3 col-md-3 label_text"
+                           title="只会爬取停止日期前的动态,如2014-01-01，如果值为-1则表示爬取全部动态">识别码</label>
+                    <input type="password" class="form-control col-lg-8 col-md-12" id="password" ms-duplex="@password"
+                           placeholder="用于获取数据结果的识别码，不是QQ密码！！！" title="用于获取数据结果的识别码，不是QQ密码">
+                </div>
+            </div>
             <div class="form-group">
                 <label for="cookie">Cookie</label>
 
@@ -62,6 +70,7 @@
                        target="_blank">点此查看具体功能</a>
                     <p class="card-text danger">因涉及大量数据分析，所有数据不得不缓存在服务器上！！！</p>
                     <p class="card-text danger">缓存时间为24小时(24小时后会自动删除)</p>
+                    <p class="card-text">24小时内您可以根据QQ号和识别码访问本站数据</p>
                     <p class="card-text danger">开发者只能保证不会滥用数据，但无法保证网站不会被攻击</p>
                     <p class="card-text danger">所以为避免造成隐私泄漏，普通用户请在离开网页时点击下方清除缓存！！！</p>
                     <p class="card-text">受限于网络带宽和服务器，许多功能并未开放</p>
@@ -114,7 +123,7 @@
 <script src="https://cdn.bootcss.com/echarts/3.8.5/echarts.min.js"></script>
 <link href="https://cdn.bootcss.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://cdn.bootcss.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
-
+<script src="https://cdn.bootcss.com/js-sha1/0.6.0/sha1.min.js"></script>
 <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 <script src="../static/avalon.js"></script>
 <link href="../static/style.css" rel="stylesheet">

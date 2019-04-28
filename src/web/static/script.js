@@ -26,7 +26,8 @@ let vm = avalon.define({
     spider_state: SPIDER_STATE.CONFIG,
     clean_data_text: CLEAN_DATA_TEXT.DOING,
     data_state: CLEAN_DATA_STATE.DOING,
-    visual_data_url:'',
+    visual_data_url: '',
+    password: '',
     fetch_history_data: function () {
         $.ajax({
             url: '/get_history/1272082503/maicius',
@@ -49,7 +50,8 @@ let vm = avalon.define({
                         stop_time: vm.stop_date,
                         mood_num: vm.stop_num,
                         cookie: vm.qq_cookie,
-                        no_delete: vm.no_delete
+                        no_delete: vm.no_delete,
+                        password: hex_sha1(vm.password)
                     },
                     success: function (data) {
                         data = JSON.parse(data);
@@ -75,22 +77,29 @@ let vm = avalon.define({
 
     query_spider_info: function (QQ) {
         $.ajax({
-            url: '/query_spider_info/' + QQ,
+            url: '/query_spider_info/' + QQ + '/' + hex_sha1(vm.password),
             type: 'GET',
             success: function (data) {
                 data = JSON.parse(data);
-                if (data.info.length > 2){
+                if (data.info.length > 2) {
                     vm.spider_info.push(data.info);
                 }
 
                 if (data.finish === 1) {
-
                     vm.show_process = 1;
                     vm.true_mood_num = data.mood_num;
                     clearInterval(vm.query_interval);
                     vm.query_num = setInterval(function () {
                         vm.query_spider_num(vm.qq_id);
                     }, 1000);
+                } else if (data.finish === -1) {
+                    alert(data.info);
+                    vm.show_process = 0;
+                    vm.spider_state = SPIDER_STATE.CONFIG;
+                    clearInterval(vm.query_interval);
+                } else if(data.finish === -2){
+                    clearInterval(vm.query_interval);
+                    alert("识别码与QQ不匹配");
                 }
             }
         })
@@ -101,21 +110,24 @@ let vm = avalon.define({
             clearInterval(vm.query_num);
             vm.spider_text = SPIDER_TEXT.STOP;
             $.ajax({
-                url: '/stop_spider/' + vm.qq_id,
+                url: '/stop_spider/' + vm.qq_id + '/' + hex_sha1(vm.password),
                 type: 'get',
                 success: function (data) {
                     data = JSON.parse(data);
-                    vm.spider_state = SPIDER_STATE.FINISH;
-                    vm.spider_num = parseInt(data.num);
-                    vm.query_clean_state();
-
+                    if (data.finish !== -2) {
+                        vm.spider_state = SPIDER_STATE.FINISH;
+                        vm.spider_num = parseInt(data.num);
+                        vm.query_clean_state();
+                    }else{
+                        alert("识别码与QQ不匹配");
+                    }
                 }
             });
         }
     },
     query_spider_num: function (QQ) {
         $.ajax({
-            url: '/query_spider_num/' + QQ + '/' + vm.true_mood_num,
+            url: '/query_spider_num/' + QQ + '/' + vm.true_mood_num + '/' + hex_sha1(vm.password),
             type: 'GET',
             success: function (data) {
                 data = JSON.parse(data);
@@ -126,6 +138,9 @@ let vm = avalon.define({
                     vm.spider_state = SPIDER_STATE.FINISH;
                     vm.data_state = CLEAN_DATA_STATE.DOING;
                     vm.query_clean_state();
+                }else if (data.finish === -2){
+                    alert("识别码与QQ不匹配");
+                    clearInterval(vm.query_num);
                 }
 
             }
@@ -133,12 +148,14 @@ let vm = avalon.define({
     },
     query_clean_state: function () {
         $.ajax({
-            url: '/query_clean_data/' + vm.qq_id,
+            url: '/query_clean_data/' + vm.qq_id + '/' + hex_sha1(vm.password),
             type: 'GET',
             success: function (data) {
                 data = JSON.parse(data);
                 if (data.finish === '1') {
                     vm.data_state = CLEAN_DATA_STATE.FINISH;
+                }else if (data.finish === -2){
+                    alert("识别码与QQ不匹配");
                 }
             }
         })
@@ -164,13 +181,19 @@ vm.$watch("spider_state", function (new_v, old_v) {
             vm.spider_text = SPIDER_TEXT.FINISH;
             $('#start_get').removeAttr("disabled");
             $('#delete_cache').removeAttr("disabled");
+            $('#qq_id').removeAttr("disabled");
             vm.agree = false;
             break;
         case SPIDER_STATE.SPIDER:
             vm.spider_text = SPIDER_TEXT.DOING;
             $('#start_get').attr("disabled", "true");
             $('#delete_cache').attr("disabled", "true");
+            $('#password').attr("disabled", "true");
+            $('#qq_id').attr("disabled", "true");
             break;
+        case SPIDER_STATE.CONFIG:
+            $('#password').removeAttr("disabled");
+            $('#qq_id').removeAttr("disabled");
     }
 });
 
@@ -181,7 +204,6 @@ vm.$watch("data_state", function (new_v, old_v) {
             break;
         case CLEAN_DATA_STATE.FINISH:
             vm.clean_data_text = CLEAN_DATA_TEXT.FINISH;
-
             break;
     }
 });

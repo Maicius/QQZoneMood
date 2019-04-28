@@ -15,7 +15,7 @@ import datetime
 import logging
 from src.spider.BaseSpider import BaseSpider
 from src.util import util
-from src.util.constant import qzone_jother2
+from src.util.constant import qzone_jother2, USER_MAP_KEY
 import math
 import execjs
 import threading

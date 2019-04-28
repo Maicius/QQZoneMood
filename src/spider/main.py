@@ -1,6 +1,7 @@
 from src.analysis.QQZoneAnalysis import get_mood_df
 from src.spider.QQZoneSpider import QQZoneSpider
-from src.util.constant import WEB_SPIDER_INFO, MOOD_NUM_PRE, CLEAN_DATA_KEY
+from src.util.constant import WEB_SPIDER_INFO, MOOD_NUM_PRE, CLEAN_DATA_KEY, GET_MAIN_PAGE_FAILED, LOGIN_FAILED, \
+    USER_MAP_KEY
 import multiprocessing
 
 def capture_data():
@@ -16,7 +17,7 @@ def capture_data():
     sp.user_info.save_user(sp.username)
 
 # 提供给web的接口
-def web_interface(username, nick_name, stop_time, mood_num, cookie, no_delete):
+def web_interface(username, nick_name, stop_time, mood_num, cookie, no_delete, password):
     # 多线程情况下不能用recover
     recover = False
     sp = QQZoneSpider(use_redis=True, debug=False, mood_begin=0, mood_num=mood_num,
@@ -28,14 +29,16 @@ def web_interface(username, nick_name, stop_time, mood_num, cookie, no_delete):
     try:
         sp.login()
         sp.re.rpush(WEB_SPIDER_INFO + username, "用户" + str(sp.username) + "登陆成功")
+        # 存储用户密码
+        sp.re.hset(USER_MAP_KEY, username, password)
     except BaseException:
-        sp.re.rpush(WEB_SPIDER_INFO + username, "登陆失败，请检查QQ号和cookie是否正确")
+        sp.re.rpush(WEB_SPIDER_INFO + username, GET_MAIN_PAGE_FAILED)
     try:
         sp.get_main_page_info()
         sp.re.rpush(WEB_SPIDER_INFO + username, "获取主页信息成功")
         sp.re.rpush(WEB_SPIDER_INFO + username, MOOD_NUM_PRE + ":" + str(sp.mood_num))
     except BaseException:
-        sp.re.rpush(WEB_SPIDER_INFO + username,  "获取主页信息失败")
+        sp.re.rpush(WEB_SPIDER_INFO + username,  LOGIN_FAILED)
     sp.get_mood_list()
     sp.user_info.save_user(username)
     # 清洗数据
