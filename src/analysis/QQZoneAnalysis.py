@@ -12,13 +12,13 @@ from src.util.constant import BASE_DIR
 import os
 
 class QQZoneAnalysis(QQZoneSpider):
-    def __init__(self, use_redis=False, debug=False, file_name_head='', analysis_friend=False, from_web=True):
-        QQZoneSpider.__init__(self, use_redis, debug, recover=False, from_web=from_web, username=file_name_head)
+    def __init__(self, use_redis=False, debug=False, username='', analysis_friend=False, from_web=True):
+        QQZoneSpider.__init__(self, use_redis, debug, recover=False, from_web=from_web, username=username)
         self.mood_data = []
         self.mood_data_df = pd.DataFrame()
         self.like_detail_df = []
         self.like_list_names_df = []
-        self.file_name_head = file_name_head
+        self.file_name_head = username
         self.analysis_friend = analysis_friend
 
         friend_dir = BASE_DIR + 'friend/' + self.file_name_head + '_friend_detail_list.csv'
@@ -330,7 +330,7 @@ def get_most_people(file_name_head):
     analysis.user_info.save_user(analysis.username)
 
 
-def get_mood_df(file_name_head, export_csv=True, export_excel=True, analysis_friend=False):
+def get_mood_df(username, export_csv=True, export_excel=True, analysis_friend=False):
     """
     根据传入的文件名前缀清洗原始数据，导出csv和excel表
     :param file_name_head:
@@ -338,7 +338,7 @@ def get_mood_df(file_name_head, export_csv=True, export_excel=True, analysis_fri
     :param export_excel:
     :return:
     """
-    analysis = QQZoneAnalysis(use_redis=True, debug=False, file_name_head=file_name_head,
+    analysis = QQZoneAnalysis(use_redis=True, debug=False, file_name_head=username,
                               analysis_friend=analysis_friend, from_web=True)
     analysis.get_useful_info_from_json()
     if export_csv:
