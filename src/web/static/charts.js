@@ -1,6 +1,5 @@
 function draw_history_line(domName, result, chartName) {
-    let temp = JSON.parse(result);
-    let data = JSON.parse(temp);
+    let data = JSON.parse(result);
     var xAxisData = data.map(function (item) {
         return item['time'] + ':' + item['content'];
     });

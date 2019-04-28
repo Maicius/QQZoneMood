@@ -10,6 +10,10 @@ WEB_SPIDER_INFO = "web_redis_info_"
 
 LOGIN_SUCCESS = "获取主页信息成功"
 
+LOGIN_FAILED = "登陆失败，请检查QQ号和cookie是否正确"
+
+GET_MAIN_PAGE_FAILED = "获取主页信息失败"
+
 FINISH_ALL_INFO = "获取全部信息完成"
 
 MOOD_COUNT_KEY = 'mood_count_'
@@ -21,4 +25,12 @@ STOP_SPIDER_FLAG = 'stop'
 SPIDER_FLAG = 'continue'
 
 CLEAN_DATA_KEY = 'clean_data_'
+
+USER_MAP_KEY = 'qq_user_map'
+
+SPIDERING_USER_LIST  = 'spidering_user_list'
+
+WAITING_USER_LIST = 'waiting_user_list'
+
+RESULT_BASE_DIR = BASE_DIR + "data/result"
 

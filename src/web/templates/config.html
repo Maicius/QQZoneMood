@@ -15,106 +15,152 @@
     <nav class="navbar navbar-dark bg-dark">
         <a class="navbar-brand" href="#">QQ空间数据分析</a>
     </nav>
-
-    <div class="main_container col-lg-8 col-md-12">
-        <form>
-            <div class="form-group row">
-                <div class="col-lg-6 col-md-12 row my_form">
-                    <label for="nickname" class="col-lg-3 col-md-3 label_text" title="怎么称呼您？">昵称</label>
-                    <input type="text" class="form-control col-lg-8 col-md-12" id="nickname" placeholder="怎么称呼您？"
-                           ms-duplex="@nick_name">
-                </div>
-                <div class="col-lg-6 col-md-12 row my_form">
-                    <label for="qq_id" class="col-lg-3 col-md-3 label_text">QQ号</label>
-                    <input type="text" class="form-control col-lg-8 col-md-12" id="qq_id" placeholder="12XXXXX"
-                           ms-duplex="@qq_id">
-                </div>
-            </div>
-            <div class="form-group row">
-                <div class="col-lg-6 col-md-12 row my_form">
-                    <label for="stop_num" class="col-lg-3 col-md-3 label_text"
-                           title="爬取动态的数量，如果值为-1表示爬取全部动态">停止数量</label>
-                    <input type="text" class="form-control col-lg-8 col-md-12" id="stop_num"
-                           title="爬取动态的数量，如果值为-1表示爬取全部动态" placeholder="-1" ms-duplex="@stop_num">
-                </div>
-                <div class="col-lg-6 col-md-12 row my_form">
-                    <label for="stop_date" class="col-lg-3 col-md-3 label_text"
-                           title="只会爬取停止日期前的动态,如2014-01-01，如果值为-1则表示爬取全部动态">停止日期</label>
-                    <input type="text" class="form-control col-lg-8 col-md-12" id="stop_date" ms-duplex="@stop_date"
-                           placeholder="2010-01-01" title="只会爬取停止日期前的动态，如果值为-1则表示爬取全部动态">
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="cookie">Cookie</label>
-
-                <textarea class="form-control col-md-12 col-lg-8" id="cookie" rows="8" style="margin: 20px auto"
-                          placeholder="请在网页上登陆QQ空间并复制cookie到此处" ms-duplex="@qq_cookie"></textarea>
-                <a href="#">cookie是什么？怎么获取cookie？</a>
-            </div>
-            <div :class="['card', 'col-lg-8', 'col-md-12', 'my_card']" ms-visible="@spider_state == 0">
-                <div class="card-body">
-                    <h5 class="card-title">用户须知</h5>
-                    <h6 class="card-subtitle mb-2 text-muted">请务必完整的阅读</h6>
-                    <p class="card-text">此程序为QQ空间爬虫</p>
-                    <p class="card-text">程序会根据输入的QQ号和cookie自动获取用户的QQ空间里的内容</p>
-                    <p class="card-text">可以对QQ空间的数据进行备份和可视化</p>
-                    <a class="card-text" href="https://github.com/Maicius/QQZoneMood/blob/master/README.md"
-                       target="_blank">点此查看具体功能</a>
-                    <p class="card-text danger">因涉及大量数据分析，所有数据不得不缓存在服务器上！！！</p>
-                    <p class="card-text danger">缓存时间为24小时(24小时后会自动删除)</p>
-                    <p class="card-text danger">开发者只能保证不会滥用数据，但无法保证网站不会被攻击</p>
-                    <p class="card-text danger">所以为避免造成隐私泄漏，普通用户请在离开网页时点击下方清除缓存！！！</p>
-                    <p class="card-text">受限于网络带宽和服务器，许多功能并未开放</p>
-                    <p class="card-text">开发者可以自行运行项目源代码</p>
-                    <a href="https://github.com/Maicius/QQZoneMood" class="card-link" target="_blank">开源项目地址</a>
-                    <a href="http://www.xiaomaidong.com" class="card-link" target="_blank">开发者简介</a>
-                </div>
-            </div>
-            <div class="form-check">
-                <input type="checkbox" class="form-check-input" id="agree" ms-duplex-checked="@agree">
-                <label class="form-check-label" for="agree">我已仔细阅读用户须知并知晓风险</label>
-            </div>
-            <div class="form-check">
-                <input type="checkbox" class="form-check-input" id="no_delete" ms-duplex-checked="@no_delete"
-                       disabled="disabled">
-                <label class="form-check-label" for="no_delete">数据永久存储(开发者选项，普通用户勿选)</label>
-            </div>
-            <button type="button" class="btn btn-primary" :click="@submit_data()" disabled="disabled" id="start_get">
-                开始获取
-            </button>
-            <button type="button" class="btn btn-danger" :click="@clear_cache()" id="delete_cache" style="margin-left: 10px">清除缓存</button>
-        </form>
-
-        <div class="spider_phase" ms-visible="@spider_state != 0">
-            <div class="my_process col-lg-8 col-md-12">
-                <!--ms-for: info in @spider_info-->
-                <p>{$info$}</p>
-                 <!--ms-for-end:-->
-                <H3>{$spider_text$}{$spider_num$} / {$true_mood_num$} ...</H3>
-                <div class="progress">
-                    <div :class="['progress-bar',(@spider_state == 1 ? ('progress-bar-animated', 'progress-bar-striped'): 'bg-success')]" role="progressbar"
-                         aria-valuemin="0" aria-valuemax="100" :css="{width: @process_width}">
+    <div ms-visible="@view_data_state == 0">
+        <div class="main_container col-lg-8 col-md-12">
+            <form>
+                <div class="form-group row">
+                    <div class="col-lg-6 col-md-12 row my_form">
+                        <label for="nickname" class="col-lg-3 col-md-3 label_text" title="怎么称呼您？">昵称</label>
+                        <input type="text" class="form-control col-lg-8 col-md-12" id="nickname" placeholder="怎么称呼您？"
+                               ms-duplex="@nick_name">
+                    </div>
+                    <div class="col-lg-6 col-md-12 row my_form">
+                        <label for="qq_id" class="col-lg-3 col-md-3 label_text">QQ号</label>
+                        <input type="text" class="form-control col-lg-8 col-md-12" id="qq_id" placeholder="12XXXXX"
+                               ms-duplex="@qq_id">
                     </div>
                 </div>
+                <div class="form-group row">
+                    <div class="col-lg-6 col-md-12 row my_form">
+                        <label for="stop_num" class="col-lg-3 col-md-3 label_text"
+                               title="爬取动态的数量，如果值为-1表示爬取全部动态">停止数量</label>
+                        <input type="text" class="form-control col-lg-8 col-md-12" id="stop_num"
+                               title="爬取动态的数量，如果值为-1表示爬取全部动态" placeholder="-1" ms-duplex="@stop_num">
+                    </div>
+                    <div class="col-lg-6 col-md-12 row my_form">
+                        <label for="stop_date" class="col-lg-3 col-md-3 label_text"
+                               title="只会爬取停止日期前的动态,如2014-01-01，如果值为-1则表示爬取全部动态">停止日期</label>
+                        <input type="text" class="form-control col-lg-8 col-md-12" id="stop_date" ms-duplex="@stop_date"
+                               placeholder="2010-01-01" title="只会爬取停止日期前的动态，如果值为-1则表示爬取全部动态">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-lg-6 col-md-12 row my_form">
+                        <label for="password" class="col-lg-3 col-md-3 label_text"
+                               title="只会爬取停止日期前的动态,如2014-01-01，如果值为-1则表示爬取全部动态">识别码</label>
+                        <input type="text" class="form-control col-lg-8 col-md-12" id="password" ms-duplex="@password"
+                               placeholder="用于获取数据结果的识别码，不是QQ密码！！！" title="用于获取数据结果的识别码，不是QQ密码">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="cookie">Cookie</label>
+
+                    <textarea class="form-control col-md-12 col-lg-8" id="cookie" rows="8" style="margin: 20px auto"
+                              placeholder="请在网页上登陆QQ空间并复制cookie到此处" ms-duplex="@qq_cookie"></textarea>
+                    <a href="#">cookie是什么？怎么获取cookie？</a>
+                </div>
+                <div :class="['card', 'col-lg-8', 'col-md-12', 'my_card']" ms-visible="@spider_state == 0">
+                    <div class="card-body">
+                        <h5 class="card-title">用户须知</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">请务必完整的阅读</h6>
+                        <p class="card-text">此程序为QQ空间爬虫</p>
+                        <p class="card-text">程序会根据输入的QQ号和cookie自动获取用户的QQ空间里的内容</p>
+                        <p class="card-text">可以对QQ空间的数据进行备份和可视化</p>
+                        <a class="card-text" href="https://github.com/Maicius/QQZoneMood/blob/master/README.md"
+                           target="_blank">点此查看具体功能</a>
+                        <p class="card-text danger">因涉及大量数据分析，所有数据不得不缓存在服务器上！！！</p>
+                        <p class="card-text danger">缓存时间为24小时(24小时后会自动删除)</p>
+                        <p class="card-text">24小时内您可以根据QQ号和识别码访问本站数据</p>
+                        <p class="card-text danger">开发者只能保证不会滥用数据，但无法保证网站不会被攻击</p>
+                        <p class="card-text danger">所以为避免造成隐私泄漏，普通用户请在离开网页时点击下方清除缓存！！！</p>
+                        <p class="card-text">受限于网络带宽和服务器，许多功能并未开放</p>
+                        <p class="card-text">开发者可以自行运行项目源代码</p>
+                        <a href="https://github.com/Maicius/QQZoneMood" class="card-link" target="_blank">开源项目地址</a>
+                    </div>
+                </div>
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="agree" ms-duplex-checked="@agree">
+                    <label class="form-check-label" for="agree">我已仔细阅读用户须知并知晓风险</label>
+                </div>
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="no_delete" ms-duplex-checked="@no_delete"
+                           disabled="disabled">
+                    <label class="form-check-label" for="no_delete">数据永久存储(开发者选项，普通用户勿选)</label>
+                </div>
+                <button type="button" class="btn btn-primary" :click="@submit_data()" disabled="disabled"
+                        id="start_get">
+                    开始获取
+                </button>
+                <button type="button" class="btn btn-danger" :click="@clear_cache()" id="delete_cache"
+                        style="margin-left: 10px">清除缓存
+                </button>
+                <button type="button" class="btn btn-primary" :click="@view_data()" id="view_data" title="查看数据"
+                        style="margin-left: 10px">
+                    查看数据
+                </button>
+            </form>
+
+            <div class="spider_phase" ms-visible="@spider_state != 0">
+                <div class="my_process col-lg-8 col-md-12">
+                    <!--ms-for: info in @spider_info-->
+                    <p>{$info$}</p>
+                    <!--ms-for-end:-->
+                    <H3>{$spider_text$}{$spider_num$} / {$true_mood_num$} ...</H3>
+                    <div class="progress">
+                        <div :class="['progress-bar',(@spider_state == 1 ? ('progress-bar-animated', 'progress-bar-striped'): 'bg-success')]"
+                             role="progressbar"
+                             aria-valuemin="0" aria-valuemax="100" :css="{width: @process_width}">
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-primary" :click="@stop_spider()" id="stop_spider"
+                        title="立即停止爬虫并保存数据"
+                        ms-visible="@spider_state==1">
+                    停止
+                </button>
             </div>
-            <button type="button" class="btn btn-primary" :click="@stop_spider()" id="stop_spider" title="立即停止爬虫并保存数据" ms-visible="@spider_state==1">
-                停止
-            </button>
-        </div>
-        <div class="spider_finish" ms-visible="@spider_state == 2">
-            <div class="col-lg-8 col-md-12" style="margin: 0 auto">
-                <p style="text-align: center">{$clean_data_text$}</p>
+            <div class="spider_finish" ms-visible="@spider_state == 2">
+                <div class="col-lg-8 col-md-12" style="margin: 20px auto 50px auto">
+                    <p style="text-align: center">{$clean_data_text$}</p>
+                </div>
             </div>
         </div>
     </div>
-</div>
+    <div ms-visible="@view_data_state == 1">
+        <div class="main_container col-lg-8 col-md-12">
+            <div class="welcome">
+                <p>Hello, {$user.nickname$}</p>
+                <p>{$user.first_time$}, 你第一次登陆了QQ空间</p>
+                <p>{$user.first_mood_time$}, 你发表了第一条动态</p>
+                <p>{$user.years$}年来，你一共写了{$user.mood_num$}条说说，并上传了{$user.photo_num$}张照片</p>
+                <p>你在{$user.first_friend_time$}添加了第一位好友<i class="highlight-keyword">{$user.first_friend$}</i></p>
+                <p>至今已拥有{$user.friend_num$}位好友</p>
+                <p>其中给你点赞最多的是<i class="highlight-keyword">{$user.like_friend_name$}</i>，给你评论最多的是<i
+                        class="highlight-keyword">{$user.cmt_friend_name$}</i></p>
+            </div>
+            <div class="large_dom" id="history_dom">
+                hello
+            </div>
+            <div class="btn-group row" style="margin-top: 20px">
+                <a class="btn btn-primary" :attr="{href:'/download_excel/' + @qq_id + '/' + @encrypt()}"
+                   id="download_excel"
+                   title="下载数据">
+                    下载数据(Excel)
+                </a>
+                <a class="btn btn-primary btn_href" :click="@return_config()" id="return_config"
+                   title="返回配置" style="margin-left: 20px;color: white; cursor: pointer">
+                    返回配置
+                </a>
+            </div>
+        </div>
+    </div>
 </body>
 <script src="../static/constant.js"></script>
 <script src="https://cdn.bootcss.com/jquery/3.2.0/jquery.min.js"></script>
 <script src="https://cdn.bootcss.com/echarts/3.8.5/echarts.min.js"></script>
 <link href="https://cdn.bootcss.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://cdn.bootcss.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
-
+<script src="https://cdn.bootcss.com/js-sha1/0.6.0/sha1.min.js"></script>
 <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 <script src="../static/avalon.js"></script>
 <link href="../static/style.css" rel="stylesheet">

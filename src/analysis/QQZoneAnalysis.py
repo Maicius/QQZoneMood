@@ -8,18 +8,17 @@ from scipy.misc import imread
 import matplotlib.pyplot as plt
 from src.spider.QQZoneFriendSpider import QQZoneFriendSpider
 from src.analysis.Average import Average
-from src.util import util
 from src.util.constant import BASE_DIR
 import os
 
 class QQZoneAnalysis(QQZoneSpider):
-    def __init__(self, use_redis=False, debug=False, file_name_head='', analysis_friend=False):
-        QQZoneSpider.__init__(self, use_redis, debug, recover=False)
+    def __init__(self, use_redis=False, debug=False, username='', analysis_friend=False, from_web=True):
+        QQZoneSpider.__init__(self, use_redis, debug, recover=False, from_web=from_web, username=username)
         self.mood_data = []
         self.mood_data_df = pd.DataFrame()
         self.like_detail_df = []
         self.like_list_names_df = []
-        self.file_name_head = file_name_head
+        self.file_name_head = username
         self.analysis_friend = analysis_friend
 
         friend_dir = BASE_DIR + 'friend/' + self.file_name_head + '_friend_detail_list.csv'
@@ -93,6 +92,7 @@ class QQZoneAnalysis(QQZoneSpider):
         data_df = data_df.sort_values(by='time_stamp', ascending=False).reset_index()
 
         data_df.drop(['total_num', 'index'],axis=1, inplace=True)
+        # data_df.drop_duplicate()
         n_E = self.av.calculate_E(data_df)
         mood_data_df['n_E'] = n_E
         mood_data_df['user'] = self.file_name_head
@@ -316,7 +316,7 @@ def clean_label_data():
 
 
 def get_most_people(file_name_head):
-    analysis = QQZoneAnalysis(use_redis=True, debug=True, file_name_head=file_name_head, analysis_friend=False)
+    analysis = QQZoneAnalysis(use_redis=True, debug=True, file_name_head=file_name_head, analysis_friend=False, from_web=True)
     # analysis.load_mood_data()
     analysis.get_useful_info_from_json()
     all_uin_count = analysis.rank_like_people(analysis.mood_data_df)
@@ -330,7 +330,7 @@ def get_most_people(file_name_head):
     analysis.user_info.save_user(analysis.username)
 
 
-def get_mood_df(file_name_head, export_csv=True, export_excel=False, analysis_friend=False):
+def get_mood_df(username, export_csv=True, export_excel=True, analysis_friend=False):
     """
     根据传入的文件名前缀清洗原始数据，导出csv和excel表
     :param file_name_head:
@@ -338,8 +338,8 @@ def get_mood_df(file_name_head, export_csv=True, export_excel=False, analysis_fr
     :param export_excel:
     :return:
     """
-    analysis = QQZoneAnalysis(use_redis=True, debug=False, file_name_head=file_name_head,
-                              analysis_friend=analysis_friend)
+    analysis = QQZoneAnalysis(use_redis=True, debug=False, file_name_head=username,
+                              analysis_friend=analysis_friend, from_web=True)
     analysis.get_useful_info_from_json()
     if export_csv:
         analysis.save_data_to_csv()
@@ -350,5 +350,5 @@ def get_mood_df(file_name_head, export_csv=True, export_excel=False, analysis_fr
 
 if __name__ == '__main__':
     get_mood_df("1272082503")
-    # get_most_people("1272082503")
+    get_most_people("1272082503")
     # clean_label_data()

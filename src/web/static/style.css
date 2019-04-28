@@ -1,21 +1,25 @@
-.wrapper{
+.wrapper {
     background-color: #c0c0c0;
 }
+
 .main_container {
     text-align: center;
     display: block;
     background: #eee8d8;
-    margin:0 auto;
+    margin: 0 auto;
     position: relative;
-    height: 100vh;
+    height: auto;
 }
 
 .large_dom {
     width: 100%;
     height: 700px;
 }
+
 .welcome {
     font-size: 16px;
+    background: #eee8d8;
+    text-align: center;
 }
 
 .highlight-keyword {
@@ -38,16 +42,20 @@
     margin: 10px auto;
 
 }
+
 .show_spider_info {
     height: 30vh;
     overflow-y: scroll;
 }
+
 .danger {
     color: red;
 }
+
 .my_process {
     margin: 20px auto;
 }
+
 .spider_phase {
     margin-top: 50px;
 }
@@ -55,4 +63,9 @@
 .spider_finish {
     margin: 20px auto;
     text-align: center;
+}
+
+.btn_href {
+    color: white;
+    cursor: pointer;
 }
