@@ -8,13 +8,12 @@ from scipy.misc import imread
 import matplotlib.pyplot as plt
 from src.spider.QQZoneFriendSpider import QQZoneFriendSpider
 from src.analysis.Average import Average
-from src.util import util
 from src.util.constant import BASE_DIR
 import os
 
 class QQZoneAnalysis(QQZoneSpider):
-    def __init__(self, use_redis=False, debug=False, file_name_head='', analysis_friend=False):
-        QQZoneSpider.__init__(self, use_redis, debug, recover=False)
+    def __init__(self, use_redis=False, debug=False, file_name_head='', analysis_friend=False, from_web=True):
+        QQZoneSpider.__init__(self, use_redis, debug, recover=False, from_web=from_web, username=file_name_head)
         self.mood_data = []
         self.mood_data_df = pd.DataFrame()
         self.like_detail_df = []
@@ -317,7 +316,7 @@ def clean_label_data():
 
 
 def get_most_people(file_name_head):
-    analysis = QQZoneAnalysis(use_redis=True, debug=True, file_name_head=file_name_head, analysis_friend=False)
+    analysis = QQZoneAnalysis(use_redis=True, debug=True, file_name_head=file_name_head, analysis_friend=False, from_web=True)
     # analysis.load_mood_data()
     analysis.get_useful_info_from_json()
     all_uin_count = analysis.rank_like_people(analysis.mood_data_df)
@@ -340,7 +339,7 @@ def get_mood_df(file_name_head, export_csv=True, export_excel=True, analysis_fri
     :return:
     """
     analysis = QQZoneAnalysis(use_redis=True, debug=False, file_name_head=file_name_head,
-                              analysis_friend=analysis_friend)
+                              analysis_friend=analysis_friend, from_web=True)
     analysis.get_useful_info_from_json()
     if export_csv:
         analysis.save_data_to_csv()

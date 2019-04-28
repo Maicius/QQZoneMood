@@ -5,12 +5,11 @@ from src.util.constant import WEB_SPIDER_INFO, MOOD_NUM_PRE, CLEAN_DATA_KEY, GET
 import multiprocessing
 
 def capture_data():
-    cookie_text = 'pgv_pvi=452072448; RK=+o+S14A/VT; tvfe_boss_uuid=7c5128d923ccdd6b; pac_uid=1_1272082503; ptcz=807bc32de0d90e8dbcdc3613231e3df03cb3ccfbf9013edf246be81ff3e0f51c; QZ_FE_WEBP_SUPPORT=1; pgv_pvid=4928238618; o_cookie=1272082503; __Q_w_s__QZN_TodoMsgCnt=1; _ga=amp-Iuo327Mw3_0w5xOcJY0tIA; zzpaneluin=; zzpanelkey=; pgv_si=s6639420416; ptisp=ctc; pgv_info=ssid=s5183597124; __Q_w_s_hat_seed=1; ptui_loginuin=458546290; Loading=Yes; qz_screen=1680x1050; uin=o1272082503; skey=@Zk9eLB4j3; p_uin=o1272082503; pt4_token=eBFNsKN*j6lVpXCbI0-QrlQqZTYr6Epvj9RnyDD7zhc_; p_skey=3ZsWdJ6j-bvIBFpN31E78aKG06MVSG6WQRKQ5f7X7*U_; cpu_performance_v8=2'
     sp = QQZoneSpider(use_redis=True, debug=True, mood_begin=0, mood_num=-1,
                       stop_time='-1',
                       download_small_image=False, download_big_image=False,
                       download_mood_detail=True, download_like_detail=True,
-                      download_like_names=True, recover=False, cookie_text=cookie_text)
+                      download_like_names=True, recover=False, cookie_text=None)
     sp.login()
     sp.get_main_page_info()
     sp.get_mood_list()

@@ -218,6 +218,7 @@ def clear_cache(QQ, password):
             conn.delete(MOOD_DETAIL_FILE_NAME)
             conn.delete(LIKE_DETAIL_FILE_NAME)
             os.remove(os.path.join(RESULT_BASE_DIR, QQ + '_mood_data.xlsx'))
+            os.remove(os.path.join(RESULT_BASE_DIR, QQ + '_mood_data.csv'))
             finish = 1
             return json.dumps(dict(finish=finish), ensure_ascii=False)
         except BaseException as e:
