@@ -30,7 +30,7 @@ class QQZoneAnalysis(QQZoneSpider):
                 self.friend_df = pd.read_csv(friend_dir)
                 self.friend = QQZoneFriendSpider(analysis=True)
 
-        self.av = Average(use_redis=False, file_name_head=file_name_head, analysis=True)
+        self.av = Average(use_redis=False, file_name_head=username, analysis=True)
         self.init_analysis_path()
 
     def init_analysis_path(self):
@@ -303,7 +303,7 @@ def clean_label_data():
     new_list = ['maicius']
     for name in new_list:
         print(name + '====================')
-        analysis = QQZoneAnalysis(use_redis=True, debug=True, file_name_head=name, analysis_friend=False)
+        analysis = QQZoneAnalysis(use_redis=True, debug=True, username=name, analysis_friend=False)
         # print(analysis.check_data_shape())
         analysis.get_useful_info_from_json()
         analysis.save_data_to_csv()
@@ -316,7 +316,7 @@ def clean_label_data():
 
 
 def get_most_people(file_name_head):
-    analysis = QQZoneAnalysis(use_redis=True, debug=True, file_name_head=file_name_head, analysis_friend=False, from_web=True)
+    analysis = QQZoneAnalysis(use_redis=True, debug=True, username=file_name_head, analysis_friend=False, from_web=True)
     # analysis.load_mood_data()
     analysis.get_useful_info_from_json()
     all_uin_count = analysis.rank_like_people(analysis.mood_data_df)
@@ -338,7 +338,7 @@ def get_mood_df(username, export_csv=True, export_excel=True, analysis_friend=Fa
     :param export_excel:
     :return:
     """
-    analysis = QQZoneAnalysis(use_redis=True, debug=False, file_name_head=username,
+    analysis = QQZoneAnalysis(use_redis=True, debug=False, username=username,
                               analysis_friend=analysis_friend, from_web=True)
     analysis.get_useful_info_from_json()
     if export_csv:
