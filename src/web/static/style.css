@@ -1,5 +1,6 @@
 .wrapper {
     background-color: #c0c0c0;
+    min-height: 100vh;
 }
 
 .main_container {
@@ -9,6 +10,7 @@
     margin: 0 auto;
     position: relative;
     height: auto;
+    min-height: 100vh;
 }
 
 .large_dom {

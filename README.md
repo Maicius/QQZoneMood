@@ -9,6 +9,7 @@
 
 ### TO DO...
 
+- 排队机制
 - Web展示界面优化
 
 ### 已实现功能
@@ -164,6 +165,8 @@
 	> [可选]历史事件抽取（自然语言处理、事件抽取）
 
 - 运行结果例图：
+![IMAGE](resource/image/screen1.png)
+![IMAGE](resource/image/screen2.png)
 ![Image](resource/image/comment.jpg)
 ![Image3](resource/image/comment_content.jpg)
 ![Image](resource/image/bike2.png)
