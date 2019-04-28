@@ -1,6 +1,6 @@
-from flask import Flask, render_template
-from src.util.constant import WEB_SPIDER_INFO, MOOD_NUM_PRE, MOOD_COUNT_KEY, STOP_SPIDER_KEY, SPIDER_FLAG, \
-    STOP_SPIDER_FLAG, FINISH_ALL_INFO, CLEAN_DATA_KEY, USER_MAP_KEY
+from flask import Flask, render_template, redirect, url_for, send_from_directory
+
+from src.util.constant import *
 import json
 from src.web.entity.QQUser import QQUser
 from src.web.entity.UserInfo import UserInfo
@@ -10,6 +10,7 @@ import threading
 from time import sleep
 import redis
 import hashlib
+import os
 pool = redis.ConnectionPool(host="127.0.0.1", port=6379, decode_responses=True)
 
 # 共享redis连接池
@@ -24,15 +25,26 @@ def get_pool():
 
 app = Flask(__name__)
 
-@app.route('/data/<QQ>/<Key>')
-def data(QQ, Key):
-    user = UserInfo()
-    user.load(QQ)
-    return render_template("data.html", user=user)
+@app.route('/data/<QQ>/<password>')
+def data(QQ, password):
+    pool = get_pool()
+    conn = redis.Redis(connection_pool=pool)
+    if check_password(conn, QQ, password):
+        user = UserInfo()
+        user.load(QQ)
+        result = dict(finish=1, user=user.to_dict())
+        return json.dumps(result, ensure_ascii=False)
+    else:
+        result = dict(finish=0)
+        return json.dumps(result, ensure_ascii=False)
 
 @app.route('/')
 def config():
     return render_template("config.html")
+
+@app.route('/error')
+def error():
+    return render_template("error.html")
 
 @app.route('/start_spider', methods=['GET','POST'])
 def start_spider():
@@ -44,7 +56,8 @@ def start_spider():
         cookie = request.form['cookie']
         no_delete = False if request.form['no_delete'] == 'false' else True
         password = request.form['password']
-        password = hashlib.md5(password).hexdigest
+
+        password = md5_password(password)
 
         print("begin spider:", qq)
         try:
@@ -59,17 +72,26 @@ def start_spider():
     else:
         return "老哥你干嘛？"
 
+def md5_password(password):
+    md5 = hashlib.md5()
+    md5.update(password.encode("utf8"))
+    return md5.hexdigest()
+
 @app.route('/get_history/<QQ>/<name>/<password>')
 def get_history(QQ, name, password):
     pool = get_pool()
     conn = redis.Redis(connection_pool=pool)
+    result = {}
     if not check_password(conn, QQ, password):
-        return json.dumps(dict(finish=-2))
+        result['finish'] = 0
+        return json.dumps(result)
     user = QQUser(QQ=QQ, name=name)
     mood_df = user.get_mood_df()
     history_df = mood_df.loc[:, ['cmt_total_num', 'like_num', 'content', 'time']]
     history_json = history_df.to_json(orient='records', force_ascii=False)
-    return json.dumps(history_json, ensure_ascii=False)
+    result['finish'] = 1
+    result['data'] = history_json
+    return json.dumps(result, ensure_ascii=False)
 
 @app.route('/get_basic_info/<QQ>/<name>')
 def get_basic_info(QQ, name):
@@ -135,14 +157,30 @@ def query_clean_data(QQ, password):
     pool = get_pool()
     conn = redis.Redis(connection_pool=pool)
     if not check_password(conn, QQ, password):
-        return json.dumps(dict(finish=-2))
+        return json.dumps(dict(finish=-2), ensure_ascii=False)
     while True:
         key = conn.get(CLEAN_DATA_KEY + QQ)
         if key == '1':
             break
         else:
             sleep(0.1)
-    return json.dumps(dict(finish=key))
+    return json.dumps(dict(finish=key), ensure_ascii=False)
+
+@app.route('/download_excel/<QQ>/<password>')
+def download_excel(QQ, password):
+    pool = get_pool()
+    conn = redis.Redis(connection_pool=pool)
+    if not check_password(conn, QQ, password):
+        return json.dumps(dict(finish="QQ号与识别码不匹配"), ensure_ascii=False)
+
+    else:
+        path = RESULT_BASE_DIR
+        print(os.path.join(path, QQ + '_mood_data.xlsx'))
+        if os.path.isfile(os.path.join(path, QQ + '_mood_data.xlsx')):
+            print(os.path.join(path, QQ + '_mood_data.xlsx'))
+            return send_from_directory(path, QQ + '_mood_data.xlsx', as_attachment=True)
+        else:
+            return json.dumps(dict(finish="文件不存在"), ensure_ascii=False)
 
 def init_redis_key(qq):
     pool = get_pool()
@@ -155,8 +193,16 @@ def init_redis_key(qq):
 
 def check_password(conn, QQ, password):
     redis_pass = conn.hget(USER_MAP_KEY, QQ)
-    password = hashlib.md5(password).hexdigest
+    password = md5_password(password)
     return redis_pass == password
+
+def check_waiting(conn, QQ):
+    user_list = conn.llen(SPIDERING_USER_LIST)
+    if user_list >= 10:
+        conn.rpush(WAITING_USER_LIST, QQ)
+    else:
+        conn.rpush(SPIDERING_USER_LIST, QQ)
+
 
 if __name__ == '__main__':
     app.run(debug=True)

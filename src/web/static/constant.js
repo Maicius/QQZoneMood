@@ -14,10 +14,15 @@ const SPIDER_TEXT = {
 
 const CLEAN_DATA_TEXT = {
     DOING: '数据分析中...',
-    FINISH: '数据分析完成，点击下面链接查看数据'
+    FINISH: '数据分析完成，点击下方按钮查看数据'
 };
 
 const CLEAN_DATA_STATE = {
     DOING: 0,
     FINISH: 1
+};
+
+const VIEW_DATA_STATE = {
+    config: 0,
+    data:1
 };

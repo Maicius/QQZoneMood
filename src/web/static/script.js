@@ -1,8 +1,5 @@
-// let history_dom = echarts.init(document.getElementById(HISTORY_DOM));
-// avalon.config({
-//     interpolate: ["[[","]]"]
-// });
-let history_dom;
+let history_dom = echarts.init(document.getElementById(HISTORY_DOM));
+
 avalon.config({
     interpolate: ['{$', '$}']
 });
@@ -28,14 +25,22 @@ let vm = avalon.define({
     data_state: CLEAN_DATA_STATE.DOING,
     visual_data_url: '',
     password: '',
-    fetch_history_data: function () {
+    view_data_state: VIEW_DATA_STATE.config,
+    user: {},
+    view_data: function(){
         $.ajax({
-            url: '/get_history/1272082503/maicius',
-            success: function (result) {
-                console.log(result);
-                draw_history_line(history_dom, result, "QQ空间说说历史曲线图");
+            url: '/data/' + vm.qq_id + '/' + sha1(vm.password),
+            type: 'GET',
+            success: function (res) {
+                res= JSON.parse(res);
+                if (res.finish){
+                    vm.view_data_state = VIEW_DATA_STATE.data;
+                    vm.user = res.user;
+                    vm.fetch_history_data();
+                }
+
             }
-        })
+         })
     },
 
     submit_data: function () {
@@ -51,7 +56,7 @@ let vm = avalon.define({
                         mood_num: vm.stop_num,
                         cookie: vm.qq_cookie,
                         no_delete: vm.no_delete,
-                        password: hex_sha1(vm.password)
+                        password: sha1(vm.password)
                     },
                     success: function (data) {
                         data = JSON.parse(data);
@@ -77,7 +82,7 @@ let vm = avalon.define({
 
     query_spider_info: function (QQ) {
         $.ajax({
-            url: '/query_spider_info/' + QQ + '/' + hex_sha1(vm.password),
+            url: '/query_spider_info/' + QQ + '/' + sha1(vm.password),
             type: 'GET',
             success: function (data) {
                 data = JSON.parse(data);
@@ -110,7 +115,7 @@ let vm = avalon.define({
             clearInterval(vm.query_num);
             vm.spider_text = SPIDER_TEXT.STOP;
             $.ajax({
-                url: '/stop_spider/' + vm.qq_id + '/' + hex_sha1(vm.password),
+                url: '/stop_spider/' + vm.qq_id + '/' + sha1(vm.password),
                 type: 'get',
                 success: function (data) {
                     data = JSON.parse(data);
@@ -127,7 +132,7 @@ let vm = avalon.define({
     },
     query_spider_num: function (QQ) {
         $.ajax({
-            url: '/query_spider_num/' + QQ + '/' + vm.true_mood_num + '/' + hex_sha1(vm.password),
+            url: '/query_spider_num/' + QQ + '/' + vm.true_mood_num + '/' + sha1(vm.password),
             type: 'GET',
             success: function (data) {
                 data = JSON.parse(data);
@@ -148,7 +153,7 @@ let vm = avalon.define({
     },
     query_clean_state: function () {
         $.ajax({
-            url: '/query_clean_data/' + vm.qq_id + '/' + hex_sha1(vm.password),
+            url: '/query_clean_data/' + vm.qq_id + '/' + sha1(vm.password),
             type: 'GET',
             success: function (data) {
                 data = JSON.parse(data);
@@ -161,6 +166,32 @@ let vm = avalon.define({
         })
     },
     clear_cache: function () {
+    },
+    fetch_history_data: function () {
+        $.ajax({
+            url: '/get_history/'+ vm.qq_id +'/' + vm.nick_name + '/' + sha1(vm.password),
+            success: function (result) {
+                console.log(result);
+                result = JSON.parse(result);
+                if (result.finish){
+                    data = result.data;
+                    draw_history_line(history_dom, data, "QQ空间说说历史曲线图");
+                }
+
+            }
+        })
+    },
+    encrypt: function(){
+        return sha1(vm.password);
+    },
+    download_excel: function () {
+        $.ajax({
+            url: '/download_excel/' +vm.qq_id + '/' + sha1(vm.password),
+            type: 'get',
+            success: function () {
+                
+            }
+        })
     }
 });
 
@@ -206,8 +237,4 @@ vm.$watch("data_state", function (new_v, old_v) {
             vm.clean_data_text = CLEAN_DATA_TEXT.FINISH;
             break;
     }
-});
-
-$(document).ready(function () {
-    //vm.fetch_history_data();
 });

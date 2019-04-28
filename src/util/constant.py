@@ -28,3 +28,9 @@ CLEAN_DATA_KEY = 'clean_data_'
 
 USER_MAP_KEY = 'qq_user_map'
 
+SPIDERING_USER_LIST  = 'spidering_user_list'
+
+WAITING_USER_LIST = 'waiting_user_list'
+
+RESULT_BASE_DIR = BASE_DIR + "data/result"
+

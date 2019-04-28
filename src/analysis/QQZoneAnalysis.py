@@ -330,7 +330,7 @@ def get_most_people(file_name_head):
     analysis.user_info.save_user(analysis.username)
 
 
-def get_mood_df(file_name_head, export_csv=True, export_excel=False, analysis_friend=False):
+def get_mood_df(file_name_head, export_csv=True, export_excel=True, analysis_friend=False):
     """
     根据传入的文件名前缀清洗原始数据，导出csv和excel表
     :param file_name_head:
