@@ -4,6 +4,7 @@ from src.util.constant import WEB_SPIDER_INFO, MOOD_NUM_PRE, CLEAN_DATA_KEY, GET
     USER_MAP_KEY
 import multiprocessing
 
+# 获取空间动态数据
 def capture_data():
     sp = QQZoneSpider(use_redis=True, debug=True, mood_begin=0, mood_num=-1,
                       stop_time='-1',

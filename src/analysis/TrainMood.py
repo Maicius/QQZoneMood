@@ -1,5 +1,7 @@
 from src.analysis.QQZoneAnalysis import QQZoneAnalysis
 import json
+
+from src.util.constant import BASE_DIR
 from src.util.util import get_mktime2
 import pandas as pd
 import re
@@ -11,12 +13,10 @@ class TrainMood(QQZoneAnalysis):
     生成各种训练需要的数据集
     """
 
-    def __init__(self, use_redis=False, debug=True, file_name_head='maicius'):
-        QQZoneAnalysis.__init__(self, use_redis=use_redis, debug=debug, file_name_head='maicius',
-                                stop_time='2014-06-10',
-                                stop_num=500, analysis_friend=False)
+    def __init__(self, use_redis=False, debug=True, file_name_head=''):
+        QQZoneAnalysis.__init__(self, use_redis=use_redis, debug=debug, username=file_name_head, analysis_friend=False)
 
-        TRAIN_BASE_DIR = self.BASE_DIR + 'data/train/' + file_name_head
+        TRAIN_BASE_DIR = BASE_DIR + 'data/train/' + file_name_head
 
         self.MOOD_DATA_SCORE_FILE_NAME = TRAIN_BASE_DIR + '_score_mood_data.csv'
         self.RE_DO_SENTIMENT_FILE_NAME = TRAIN_BASE_DIR + '_re_do_mood_data.csv'
