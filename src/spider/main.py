@@ -1,9 +1,10 @@
 from src.analysis.QQZoneAnalysis import get_mood_df, get_most_people
 from src.spider.QQZoneSpider import QQZoneSpider
 from src.util.constant import WEB_SPIDER_INFO, MOOD_NUM_PRE, CLEAN_DATA_KEY, GET_MAIN_PAGE_FAILED, LOGIN_FAILED, \
-    USER_MAP_KEY
+    USER_MAP_KEY, GET_MOOD_FAILED
 import multiprocessing
 
+# 获取空间动态数据
 def capture_data():
     sp = QQZoneSpider(use_redis=True, debug=True, mood_begin=0, mood_num=-1,
                       stop_time='-1',
@@ -38,8 +39,13 @@ def web_interface(username, nick_name, stop_time, mood_num, cookie, no_delete, p
         sp.re.rpush(WEB_SPIDER_INFO + username, MOOD_NUM_PRE + ":" + str(sp.mood_num))
     except BaseException:
         sp.re.rpush(WEB_SPIDER_INFO + username,  LOGIN_FAILED)
-    sp.get_mood_list()
-    sp.user_info.save_user(username)
+
+    try:
+        sp.get_mood_list()
+        sp.user_info.save_user(username)
+    except BaseException:
+        sp.re.rpush(WEB_SPIDER_INFO + username, GET_MOOD_FAILED)
+        exit(1)
     # 清洗数据
     get_mood_df(username)
     get_most_people(username)

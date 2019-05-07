@@ -9,8 +9,9 @@
 
 ### TO DO...
 
-- 排队机制
+- Web排队机制
 - Web展示界面优化
+- README更新
 
 ### 已实现功能
 
@@ -34,13 +35,11 @@
 
 	> 包括各种词云图、关系图
 
+- Web配置界面
+
+	> 使用Flask + avalon.js + echarts.js 搭建的简易web界面，为普通用户提供一个快速获取数据的方法
+	
 ##### 2.衍生功能
-
-> 这部分的目标是推算什么样的动态内容更受好友欢迎以及构建用户画像，但是很遗憾，目前获得的数据价值有限
-
-- QQ空间动态内容分类
-
-	> 分为7大类，自己标注的数据集(7231条数据,未公开，如有需要请邮件联系并说明原因)，使用RNN进行分类
 
 - QQ空间动态情感检测
 
@@ -49,23 +48,42 @@
 - QQ空间照片评分
 	
 	> 基于[Google NIMA模型](https://modelzoo.co/model/nima)
-	
-- QQ空间照片内容检测
-	
-	> 基于Fast R-CNN
-
-- QQ空间中动态受好友的欢迎程度与动态内容的关系模型拟合
-
-	> 将从动态中抽取的文字内容、图片内容转化为离散型或连续型变量，并将动态的点赞量、评论量、浏览量转化为热度作为标签，使用xgboost对以上数据进行拟合
 
 - QQ空间好友关系演变图
 	
 	> [戳这里查看视频演示](https://v.youku.com/v_show/id_XMzkxMDQ0NTcyMA==.html?spm=a2hzp.8253869.0.0)
 
 
-### 爬虫文件
+### 项目结构
 
-### QQZone.py
+#### resource:存放数据文件（不包括web中的静态资源）
+#### src-spider:包括四个爬虫类和一个入口
+
+- BaseSpider(object): 爬虫基类，初始化各种变量和提供基础接口，统一管理爬虫的headers、数据的加载和存储
+- QQZoneSpider(BaseSpider):爬取QQ空间动态的主要逻辑，包括各种url的构建
+- QQZoneFriendSpider(QQZoneSpider): 爬取用户的好友基本信息和共同群组，计算用户在各个时间段的好友数量
+- QQZoneFriendMoodSpider(QQZoneSpider):爬取用户指定好友的动态
+- main: 程序入口，为web程序提供爬虫API
+
+#### src-analysis:
+
+- QQZoneAnalysis: 数据清洗，将爬虫得到的原始数据清洗为excel形式，并做简单的数据统计和分析
+- Average: 计算平均评论量、点赞量、浏览量等数据
+- SentimentClassify: 调用百度人工智能API进行情感分类
+- TrainMood：已废弃，以前计划用来对文本内容分类等等
+
+#### src-visual:
+
+- CreateGexf: 将用户好友数据生成Gephi软件可以接受的数据格式以进行聚类
+
+#### src-web：网站模块
+
+- src-web-entity: 实体类
+- static: 静态资源，外部引用的包主要使用cdn
+- templates：网页
+
+
+### 环境说明
 
 - python版本：3.6（推荐使用python3，因为本爬虫涉及大量文件交互，python3的编码管理比2中好很多）
 - 登陆使用的是Selenium， 无法识别验证码，抓取使用requests
@@ -94,7 +112,7 @@
 	> 请注意版本匹配，可以查看这篇博客：  
 	> [selenium之 chromedriver与chrome版本映射表（更新至v2.32）](http://blog.csdn.net/huilan_same/article/details/51896672)
 
-#### QQZone运行方式 
+#### 运行方式 
 
 - 1.安装依赖
 
@@ -141,6 +159,8 @@
 - 8.数据清理，导出csv结构数据
 
 	> python3 QQZoneAnalysis.py
+
+
 
 ### 数据分析
 
