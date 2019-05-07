@@ -74,6 +74,7 @@ class QQZoneFriendSpider(QQZoneSpider):
             thread_num = 10
         else:
             thread_num = math.ceil(friend_num / 20)
+        print("获取好友基本进行的线程数量：", thread_num)
         for i in range(thread_num):
             begin_index = i
             t = threading.Thread(target=self.do_get_friend_detail, args=(begin_index, friend_num, thread_num))
@@ -97,7 +98,7 @@ class QQZoneFriendSpider(QQZoneSpider):
         while index < friend_num:
             friend = self.friend_list[index]
             uin = friend['uin']
-            if True:
+            if self.debug:
                 print('正在爬取好友:', uin, '数据...,', 'index=', index)
             url = self.get_friend_detail_url(uin)
             content = self.get_json(self.req.get(url, headers=self.headers).content.decode('utf-8'))

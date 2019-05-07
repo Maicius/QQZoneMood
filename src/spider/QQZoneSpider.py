@@ -166,6 +166,15 @@ class QQZoneSpider(BaseSpider):
         if self.mood_num == -1:
             self.mood_num = mood_num
 
+
+        # 根据mood_num分配线程个数
+        if self.mood_num >= 200:
+            self.thread_num = 10
+        else:
+            self.thread_num = round(mood_num / 20)
+        if self.thread_num < 1:
+            self.thread_num = 1
+        print("获取QQ动态的线程数量:", self.thread_num)
         step = self.find_best_step(self.mood_num, self.thread_num)
 
         for i in range(0, self.thread_num):
