@@ -36,3 +36,6 @@ WAITING_USER_LIST = 'waiting_user_list'
 
 RESULT_BASE_DIR = BASE_DIR + "data/result"
 
+STOP_FRIEND_INFO_SPIDER_KEY = 'stop_friend_info_'
+FINISH_FRIEND_INFO_ALL = '获取全部好友基本信息完成'
+

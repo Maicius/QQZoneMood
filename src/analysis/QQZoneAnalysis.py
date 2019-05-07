@@ -1,4 +1,3 @@
-from src.spider.QQZoneSpider import QQZoneSpider
 import re
 import json
 import pandas as pd
@@ -12,12 +11,13 @@ from src.util.constant import BASE_DIR
 import os
 
 
-class QQZoneAnalysis(QQZoneSpider):
+class QQZoneAnalysis(QQZoneFriendSpider):
     def __init__(self, use_redis=False, debug=False, username='', analysis_friend=False, mood_begin=0, mood_num=-1,
                  stop_time='-1', from_web=True, nickname='', no_delete=True, cookie_text=''):
-        QQZoneSpider.__init__(self, use_redis, debug, recover=False, username=username, mood_num=mood_num,
+
+        QQZoneFriendSpider.__init__(self, use_redis, debug, recover=False, username=username, mood_num=mood_num,
                               mood_begin=mood_begin, stop_time=stop_time, from_web=from_web, nickname=nickname,
-                              no_delete=no_delete, cookie_text=cookie_text)
+                              no_delete=no_delete, cookie_text=cookie_text, analysis=True)
         self.mood_data = []
         self.mood_data_df = pd.DataFrame()
         self.like_detail_df = []
@@ -32,7 +32,6 @@ class QQZoneAnalysis(QQZoneSpider):
                 self.analysis_friend = False
             else:
                 self.friend_df = pd.read_csv(friend_dir)
-                self.friend = QQZoneFriendSpider(analysis=True)
 
         self.av = Average(use_redis=False, file_name_head=username, analysis=True)
         self.init_analysis_path()
@@ -177,7 +176,7 @@ class QQZoneAnalysis(QQZoneSpider):
                             self.format_error(e, comment)
 
                 if self.analysis_friend:
-                    friend_num = self.friend.calculate_friend_num_timeline(time_stamp, self.friend_df)
+                    friend_num = self.calculate_friend_num_timeline(time_stamp, self.friend_df)
                 else:
                     friend_num = -1
                 self.mood_data.append(dict(tid=tid, content=content, time=time, time_stamp=time_stamp, pic_num=pic_num,
@@ -303,7 +302,7 @@ class QQZoneAnalysis(QQZoneSpider):
         all_uin_dict = {str(x[0]): x[1] for x in all_uin_count.values}
         self.drawWordCloud(all_uin_dict, self.file_name_head + '_like_', dict_type=True)
 
-    def get_mood_df(self, export_csv=True, export_excel=True, analysis_friend=False):
+    def get_mood_df(self, export_csv=True, export_excel=True):
         """
         根据传入的文件名前缀清洗原始数据，导出csv和excel表
         :param file_name_head:

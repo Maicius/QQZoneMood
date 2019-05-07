@@ -3,20 +3,28 @@ from urllib import parse
 import json
 import pandas as pd
 from src.util import util
-from src.util.constant import BASE_DIR
-import time
+import math
+import threading
+from src.util.constant import BASE_DIR, FINISH_FRIEND_INFO_ALL, STOP_FRIEND_INFO_SPIDER_KEY
+
+
 class QQZoneFriendSpider(QQZoneSpider):
     """
-    爬取自己的好友的数量等基本信息（不是爬好友的动态）
+    爬取自己的好友的数量、共同群组等基本信息（不是爬好友的动态）
     """
-    def __init__(self, use_redis=False, debug=False, analysis=False, recover=False):
+    def __init__(self, use_redis=False, debug=False, analysis=False, recover=False,
+                 username='', mood_begin=0, mood_num=-1, stop_time='-1', from_web=True, nickname='', no_delete=True, cookie_text=''
+                 ):
         """
 
         :param use_redis: 是否使用redis
         :param debug: 是否开启debug模式
         :param analysis: 如果为true, 会执行爬虫程序，再执行分析程序，如果为false，只执行分析程序
         """
-        QQZoneSpider.__init__(self, use_redis=use_redis, debug=debug, recover=recover)
+        QQZoneSpider.__init__(self, use_redis, debug, recover=recover, username=username, mood_num=mood_num,
+                              mood_begin=mood_begin, stop_time=stop_time, from_web=from_web, nickname=nickname,
+                              no_delete=no_delete, cookie_text=cookie_text)
+
         if self.g_tk == 0 and analysis == False:
             self.login()
 
@@ -32,7 +40,7 @@ class QQZoneFriendSpider(QQZoneSpider):
         self.friend_list = []
         self.friend_df = None
         self.re = self.connect_redis()
-
+        self.friend_thread_list = []
 
     def get_friend_list(self):
         """
@@ -46,6 +54,7 @@ class QQZoneFriendSpider(QQZoneSpider):
             self.re.set('friend_list', self.friend_list)
         self.save_data_to_json(self.friend_list, self.FRIEND_LIST_FILE_NAME)
         print('获取好友列表信息完成')
+        return len(self.friend_list)
 
     def download_head_image(self):
         for item in self.friend_list:
@@ -59,13 +68,40 @@ class QQZoneFriendSpider(QQZoneSpider):
         根据好友列表获取好友详情
         :return:
         """
-        self.get_friend_list()
-        i = 0
-        for friend in self.friend_list:
+        friend_num = self.get_friend_list()
+        # 保证每个线程至少爬20次，最多开10个线程
+        if friend_num >= 200:
+            thread_num = 10
+        else:
+            thread_num = math.ceil(friend_num / 20)
+
+        for i in range(thread_num):
+            begin_index = i
+            t = threading.Thread(target=self.do_get_friend_detail, args=(begin_index, friend_num, thread_num))
+            self.friend_thread_list.append(t)
+
+        for t in self.friend_thread_list:
+            t.setDaemon(False)
+            t.start()
+
+        # 等待全部子线程结束
+        for t in self.friend_thread_list:
+            t.join()
+
+        if self.use_redis:
+            self.re.set(STOP_FRIEND_INFO_SPIDER_KEY + self.username, FINISH_FRIEND_INFO_ALL)
+            self.re.set(self.FRIEND_DETAIL_FILE_NAME, self.friend_detail)
+        self.save_data_to_json(self.friend_detail, self.FRIEND_DETAIL_FILE_NAME)
+
+    def do_get_friend_detail(self, index, friend_num, step=1):
+        # 避免好友数量为0
+        if step < 1:
+            step = 1
+        while index < friend_num:
+            friend = self.friend_list[index]
             uin = friend['uin']
-            i = i + 1
-            print(i)
-            print('正在爬取:', uin, '...')
+            if True:
+                print('正在爬取好友:', uin, '数据...,', 'index=', index)
             url = self.get_friend_detail_url(uin)
             content = self.get_json(self.req.get(url, headers=self.headers).content.decode('utf-8'))
             data = json.loads(content)
@@ -76,10 +112,7 @@ class QQZoneFriendSpider(QQZoneSpider):
                 print(data)
                 continue
             self.friend_detail.append(data)
-
-        if self.use_redis:
-            self.re.set(self.FRIEND_DETAIL_FILE_NAME, self.friend_detail)
-        self.save_data_to_json(self.friend_detail, self.FRIEND_DETAIL_FILE_NAME)
+            index += step
 
     def get_friend_list_url(self):
         friend_url = 'https://user.qzone.qq.com/proxy/domain/r.qzone.qq.com/cgi-bin/tfriend/friend_show_qqfriends.cgi?'
@@ -121,8 +154,6 @@ class QQZoneFriendSpider(QQZoneSpider):
             except BaseException as e:
                 self.format_error(e, "Failed to load data from json, Make sure the correct filename")
                 exit(1)
-
-
 
     def clean_friend_data(self):
         """
