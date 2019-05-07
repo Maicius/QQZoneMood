@@ -11,16 +11,20 @@ from src.analysis.Average import Average
 from src.util.constant import BASE_DIR
 import os
 
+
 class QQZoneAnalysis(QQZoneSpider):
-    def __init__(self, use_redis=False, debug=False, username='', analysis_friend=False, from_web=True):
-        QQZoneSpider.__init__(self, use_redis, debug, recover=False, from_web=from_web, username=username)
+    def __init__(self, use_redis=False, debug=False, username='', analysis_friend=False, mood_begin=0, mood_num=-1,
+                 stop_time='-1', from_web=True, nickname='', no_delete=True, cookie_text=''):
+        QQZoneSpider.__init__(self, use_redis, debug, recover=False, username=username, mood_num=mood_num,
+                              mood_begin=mood_begin, stop_time=stop_time, from_web=from_web, nickname=nickname,
+                              no_delete=no_delete, cookie_text=cookie_text)
         self.mood_data = []
         self.mood_data_df = pd.DataFrame()
         self.like_detail_df = []
         self.like_list_names_df = []
         self.file_name_head = username
         self.analysis_friend = analysis_friend
-
+        self.has_clean_data = False
         friend_dir = BASE_DIR + 'friend/' + self.file_name_head + '_friend_detail_list.csv'
 
         if self.analysis_friend:
@@ -87,16 +91,17 @@ class QQZoneAnalysis(QQZoneSpider):
         like_detail_df = pd.DataFrame(self.like_detail_df)
         like_list_df = pd.DataFrame(self.like_list_names_df)
         data_df = pd.merge(left=mood_data_df, right=like_detail_df, how='inner', left_on='tid', right_on='tid')
-        data_df = pd.merge(left=data_df, right=like_list_df, how='inner', left_on='tid',right_on='tid')
+        data_df = pd.merge(left=data_df, right=like_list_df, how='inner', left_on='tid', right_on='tid')
 
         data_df = data_df.sort_values(by='time_stamp', ascending=False).reset_index()
 
-        data_df.drop(['total_num', 'index'],axis=1, inplace=True)
+        data_df.drop(['total_num', 'index'], axis=1, inplace=True)
         # data_df.drop_duplicate()
         n_E = self.av.calculate_E(data_df)
         mood_data_df['n_E'] = n_E
         mood_data_df['user'] = self.file_name_head
         self.mood_data_df = data_df
+        self.has_clean_data = True
 
     def parse_mood_detail(self, mood):
         try:
@@ -138,8 +143,8 @@ class QQZoneAnalysis(QQZoneSpider):
                                         comment_reply_content = comment_reply['content']
                                         # 去掉 @{uin:117557,nick:16,who:1,auto:1} 这种文字
                                         comment_reply_content = \
-                                        re.subn(re.compile('\@\{.*?\}'), '', comment_reply_content)[
-                                            0].strip()
+                                            re.subn(re.compile('\@\{.*?\}'), '', comment_reply_content)[
+                                                0].strip()
                                         comment_reply_name = comment_reply['name']
                                         comment_reply_time = comment_reply['createTime2']
                                         comment_reply_list.append(dict(comment_reply_content=comment_reply_content,
@@ -155,8 +160,8 @@ class QQZoneAnalysis(QQZoneSpider):
                                         comment_reply_content = comment_reply['content']
                                         # 去掉 @{uin:117557,nick:16,who:1,auto:1} 这种文字
                                         comment_reply_content = \
-                                        re.subn(re.compile('\@\{.*?\}'), '', comment_reply_content)[
-                                            0].strip()
+                                            re.subn(re.compile('\@\{.*?\}'), '', comment_reply_content)[
+                                                0].strip()
                                         comment_reply_name = comment_reply['poster']['name']
                                         comment_reply_time = comment_reply['postTime']
                                         comment_reply_list.append(dict(comment_reply_content=comment_reply_content,
@@ -298,6 +303,35 @@ class QQZoneAnalysis(QQZoneSpider):
         all_uin_dict = {str(x[0]): x[1] for x in all_uin_count.values}
         self.drawWordCloud(all_uin_dict, self.file_name_head + '_like_', dict_type=True)
 
+    def get_mood_df(self, export_csv=True, export_excel=True, analysis_friend=False):
+        """
+        根据传入的文件名前缀清洗原始数据，导出csv和excel表
+        :param file_name_head:
+        :param export_csv:
+        :param export_excel:
+        :return:
+        """
+        if not self.has_clean_data:
+            self.get_useful_info_from_json()
+        if export_csv:
+            self.save_data_to_csv()
+        if export_excel:
+            self.save_data_to_excel()
+        return self.mood_data_df
+
+    def get_most_people(self):
+        if not self.has_clean_data:
+            self.get_useful_info_from_json()
+        all_uin_count = self.rank_like_people(self.mood_data_df)
+        all_uin_count = all_uin_count.sort_values(by="gender", ascending=False).reset_index()
+        most_like_name = all_uin_count.loc[0, 'nick']
+
+        cmt_df = self.av.calculate_cmt_rank(self.mood_data_df).reset_index()
+        most_cmt_name = cmt_df.loc[0, 'cmt_name']
+        self.user_info.cmt_friend_name = most_cmt_name
+        self.user_info.like_friend_name = most_like_name
+        self.user_info.save_user(self.username)
+
 
 def clean_label_data():
     new_list = ['maicius']
@@ -315,37 +349,16 @@ def clean_label_data():
         # analysis.export_all_label_data()
 
 
-def get_most_people(file_name_head):
-    analysis = QQZoneAnalysis(use_redis=True, debug=True, username=file_name_head, analysis_friend=False, from_web=True)
-    # analysis.load_mood_data()
-    analysis.get_useful_info_from_json()
-    all_uin_count = analysis.rank_like_people(analysis.mood_data_df)
-    all_uin_count = all_uin_count.sort_values(by="gender", ascending=False).reset_index()
-    most_like_name = all_uin_count.loc[0, 'nick']
+def get_most_people(username):
+    analysis = QQZoneAnalysis(use_redis=True, debug=True, username=username, analysis_friend=False, from_web=True)
+    analysis.get_most_people()
 
-    cmt_df = analysis.av.calculate_cmt_rank(analysis.mood_data_df).reset_index()
-    most_cmt_name = cmt_df.loc[0, 'cmt_name']
-    analysis.user_info.cmt_friend_name = most_cmt_name
-    analysis.user_info.like_friend_name = most_like_name
-    analysis.user_info.save_user(analysis.username)
+def get_mood_df(username):
+    analysis = QQZoneAnalysis(use_redis=True, debug=True, username=username, analysis_friend=False, from_web=True)
+    analysis.get_mood_df()
 
 
-def get_mood_df(username, export_csv=True, export_excel=True, analysis_friend=False):
-    """
-    根据传入的文件名前缀清洗原始数据，导出csv和excel表
-    :param file_name_head:
-    :param export_csv:
-    :param export_excel:
-    :return:
-    """
-    analysis = QQZoneAnalysis(use_redis=True, debug=False, username=username,
-                              analysis_friend=analysis_friend, from_web=True)
-    analysis.get_useful_info_from_json()
-    if export_csv:
-        analysis.save_data_to_csv()
-    if export_excel:
-        analysis.save_data_to_excel()
-    return analysis.mood_data_df
+
 
 
 if __name__ == '__main__':

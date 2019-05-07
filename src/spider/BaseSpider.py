@@ -15,7 +15,7 @@ class BaseSpider(object):
     def __init__(self, use_redis=False, debug=False, mood_begin=0, mood_num=-1, stop_time='-1',
                  download_small_image=False, download_big_image=False,
                  download_mood_detail=True, download_like_detail=True, download_like_names=True, recover=False,
-                 cookie_text=None, from_web=False, username='', nick_name='', no_delete=True):
+                 cookie_text=None, from_web=False, username='', nickname='', no_delete=True):
         # 初始化下载项
         self.mood_begin = mood_begin
         self.mood_num = mood_num
@@ -41,7 +41,7 @@ class BaseSpider(object):
         if from_web:
             self.username = username
             self.file_name_head = username
-            self.nick_name = nick_name
+            self.nickname = nickname
         else:
             self.username, self.password, self.file_name_head, self.nick_name = self.get_username_password()
         self.mood_host = self.http_host + '/' + self.username + '/mood/'
@@ -67,7 +67,7 @@ class BaseSpider(object):
         if self.user_info is None:
             self.user_info = UserInfo()
         self.user_info.QQ = self.username
-        self.user_info.nickname = self.nick_name
+        self.user_info.nickname = self.nickname
 
     def get_username_password(self):
         config_path = BASE_DIR + 'config/userinfo.json'
