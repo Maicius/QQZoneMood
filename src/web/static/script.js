@@ -26,7 +26,14 @@ let vm = avalon.define({
     visual_data_url: '',
     password: '',
     view_data_state: VIEW_DATA_STATE.config,
+
+    friend_info_spider_text: SPIDER_FRIEND_TEXT.DOING,
+    spider_friend_num: 0,
+    friend_process_width: 0,
+    all_friend_num: 0,
+    friend_info_spider_state: SPIDER_FRIEND_STATE.DOING,
     user: {},
+
     view_data: function () {
 
         if (vm.qq_id.length === 0 && vm.password.length === 0 && vm.nick_name.length === 0) {
@@ -43,7 +50,7 @@ let vm = avalon.define({
                         vm.view_data_state = VIEW_DATA_STATE.data;
                         vm.user = res.user;
                         vm.fetch_history_data();
-                    }else{
+                    } else {
                         alert("暂无该用户数据, 请先运行爬虫");
                     }
 
@@ -74,6 +81,7 @@ let vm = avalon.define({
                             //alert("success");
                             vm.begin_spider = 1;
                             vm.spider_state = SPIDER_STATE.SPIDER;
+                            vm.friend_info_spider_state = SPIDER_FRIEND_STATE.DOING;
                             vm.query_interval = setInterval(function () {
                                 vm.query_spider_info(vm.qq_id);
                             }, 1000);
@@ -103,10 +111,16 @@ let vm = avalon.define({
                 if (data.finish === 1) {
                     vm.show_process = 1;
                     vm.true_mood_num = data.mood_num;
-                    clearInterval(vm.query_interval);
+
                     vm.query_num = setInterval(function () {
                         vm.query_spider_num(vm.qq_id);
                     }, 1000);
+                } else if (data.finish === 2) {
+                    vm.all_friend_num = data.friend_num;
+                    clearInterval(vm.query_interval);
+                    vm.query_friend_info = setInterval(function () {
+                        vm.query_friend_info_num(vm.qq_id);
+                    }, 500);
                 } else if (data.finish === -1) {
                     alert(data.info);
                     vm.show_process = 0;
@@ -161,6 +175,25 @@ let vm = avalon.define({
             }
         })
     },
+
+    query_friend_info_num: function(QQ){
+        $.ajax({
+            url: '/query_friend_info_num/' + QQ + '/' + vm.all_friend_num + '/' + sha1(vm.password),
+            type:'GET',
+            success: function (data) {
+                data = JSON.parse(data);
+                vm.spider_friend_num = data.num;
+                vm.friend_process_width = Math.ceil(parseInt(vm.spider_friend_num) / parseInt(vm.all_friend_num) * 100) + "%";
+                if (data.finish === 1) {
+                    clearInterval(vm.query_friend_info);
+                    vm.friend_info_spider_state = SPIDER_FRIEND_STATE.FINISH;
+                } else if (data.finish === -2) {
+                    alert("识别码与QQ不匹配");
+                    clearInterval(vm.query_friend_info);
+                }
+            }
+         })
+    },
     query_clean_state: function () {
         $.ajax({
             url: '/query_clean_data/' + vm.qq_id + '/' + sha1(vm.password),
@@ -181,7 +214,7 @@ let vm = avalon.define({
             url: '/clear_cache/' + vm.qq_id + '/' + sha1(vm.password),
             type: 'GET',
             success: function (data) {
-                if (data.finish){
+                if (data.finish) {
                     alert("清除缓存成功");
                 }
             }
@@ -254,5 +287,16 @@ vm.$watch("data_state", function (new_v, old_v) {
         case CLEAN_DATA_STATE.FINISH:
             vm.clean_data_text = CLEAN_DATA_TEXT.FINISH;
             break;
+    }
+});
+
+vm.$watch("friend_info_spider_state", function (new_v, old_v) {
+    switch (new_v) {
+        case SPIDER_FRIEND_STATE.DOING:
+            vm.friend_info_spider_text = SPIDER_FRIEND_TEXT.DOING;
+            break;
+        case SPIDER_FRIEND_STATE.FINISH:
+            vm.friend_info_spider_text = SPIDER_FRIEND_TEXT.FINISH;
+
     }
 });

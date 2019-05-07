@@ -104,11 +104,18 @@
                     <!--ms-for: info in @spider_info-->
                     <p>{$info$}</p>
                     <!--ms-for-end:-->
-                    <H3>{$spider_text$}{$spider_num$} / {$true_mood_num$} ...</H3>
+                    <H4>{$spider_text$}{$spider_num$} / {$true_mood_num$}</H4>
                     <div class="progress">
                         <div :class="['progress-bar',(@spider_state == 1 ? ('progress-bar-animated', 'progress-bar-striped'): 'bg-success')]"
                              role="progressbar"
                              aria-valuemin="0" aria-valuemax="100" :css="{width: @process_width}">
+                        </div>
+                    </div>
+                    <H4 style="margin-top:20px">{$friend_info_spider_text$}{$spider_friend_num$} / {$all_friend_num$}</H4>
+                    <div class="progress">
+                        <div :class="['progress-bar',(@spider_state == 1 ? ('progress-bar-animated', 'progress-bar-striped'): 'bg-success')]"
+                             role="progressbar"
+                             aria-valuemin="0" aria-valuemax="100" :css="{width: @friend_process_width}">
                         </div>
                     </div>
                 </div>

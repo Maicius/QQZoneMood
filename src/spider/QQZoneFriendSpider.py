@@ -5,7 +5,8 @@ import pandas as pd
 from src.util import util
 import math
 import threading
-from src.util.constant import BASE_DIR, FINISH_FRIEND_INFO_ALL, STOP_FRIEND_INFO_SPIDER_KEY
+from src.util.constant import BASE_DIR, FINISH_FRIEND_INFO_ALL, STOP_FRIEND_INFO_SPIDER_KEY, WEB_SPIDER_INFO, \
+    FRIEND_INFO_PRE, FRIEND_INFO_COUNT_KEY
 
 
 class QQZoneFriendSpider(QQZoneSpider):
@@ -69,6 +70,7 @@ class QQZoneFriendSpider(QQZoneSpider):
         :return:
         """
         friend_num = self.get_friend_list()
+        self.re.rpush(WEB_SPIDER_INFO + self.username, FRIEND_INFO_PRE + ":" + str(friend_num))
         # 保证每个线程至少爬20次，最多开10个线程
         if friend_num >= 200:
             thread_num = 10
@@ -111,6 +113,8 @@ class QQZoneFriendSpider(QQZoneSpider):
                 continue
             self.friend_detail.append(data)
             index += step
+            self.re.set(FRIEND_INFO_COUNT_KEY + self.username, len(self.friend_detail))
+
 
     def get_friend_list_url(self):
         friend_url = 'https://user.qzone.qq.com/proxy/domain/r.qzone.qq.com/cgi-bin/tfriend/friend_show_qqfriends.cgi?'
