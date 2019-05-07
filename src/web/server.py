@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, send_from_directory
+from flask import Flask, render_template, send_from_directory
 
 from src.util.constant import *
 import json
@@ -118,17 +118,22 @@ def query_spider_info(QQ, password):
     if not check_password(conn, QQ, password):
         return json.dumps(dict(finish=-2))
     info = conn.lpop(WEB_SPIDER_INFO + QQ)
+
     finish = 0
     mood_num = -1
+    friend_num = 0
     if info is not None:
-        if info.find(MOOD_NUM_PRE) != -1:
+        if info.find(FRIEND_INFO_PRE) != -1:
+            finish = 2
+            friend_num = int(info.split(':')[1])
+        elif info.find(MOOD_NUM_PRE) != -1:
             finish = 1
-            mood_num = info.split(':')[1]
+            mood_num = int(info.split(':')[1])
         elif info.find("失败") != -1:
             finish = -1
             mood_num = -1
 
-    result = dict(info=info, finish=finish, mood_num=mood_num)
+    result = dict(info=info, finish=finish, mood_num=mood_num, friend_num=friend_num)
     return json.dumps(result, ensure_ascii=False)
 
 
@@ -144,6 +149,17 @@ def query_spider_num(QQ, mood_num, password):
         finish = 1
     return json.dumps(dict(num=info, finish=finish))
 
+@app.route('/query_friend_info_num/<QQ>/<friend_num>/<password>')
+def query_friend_info_num(QQ, friend_num, password):
+    pool = get_pool()
+    conn = redis.Redis(connection_pool=pool)
+    if not check_password(conn, QQ, password):
+        return json.dumps(dict(finish=-2))
+    info = conn.get(FRIEND_INFO_COUNT_KEY + str(QQ))
+    finish = 0
+    if int(info) >= int(friend_num):
+        finish = 1
+    return json.dumps(dict(num=info, finish=finish))
 
 @app.route('/stop_spider/<QQ>/<password>')
 def stop_spider(QQ, password):
@@ -219,6 +235,8 @@ def clear_cache(QQ, password):
             conn.delete(LIKE_DETAIL_FILE_NAME)
             os.remove(os.path.join(RESULT_BASE_DIR, QQ + '_mood_data.xlsx'))
             os.remove(os.path.join(RESULT_BASE_DIR, QQ + '_mood_data.csv'))
+            os.remove(os.path.join(BASE_DIR + 'temp', QQ + '.json'))
+            os.remove(os.path.join(BASE_DIR + 'log', QQ + '.log'))
             finish = 1
             return json.dumps(dict(finish=finish), ensure_ascii=False)
         except BaseException as e:
@@ -235,6 +253,7 @@ def init_redis_key(qq):
     # 设置标记位，以便停止爬虫的时候使用
     conn.set(STOP_SPIDER_KEY + qq, SPIDER_FLAG)
     conn.set(CLEAN_DATA_KEY + qq, 0)
+    conn.set(FRIEND_INFO_COUNT_KEY + qq, 0)
 
 
 def check_password(conn, QQ, password):

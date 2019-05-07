@@ -186,7 +186,7 @@
 
 - 运行结果例图：
 ![IMAGE](resource/image/screen1.png)
-![IMAGE](resource/image/screen2.png)
+![image](resource/image/image2.png)
 ![Image](resource/image/comment.jpg)
 ![Image3](resource/image/comment_content.jpg)
 ![Image](resource/image/bike2.png)

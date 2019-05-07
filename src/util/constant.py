@@ -20,7 +20,8 @@ FINISH_ALL_INFO = "获取全部信息完成"
 
 MOOD_COUNT_KEY = 'mood_count_'
 
-MOOD_NUM_PRE = '动态数目'
+MOOD_NUM_PRE = 'QQ空间的说说数量'
+FRIEND_INFO_PRE = 'QQ好友数量'
 
 STOP_SPIDER_KEY = 'stop_spider_'
 STOP_SPIDER_FLAG = 'stop'
@@ -36,3 +37,7 @@ WAITING_USER_LIST = 'waiting_user_list'
 
 RESULT_BASE_DIR = BASE_DIR + "data/result"
 
+STOP_FRIEND_INFO_SPIDER_KEY = 'stop_friend_info_'
+FINISH_FRIEND_INFO_ALL = '获取全部好友基本信息完成'
+
+FRIEND_INFO_COUNT_KEY = 'friend_info_count_'

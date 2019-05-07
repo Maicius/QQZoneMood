@@ -8,8 +8,8 @@ const SPIDER_STATE = {
 
 const SPIDER_TEXT = {
     STOP: '正在停止爬虫并保存数据...',
-    DOING : '正在获取:',
-    FINISH: '成功获取数据:'
+    DOING : '正在说说获取:',
+    FINISH: '成功获取说说数据:'
 };
 
 const CLEAN_DATA_TEXT = {
@@ -26,3 +26,15 @@ const VIEW_DATA_STATE = {
     config: 0,
     data:1
 };
+
+const SPIDER_FRIEND_TEXT = {
+    STOP: '正在停止爬虫并保存数据...',
+    DOING : '正在获取好友数据:',
+    FINISH: '成功获取好友数据:'
+};
+
+const SPIDER_FRIEND_STATE = {
+    DOING : 0,
+    FINISH : 1
+};
+
