@@ -74,16 +74,13 @@ class QQZoneFriendSpider(QQZoneSpider):
             thread_num = 10
         else:
             thread_num = math.ceil(friend_num / 20)
-
         for i in range(thread_num):
             begin_index = i
             t = threading.Thread(target=self.do_get_friend_detail, args=(begin_index, friend_num, thread_num))
             self.friend_thread_list.append(t)
-
         for t in self.friend_thread_list:
             t.setDaemon(False)
             t.start()
-
         # 等待全部子线程结束
         for t in self.friend_thread_list:
             t.join()
