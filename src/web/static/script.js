@@ -35,12 +35,11 @@ let vm = avalon.define({
     user: {},
 
     view_data: function () {
-
         if (vm.qq_id.length === 0 && vm.password.length === 0 && vm.nick_name.length === 0) {
             alert("QQ号、用户名和验证码不能为空");
         } else {
             $.ajax({
-                url: '/data/' + vm.qq_id + '/' + vm.nick_name + '/' + sha1(vm.password),
+                url: '/data/userinfo/' + vm.qq_id + '/' + vm.nick_name + '/' + sha1(vm.password),
                 type: 'GET',
 
                 success: function (res) {
@@ -61,10 +60,9 @@ let vm = avalon.define({
 
     submit_data: function () {
         if (vm.qq_id !== '' && vm.nick_name !== '' && vm.cookie !== '') {
-
             if (agree) {
                 $.ajax({
-                    url: "/start_spider",
+                    url: "/spider/start_spider",
                     type: 'post',
                     data: {
                         nick_name: vm.nick_name,
@@ -100,7 +98,7 @@ let vm = avalon.define({
 
     query_spider_info: function (QQ) {
         $.ajax({
-            url: '/query_spider_info/' + QQ + '/' + sha1(vm.password),
+            url: '/spider/query_spider_info/' + QQ + '/' + sha1(vm.password),
             type: 'GET',
             success: function (data) {
                 data = JSON.parse(data);
@@ -139,7 +137,7 @@ let vm = avalon.define({
             clearInterval(vm.query_num);
             vm.spider_text = SPIDER_TEXT.STOP;
             $.ajax({
-                url: '/stop_spider/' + vm.qq_id + '/' + sha1(vm.password),
+                url: '/spider/stop_spider/' + vm.qq_id + '/' + sha1(vm.password),
                 type: 'get',
                 success: function (data) {
                     data = JSON.parse(data);
@@ -156,7 +154,7 @@ let vm = avalon.define({
     },
     query_spider_num: function (QQ) {
         $.ajax({
-            url: '/query_spider_num/' + QQ + '/' + vm.true_mood_num + '/' + sha1(vm.password),
+            url: '/spider/query_spider_num/' + QQ + '/' + vm.true_mood_num + '/' + sha1(vm.password),
             type: 'GET',
             success: function (data) {
                 data = JSON.parse(data);
@@ -178,7 +176,7 @@ let vm = avalon.define({
 
     query_friend_info_num: function(QQ){
         $.ajax({
-            url: '/query_friend_info_num/' + QQ + '/' + vm.all_friend_num + '/' + sha1(vm.password),
+            url: '/spider/query_friend_info_num/' + QQ + '/' + vm.all_friend_num + '/' + sha1(vm.password),
             type:'GET',
             success: function (data) {
                 data = JSON.parse(data);
@@ -196,7 +194,7 @@ let vm = avalon.define({
     },
     query_clean_state: function () {
         $.ajax({
-            url: '/query_clean_data/' + vm.qq_id + '/' + sha1(vm.password),
+            url: '/spider/query_clean_data/' + vm.qq_id + '/' + sha1(vm.password),
             type: 'GET',
             success: function (data) {
                 data = JSON.parse(data);
@@ -211,7 +209,7 @@ let vm = avalon.define({
     clear_cache: function () {
         clearInterval(vm.query_num);
         $.ajax({
-            url: '/clear_cache/' + vm.qq_id + '/' + sha1(vm.password),
+            url: '/spider/clear_cache/' + vm.qq_id + '/' + sha1(vm.password),
             type: 'GET',
             success: function (data) {
                 if (data.finish) {
@@ -222,7 +220,7 @@ let vm = avalon.define({
     },
     fetch_history_data: function () {
         $.ajax({
-            url: '/get_history/' + vm.qq_id + '/' + vm.nick_name + '/' + sha1(vm.password),
+            url: '/data/get_history/' + vm.qq_id + '/' + vm.nick_name + '/' + sha1(vm.password),
             success: function (result) {
                 console.log(result);
                 result = JSON.parse(result);

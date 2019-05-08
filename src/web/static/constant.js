@@ -8,7 +8,7 @@ const SPIDER_STATE = {
 
 const SPIDER_TEXT = {
     STOP: '正在停止爬虫并保存数据...',
-    DOING : '正在说说获取:',
+    DOING : '正在获取说说数据:',
     FINISH: '成功获取说说数据:'
 };
 
