@@ -144,22 +144,9 @@
         :param download_like_detail:是否下载点赞的详情，包括点赞数量、评论数量、浏览量，该数据未被清除
         :param download_like_names:是否下载点赞的详情，主要包含点赞的人员列表，该数据有很多都被清空了
         
-- 5.获取自己空间的动态数据
+- 4.运行flask服务器
 
-	> python3 QQZoneSpider.py
-	
-- 6.获取好友列表并计算每个时间点的好友数量
-
-	> python3 QQZoneFriendSpider.py
-
-- 7.获取指定好友的动态详情
-
-	> python3	QQZoneFriendMoodSpider.py
-
-- 8.数据清理，导出csv结构数据
-
-	> python3 QQZoneAnalysis.py
-
+> python3 src/web/server.py
 
 
 ### 数据分析
