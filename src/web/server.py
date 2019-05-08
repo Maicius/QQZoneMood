@@ -2,7 +2,6 @@ from flask import Flask, render_template, send_from_directory
 
 from src.util.constant import *
 import json
-from src.web.entity.QQUser import QQUser
 from src.web.entity.UserInfo import UserInfo
 from flask import request
 from src.spider.main import web_interface
@@ -95,12 +94,14 @@ def get_history(QQ, name, password):
     if not check_password(conn, QQ, password):
         result['finish'] = 0
         return json.dumps(result)
-    user = QQUser(QQ=QQ, name=name)
-    mood_df = user.get_mood_df()
-    history_df = mood_df.loc[:, ['cmt_total_num', 'like_num', 'content', 'time']]
-    history_json = history_df.to_json(orient='records', force_ascii=False)
-    result['finish'] = 1
-    result['data'] = history_json
+
+    history = conn.get(BASE_DIR + 'friend/' + QQ + '_history_like_list.json')
+    if history:
+        history_json = json.loads(history)
+        result['finish'] = 1
+        result['data'] = history_json
+    else:
+        result['finish'] = -1
     return json.dumps(result, ensure_ascii=False)
 
 
@@ -271,4 +272,4 @@ def check_waiting(conn, QQ):
 
 
 if __name__ == '__main__':
-    app.run(host='172.20.10.4', port=5000)
+    app.run(host='localhost', port=5000)

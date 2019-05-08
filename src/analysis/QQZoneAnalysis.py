@@ -7,8 +7,7 @@ from scipy.misc import imread
 import matplotlib.pyplot as plt
 from src.spider.QQZoneFriendSpider import QQZoneFriendSpider
 from src.analysis.Average import Average
-from src.util.constant import BASE_DIR
-import os
+from src.util.constant import BASE_DIR, HISTORY_LIKE_AGREE
 
 
 class QQZoneAnalysis(QQZoneFriendSpider):
@@ -25,13 +24,8 @@ class QQZoneAnalysis(QQZoneFriendSpider):
         self.file_name_head = username
         self.analysis_friend = analysis_friend
         self.has_clean_data = False
-        friend_dir = BASE_DIR + 'friend/' + self.file_name_head + '_friend_detail_list.csv'
-
-        if self.analysis_friend:
-            if not os.path.exists(friend_dir):
-                self.analysis_friend = False
-            else:
-                self.friend_df = pd.read_csv(friend_dir)
+        self.friend_dir = BASE_DIR + 'friend/' + self.file_name_head + '_friend_detail_list.csv'
+        self.history_like_agree_file_name = BASE_DIR + 'friend/' + self.file_name_head + '_history_like_list.json'
 
         self.av = Average(use_redis=False, file_name_head=username, analysis=True)
         self.init_analysis_path()
@@ -176,7 +170,22 @@ class QQZoneAnalysis(QQZoneFriendSpider):
                             self.format_error(e, comment)
 
                 if self.analysis_friend:
-                    friend_num = self.calculate_friend_num_timeline(time_stamp, self.friend_df)
+                    if self.use_redis:
+                        friend_detail = self.re.get(self.FRIEND_DETAIL_FILE_NAME)
+                        if friend_detail:
+                            self.friend_df = json.loads(friend_detail)
+                            friend_num = self.calculate_friend_num_timeline(time_stamp, self.friend_df)
+                        else:
+                            print("暂无好友数据，请先运行QQZoneFriendSpider")
+                            friend_num = -1
+                    else:
+                        try:
+                            self.friend_df = pd.read_csv(self.friend_dir)
+                            friend_num = self.calculate_friend_num_timeline(time_stamp, self.friend_df)
+                        except:
+                            print("暂无好友数据，请先运行QQZoneFriendSpider")
+                            friend_num = -1
+
                 else:
                     friend_num = -1
                 self.mood_data.append(dict(tid=tid, content=content, time=time, time_stamp=time_stamp, pic_num=pic_num,
@@ -331,6 +340,16 @@ class QQZoneAnalysis(QQZoneFriendSpider):
         self.user_info.like_friend_name = most_like_name
         self.user_info.save_user(self.username)
 
+    def calculate_history_like_agree(self):
+        history_df = self.mood_data_df.loc[:, ['cmt_total_num', 'like_num', 'content', 'time']]
+        history_json = history_df.to_json(orient='records', force_ascii=False)
+        if self.use_redis:
+            self.re.set(self.history_like_agree_file_name, json.dumps(history_json, ensure_ascii=False))
+        else:
+            self.save_data_to_json(history_json, self.history_like_agree_file_name)
+
+
+
 
 def clean_label_data():
     new_list = ['maicius']
@@ -346,7 +365,6 @@ def clean_label_data():
         # analysis.calculate_cmt_cloud(analysis.mood_data_df)
         analysis.calculate_like_cloud(analysis.mood_data_df)
         # analysis.export_all_label_data()
-
 
 def get_most_people(username):
     analysis = QQZoneAnalysis(use_redis=True, debug=True, username=username, analysis_friend=False, from_web=True)

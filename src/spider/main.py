@@ -19,7 +19,7 @@ def capture_data():
 
 # 提供给web的接口
 def web_interface(username, nickname, stop_time, mood_num, cookie_text, no_delete, password):
-    sp = QQZoneAnalysis(use_redis=True, debug=False, username=username, analysis_friend=False, from_web=True,
+    sp = QQZoneAnalysis(use_redis=True, debug=False, username=username, analysis_friend=True, from_web=True,
                         nickname=nickname, stop_time=stop_time, mood_num=mood_num, no_delete=no_delete, cookie_text=cookie_text)
     try:
         sp.login()
@@ -56,6 +56,8 @@ def web_interface(username, nickname, stop_time, mood_num, cookie_text, no_delet
     # 清洗数据并计算评论最多和点赞最多的人
     sp.get_most_people()
     sp.get_mood_df()
+    sp.get_friend_info()
+    sp.calculate_history_like_agree()
     sp.re.set(CLEAN_DATA_KEY + username, 1)
 
 

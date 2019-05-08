@@ -70,7 +70,9 @@ class QQZoneFriendSpider(QQZoneSpider):
         :return:
         """
         friend_num = self.get_friend_list()
-        self.re.rpush(WEB_SPIDER_INFO + self.username, FRIEND_INFO_PRE + ":" + str(friend_num))
+        if self.use_redis:
+            self.re.rpush(WEB_SPIDER_INFO + self.username, FRIEND_INFO_PRE + ":" + str(friend_num))
+        self.user_info.friend_num = friend_num
         # 保证每个线程至少爬20次，最多开10个线程
         if friend_num >= 200:
             thread_num = 10
@@ -84,14 +86,16 @@ class QQZoneFriendSpider(QQZoneSpider):
         for t in self.friend_thread_list:
             t.setDaemon(False)
             t.start()
+
         # 等待全部子线程结束
         for t in self.friend_thread_list:
             t.join()
 
         if self.use_redis:
             self.re.set(STOP_FRIEND_INFO_SPIDER_KEY + self.username, FINISH_FRIEND_INFO_ALL)
-            self.re.set(self.FRIEND_DETAIL_FILE_NAME, self.friend_detail)
-        self.save_data_to_json(self.friend_detail, self.FRIEND_DETAIL_FILE_NAME)
+            self.re.set(self.FRIEND_DETAIL_FILE_NAME, json.dumps(self.friend_detail, ensure_ascii=False))
+        else:
+            self.save_data_to_json(self.friend_detail, self.FRIEND_DETAIL_FILE_NAME)
 
     def do_get_friend_detail(self, index, friend_num, step=1):
         # 避免好友数量为0
@@ -114,7 +118,6 @@ class QQZoneFriendSpider(QQZoneSpider):
             self.friend_detail.append(data)
             index += step
             self.re.set(FRIEND_INFO_COUNT_KEY + self.username, len(self.friend_detail))
-
 
     def get_friend_list_url(self):
         friend_url = 'https://user.qzone.qq.com/proxy/domain/r.qzone.qq.com/cgi-bin/tfriend/friend_show_qqfriends.cgi?'
@@ -204,7 +207,6 @@ class QQZoneFriendSpider(QQZoneSpider):
         :param timestamp: 传入时间戳
         :return: 用户在给定时间点的好友数量
         """
-
         friend_total_num = friend_df.shape[0]
         friend_df_time = friend_df[friend_df['add_friend_time'] > timestamp]
         friend_time_num = friend_total_num - friend_df_time.shape[0]
@@ -219,6 +221,7 @@ class QQZoneFriendSpider(QQZoneSpider):
         if self.friend_df is None:
             self.friend_df = pd.read_csv(self.FRIEND_DETAIL_LIST_FILE_NAME)
 
+        self.user_info.friend_num = self.friend_df.shape[0]
         zero_index = self.friend_df[self.friend_df['add_friend_time'] == 0].index
         self.friend_df.drop(index=zero_index, axis=0, inplace=True)
         self.friend_df.reset_index(inplace=True)
@@ -226,6 +229,7 @@ class QQZoneFriendSpider(QQZoneSpider):
 
         early_nick = self.friend_df.loc[0, 'nick_name']
         first_header_url = self.FRIEND_HEADER_IMAGE_PATH + str(int(self.friend_df.loc[0, 'friend_uin'])) + '.jpg'
+
         self.user_info.first_friend = early_nick
         self.user_info.first_friend_time = early_time
         self.user_info.first_friend_header = first_header_url

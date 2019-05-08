@@ -40,7 +40,7 @@ class QQZoneFriendMoodSpider(QQZoneSpider):
         url = 'https://user.qzone.qq.com/proxy/domain/users.qzone.qq.com/cgi-bin/likes/get_like_list_app?'
         params = {
             "uin": self.raw_username,
-            "unikey": self.unikey,
+            "unikey": unikey,
             "begin_uin": 0,
             "query_count": 60,
             "if_first_page": 1,
