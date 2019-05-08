@@ -3,13 +3,13 @@ import redis
 import hashlib
 
 # 共享redis连接池
-pool = redis.ConnectionPool(host="127.0.0.1", port=6379, decode_responses=True)
+pool = redis.ConnectionPool(host="redis", port=6379, decode_responses=True)
 def get_pool():
     try:
         if pool:
             return pool
         else:
-            return redis.ConnectionPool(host='127.0.0.1', port=6379, decode_responses=True, max_connections=1000)
+            return redis.ConnectionPool(host='redis', port=6379, decode_responses=True, max_connections=1000)
     except BaseException as e:
         print(e)
 
