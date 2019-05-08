@@ -68,6 +68,7 @@ class QQZoneSpider(BaseSpider):
         self.get_g_tk()
         print("finish to calculate g_tk")
         self.headers['cookie'] = self.cookies
+        self.h5_headers['cookie'] = self.cookies
 
     # 核心加密字段
     def get_g_tk(self):
@@ -114,6 +115,7 @@ class QQZoneSpider(BaseSpider):
     def manu_get_cookie(self, cookie_text):
         self.cookies = cookie_text
         self.headers['cookie'] = self.cookies
+        self.headers['cookie'] = self.cookies
 
     # 构造获取动态的URL
     def get_mood_url(self):
@@ -154,7 +156,7 @@ class QQZoneSpider(BaseSpider):
                 recover_index_split = recover_index % 20
         url = url_mood + '&pos=' + str(pos)
         print("url", url)
-        res = self.req.get(url=url, headers=self.headers, timeout=20)
+        res = self.req.get(url=url, headers=self.h5_headers, timeout=20)
         mood = res.content.decode('utf-8')
         if self.debug:
             print(res.status_code)
@@ -216,7 +218,7 @@ class QQZoneSpider(BaseSpider):
             # self.re.lpush(WEB_SPIDER_INFO + self.username, "正在爬取" + str(pos) + "...")
             try:
                 url = url_mood + '&pos=' + str(pos)
-                mood_list = self.req.get(url=url, headers=self.headers, timeout=20)
+                mood_list = self.req.get(url=url, headers=self.h5_headers, timeout=20)
                 # print(mood_list.content)
                 try:
                     json_content = self.get_json(str(mood_list.content.decode('utf-8')))

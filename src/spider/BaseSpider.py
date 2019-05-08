@@ -34,6 +34,7 @@ class BaseSpider(object):
             self.stop_time = -1
         self.begin_time = datetime.datetime.now()
         self.host = 'https://user.qzone.qq.com'
+        self.h5_host = 'h5.qzone.qq.com'
         self.http_host = 'http://user.qzone.qq.com'
         self.use_redis = use_redis
         self.debug = debug
@@ -47,6 +48,7 @@ class BaseSpider(object):
         self.mood_host = self.http_host + '/' + self.username + '/mood/'
         # 在爬取好友动态时username会变为好友的QQ号，所以此处需要备份
         self.raw_username = deepcopy(self.username)
+
         self.headers = {
             'host': 'user.qzone.qq.com',
             'accept-encoding': 'gzip, deflate, br',
@@ -55,6 +57,9 @@ class BaseSpider(object):
             'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:66.0) Gecko/20100101 Firefox/66.0',
             'connection': 'keep-alive'
         }
+        self.h5_headers = deepcopy(self.headers)
+        self.h5_headers['host'] = self.h5_host
+
         logging.basicConfig(level=logging.DEBUG,
                             format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
                             datefmt='%a, %d %b %Y %H:%M:%S',
