@@ -43,3 +43,5 @@ FINISH_FRIEND_INFO_ALL = '获取全部好友基本信息完成'
 FRIEND_INFO_COUNT_KEY = 'friend_info_count_'
 
 HISTORY_LIKE_AGREE = 'history_like_agree_'
+
+FRIEND_LIST_KEY = 'friend_list_'

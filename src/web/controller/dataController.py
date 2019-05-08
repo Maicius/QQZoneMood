@@ -35,10 +35,13 @@ def clear_cache(QQ, password):
     else:
         try:
             DATA_DIR_HEAD = BASE_DIR + 'data/' + QQ
+            FRIEND_DIR_HEAD = BASE_DIR + 'friend/' + QQ
             CONTENT_FILE_NAME = DATA_DIR_HEAD + '_QQ_content.json'
             LIKE_DETAIL_FILE_NAME = DATA_DIR_HEAD + '_QQ_like_detail' + '.json'
             LIKE_LIST_NAME_FILE_NAME = DATA_DIR_HEAD + '_QQ_like_list_name' + '.json'
             MOOD_DETAIL_FILE_NAME = DATA_DIR_HEAD + '_QQ_mood_detail' + '.json'
+            FRIEND_DETAIL_FILE_NAME = FRIEND_DIR_HEAD + '_friend_detail.json'
+
             conn.delete(CONTENT_FILE_NAME)
             conn.delete(LIKE_LIST_NAME_FILE_NAME)
             conn.delete(MOOD_DETAIL_FILE_NAME)

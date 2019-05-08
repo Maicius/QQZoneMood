@@ -6,7 +6,7 @@ from src.util import util
 import math
 import threading
 from src.util.constant import BASE_DIR, FINISH_FRIEND_INFO_ALL, STOP_FRIEND_INFO_SPIDER_KEY, WEB_SPIDER_INFO, \
-    FRIEND_INFO_PRE, FRIEND_INFO_COUNT_KEY
+    FRIEND_INFO_PRE, FRIEND_INFO_COUNT_KEY, EXPIRE_TIME_IN_SECONDS, FRIEND_LIST_KEY
 
 
 class QQZoneFriendSpider(QQZoneSpider):
@@ -35,8 +35,8 @@ class QQZoneFriendSpider(QQZoneSpider):
         self.FRIEND_DETAIL_LIST_FILE_NAME = FRIEND_DIR_HEAD + '_friend_detail_list.csv'
         self.FRIEND_DETAIL_EXCEL_FILE_NAME = FRIEND_DIR_HEAD + '_friend_detail_list.xlsx'
         # 头像下载到web的static文件夹，以便在web中调用
-        self.FRIEND_HEADER_IMAGE_PATH = '../web/static/image/header/'
-
+        self.FRIEND_HEADER_IMAGE_PATH = '../web/static/image/header/' + self.file_name_head + '/'
+        
         util.check_dir_exist(self.FRIEND_HEADER_IMAGE_PATH)
         self.friend_detail = []
         self.friend_list = []
@@ -55,7 +55,9 @@ class QQZoneFriendSpider(QQZoneSpider):
         friend_content = self.get_json(self.req.get(url=friend_list_url, headers=self.headers).content.decode('utf-8'))
         self.friend_list = json.loads(friend_content)['data']['items']
         if self.use_redis:
-            self.re.set('friend_list', self.friend_list)
+            self.re.set(FRIEND_LIST_KEY + self.username, self.friend_list)
+            if not self.no_delete:
+                self.re.expire(FRIEND_LIST_KEY + self.username, EXPIRE_TIME_IN_SECONDS)
         self.save_data_to_json(self.friend_list, self.FRIEND_LIST_FILE_NAME)
         print('获取好友列表信息完成')
         return len(self.friend_list)
@@ -97,8 +99,12 @@ class QQZoneFriendSpider(QQZoneSpider):
         if self.use_redis:
             self.re.set(STOP_FRIEND_INFO_SPIDER_KEY + self.username, FINISH_FRIEND_INFO_ALL)
             self.re.set(self.FRIEND_DETAIL_FILE_NAME, json.dumps(self.friend_detail, ensure_ascii=False))
+            if not self.no_delete:
+                self.re.expire(STOP_FRIEND_INFO_SPIDER_KEY + self.username, EXPIRE_TIME_IN_SECONDS)
+                self.re.expire(self.FRIEND_DETAIL_FILE_NAME, EXPIRE_TIME_IN_SECONDS)
         else:
             self.save_data_to_json(self.friend_detail, self.FRIEND_DETAIL_FILE_NAME)
+
 
     def do_get_friend_detail(self, index, friend_num, step=1):
         # 避免好友数量为0
@@ -121,6 +127,8 @@ class QQZoneFriendSpider(QQZoneSpider):
             self.friend_detail.append(data)
             index += step
             self.re.set(FRIEND_INFO_COUNT_KEY + self.username, len(self.friend_detail))
+            if not self.no_delete:
+                self.re.expire(FRIEND_INFO_COUNT_KEY + self.username, EXPIRE_TIME_IN_SECONDS)
 
     def get_friend_list_url(self):
         friend_url = 'https://user.qzone.qq.com/proxy/domain/r.qzone.qq.com/cgi-bin/tfriend/friend_show_qqfriends.cgi?'
