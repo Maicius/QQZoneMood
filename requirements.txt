@@ -7,11 +7,12 @@ lxml
 matplotlib
 pandas
 redis
-requests
+requests == 2.18.4
 schedule
 selenium
 sha1
-urllib3
+urllib3 == 1.23
 wordcloud
 pyExecjs
 Flask
+scipy
