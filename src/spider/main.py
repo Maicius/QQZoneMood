@@ -53,10 +53,15 @@ def web_interface(username, nickname, stop_time, mood_num, cookie_text, no_delet
         sp.re.rpush(WEB_SPIDER_INFO + username, GET_MOOD_FAILED)
         exit(1)
 
-    # 清洗数据并计算评论最多和点赞最多的人
+    # 清洗好友数据
+    sp.clean_friend_data()
+    # 获取第一位好友数据
+    sp.get_first_friend_info()
+    # 清洗说说数据并计算点赞最多的人和评论最多的人
     sp.get_most_people()
-    sp.get_mood_df()
-    sp.get_friend_info()
+    # 保存说说数据
+    sp.export_mood_df()
+
     sp.calculate_history_like_agree()
     sp.re.set(CLEAN_DATA_KEY + username, 1)
 

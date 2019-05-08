@@ -16,7 +16,7 @@ class QQZoneAnalysis(QQZoneFriendSpider):
 
         QQZoneFriendSpider.__init__(self, use_redis, debug, recover=False, username=username, mood_num=mood_num,
                               mood_begin=mood_begin, stop_time=stop_time, from_web=from_web, nickname=nickname,
-                              no_delete=no_delete, cookie_text=cookie_text, analysis=True)
+                              no_delete=no_delete, cookie_text=cookie_text, analysis=True, export_excel=True, export_csv=False)
         self.mood_data = []
         self.mood_data_df = pd.DataFrame()
         self.like_detail_df = []
@@ -170,21 +170,14 @@ class QQZoneAnalysis(QQZoneFriendSpider):
                             self.format_error(e, comment)
 
                 if self.analysis_friend:
-                    if self.use_redis:
-                        friend_detail = self.re.get(self.FRIEND_DETAIL_FILE_NAME)
-                        if friend_detail:
-                            self.friend_df = json.loads(friend_detail)
-                            friend_num = self.calculate_friend_num_timeline(time_stamp, self.friend_df)
-                        else:
-                            print("暂无好友数据，请先运行QQZoneFriendSpider")
-                            friend_num = -1
-                    else:
-                        try:
-                            self.friend_df = pd.read_csv(self.friend_dir)
-                            friend_num = self.calculate_friend_num_timeline(time_stamp, self.friend_df)
-                        except:
-                            print("暂无好友数据，请先运行QQZoneFriendSpider")
-                            friend_num = -1
+                    try:
+                        if self.friend_df.empty:
+                            self.friend_df = pd.read_csv(self.FRIEND_DETAIL_LIST_FILE_NAME)
+                        friend_num = self.calculate_friend_num_timeline(time_stamp, self.friend_df)
+
+                    except BaseException as e:
+                        print("暂无好友数据，请先运行QQZoneFriendSpider")
+                        friend_num = -1
 
                 else:
                     friend_num = -1
@@ -311,7 +304,7 @@ class QQZoneAnalysis(QQZoneFriendSpider):
         all_uin_dict = {str(x[0]): x[1] for x in all_uin_count.values}
         self.drawWordCloud(all_uin_dict, self.file_name_head + '_like_', dict_type=True)
 
-    def get_mood_df(self, export_csv=True, export_excel=True):
+    def export_mood_df(self, export_csv=True, export_excel=True):
         """
         根据传入的文件名前缀清洗原始数据，导出csv和excel表
         :param file_name_head:
@@ -325,7 +318,7 @@ class QQZoneAnalysis(QQZoneFriendSpider):
             self.save_data_to_csv()
         if export_excel:
             self.save_data_to_excel()
-        return self.mood_data_df
+        print("保存清洗后的数据成功", self.username)
 
     def get_most_people(self):
         if not self.has_clean_data:
@@ -348,9 +341,6 @@ class QQZoneAnalysis(QQZoneFriendSpider):
         else:
             self.save_data_to_json(history_json, self.history_like_agree_file_name)
 
-
-
-
 def clean_label_data():
     new_list = ['maicius']
     for name in new_list:
@@ -370,15 +360,13 @@ def get_most_people(username):
     analysis = QQZoneAnalysis(use_redis=True, debug=True, username=username, analysis_friend=False, from_web=True)
     analysis.get_most_people()
 
-def get_mood_df(username):
+def export_mood_df(username):
     analysis = QQZoneAnalysis(use_redis=True, debug=True, username=username, analysis_friend=False, from_web=True)
-    analysis.get_mood_df()
-
-
+    analysis.export_mood_df()
 
 
 
 if __name__ == '__main__':
-    get_mood_df("1272082503")
+    export_mood_df("1272082503")
     get_most_people("1272082503")
     # clean_label_data()

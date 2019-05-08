@@ -14,8 +14,8 @@ class QQZoneFriendSpider(QQZoneSpider):
     爬取自己的好友的数量、共同群组等基本信息（不是爬好友的动态）
     """
     def __init__(self, use_redis=False, debug=False, analysis=False, recover=False,
-                 username='', mood_begin=0, mood_num=-1, stop_time='-1', from_web=True, nickname='', no_delete=True, cookie_text=''
-                 ):
+                 username='', mood_begin=0, mood_num=-1, stop_time='-1', from_web=True, nickname='', no_delete=True, cookie_text='',
+                 export_excel=False, export_csv = True):
         """
 
         :param use_redis: 是否使用redis
@@ -33,15 +33,18 @@ class QQZoneFriendSpider(QQZoneSpider):
         self.FRIEND_LIST_FILE_NAME = FRIEND_DIR_HEAD + '_friend_list.json'
         self.FRIEND_DETAIL_FILE_NAME = FRIEND_DIR_HEAD + '_friend_detail.json'
         self.FRIEND_DETAIL_LIST_FILE_NAME = FRIEND_DIR_HEAD + '_friend_detail_list.csv'
+        self.FRIEND_DETAIL_EXCEL_FILE_NAME = FRIEND_DIR_HEAD + '_friend_detail_list.xlsx'
         # 头像下载到web的static文件夹，以便在web中调用
         self.FRIEND_HEADER_IMAGE_PATH = '../web/static/image/header/'
 
         util.check_dir_exist(self.FRIEND_HEADER_IMAGE_PATH)
         self.friend_detail = []
         self.friend_list = []
-        self.friend_df = None
+        self.friend_df = pd.DataFrame()
         self.re = self.connect_redis()
         self.friend_thread_list = []
+        self.export_excel = export_excel
+        self.export_csv = export_csv
 
     def get_friend_list(self):
         """
@@ -192,10 +195,13 @@ class QQZoneFriendSpider(QQZoneSpider):
                 print(e)
         friend_df = pd.DataFrame(self.friend_detail_list)
         friend_df.sort_values(by='add_friend_time', inplace=True)
-        friend_df.to_csv(self.FRIEND_DETAIL_LIST_FILE_NAME)
+        if self.export_excel:
+            friend_df.to_excel(self.FRIEND_DETAIL_EXCEL_FILE_NAME)
+        if self.export_csv:
+            friend_df.to_csv(self.FRIEND_DETAIL_LIST_FILE_NAME)
         print("Finish to clean friend data...")
         print("File Name:", self.FRIEND_DETAIL_LIST_FILE_NAME)
-        return friend_df
+        self.friend_df = friend_df
 
     def get_friend_total_num(self):
         self.load_friend_data()
@@ -217,7 +223,7 @@ class QQZoneFriendSpider(QQZoneSpider):
     def get_friend_result_file_name(self):
         return self.FRIEND_DETAIL_LIST_FILE_NAME
 
-    def get_friend_info(self):
+    def get_first_friend_info(self):
         if self.friend_df is None:
             self.friend_df = pd.read_csv(self.FRIEND_DETAIL_LIST_FILE_NAME)
 
@@ -242,6 +248,6 @@ if __name__ == '__main__':
     friend_spider.get_friend_detail()
     friend_spider.download_head_image()
     friend_spider.clean_friend_data()
-    friend_spider.get_friend_info()
+    friend_spider.get_first_friend_info()
     # friend_spider.calculate_friend_num_timeline(1411891250)
 

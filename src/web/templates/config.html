@@ -151,7 +151,12 @@
                 <a class="btn btn-primary" :attr="{href:'/download_excel/' + @qq_id + '/' + @encrypt()}"
                    id="download_excel"
                    title="下载数据">
-                    下载数据(Excel)
+                    下载说说数据(Excel)
+                </a>
+                <a class="btn btn-primary" :attr="{href:'/download_friend/' + @qq_id + '/' + @encrypt()}"
+                   id="download_friend"
+                   title="下载数据" style="margin-left: 20px;color: white; cursor: pointer">
+                    下载好友数据(Excel)
                 </a>
                 <a class="btn btn-primary btn_href" :click="@return_config()" id="return_config"
                    title="返回配置" style="margin-left: 20px;color: white; cursor: pointer">
