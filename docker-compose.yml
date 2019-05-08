@@ -12,8 +12,4 @@ services:
     image: redis
     ports:
       - 6379:6379
-    volumes:
-      # 目录映射
-      - "${REDIS_DIR}/conf:/usr/local/etc/redis"
-      - "${REDIS_DIR}/data:/data"
     command: redis-server

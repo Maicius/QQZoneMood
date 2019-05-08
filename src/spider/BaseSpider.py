@@ -59,11 +59,12 @@ class BaseSpider(object):
         }
         self.h5_headers = deepcopy(self.headers)
         self.h5_headers['host'] = self.h5_host
-
+        logging_dir = BASE_DIR + 'log/'
+        util.check_dir_exist(logging_dir)
         logging.basicConfig(level=logging.DEBUG,
                             format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
                             datefmt='%a, %d %b %Y %H:%M:%S',
-                            filename=BASE_DIR + 'log/' + self.username + '.log',
+                            filename=logging_dir + self.username + '.log',
                             filemode='w+')
         if (use_redis):
             self.re = self.connect_redis()
