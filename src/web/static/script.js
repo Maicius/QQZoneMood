@@ -228,7 +228,6 @@ let vm = avalon.define({
         $.ajax({
             url: '/data/get_history/' + vm.qq_id + '/' + vm.nick_name + '/' + sha1(vm.password),
             success: function (result) {
-                console.log(result);
                 result = JSON.parse(result);
                 if (result.finish) {
                     data = result.data;

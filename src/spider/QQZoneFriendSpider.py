@@ -242,7 +242,7 @@ class QQZoneFriendSpider(QQZoneSpider):
     def get_first_friend_info(self):
         if self.friend_df is None:
             self.friend_df = pd.read_csv(self.FRIEND_DETAIL_LIST_FILE_NAME)
-
+        self.get_single_friend()
         # self.user_info.friend_num = self.friend_df.shape[0]
         zero_index = self.friend_df[self.friend_df['add_friend_time'] == 0].index
         self.friend_df.drop(index=zero_index, axis=0, inplace=True)
@@ -255,8 +255,11 @@ class QQZoneFriendSpider(QQZoneSpider):
         self.user_info.first_friend = early_nick
         self.user_info.first_friend_time = early_time
         self.user_info.first_friend_header = first_header_url
-
         self.user_info.save_user()
+
+    def get_single_friend(self):
+        single_friend = self.friend_df[self.friend_df['uin'] == 0].shape[0]
+        self.user_info.single_friend = single_friend
 
 
 if __name__ == '__main__':
