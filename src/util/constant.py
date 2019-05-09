@@ -1,8 +1,7 @@
 # for localhost
-# REDIS_HOST = '127.0.0.1'
+REDIS_HOST = '127.0.0.1'
 ## for docker
-REDIS_HOST = 'redis'
-
+REDIS_HOST_DOCKER = 'redis'
 
 BASE_DIR = '../../resource/'
 
@@ -40,9 +39,6 @@ USER_MAP_KEY = 'qq_user_map'
 SPIDERING_USER_LIST  = 'spidering_user_list'
 
 WAITING_USER_LIST = 'waiting_user_list'
-
-RESULT_BASE_DIR = BASE_DIR + "data/result"
-FRIEND_BASE_DIR = BASE_DIR + "friend"
 
 STOP_FRIEND_INFO_SPIDER_KEY = 'stop_friend_info_'
 FINISH_FRIEND_INFO_ALL = '获取全部好友基本信息完成'

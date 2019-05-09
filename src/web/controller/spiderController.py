@@ -59,6 +59,8 @@ def start_spider():
         stop_time = str(request.form['stop_time'])
         mood_num = int(request.form['mood_num'])
         cookie = request.form['cookie']
+        if cookie == None or len(cookie) < 10:
+            return json.dumps(dict(result=0), ensure_ascii=False)
         no_delete = False if request.form['no_delete'] == 'false' else True
         password = request.form['password']
         password = md5_password(password)

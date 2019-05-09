@@ -24,21 +24,23 @@ class QQZoneAnalysis(QQZoneFriendSpider):
         self.file_name_head = username
         self.analysis_friend = analysis_friend
         self.has_clean_data = False
-        self.friend_dir = BASE_DIR + 'friend/' + self.file_name_head + '_friend_detail_list.csv'
-        self.history_like_agree_file_name = BASE_DIR + 'friend/' + self.file_name_head + '_history_like_list.json'
+        self.friend_dir = BASE_DIR + self.file_name_head + '/friend/' + 'friend_detail_list.csv'
+        self.history_like_agree_file_name = BASE_DIR +  self.file_name_head + '/friend/' + 'history_like_list.json'
 
-        self.av = Average(use_redis=False, file_name_head=username, analysis=True)
+        self.av = Average(use_redis=False, file_name_head=username, analysis=True, debug=debug)
         self.init_analysis_path()
 
     def init_analysis_path(self):
-        RESULT_BASE_DIR = BASE_DIR + "data/result/" + self.file_name_head
-        self.MOOD_DATA_FILE_NAME = RESULT_BASE_DIR + '_mood_data.csv'
-        self.MOOD_DATA_EXCEL_FILE_NAME = RESULT_BASE_DIR + '_mood_data.xlsx'
-        LABEL_BASE_DIR = BASE_DIR + "data/label/" + self.file_name_head
-        self.LABEL_FILE_CSV = LABEL_BASE_DIR + '_label_data.csv'
-        self.LABEL_FILE_EXCEL = LABEL_BASE_DIR + '_label_data.xlsx'
-        self.label_path = BASE_DIR + 'data/label/'
-        self.image_path = BASE_DIR + '/image/'
+        RESULT_BASE_DIR = self.USER_BASE_DIR + "data/result/"
+        self.MOOD_DATA_FILE_NAME = RESULT_BASE_DIR + 'mood_data.csv'
+        self.MOOD_DATA_EXCEL_FILE_NAME = RESULT_BASE_DIR + 'mood_data.xlsx'
+
+        LABEL_BASE_DIR = self.USER_BASE_DIR + "data/label/"
+        self.LABEL_FILE_CSV = LABEL_BASE_DIR + 'label_data.csv'
+        self.LABEL_FILE_EXCEL = LABEL_BASE_DIR + 'label_data.xlsx'
+
+        self.label_path = self.USER_BASE_DIR + 'data/label/'
+        self.image_path = self.USER_BASE_DIR + '/image/'
 
     def load_file_from_redis(self):
         self.do_recover_from_exist_data()
@@ -331,7 +333,7 @@ class QQZoneAnalysis(QQZoneFriendSpider):
         most_cmt_name = cmt_df.loc[0, 'cmt_name']
         self.user_info.cmt_friend_name = most_cmt_name
         self.user_info.like_friend_name = most_like_name
-        self.user_info.save_user(self.username)
+        self.user_info.save_user()
 
     def calculate_history_like_agree(self):
         history_df = self.mood_data_df.loc[:, ['cmt_total_num', 'like_num', 'content', 'time']]

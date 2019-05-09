@@ -16,12 +16,12 @@ class TrainMood(QQZoneAnalysis):
     def __init__(self, use_redis=False, debug=True, file_name_head=''):
         QQZoneAnalysis.__init__(self, use_redis=use_redis, debug=debug, username=file_name_head, analysis_friend=False)
 
-        TRAIN_BASE_DIR = BASE_DIR + 'data/train/' + file_name_head
+        TRAIN_BASE_DIR = BASE_DIR + file_name_head + '/data/train/'
 
-        self.MOOD_DATA_SCORE_FILE_NAME = TRAIN_BASE_DIR + '_score_mood_data.csv'
-        self.RE_DO_SENTIMENT_FILE_NAME = TRAIN_BASE_DIR + '_re_do_mood_data.csv'
-        self.TEXT_LABEL_TRAIN_DATA = TRAIN_BASE_DIR + '_mood_text.csv'
-        self.TRAIN_DATA_AFTER_CLASSIFIC = TRAIN_BASE_DIR + '_mood_classific.csv'
+        self.MOOD_DATA_SCORE_FILE_NAME = TRAIN_BASE_DIR + 'score_mood_data.csv'
+        self.RE_DO_SENTIMENT_FILE_NAME = TRAIN_BASE_DIR + 're_do_mood_data.csv'
+        self.TEXT_LABEL_TRAIN_DATA = TRAIN_BASE_DIR + 'mood_text.csv'
+        self.TRAIN_DATA_AFTER_CLASSIFIC = TRAIN_BASE_DIR + 'mood_classific.csv'
 
         self.TEXT_LABEL_RESULT_TRAIN_DATA = '../data/train3/text_' + file_name_head + '_label.csv'
         self.TEXT_CLASSIFICATION_DATA_SET = '../data/train/'

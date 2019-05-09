@@ -2,7 +2,7 @@ import datetime
 from src.util import util
 from copy import deepcopy
 import json
-from src.util.constant import BASE_DIR, EXPIRE_TIME_IN_SECONDS, REDIS_HOST
+from src.util.constant import BASE_DIR, EXPIRE_TIME_IN_SECONDS, REDIS_HOST, REDIS_HOST_DOCKER
 import re
 import logging
 import redis
@@ -59,7 +59,8 @@ class BaseSpider(object):
         }
         self.h5_headers = deepcopy(self.headers)
         self.h5_headers['host'] = self.h5_host
-        logging_dir = BASE_DIR + 'log/'
+        self.USER_BASE_DIR = BASE_DIR + self.username + '/'
+        logging_dir = self.USER_BASE_DIR + 'log/'
         util.check_dir_exist(logging_dir)
         logging.basicConfig(level=logging.DEBUG,
                             format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
@@ -69,9 +70,9 @@ class BaseSpider(object):
         if (use_redis):
             self.re = self.connect_redis()
 
-        self.user_info = UserInfo().load(self.username)
+        self.user_info = UserInfo(self.username).load()
         if self.user_info is None:
-            self.user_info = UserInfo()
+            self.user_info = UserInfo(self.username)
         self.user_info.QQ = self.username
         self.user_info.nickname = self.nickname
 
@@ -146,30 +147,30 @@ class BaseSpider(object):
         self.until_stop_time = True
 
 
-    def init_file_name(self, file_name_head):
+    def init_file_name(self):
         logging.info('file_name_head:' + self.file_name_head)
-        DATA_DIR_HEAD = BASE_DIR + 'data/' + file_name_head
-        self.CONTENT_FILE_NAME = DATA_DIR_HEAD + '_QQ_content.json'
-        self.LIKE_DETAIL_FILE_NAME = DATA_DIR_HEAD + '_QQ_like_detail' + '.json'
-        self.LIKE_LIST_NAME_FILE_NAME = DATA_DIR_HEAD + '_QQ_like_list_name' + '.json'
-        self.MOOD_DETAIL_FILE_NAME = DATA_DIR_HEAD + '_QQ_mood_detail' + '.json'
 
-        ERROR_DIR_HEAD = BASE_DIR + 'error/' + file_name_head
-        self.ERROR_LIKE_DETAIL_FILE_NAME = ERROR_DIR_HEAD + '_QQ_like_detail_error' + '.json'
-        self.ERROR_LIKE_LIST_NAME_FILE_NAME = ERROR_DIR_HEAD + '_QQ_like_list_name_error' + '.json'
-        self.ERROR_MOOD_DETAIL_FILE_NAME = ERROR_DIR_HEAD + '_QQ_mood_detail_error' + '.json'
-        self.ERROR_LIKE_DETAIL_UNIKEY_FILE_NAME = ERROR_DIR_HEAD + '_QQ_like_detail_error_unikey' + '.txt'
-        self.ERROR_LIKE_LIST_NAME_UNIKEY_FILE_NAME = ERROR_DIR_HEAD + '_QQ_like_list_error_unikey' + '.txt'
-        self.ERROR_MOOD_DETAIL_UNIKEY_FILE_NAME = ERROR_DIR_HEAD + '_QQ_mood_detail_error_unikey' + '.txt'
+        DATA_DIR_HEAD = self.USER_BASE_DIR + 'data/'
+        self.CONTENT_FILE_NAME = DATA_DIR_HEAD + 'QQ_content.json'
+        self.LIKE_DETAIL_FILE_NAME = DATA_DIR_HEAD + 'QQ_like_detail' + '.json'
+        self.LIKE_LIST_NAME_FILE_NAME = DATA_DIR_HEAD + 'QQ_like_list_name' + '.json'
+        self.MOOD_DETAIL_FILE_NAME = DATA_DIR_HEAD + 'QQ_mood_detail' + '.json'
 
+        ERROR_DIR_HEAD = self.USER_BASE_DIR + 'error/'
+        self.ERROR_LIKE_DETAIL_FILE_NAME = ERROR_DIR_HEAD + 'QQ_like_detail_error' + '.json'
+        self.ERROR_LIKE_LIST_NAME_FILE_NAME = ERROR_DIR_HEAD + 'QQ_like_list_name_error' + '.json'
+        self.ERROR_MOOD_DETAIL_FILE_NAME = ERROR_DIR_HEAD + 'QQ_mood_detail_error' + '.json'
+        self.ERROR_LIKE_DETAIL_UNIKEY_FILE_NAME = ERROR_DIR_HEAD + 'QQ_like_detail_error_unikey' + '.txt'
+        self.ERROR_LIKE_LIST_NAME_UNIKEY_FILE_NAME = ERROR_DIR_HEAD + 'QQ_like_list_error_unikey' + '.txt'
+        self.ERROR_MOOD_DETAIL_UNIKEY_FILE_NAME = ERROR_DIR_HEAD + 'QQ_mood_detail_error_unikey' + '.txt'
 
-        self.SMALL_IMAGE_DIR = BASE_DIR + 'qq_image/' + file_name_head + '/'
-        self.BIG_IMAGE_DIR = BASE_DIR + 'qq_big_image/' + file_name_head + '/'
+        self.SMALL_IMAGE_DIR = self.USER_BASE_DIR + 'qq_image/'
+        self.BIG_IMAGE_DIR = self.USER_BASE_DIR + 'qq_big_image/'
         util.check_dir_exist(DATA_DIR_HEAD)
         util.check_dir_exist(ERROR_DIR_HEAD)
         util.check_dir_exist(self.SMALL_IMAGE_DIR)
         util.check_dir_exist(self.BIG_IMAGE_DIR)
-        print("Init file Name Finish:", file_name_head)
+        print("Init file Name Finish:", self.USER_BASE_DIR)
 
     def load_all_data_from_json(self):
         self.content = self.load_data_from_json(self.CONTENT_FILE_NAME)
@@ -283,11 +284,15 @@ class BaseSpider(object):
             pool = redis.ConnectionPool(host=REDIS_HOST, port=6379, decode_responses=True)
             re = redis.Redis(connection_pool=pool)
             return re
-        except BaseException as e:
-            print('Error===================')
-            print(e)
-            print('Failed to connect redis')
-            print('===================')
+        except ConnectionError:
+            try:
+                pool = redis.ConnectionPool(host=REDIS_HOST_DOCKER, port=6379, decode_responses=True)
+                re = redis.Redis(connection_pool=pool)
+                return re
+            except BaseException as e:
+                self.format_error(e, "Failed to connect redis")
+
+
 
     def check_time(self, mood, stop_time, until_stop_time=True):
         create_time = mood['created_time']

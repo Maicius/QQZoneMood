@@ -57,7 +57,7 @@ class QQZoneFriendMoodSpider(QQZoneSpider):
             # 重新初始化参数
             self.init_parameter()
 
-            self.init_file_name(self.file_name_head)
+            self.init_file_name()
 
             self.get_mood_list()
 

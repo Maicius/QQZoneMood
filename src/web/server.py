@@ -25,4 +25,4 @@ app.register_blueprint(spider, url_prefix='/spider')
 app.register_blueprint(data, url_prefix='/data')
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=5000, debug=True)

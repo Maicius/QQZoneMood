@@ -51,7 +51,7 @@ class QQZoneSpider(BaseSpider):
         self.cookies = {}
         self.qzonetoken = ""
         self.g_tk = 0
-        self.init_file_name(self.file_name_head)
+        self.init_file_name()
         self.init_parameter()
 
     def login(self):
