@@ -84,7 +84,10 @@ let vm = avalon.define({
                                 vm.query_spider_info(vm.qq_id);
                             }, 1000);
 
-                        } else {
+                        }else if(data.result === 0){
+                            alert("请输入有效cookie");
+                        }
+                        else {
                             alert("未知错误:" + data.result)
                         }
                     }

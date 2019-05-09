@@ -17,17 +17,17 @@ def download_excel(QQ, password, file_type):
         return json.dumps(dict(finish="QQ号与识别码不匹配"), ensure_ascii=False)
 
     else:
-        if file_type == 'xlsx':
+        if file_type == 'mood':
             path = BASE_DIR + QQ + "/data/result"
-            if os.path.isfile(os.path.join(path, QQ + '_mood_data.xlsx')):
-                print(os.path.join(path, QQ + '_mood_data.xlsx'))
-                return send_from_directory(path, QQ + '_mood_data.xlsx', as_attachment=True)
+            if os.path.isfile(os.path.join(path, 'mood_data.xlsx')):
+                print(os.path.join(path, 'mood_data.xlsx'))
+                return send_from_directory(path, 'mood_data.xlsx', as_attachment=True)
             else:
                 return json.dumps(dict(finish="文件不存在"), ensure_ascii=False)
-        elif file_type == 'csv':
+        elif file_type == 'friend':
             path = BASE_DIR + QQ + "/friend"
-            if os.path.isfile(os.path.join(path, QQ + '_friend_detail_list.xlsx')):
-                return send_from_directory(path, QQ + '_friend_detail_list.xlsx', as_attachment=True)
+            if os.path.isfile(os.path.join(path, 'friend_detail_list.xlsx')):
+                return send_from_directory(path, 'friend_detail_list.xlsx', as_attachment=True)
             else:
                 return json.dumps(dict(finish="文件不存在"), ensure_ascii=False)
 

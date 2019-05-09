@@ -32,12 +32,12 @@ class QQZoneAnalysis(QQZoneFriendSpider):
 
     def init_analysis_path(self):
         RESULT_BASE_DIR = self.USER_BASE_DIR + "data/result/"
-        self.MOOD_DATA_FILE_NAME = RESULT_BASE_DIR + '_mood_data.csv'
-        self.MOOD_DATA_EXCEL_FILE_NAME = RESULT_BASE_DIR + '_mood_data.xlsx'
+        self.MOOD_DATA_FILE_NAME = RESULT_BASE_DIR + 'mood_data.csv'
+        self.MOOD_DATA_EXCEL_FILE_NAME = RESULT_BASE_DIR + 'mood_data.xlsx'
 
         LABEL_BASE_DIR = self.USER_BASE_DIR + "data/label/"
-        self.LABEL_FILE_CSV = LABEL_BASE_DIR + '_label_data.csv'
-        self.LABEL_FILE_EXCEL = LABEL_BASE_DIR + '_label_data.xlsx'
+        self.LABEL_FILE_CSV = LABEL_BASE_DIR + 'label_data.csv'
+        self.LABEL_FILE_EXCEL = LABEL_BASE_DIR + 'label_data.xlsx'
 
         self.label_path = self.USER_BASE_DIR + 'data/label/'
         self.image_path = self.USER_BASE_DIR + '/image/'
