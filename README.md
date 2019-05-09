@@ -16,7 +16,7 @@
 
 	> 2.根据1中配置获取QQ空间的动态数量和好友基本信息
 
-	> 3.清除缓存(尚且存在bug,没有完全清除所有数据)
+	> 3.清除缓存
 
 	> 4.数据可视化和下载（excel表）
 
@@ -28,9 +28,6 @@
 
 	> docker-compose up
 
-- 如果出现 error: redis connection confused, 请确认 src.util.constant.py文件中: 
-
-	> REDIS_HOST = 'redis'
 
 ### TO DO...
 
