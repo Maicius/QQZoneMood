@@ -70,8 +70,12 @@ def start_spider():
         conn = get_redis_conn(pool_flag)
         res = init_redis_key(conn, qq)
         if not res:
-            result = dict(result="连接数据库失败")
-            return json.dumps(result, ensure_ascii=False)
+            try:
+                session[POOL_FLAG] = judge_pool()
+                init_redis_key(conn, qq)
+            except BaseException:
+                result = dict(result="连接数据库失败，请刷新页面再尝试")
+                return json.dumps(result, ensure_ascii=False)
         try:
             t = threading.Thread(target=web_interface,
                                  args=(qq, nick_name, stop_time, mood_num, cookie, no_delete, password, pool_flag))
@@ -110,6 +114,8 @@ def stop_spider(QQ, password):
 def query_friend_info_num(QQ, friend_num, password):
     pool_flag = session.get(POOL_FLAG)
     conn = get_redis_conn(pool_flag)
+    if conn is None:
+        return json.dumps(dict(num="数据库未连接", finish=0))
     if not check_password(conn, QQ, password):
         return json.dumps(dict(finish=-2))
     info = conn.get(FRIEND_INFO_COUNT_KEY + str(QQ))

@@ -17,6 +17,7 @@ app.config['PERMANENT_SESSION_LIFETIME']=timedelta(days=7)
 @app.route('/')
 def config():
     session[POOL_FLAG] = judge_pool()
+    print("pool flag:", session.get(POOL_FLAG))
     return render_template("config.html")
 
 
@@ -28,4 +29,4 @@ app.register_blueprint(spider, url_prefix='/spider')
 app.register_blueprint(data, url_prefix='/data')
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=False)

@@ -25,6 +25,8 @@ class UserInfo(object):
     cmt_friend_name_header = ''
     cmt_friend_name = ''
 
+    single_friend = 0,
+
     is_none = True
     def __init__(self, username):
         self.temp_dir = BASE_DIR + username + '/temp/'
@@ -37,7 +39,7 @@ class UserInfo(object):
                     years=self.years, first_friend_header = self.first_friend_header,
                     like_friend_name=self.like_friend_name, like_friend_header=self.like_friend_header,
                     cmt_friend_name_header=self.cmt_friend_name_header, first_mood_time=self.first_mood_time,
-                    cmt_friend_name=self.cmt_friend_name)
+                    cmt_friend_name=self.cmt_friend_name, single_friend=self.single_friend)
 
     def save_user(self):
         data = self.to_dict()
@@ -75,3 +77,4 @@ class UserInfo(object):
         self.cmt_friend_name_header = data['cmt_friend_name_header']
         self.cmt_friend_name = data['cmt_friend_name']
         self.first_mood_time = data['first_mood_time']
+        self.single_friend = data['single_friend']

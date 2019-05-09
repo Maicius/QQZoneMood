@@ -6,7 +6,7 @@ from src.util import util
 import math
 import threading
 from src.util.constant import BASE_DIR, FINISH_FRIEND_INFO_ALL, STOP_FRIEND_INFO_SPIDER_KEY, WEB_SPIDER_INFO, \
-    FRIEND_INFO_PRE, FRIEND_INFO_COUNT_KEY, EXPIRE_TIME_IN_SECONDS, FRIEND_LIST_KEY
+    FRIEND_INFO_PRE, FRIEND_INFO_COUNT_KEY, EXPIRE_TIME_IN_SECONDS, FRIEND_LIST_KEY, STOP_SPIDER_KEY, STOP_SPIDER_FLAG
 
 
 class QQZoneFriendSpider(QQZoneSpider):
@@ -86,7 +86,7 @@ class QQZoneFriendSpider(QQZoneSpider):
         print("获取好友基本进行的线程数量：", thread_num)
         for i in range(thread_num):
             begin_index = i
-            t = threading.Thread(target=self.do_get_friend_detail, args=(begin_index, friend_num, thread_num))
+            t = threading.Thread(target=self.do_get_friend_detail, args=(begin_index, friend_num, thread_num, True))
             self.friend_thread_list.append(t)
         for t in self.friend_thread_list:
             t.setDaemon(False)
@@ -106,11 +106,11 @@ class QQZoneFriendSpider(QQZoneSpider):
             self.save_data_to_json(self.friend_detail, self.FRIEND_DETAIL_FILE_NAME)
 
 
-    def do_get_friend_detail(self, index, friend_num, step=1):
+    def do_get_friend_detail(self, index, friend_num, step=1, until_stop_time=True):
         # 避免好友数量为0
         if step < 1:
             step = 1
-        while index < friend_num:
+        while index < friend_num and until_stop_time:
             friend = self.friend_list[index]
             uin = friend['uin']
             if self.debug:
@@ -120,6 +120,7 @@ class QQZoneFriendSpider(QQZoneSpider):
             data = json.loads(content)
             try:
                 data = data['data']
+                data['friendUin'] = uin
             except BaseException as e:
                 self.format_error(e, friend)
                 print(data)
@@ -129,6 +130,7 @@ class QQZoneFriendSpider(QQZoneSpider):
             self.re.set(FRIEND_INFO_COUNT_KEY + self.username, len(self.friend_detail))
             if not self.no_delete:
                 self.re.expire(FRIEND_INFO_COUNT_KEY + self.username, EXPIRE_TIME_IN_SECONDS)
+            until_stop_time = False if self.re.get(STOP_SPIDER_KEY + str(self.username)) == STOP_SPIDER_FLAG else True
 
     def get_friend_list_url(self):
         friend_url = 'https://user.qzone.qq.com/proxy/domain/r.qzone.qq.com/cgi-bin/tfriend/friend_show_qqfriends.cgi?'
@@ -198,8 +200,13 @@ class QQZoneFriendSpider(QQZoneSpider):
                          common_group_num=common_group_num, common_group_names=common_group_names, img=img))
 
             except BaseException as e:
-                print("Error in friend list, please check:", friend)
-                print("program is continue")
+                if self.debug:
+                    print("单向好友:", friend)
+                self.friend_detail_list.append(
+                    dict(uin=0, friend_uin=friend['friendUin'], add_friend_time=0,
+                         nick_name='单向好友', common_friend_num=0,
+                         common_group_num=0, common_group_names='', img=''))
+
         friend_df = pd.DataFrame(self.friend_detail_list)
         friend_df.sort_values(by='add_friend_time', inplace=True)
 
@@ -235,7 +242,7 @@ class QQZoneFriendSpider(QQZoneSpider):
     def get_first_friend_info(self):
         if self.friend_df is None:
             self.friend_df = pd.read_csv(self.FRIEND_DETAIL_LIST_FILE_NAME)
-
+        self.get_single_friend()
         # self.user_info.friend_num = self.friend_df.shape[0]
         zero_index = self.friend_df[self.friend_df['add_friend_time'] == 0].index
         self.friend_df.drop(index=zero_index, axis=0, inplace=True)
@@ -248,8 +255,11 @@ class QQZoneFriendSpider(QQZoneSpider):
         self.user_info.first_friend = early_nick
         self.user_info.first_friend_time = early_time
         self.user_info.first_friend_header = first_header_url
-
         self.user_info.save_user()
+
+    def get_single_friend(self):
+        single_friend = self.friend_df[self.friend_df['uin'] == 0].shape[0]
+        self.user_info.single_friend = single_friend
 
 
 if __name__ == '__main__':
