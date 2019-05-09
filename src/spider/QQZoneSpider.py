@@ -238,7 +238,7 @@ class QQZoneSpider(BaseSpider):
                     until_stop_time = False if self.re.get(STOP_SPIDER_KEY+ str(self.username)) == STOP_SPIDER_FLAG else True
                 pos += 20
                 # 每抓100条保存一次数据
-                if pos % 100 == 0:
+                if pos % 100 == 0 and self.use_redis:
                     self.save_data_to_redis(final_result=False)
             except BaseException as e:
                 print("ERROR===================")

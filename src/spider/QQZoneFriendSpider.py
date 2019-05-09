@@ -36,7 +36,7 @@ class QQZoneFriendSpider(QQZoneSpider):
         self.FRIEND_DETAIL_EXCEL_FILE_NAME = FRIEND_DIR_HEAD + '_friend_detail_list.xlsx'
         # 头像下载到web的static文件夹，以便在web中调用
         self.FRIEND_HEADER_IMAGE_PATH = '../web/static/image/header/' + self.file_name_head + '/'
-        
+        util.check_dir_exist(BASE_DIR + 'friend/')
         util.check_dir_exist(self.FRIEND_HEADER_IMAGE_PATH)
         self.friend_detail = []
         self.friend_list = []
