@@ -2,7 +2,7 @@ import datetime
 from src.util import util
 from copy import deepcopy
 import json
-from src.util.constant import BASE_DIR, EXPIRE_TIME_IN_SECONDS
+from src.util.constant import BASE_DIR, EXPIRE_TIME_IN_SECONDS, REDIS_HOST
 import re
 import logging
 import redis
@@ -280,7 +280,7 @@ class BaseSpider(object):
 
     def connect_redis(self):
         try:
-            pool = redis.ConnectionPool(host="127.0.0.1", port=6379, decode_responses=True)
+            pool = redis.ConnectionPool(host=REDIS_HOST, port=6379, decode_responses=True)
             re = redis.Redis(connection_pool=pool)
             return re
         except BaseException as e:

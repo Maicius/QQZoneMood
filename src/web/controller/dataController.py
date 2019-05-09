@@ -9,21 +9,28 @@ from src.web.entity.UserInfo import UserInfo
 from src.web.web_util.web_util import get_pool, check_password
 data = Blueprint('data',__name__)
 
-@data.route('/download_excel/<QQ>/<password>')
-def download_excel(QQ, password):
+@data.route('/download_file/<QQ>/<password>/<file_type>')
+def download_excel(QQ, password, file_type):
     pool = get_pool()
     conn = redis.Redis(connection_pool=pool)
+
     if not check_password(conn, QQ, password):
         return json.dumps(dict(finish="QQ号与识别码不匹配"), ensure_ascii=False)
 
     else:
-        path = RESULT_BASE_DIR
-        print(os.path.join(path, QQ + '_mood_data.xlsx'))
-        if os.path.isfile(os.path.join(path, QQ + '_mood_data.xlsx')):
-            print(os.path.join(path, QQ + '_mood_data.xlsx'))
-            return send_from_directory(path, QQ + '_mood_data.xlsx', as_attachment=True)
-        else:
-            return json.dumps(dict(finish="文件不存在"), ensure_ascii=False)
+        if file_type == 'xlsx':
+            path = RESULT_BASE_DIR
+            if os.path.isfile(os.path.join(path, QQ + '_mood_data.xlsx')):
+                print(os.path.join(path, QQ + '_mood_data.xlsx'))
+                return send_from_directory(path, QQ + '_mood_data.xlsx', as_attachment=True)
+            else:
+                return json.dumps(dict(finish="文件不存在"), ensure_ascii=False)
+        elif file_type == 'csv':
+            path = FRIEND_BASE_DIR
+            if os.path.isfile(os.path.join(path, QQ + '_friend_detail_list.xlsx')):
+                return send_from_directory(path, QQ + '_friend_detail_list.xlsx', as_attachment=True)
+            else:
+                return json.dumps(dict(finish="文件不存在"), ensure_ascii=False)
 
 
 @data.route('/clear_cache/<QQ>/<password>')
