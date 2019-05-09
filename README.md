@@ -6,12 +6,37 @@
 
 ![Image](resource/image/web2.png)
 
+### docker版运行方式
+
+- 本项目将网页配置版本打包为docker（以下简称docker版）,强烈建议普通用户使用docker运行本项目来获取数据
+
+- docker版主要包括以下功能：
+
+	> 1.配置用户名、QQ号、爬取动态的数量、停止日期、识别码、cookie等参数
+
+	> 2.根据1中配置获取QQ空间的动态数量和好友基本信息
+
+	> 3.清除缓存(尚且存在bug,没有完全清除所有数据)
+
+	> 4.数据可视化和下载（excel表）
+
+- 运行方式(请确保已经安装了docker和docker-compose)：
+
+	> git clone git@github.com:Maicius/QQZoneMood.git
+
+	> cd QQZoneMood
+
+	> docker-compose up
+
+- 如果出现 error: redis connection confused, 请确认 src.util.constant.py文件中: 
+
+	> REDIS_HOST = 'redis'
 
 ### TO DO...
 
-- Web排队机制
+- Web排队机制（为上线做准备）
 - Web展示界面优化
-- README更新
+- 计算更多指标
 
 ### 已实现功能
 
@@ -112,7 +137,7 @@
 	> 请注意版本匹配，可以查看这篇博客：  
 	> [selenium之 chromedriver与chrome版本映射表（更新至v2.32）](http://blog.csdn.net/huilan_same/article/details/51896672)
 
-#### 运行方式 
+#### 开发者运行方式 
 
 - 1.安装依赖
 
@@ -148,6 +173,7 @@
 
 > python3 src/web/server.py
 
+- 5.其它程序入口写在各个py文件的main函数中，待规范
 
 ### 数据分析
 
