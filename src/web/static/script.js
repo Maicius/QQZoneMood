@@ -209,11 +209,14 @@ let vm = avalon.define({
     clear_cache: function () {
         clearInterval(vm.query_num);
         $.ajax({
-            url: '/spider/clear_cache/' + vm.qq_id + '/' + sha1(vm.password),
+            url: '/data/clear_cache/' + vm.qq_id + '/' + sha1(vm.password),
             type: 'GET',
             success: function (data) {
+                data = JSON.parse(data);
                 if (data.finish) {
                     alert("清除缓存成功");
+                }else{
+                    alert(data.info)
                 }
             }
         })

@@ -2,6 +2,8 @@ import numpy as np
 import pandas as pd
 from json import JSONDecodeError
 import json
+
+from src.util import util
 from src.util.constant import BASE_DIR
 
 class Average(object):
@@ -10,7 +12,7 @@ class Average(object):
     创建一个平均数类
     用于计算cmt_total_num、like_num、prd_num的均值
     """
-    def __init__(self, use_redis=False, debug=True, file_name_head="", filename="", analysis = False):
+    def __init__(self, use_redis=False, debug=False, file_name_head="", filename="", analysis = False):
         """
 
         :param use_redis:
@@ -23,10 +25,12 @@ class Average(object):
         self.df = None
         self.filename = filename
         self.file_name_head = file_name_head
-        self.N_E_FILE_NAME = BASE_DIR + 'data/result/' + file_name_head + '_n_E_mood_data.csv'
-        self.CMT_RESULT_NAMES = BASE_DIR + 'data/result/' + file_name_head + '_cmt_result_names.csv'
+        USER_BASE_DIR = BASE_DIR + file_name_head + '/data/result/'
+        util.check_dir_exist(USER_BASE_DIR)
+        self.N_E_FILE_NAME = USER_BASE_DIR + 'n_E_mood_data.csv'
+        self.CMT_RESULT_NAMES = USER_BASE_DIR + 'cmt_result_names.csv'
         if self.filename == '' and self.file_name_head != '':
-            self.filename = BASE_DIR + 'data/result/' + file_name_head + '_mood_data.csv'
+            self.filename = USER_BASE_DIR + 'mood_data.csv'
 
         if not analysis:
             self.read_data_from_csv()
@@ -121,6 +125,7 @@ class Average(object):
             cmt_result_csv.append(dict(cmt_name=name, cmt_times=cmt_times))
         cmt_result_csv_df = pd.DataFrame(cmt_result_csv)
         cmt_result_csv_df.sort_values(by='cmt_times', inplace=True, ascending=False)
+
         cmt_result_csv_df.to_csv(self.CMT_RESULT_NAMES)
         return cmt_result_csv_df
 

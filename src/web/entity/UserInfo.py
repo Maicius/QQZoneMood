@@ -25,9 +25,9 @@ class UserInfo(object):
     cmt_friend_name_header = ''
     cmt_friend_name = ''
 
-    temp_dir = BASE_DIR + 'temp/'
     is_none = True
-    def __init__(self):
+    def __init__(self, username):
+        self.temp_dir = BASE_DIR + username + '/temp/'
         check_dir_exist(self.temp_dir)
 
     def to_dict(self):
@@ -39,21 +39,24 @@ class UserInfo(object):
                     cmt_friend_name_header=self.cmt_friend_name_header, first_mood_time=self.first_mood_time,
                     cmt_friend_name=self.cmt_friend_name)
 
-    def save_user(self, QQ):
+    def save_user(self):
         data = self.to_dict()
-        with open(self.temp_dir + QQ + ".json", 'w', encoding='utf-8') as w:
+        with open(self.temp_dir + "user_info.json", 'w', encoding='utf-8') as w:
             json.dump(data, w, ensure_ascii=False)
 
-    def load(self, QQ):
+    def load(self):
         try:
-            with open(self.temp_dir + QQ + ".json", 'r', encoding='utf-8') as r:
+            with open(self.temp_dir + "user_info.json", 'r', encoding='utf-8') as r:
                 user = json.load(r)
             self.change_dict_to_object(user)
             self.is_none = False
             return self
+        except FileNotFoundError:
+            return None
         except BaseException as e:
             print(e)
             return None
+
 
     def change_dict_to_object(self, data):
         self.QQ = data['QQ']

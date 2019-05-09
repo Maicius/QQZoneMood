@@ -17,7 +17,6 @@ class QQZoneFriendSpider(QQZoneSpider):
                  username='', mood_begin=0, mood_num=-1, stop_time='-1', from_web=True, nickname='', no_delete=True, cookie_text='',
                  export_excel=False, export_csv = True):
         """
-
         :param use_redis: 是否使用redis
         :param debug: 是否开启debug模式
         :param analysis: 如果为true, 会执行爬虫程序，再执行分析程序，如果为false，只执行分析程序
@@ -28,15 +27,16 @@ class QQZoneFriendSpider(QQZoneSpider):
 
         if self.g_tk == 0 and analysis == False:
             self.login()
-
-        FRIEND_DIR_HEAD = BASE_DIR + 'friend/' + self.file_name_head
-        self.FRIEND_LIST_FILE_NAME = FRIEND_DIR_HEAD + '_friend_list.json'
-        self.FRIEND_DETAIL_FILE_NAME = FRIEND_DIR_HEAD + '_friend_detail.json'
-        self.FRIEND_DETAIL_LIST_FILE_NAME = FRIEND_DIR_HEAD + '_friend_detail_list.csv'
-        self.FRIEND_DETAIL_EXCEL_FILE_NAME = FRIEND_DIR_HEAD + '_friend_detail_list.xlsx'
+        USER_BASE_DIR = BASE_DIR + self.username + '/'
+        util.check_dir_exist(USER_BASE_DIR)
+        FRIEND_DIR_HEAD = USER_BASE_DIR + 'friend/'
+        self.FRIEND_LIST_FILE_NAME = FRIEND_DIR_HEAD + 'friend_list.json'
+        self.FRIEND_DETAIL_FILE_NAME = FRIEND_DIR_HEAD + 'friend_detail.json'
+        self.FRIEND_DETAIL_LIST_FILE_NAME = FRIEND_DIR_HEAD + 'friend_detail_list.csv'
+        self.FRIEND_DETAIL_EXCEL_FILE_NAME = FRIEND_DIR_HEAD + 'friend_detail_list.xlsx'
         # 头像下载到web的static文件夹，以便在web中调用
         self.FRIEND_HEADER_IMAGE_PATH = '../web/static/image/header/' + self.file_name_head + '/'
-        util.check_dir_exist(BASE_DIR + 'friend/')
+        util.check_dir_exist(USER_BASE_DIR + 'friend/')
         util.check_dir_exist(self.FRIEND_HEADER_IMAGE_PATH)
         self.friend_detail = []
         self.friend_list = []
@@ -179,8 +179,7 @@ class QQZoneFriendSpider(QQZoneSpider):
         if len(self.friend_list) == 0:
             self.load_friend_data()
         friend_total_num = len(self.friend_list)
-        print("friend num:", friend_total_num)
-        self.user_info.friend_num = friend_total_num
+        print("valid friend num:", friend_total_num)
         friend_list_df = pd.DataFrame(self.friend_list)
         self.friend_detail_list = []
         for friend in self.friend_detail:
@@ -200,15 +199,16 @@ class QQZoneFriendSpider(QQZoneSpider):
 
             except BaseException as e:
                 print("Error in friend list, please check:", friend)
-                print(e)
+                print("program is continue")
         friend_df = pd.DataFrame(self.friend_detail_list)
         friend_df.sort_values(by='add_friend_time', inplace=True)
         if self.export_excel:
             friend_df.to_excel(self.FRIEND_DETAIL_EXCEL_FILE_NAME)
         if self.export_csv:
             friend_df.to_csv(self.FRIEND_DETAIL_LIST_FILE_NAME)
-        print("Finish to clean friend data...")
-        print("File Name:", self.FRIEND_DETAIL_LIST_FILE_NAME)
+        if self.debug:
+            print("Finish to clean friend data...")
+            print("File Name:", self.FRIEND_DETAIL_LIST_FILE_NAME)
         self.friend_df = friend_df
 
     def get_friend_total_num(self):
@@ -235,7 +235,7 @@ class QQZoneFriendSpider(QQZoneSpider):
         if self.friend_df is None:
             self.friend_df = pd.read_csv(self.FRIEND_DETAIL_LIST_FILE_NAME)
 
-        self.user_info.friend_num = self.friend_df.shape[0]
+        # self.user_info.friend_num = self.friend_df.shape[0]
         zero_index = self.friend_df[self.friend_df['add_friend_time'] == 0].index
         self.friend_df.drop(index=zero_index, axis=0, inplace=True)
         self.friend_df.reset_index(inplace=True)
@@ -248,7 +248,7 @@ class QQZoneFriendSpider(QQZoneSpider):
         self.user_info.first_friend_time = early_time
         self.user_info.first_friend_header = first_header_url
 
-        self.user_info.save_user(self.username)
+        self.user_info.save_user()
 
 
 if __name__ == '__main__':
