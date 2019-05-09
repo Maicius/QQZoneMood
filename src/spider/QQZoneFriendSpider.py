@@ -55,7 +55,7 @@ class QQZoneFriendSpider(QQZoneSpider):
         friend_content = self.get_json(self.req.get(url=friend_list_url, headers=self.headers).content.decode('utf-8'))
         self.friend_list = json.loads(friend_content)['data']['items']
         if self.use_redis:
-            self.re.set(FRIEND_LIST_KEY + self.username, self.friend_list)
+            self.re.set(FRIEND_LIST_KEY + self.username, json.dumps(self.friend_list, ensure_ascii=False))
             if not self.no_delete:
                 self.re.expire(FRIEND_LIST_KEY + self.username, EXPIRE_TIME_IN_SECONDS)
         self.save_data_to_json(self.friend_list, self.FRIEND_LIST_FILE_NAME)

@@ -1,6 +1,7 @@
-REDIS_HOST = '127.0.0.1'
+# for localhost
+# REDIS_HOST = '127.0.0.1'
 ## for docker
-# REDIS_HOST = 'redis'
+REDIS_HOST = 'redis'
 
 
 BASE_DIR = '../../resource/'
