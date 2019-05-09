@@ -7,6 +7,8 @@ import re
 import logging
 import redis
 from src.web.entity.UserInfo import UserInfo
+from src.web.web_util.web_util import get_redis_conn
+
 
 class BaseSpider(object):
     """
@@ -15,7 +17,7 @@ class BaseSpider(object):
     def __init__(self, use_redis=False, debug=False, mood_begin=0, mood_num=-1, stop_time='-1',
                  download_small_image=False, download_big_image=False,
                  download_mood_detail=True, download_like_detail=True, download_like_names=True, recover=False,
-                 cookie_text=None, from_web=False, username='', nickname='', no_delete=True):
+                 cookie_text=None, from_web=False, username='', nickname='', no_delete=True, pool_flag='127.0.0.1'):
         # 初始化下载项
         self.mood_begin = mood_begin
         self.mood_num = mood_num
@@ -39,6 +41,7 @@ class BaseSpider(object):
         self.use_redis = use_redis
         self.debug = debug
         self.cookie_text = cookie_text
+        self.pool_flag = pool_flag
         if from_web:
             self.username = username
             self.file_name_head = username
@@ -280,19 +283,12 @@ class BaseSpider(object):
         self.save_data_to_redis(final_result=True)
 
     def connect_redis(self):
-        try:
-            pool = redis.ConnectionPool(host=REDIS_HOST, port=6379, decode_responses=True)
-            re = redis.Redis(connection_pool=pool)
-            return re
-        except ConnectionError:
-            try:
-                pool = redis.ConnectionPool(host=REDIS_HOST_DOCKER, port=6379, decode_responses=True)
-                re = redis.Redis(connection_pool=pool)
-                return re
-            except BaseException as e:
-                self.format_error(e, "Failed to connect redis")
-
-
+        conn = get_redis_conn(self.pool_flag)
+        if conn is None:
+            print("连接数据库失败")
+            exit(1)
+        else:
+            return conn
 
     def check_time(self, mood, stop_time, until_stop_time=True):
         create_time = mood['created_time']

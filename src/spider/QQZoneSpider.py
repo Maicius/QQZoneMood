@@ -25,7 +25,7 @@ class QQZoneSpider(BaseSpider):
     def __init__(self, use_redis=False, debug=False, mood_begin=0, mood_num=-1, stop_time='-1',
                  download_small_image=False, download_big_image=False,
                  download_mood_detail=True, download_like_detail=True, download_like_names=True, recover=False,
-                 cookie_text=None, from_web=False, username='', nickname='', no_delete=True):
+                 cookie_text=None, from_web=False, username='', nickname='', no_delete=True, pool_flag='127.0.0.1'):
         """
         init method
         :param use_redis: If true, use redis and json file to save data, if false, use json file only.
@@ -44,7 +44,7 @@ class QQZoneSpider(BaseSpider):
                             download_small_image=download_small_image, download_big_image=download_big_image,
                             download_mood_detail=download_mood_detail, download_like_detail=download_like_detail,
                             download_like_names=download_like_names, recover=recover, cookie_text=cookie_text,
-                            from_web=from_web, username=username, nickname=nickname, no_delete=no_delete)
+                            from_web=from_web, username=username, nickname=nickname, no_delete=no_delete, pool_flag=pool_flag)
 
 
         self.req = requests.Session()

@@ -1,18 +1,17 @@
-from flask import Flask, render_template, send_from_directory, Blueprint
+from flask import send_from_directory, Blueprint, session
 import json
 from src.util.constant import *
-import redis
 import os
 
 from src.web.entity.UserInfo import UserInfo
-from src.web.web_util.web_util import get_pool, check_password
+from src.web.web_util.web_util import get_pool, check_password, get_redis_conn
+
 data = Blueprint('data',__name__)
 
 @data.route('/download_file/<QQ>/<password>/<file_type>')
 def download_excel(QQ, password, file_type):
-    pool = get_pool()
-    conn = redis.Redis(connection_pool=pool)
-
+    pool_flag = session.get(POOL_FLAG)
+    conn = get_redis_conn(pool_flag)
     if not check_password(conn, QQ, password):
         return json.dumps(dict(finish="QQ号与识别码不匹配"), ensure_ascii=False)
 
@@ -34,8 +33,8 @@ def download_excel(QQ, password, file_type):
 
 @data.route('/clear_cache/<QQ>/<password>')
 def clear_cache(QQ, password):
-    pool = get_pool()
-    conn = redis.Redis(connection_pool=pool)
+    pool_flag = session.get(POOL_FLAG)
+    conn = get_redis_conn(pool_flag)
     if not check_password(conn, QQ, password):
         return json.dumps(dict(finish="QQ号与识别码不匹配"), ensure_ascii=False)
     else:
@@ -58,8 +57,8 @@ def clear_cache(QQ, password):
 
 @data.route('/get_history/<QQ>/<name>/<password>')
 def get_history(QQ, name, password):
-    pool = get_pool()
-    conn = redis.Redis(connection_pool=pool)
+    pool_flag = session.get(POOL_FLAG)
+    conn = get_redis_conn(pool_flag)
     result = {}
     if not check_password(conn, QQ, password):
         result['finish'] = 0
@@ -76,8 +75,8 @@ def get_history(QQ, name, password):
 
 @data.route('/userinfo/<QQ>/<name>/<password>')
 def userinfo(QQ, name, password):
-    pool = get_pool()
-    conn = redis.Redis(connection_pool=pool)
+    pool_flag = session.get(POOL_FLAG)
+    conn = get_redis_conn(pool_flag)
     if check_password(conn, QQ, password):
         user = UserInfo(QQ)
         user.load()

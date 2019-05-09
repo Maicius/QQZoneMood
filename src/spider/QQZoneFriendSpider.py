@@ -15,7 +15,7 @@ class QQZoneFriendSpider(QQZoneSpider):
     """
     def __init__(self, use_redis=False, debug=False, analysis=False, recover=False,
                  username='', mood_begin=0, mood_num=-1, stop_time='-1', from_web=True, nickname='', no_delete=True, cookie_text='',
-                 export_excel=False, export_csv = True):
+                 export_excel=False, export_csv = True, pool_flag='127.0.0.1'):
         """
         :param use_redis: 是否使用redis
         :param debug: 是否开启debug模式
@@ -23,7 +23,7 @@ class QQZoneFriendSpider(QQZoneSpider):
         """
         QQZoneSpider.__init__(self, use_redis, debug, recover=recover, username=username, mood_num=mood_num,
                               mood_begin=mood_begin, stop_time=stop_time, from_web=from_web, nickname=nickname,
-                              no_delete=no_delete, cookie_text=cookie_text)
+                              no_delete=no_delete, cookie_text=cookie_text, pool_flag=pool_flag)
 
         if self.g_tk == 0 and analysis == False:
             self.login()
@@ -202,6 +202,7 @@ class QQZoneFriendSpider(QQZoneSpider):
                 print("program is continue")
         friend_df = pd.DataFrame(self.friend_detail_list)
         friend_df.sort_values(by='add_friend_time', inplace=True)
+
         if self.export_excel:
             friend_df.to_excel(self.FRIEND_DETAIL_EXCEL_FILE_NAME)
         if self.export_csv:

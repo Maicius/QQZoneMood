@@ -12,11 +12,11 @@ from src.util.constant import BASE_DIR, HISTORY_LIKE_AGREE
 
 class QQZoneAnalysis(QQZoneFriendSpider):
     def __init__(self, use_redis=False, debug=False, username='', analysis_friend=False, mood_begin=0, mood_num=-1,
-                 stop_time='-1', from_web=True, nickname='', no_delete=True, cookie_text=''):
+                 stop_time='-1', from_web=True, nickname='', no_delete=True, cookie_text='', pool_flag='127.0.0.1'):
 
         QQZoneFriendSpider.__init__(self, use_redis, debug, recover=False, username=username, mood_num=mood_num,
                               mood_begin=mood_begin, stop_time=stop_time, from_web=from_web, nickname=nickname,
-                              no_delete=no_delete, cookie_text=cookie_text, analysis=True, export_excel=True, export_csv=False)
+                              no_delete=no_delete, cookie_text=cookie_text, analysis=True, export_excel=True, export_csv=False, pool_flag=pool_flag)
         self.mood_data = []
         self.mood_data_df = pd.DataFrame()
         self.like_detail_df = []

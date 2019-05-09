@@ -1,20 +1,26 @@
 from src.util.constant import *
+from flask import session
 import redis
 import hashlib
+import sys
+import os
+curPath = os.path.abspath(os.path.dirname(__file__))
+rootPath = os.path.split(curPath)[0]
+sys.path.append(os.path.split(rootPath)[0])
 
 # 共享redis连接池
 def connect_redis():
-    try:
-        pool = redis.ConnectionPool(host=REDIS_HOST, port=6379, decode_responses=True)
-        return pool
-    except ConnectionError:
-        try:
-            pool = redis.ConnectionPool(host=REDIS_HOST_DOCKER, port=6379, decode_responses=True)
-            return pool
-        except BaseException as e:
-            raise e
+    pool = redis.ConnectionPool(host=REDIS_HOST, port=6379, decode_responses=True)
+    return pool
+
+
+def connect_docker_redis():
+    pool = redis.ConnectionPool(host=REDIS_HOST_DOCKER, port=6379, decode_responses=True)
+    return pool
 
 pool = connect_redis()
+docker_pool = connect_docker_redis()
+POOL_FLAG = -1
 
 def get_pool():
     try:
@@ -25,15 +31,56 @@ def get_pool():
     except BaseException as e:
         print(e)
 
-def init_redis_key(qq):
-    pool = get_pool()
-    conn = redis.Redis(connection_pool=pool)
-    conn.delete(WEB_SPIDER_INFO + qq)
-    conn.set(MOOD_COUNT_KEY + qq, 0)
-    # 设置标记位，以便停止爬虫的时候使用
-    conn.set(STOP_SPIDER_KEY + qq, SPIDER_FLAG)
-    conn.set(CLEAN_DATA_KEY + qq, 0)
-    conn.set(FRIEND_INFO_COUNT_KEY + qq, 0)
+def get_docker_pool():
+    try:
+        if docker_pool:
+            return docker_pool
+        else:
+            return connect_docker_redis()
+    except BaseException as e:
+        print(e)
+
+def get_redis_conn(pool_flag):
+
+    if pool_flag == REDIS_HOST:
+        pool = get_pool()
+        conn = redis.Redis(connection_pool=pool)
+        return conn
+
+    elif pool_flag == REDIS_HOST_DOCKER:
+        docker_pool = get_docker_pool()
+        conn = redis.Redis(connection_pool=docker_pool)
+        return conn
+
+# 因docker中的redis与直接访问redis的host不一致，所以在这里判断,并将结果保存在session中
+def judge_pool():
+    try:
+        pool = get_pool()
+        conn = redis.Redis(connection_pool=pool)
+        conn.set('redis_success', 1)
+        return REDIS_HOST
+    except BaseException as e:
+        try:
+            docker_pool = get_docker_pool()
+            conn = redis.Redis(connection_pool=docker_pool)
+            conn.set('redis_success', 2)
+            return REDIS_HOST_DOCKER
+        except BaseException as e:
+            print("Failed to connect redis:", e)
+            raise e
+
+def init_redis_key(conn, qq):
+
+    if conn:
+        conn.delete(WEB_SPIDER_INFO + qq)
+        conn.set(MOOD_COUNT_KEY + qq, 0)
+        # 设置标记位，以便停止爬虫的时候使用
+        conn.set(STOP_SPIDER_KEY + qq, SPIDER_FLAG)
+        conn.set(CLEAN_DATA_KEY + qq, 0)
+        conn.set(FRIEND_INFO_COUNT_KEY + qq, 0)
+        return 1
+    else:
+        return 0
 
 
 def check_password(conn, QQ, password):

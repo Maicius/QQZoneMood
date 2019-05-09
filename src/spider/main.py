@@ -23,9 +23,9 @@ def capture_data():
 
 
 # 提供给web的接口
-def web_interface(username, nickname, stop_time, mood_num, cookie_text, no_delete, password):
+def web_interface(username, nickname, stop_time, mood_num, cookie_text, no_delete, password, pool_flag):
     sp = QQZoneAnalysis(use_redis=True, debug=False, username=username, analysis_friend=True, from_web=True,
-                        nickname=nickname, stop_time=stop_time, mood_num=mood_num, no_delete=no_delete, cookie_text=cookie_text)
+                        nickname=nickname, stop_time=stop_time, mood_num=mood_num, no_delete=no_delete, cookie_text=cookie_text, pool_flag=pool_flag)
     try:
         sp.login()
         sp.re.rpush(WEB_SPIDER_INFO + username, "用户" + str(sp.username) + "登陆成功")

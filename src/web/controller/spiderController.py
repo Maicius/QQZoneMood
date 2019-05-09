@@ -1,4 +1,4 @@
-from flask import Flask, render_template, send_from_directory, Blueprint
+from flask import Flask, render_template, send_from_directory, Blueprint,session
 
 import json
 from src.util.constant import *
@@ -9,15 +9,15 @@ import threading
 from time import sleep
 import redis
 
-from src.web.web_util.web_util import get_pool, check_password, md5_password, init_redis_key
-
+from src.web.web_util.web_util import get_pool, check_password, md5_password, init_redis_key, get_redis_conn, \
+    get_docker_pool, judge_pool
 
 spider = Blueprint('spider',__name__)
 
 @spider.route('/query_spider_info/<QQ>/<password>')
 def query_spider_info(QQ, password):
-    pool = get_pool()
-    conn = redis.Redis(connection_pool=pool)
+    pool_flag = session.get(POOL_FLAG)
+    conn = get_redis_conn(pool_flag)
     if not check_password(conn, QQ, password):
         return json.dumps(dict(finish=-2))
     info = conn.lpop(WEB_SPIDER_INFO + QQ)
@@ -41,8 +41,8 @@ def query_spider_info(QQ, password):
 
 @spider.route('/query_spider_num/<QQ>/<mood_num>/<password>')
 def query_spider_num(QQ, mood_num, password):
-    pool = get_pool()
-    conn = redis.Redis(connection_pool=pool)
+    pool_flag = session.get(POOL_FLAG)
+    conn = get_redis_conn(pool_flag)
     if not check_password(conn, QQ, password):
         return json.dumps(dict(finish=-2))
     info = conn.get(MOOD_COUNT_KEY + str(QQ))
@@ -53,6 +53,7 @@ def query_spider_num(QQ, mood_num, password):
 
 @spider.route('/start_spider', methods=['GET', 'POST'])
 def start_spider():
+
     if request.method == 'POST':
         nick_name = request.form['nick_name']
         qq = request.form['qq']
@@ -65,10 +66,15 @@ def start_spider():
         password = request.form['password']
         password = md5_password(password)
         print("begin spider:", qq)
+        pool_flag = session.get(POOL_FLAG)
+        conn = get_redis_conn(pool_flag)
+        res = init_redis_key(conn, qq)
+        if not res:
+            result = dict(result="连接数据库失败")
+            return json.dumps(result, ensure_ascii=False)
         try:
             t = threading.Thread(target=web_interface,
-                                 args=(qq, nick_name, stop_time, mood_num, cookie, no_delete, password))
-            init_redis_key(qq)
+                                 args=(qq, nick_name, stop_time, mood_num, cookie, no_delete, password, pool_flag))
             t.start()
             result = dict(result=1)
             return json.dumps(result, ensure_ascii=False)
@@ -81,8 +87,8 @@ def start_spider():
 
 @spider.route('/stop_spider/<QQ>/<password>')
 def stop_spider(QQ, password):
-    pool = get_pool()
-    conn = redis.Redis(connection_pool=pool)
+    pool_flag = session.get(POOL_FLAG)
+    conn = get_redis_conn(pool_flag)
     if not check_password(conn, QQ, password):
         return json.dumps(dict(finish=-2))
     # 更新标记位，停止爬虫
@@ -102,8 +108,8 @@ def stop_spider(QQ, password):
 
 @spider.route('/query_friend_info_num/<QQ>/<friend_num>/<password>')
 def query_friend_info_num(QQ, friend_num, password):
-    pool = get_pool()
-    conn = redis.Redis(connection_pool=pool)
+    pool_flag = session.get(POOL_FLAG)
+    conn = get_redis_conn(pool_flag)
     if not check_password(conn, QQ, password):
         return json.dumps(dict(finish=-2))
     info = conn.get(FRIEND_INFO_COUNT_KEY + str(QQ))
@@ -114,8 +120,8 @@ def query_friend_info_num(QQ, friend_num, password):
 
 @spider.route('/query_clean_data/<QQ>/<password>')
 def query_clean_data(QQ, password):
-    pool = get_pool()
-    conn = redis.Redis(connection_pool=pool)
+    pool_flag = session.get(POOL_FLAG)
+    conn = get_redis_conn(pool_flag)
     if not check_password(conn, QQ, password):
         return json.dumps(dict(finish=-2), ensure_ascii=False)
     while True:
