@@ -2,9 +2,9 @@
 
 -  抓取QQ空间说说内容并进行分析
 
-![Image](resource/image/text.png)
+![Image](resource/image/text.jpg)
 
-![Image](resource/image/web2.png)
+![Image](resource/image/history.jpg)
 
 ### docker版运行方式
 

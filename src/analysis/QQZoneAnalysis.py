@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 from src.spider.QQZoneFriendSpider import QQZoneFriendSpider
 from src.analysis.Average import Average
 from src.util.constant import BASE_DIR, HISTORY_LIKE_AGREE
+from src.util.util import get_mktime2, get_standard_time_from_mktime2
 
 
 class QQZoneAnalysis(QQZoneFriendSpider):
@@ -93,10 +94,52 @@ class QQZoneAnalysis(QQZoneFriendSpider):
         data_df.drop(['total_num', 'index'], axis=1, inplace=True)
         # data_df.drop_duplicate()
         n_E = self.av.calculate_E(data_df)
-        mood_data_df['n_E'] = n_E
-        mood_data_df['user'] = self.file_name_head
+        max_n_E = max(n_E)
+        data_df['n_E'] = n_E
+        data_df['user'] = self.file_name_head
+
         self.mood_data_df = data_df
+        date = self.mood_data_df.loc[self.mood_data_df.n_E == max_n_E, 'time'].values[0]
+        # 计算熵最高的日期
+        self.user_info.most_date = date
         self.has_clean_data = True
+
+    def calculate_send_time(self):
+        """
+        计算每条说说的发送时间
+        分为以下五种类型：
+        0.0点-3点
+        1.3-6
+        2.6点-9点
+        3.9-12
+        4.12点-15
+        5.15-18
+        6.18-21
+        7.21-24
+        :return:
+        """
+        if self.friend_df is None:
+            self.friend_df = pd.read_csv(self.FRIEND_DETAIL_LIST_FILE_NAME)
+        day_begin_time = self.mood_data_df['time_stamp'].apply(lambda x: get_standard_time_from_mktime2(x))
+        day_time_stamp = self.mood_data_df['time_stamp']
+        time_diff = day_time_stamp - day_begin_time
+        # 四个小时的时间差
+        time_step = 60 * 60 * 3
+        time_state = time_diff.apply(lambda x: x // time_step)
+        time_state_df = pd.DataFrame(time_state)
+        time_state_df['count'] = 1
+        time_state_df = time_state_df.groupby(by='time_stamp').sum().reset_index()
+        temp = max(time_state_df['count'].values)
+
+        most_state = time_state_df.loc[time_state_df['count'] == temp, 'time_stamp'].values[0]
+        # 判断是否是夜猫子
+        is_night = (time_state_df.loc[time_state_df['time_stamp'] == 0, 'count'].values[0] / time_state_df['count'].sum()) > 0.1
+        self.mood_data_df['time_state'] = time_state
+        self.time_step_df = pd.DataFrame(time_state)
+
+        print('send time:', self.mood_data_df.shape)
+        self.user_info.most_time_state = most_state
+        self.user_info.is_night = int(is_night)
 
     def parse_mood_detail(self, mood):
         try:
@@ -333,7 +376,7 @@ class QQZoneAnalysis(QQZoneFriendSpider):
         most_cmt_name = cmt_df.loc[0, 'cmt_name']
         self.user_info.cmt_friend_name = most_cmt_name
         self.user_info.like_friend_name = most_like_name
-        self.user_info.save_user()
+
 
     def calculate_history_like_agree(self):
         history_df = self.mood_data_df.loc[:, ['cmt_total_num', 'like_num', 'content', 'time']]

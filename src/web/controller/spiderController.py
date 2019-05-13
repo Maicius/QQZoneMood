@@ -108,7 +108,8 @@ def stop_spider(QQ, password):
             sleep(0.1)
 
     num = conn.get(MOOD_COUNT_KEY + str(QQ))
-    return json.dumps(dict(num=num, finish=stop))
+    friend_num = conn.get(FRIEND_INFO_COUNT_KEY + str(QQ))
+    return json.dumps(dict(num=num, finish=stop, friend_num=friend_num))
 
 @spider.route('/query_friend_info_num/<QQ>/<friend_num>/<password>')
 def query_friend_info_num(QQ, friend_num, password):

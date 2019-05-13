@@ -51,9 +51,14 @@ def get_mktime(date_string):
 def get_mktime2(date_string):
     return time.mktime(time.strptime(date_string, '%Y年%m月%d日'))
 
+
 # 将时间戳转化为标准时间
 def get_standard_time_from_mktime(mktime):
     return time.strftime("%Y-%m-%d", time.localtime(mktime))
+
+def get_standard_time_from_mktime2(mktime):
+    temp = time.strftime("%Y-%m-%d", time.localtime(mktime))
+    return get_mktime(temp)
 
 
 def get_month(date):

@@ -25,7 +25,12 @@ class UserInfo(object):
     cmt_friend_name_header = ''
     cmt_friend_name = ''
 
-    single_friend = 0,
+    single_friend = 0
+
+    most_date = ''
+    most_time_state = ''
+
+    is_night = ''
 
     is_none = True
     def __init__(self, username):
@@ -39,7 +44,8 @@ class UserInfo(object):
                     years=self.years, first_friend_header = self.first_friend_header,
                     like_friend_name=self.like_friend_name, like_friend_header=self.like_friend_header,
                     cmt_friend_name_header=self.cmt_friend_name_header, first_mood_time=self.first_mood_time,
-                    cmt_friend_name=self.cmt_friend_name, single_friend=self.single_friend)
+                    cmt_friend_name=self.cmt_friend_name, single_friend=self.single_friend, most_date = self.most_date,
+                    most_time_state=self.most_time_state, is_night = self.is_night)
 
     def save_user(self):
         data = self.to_dict()
@@ -78,3 +84,6 @@ class UserInfo(object):
         self.cmt_friend_name = data['cmt_friend_name']
         self.first_mood_time = data['first_mood_time']
         self.single_friend = data['single_friend']
+        self.most_date = data['most_date']
+        self.most_time_state = data['most_time_state']
+        self.is_night = data['is_night']

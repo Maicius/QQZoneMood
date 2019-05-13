@@ -138,6 +138,7 @@ let vm = avalon.define({
         //避免用户多次点击停止爬虫导致保存数据出错
         if (vm.spider_text !== SPIDER_TEXT.STOP) {
             clearInterval(vm.query_num);
+            clearInterval(vm.query_friend_info);
             vm.spider_text = SPIDER_TEXT.STOP;
             $.ajax({
                 url: '/spider/stop_spider/' + vm.qq_id + '/' + sha1(vm.password),
@@ -147,6 +148,9 @@ let vm = avalon.define({
                     if (data.finish !== -2) {
                         vm.spider_state = SPIDER_STATE.FINISH;
                         vm.spider_num = parseInt(data.num);
+                        vm.process_width = Math.ceil(parseInt(vm.spider_num) / parseInt(vm.true_mood_num) * 100) + "%";
+                        vm.spider_friend_num = data.num;
+                        vm.friend_process_width = Math.ceil(parseInt(vm.spider_friend_num) / parseInt(vm.all_friend_num) * 100) + "%";
                         vm.query_clean_state();
                     } else {
                         alert("识别码与QQ不匹配");
