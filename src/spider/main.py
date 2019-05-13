@@ -64,6 +64,8 @@ def web_interface(username, nickname, stop_time, mood_num, cookie_text, no_delet
     sp.get_first_friend_info()
     # 清洗说说数据并计算点赞最多的人和评论最多的人
     sp.get_most_people()
+    sp.calculate_send_time()
+    sp.user_info.save_user()
     # 保存说说数据
     sp.export_mood_df()
 
