@@ -1,16 +1,13 @@
-from flask import Flask, render_template, send_from_directory, Blueprint,session
+from flask import Blueprint,session
 
 import json
 from src.util.constant import *
-from src.web.entity.UserInfo import UserInfo
 from flask import request
 from src.spider.main import web_interface
 import threading
 from time import sleep
-import redis
 
-from src.web.web_util.web_util import get_pool, check_password, md5_password, init_redis_key, get_redis_conn, \
-    get_docker_pool, judge_pool
+from src.web.web_util.web_util import check_password, md5_password, init_redis_key, get_redis_conn, judge_pool
 
 spider = Blueprint('spider',__name__)
 

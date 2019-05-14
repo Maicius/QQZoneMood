@@ -2,10 +2,9 @@ import datetime
 from src.util import util
 from copy import deepcopy
 import json
-from src.util.constant import BASE_DIR, EXPIRE_TIME_IN_SECONDS, REDIS_HOST, REDIS_HOST_DOCKER
+from src.util.constant import BASE_DIR, EXPIRE_TIME_IN_SECONDS
 import re
 import logging
-import redis
 from src.web.entity.UserInfo import UserInfo
 from src.web.web_util.web_util import get_redis_conn
 

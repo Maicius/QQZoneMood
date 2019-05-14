@@ -7,8 +7,8 @@ from scipy.misc import imread
 import matplotlib.pyplot as plt
 from src.spider.QQZoneFriendSpider import QQZoneFriendSpider
 from src.analysis.Average import Average
-from src.util.constant import BASE_DIR, HISTORY_LIKE_AGREE
-from src.util.util import get_mktime2, get_standard_time_from_mktime2
+from src.util.constant import BASE_DIR
+from src.util.util import get_standard_time_from_mktime2
 
 
 class QQZoneAnalysis(QQZoneFriendSpider):
