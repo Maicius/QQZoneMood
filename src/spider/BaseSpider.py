@@ -43,10 +43,9 @@ class BaseSpider(object):
         self.pool_flag = pool_flag
         if from_web:
             self.username = username
-            self.file_name_head = username
             self.nickname = nickname
         else:
-            self.username, self.password, self.file_name_head, self.nick_name = self.get_username_password()
+            self.username, self.password, self.nick_name = self.get_username_password()
         self.mood_host = self.http_host + '/' + self.username + '/mood/'
         # 在爬取好友动态时username会变为好友的QQ号，所以此处需要备份
         self.raw_username = deepcopy(self.username)
@@ -83,7 +82,7 @@ class BaseSpider(object):
         try:
             with open(config_path, 'r', encoding='utf-8') as r:
                 userinfo = json.load(r)
-            return userinfo['username'], userinfo['password'], userinfo['file_name_head'], userinfo['nick_name']
+            return userinfo['username'], userinfo['password'], userinfo['nick_name']
         except:
             print("Error: File Not Found==============")
             print("请检查配置文件是否正确配置!!!!")
@@ -150,7 +149,7 @@ class BaseSpider(object):
 
 
     def init_file_name(self):
-        logging.info('file_name_head:' + self.file_name_head)
+        logging.info('file_name_head:' + self.username)
 
         DATA_DIR_HEAD = self.USER_BASE_DIR + 'data/'
         self.CONTENT_FILE_NAME = DATA_DIR_HEAD + 'QQ_content.json'

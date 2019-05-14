@@ -31,7 +31,6 @@ class QQZoneFriendMoodSpider(QQZoneSpider):
 
     def change_username(self, friend_name):
         self.username = friend_name['friend_name']
-        self.file_name_head = friend_name['file_name_head']
         self.mood_host = self.http_host + '/' + self.username + '/mood/'
 
 
