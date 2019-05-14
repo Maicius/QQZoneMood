@@ -29,7 +29,8 @@
 	> cd QQZoneMood
 
 	> docker-compose up
-
+	
+	> 浏览器里输入地址: [http://localhost:5000](http://localhost:5000)
 
 ### TO DO...
 
