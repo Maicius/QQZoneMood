@@ -9,18 +9,14 @@ from src.util.constant import WEB_SPIDER_INFO, MOOD_NUM_PRE, CLEAN_DATA_KEY, GET
     USER_MAP_KEY, GET_MOOD_FAILED, MOOD_FINISH_KEY
 import threading
 
-# 获取空间动态数据
-def capture_data():
-    sp = QQZoneSpider(use_redis=True, debug=True, mood_begin=0, mood_num=-1,
-                      stop_time='-1',
-                      download_small_image=False, download_big_image=False,
-                      download_mood_detail=True, download_like_detail=True,
-                      download_like_names=True, recover=False, cookie_text=None)
+# 使用selenium自动登陆，获取空间全部说说内容，不下载图片
+# 比较完整的一个接口，可直接调用
+def capture_main_data():
+    sp = QQZoneSpider(use_redis=True, debug=False, download_small_image=False, download_big_image=False)
     sp.login()
     sp.get_main_page_info()
     sp.get_mood_list()
     sp.user_info.save_user(sp.username)
-
 
 # 提供给web的接口
 def web_interface(username, nickname, stop_time, mood_num, cookie_text, no_delete, password, pool_flag):
@@ -84,23 +80,5 @@ def get_user_basic_info():
     return sp.user_info
 
 
-def array_test():
-    step = 1102 // 4
-    for i in range(0, 4):
-        print(i * step)
-
-
-def test_step():
-    sp = QQZoneSpider(use_redis=True, debug=True, mood_begin=0, mood_num=1000,
-                      stop_time='-1',
-                      download_small_image=False, download_big_image=False,
-                      download_mood_detail=True, download_like_detail=True,
-                      download_like_names=True, recover=False, cookie_text=None)
-    sp.find_best_step(1100, 5)
-    sp.find_best_step(1222, 5)
-    sp.find_best_step(2222, 10)
-
-
 if __name__ == '__main__':
     capture_data()
-    # test_step()

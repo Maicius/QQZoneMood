@@ -208,7 +208,8 @@ class QQZoneSpider(BaseSpider):
 
     def find_best_step(self, mood_num, thread_num):
         step = int(mood_num / thread_num // 20 * 20)
-        print("Best Step:", step)
+        if self.debug:
+            print("Best Step:", step)
         return step
 
     def get_mood_in_range(self, pos, mood_num, recover_index_split, url_mood, until_stop_time):

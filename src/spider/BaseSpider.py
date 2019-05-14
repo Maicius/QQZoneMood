@@ -45,7 +45,7 @@ class BaseSpider(object):
             self.username = username
             self.nickname = nickname
         else:
-            self.username, self.password, self.nick_name = self.get_username_password()
+            self.username, self.password, self.nickname = self.get_username_password()
         self.mood_host = self.http_host + '/' + self.username + '/mood/'
         # 在爬取好友动态时username会变为好友的QQ号，所以此处需要备份
         self.raw_username = deepcopy(self.username)
@@ -93,10 +93,10 @@ class BaseSpider(object):
     # 将响应字符串转化为标准Json
     def get_json(self, str1):
         arr = re.findall(r'[^()]+', str1)
-        json = ""
-        for i in range(1, len(arr) - 1):
-            json += arr[i]
-        return json
+        # for i in range(1, len(arr) - 1):
+        #     json += arr[i]
+        json = "".join(arr[1:-1])
+        return json.strip()
 
     # 从本地恢复数据（用于爬虫意外中断之后的数据恢复）
     def do_recover_from_exist_data(self):
