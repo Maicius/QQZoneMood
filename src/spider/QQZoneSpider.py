@@ -168,8 +168,6 @@ class QQZoneSpider(BaseSpider):
         # 如果mood_num为-1，则下载全部的动态
         if self.mood_num == -1:
             self.mood_num = mood_num
-
-
         # 根据mood_num分配线程个数
         if self.mood_num >= 200:
             self.thread_num = 10
