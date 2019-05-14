@@ -28,6 +28,8 @@ GET_MAIN_PAGE_FAILED = "获取主页信息失败"
 FINISH_ALL_INFO = "获取全部信息完成"
 
 MOOD_COUNT_KEY = 'mood_count_'
+MOOD_FINISH_KEY = 'mood_finish_'
+FRIEND_FINISH_KEY = 'friend_finish_'
 
 MOOD_NUM_PRE = 'QQ空间的说说数量'
 FRIEND_INFO_PRE = 'QQ好友数量'

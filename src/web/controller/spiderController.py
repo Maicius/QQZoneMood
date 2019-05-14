@@ -46,14 +46,16 @@ def query_spider_num(QQ, mood_num, password):
     if not check_password(conn, QQ, password):
         return json.dumps(dict(finish=-2))
     info = conn.get(MOOD_COUNT_KEY + str(QQ))
+    # 强制停止，保证在由于网络等原因导致爬取的说说数量有缺失时也能正常停止程序
+    finish_key = bool(conn.get(MOOD_FINISH_KEY + str(QQ)))
+
     finish = 0
-    if int(info) >= int(mood_num):
+    if finish_key or int(info) >= int(mood_num):
         finish = 1
     return json.dumps(dict(num=info, finish=finish))
 
 @spider.route('/start_spider', methods=['GET', 'POST'])
 def start_spider():
-
     if request.method == 'POST':
         nick_name = request.form['nick_name']
         qq = request.form['qq']

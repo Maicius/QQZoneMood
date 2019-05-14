@@ -6,7 +6,7 @@ sys.path.append(os.path.split(rootPath)[0])
 from src.analysis.QQZoneAnalysis import QQZoneAnalysis
 from src.spider.QQZoneSpider import QQZoneSpider
 from src.util.constant import WEB_SPIDER_INFO, MOOD_NUM_PRE, CLEAN_DATA_KEY, GET_MAIN_PAGE_FAILED, LOGIN_FAILED, \
-    USER_MAP_KEY, GET_MOOD_FAILED
+    USER_MAP_KEY, GET_MOOD_FAILED, MOOD_FINISH_KEY
 import threading
 
 # 获取空间动态数据
@@ -68,7 +68,7 @@ def web_interface(username, nickname, stop_time, mood_num, cookie_text, no_delet
     sp.user_info.save_user()
     # 保存说说数据
     sp.export_mood_df()
-
+    sp.re.set(MOOD_FINISH_KEY + str(username), 1)
     sp.calculate_history_like_agree()
     sp.re.set(CLEAN_DATA_KEY + username, 1)
 
