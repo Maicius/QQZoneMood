@@ -15,11 +15,11 @@ import datetime
 import logging
 from src.spider.BaseSpider import BaseSpider
 from src.util import util
-from src.util.constant import qzone_jother2, USER_MAP_KEY
+from src.util.constant import qzone_jother2
 import math
 import execjs
 import threading
-from src.util.constant import WEB_SPIDER_INFO, FINISH_ALL_INFO, MOOD_COUNT_KEY, STOP_SPIDER_KEY, STOP_SPIDER_FLAG
+from src.util.constant import FINISH_ALL_INFO, MOOD_COUNT_KEY, STOP_SPIDER_KEY, STOP_SPIDER_FLAG
 
 class QQZoneSpider(BaseSpider):
     def __init__(self, use_redis=False, debug=False, mood_begin=0, mood_num=-1, stop_time='-1',
@@ -66,7 +66,8 @@ class QQZoneSpider(BaseSpider):
             self.auto_get_cookie()
         # 根据cookie计算g_tk值
         self.get_g_tk()
-        print("finish to calculate g_tk")
+        if self.debug:
+            print("finish to calculate g_tk")
         self.headers['cookie'] = self.cookies
         self.h5_headers['cookie'] = self.cookies
 
@@ -167,13 +168,11 @@ class QQZoneSpider(BaseSpider):
         # 如果mood_num为-1，则下载全部的动态
         if self.mood_num == -1:
             self.mood_num = mood_num
-
-
         # 根据mood_num分配线程个数
         if self.mood_num >= 200:
             self.thread_num = 10
         else:
-            self.thread_num = round(mood_num / 20)
+            self.thread_num = round(self.mood_num / 20)
         if self.thread_num < 1:
             self.thread_num = 1
         print("获取QQ动态的线程数量:", self.thread_num)
@@ -197,7 +196,8 @@ class QQZoneSpider(BaseSpider):
 
         # 保存所有数据到指定文件
         print('保存最终数据中...')
-        self.re.set(STOP_SPIDER_KEY + self.username, FINISH_ALL_INFO)
+        if self.use_redis:
+            self.re.set(STOP_SPIDER_KEY + self.username, FINISH_ALL_INFO)
         if (self.debug):
             print('Error Unikeys Num:', len(self.error_like_detail_unikeys))
             print('Retry to get them...')
@@ -208,7 +208,8 @@ class QQZoneSpider(BaseSpider):
 
     def find_best_step(self, mood_num, thread_num):
         step = int(mood_num / thread_num // 20 * 20)
-        print("Best Step:", step)
+        if self.debug:
+            print("Best Step:", step)
         return step
 
     def get_mood_in_range(self, pos, mood_num, recover_index_split, url_mood, until_stop_time):
@@ -235,7 +236,8 @@ class QQZoneSpider(BaseSpider):
                         recover_index_split = 0
                     # 获取数据
                     until_stop_time = self.do_get_infos(unikeys, until_stop_time)
-                    until_stop_time = False if self.re.get(STOP_SPIDER_KEY+ str(self.username)) == STOP_SPIDER_FLAG else True
+                    if self.use_redis:
+                        until_stop_time = False if self.re.get(STOP_SPIDER_KEY+ str(self.username)) == STOP_SPIDER_FLAG else True
                 pos += 20
                 # 每抓100条保存一次数据
                 if pos % 100 == 0 and self.use_redis:
@@ -446,7 +448,8 @@ class QQZoneSpider(BaseSpider):
 
                 # 计数，反馈给前端
                 self.mood_count += 1
-                self.re.set(MOOD_COUNT_KEY + str(self.username), self.mood_count)
+                if self.use_redis:
+                    self.re.set(MOOD_COUNT_KEY + str(self.username), self.mood_count)
 
             except BaseException as e:
                 self.format_error(e, 'continue to capture...')
@@ -631,7 +634,7 @@ class QQZoneSpider(BaseSpider):
             self.user_info.years = years
             if self.debug:
                 print("Finish to get first time")
-
+            print("Success to Get Main Page Info!")
         except BaseException as e:
             self.format_error(e, "获取第一次登陆时间失败")
 

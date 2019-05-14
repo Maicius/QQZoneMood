@@ -1,5 +1,4 @@
 from src.util.constant import *
-from flask import session
 import redis
 import hashlib
 import sys

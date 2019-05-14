@@ -7,8 +7,8 @@ from scipy.misc import imread
 import matplotlib.pyplot as plt
 from src.spider.QQZoneFriendSpider import QQZoneFriendSpider
 from src.analysis.Average import Average
-from src.util.constant import BASE_DIR, HISTORY_LIKE_AGREE
-from src.util.util import get_mktime2, get_standard_time_from_mktime2
+from src.util.constant import BASE_DIR
+from src.util.util import get_standard_time_from_mktime2
 
 
 class QQZoneAnalysis(QQZoneFriendSpider):
@@ -22,11 +22,10 @@ class QQZoneAnalysis(QQZoneFriendSpider):
         self.mood_data_df = pd.DataFrame()
         self.like_detail_df = []
         self.like_list_names_df = []
-        self.file_name_head = username
         self.analysis_friend = analysis_friend
         self.has_clean_data = False
-        self.friend_dir = BASE_DIR + self.file_name_head + '/friend/' + 'friend_detail_list.csv'
-        self.history_like_agree_file_name = BASE_DIR +  self.file_name_head + '/friend/' + 'history_like_list.json'
+        self.friend_dir = BASE_DIR + self.username + '/friend/' + 'friend_detail_list.csv'
+        self.history_like_agree_file_name = BASE_DIR +  self.username + '/friend/' + 'history_like_list.json'
 
         self.av = Average(use_redis=False, file_name_head=username, analysis=True, debug=debug)
         self.init_analysis_path()
@@ -328,12 +327,12 @@ class QQZoneAnalysis(QQZoneFriendSpider):
         content = df['content'].sum()
 
         words = self.get_jieba_words(content)
-        self.drawWordCloud(words, self.file_name_head + '_content_')
+        self.drawWordCloud(words, self.username + '_content_')
 
     def calculate_cmt_cloud(self, df):
         cmt_df = self.av.calculate_cmt_rank(df)
         cmt_dict = {x[0]: x[1] for x in cmt_df.values}
-        self.drawWordCloud(cmt_dict, self.file_name_head + '_cmt_', dict_type=True)
+        self.drawWordCloud(cmt_dict, self.username + '_cmt_', dict_type=True)
 
     def rank_like_people(self, df):
         uin_list = df['uin_list']
@@ -347,7 +346,7 @@ class QQZoneAnalysis(QQZoneFriendSpider):
     def calculate_like_cloud(self, df):
         all_uin_count = self.rank_like_people(df)
         all_uin_dict = {str(x[0]): x[1] for x in all_uin_count.values}
-        self.drawWordCloud(all_uin_dict, self.file_name_head + '_like_', dict_type=True)
+        self.drawWordCloud(all_uin_dict, self.username + '_like_', dict_type=True)
 
     def export_mood_df(self, export_csv=True, export_excel=True):
         """

@@ -2,10 +2,9 @@ import datetime
 from src.util import util
 from copy import deepcopy
 import json
-from src.util.constant import BASE_DIR, EXPIRE_TIME_IN_SECONDS, REDIS_HOST, REDIS_HOST_DOCKER
+from src.util.constant import BASE_DIR, EXPIRE_TIME_IN_SECONDS
 import re
 import logging
-import redis
 from src.web.entity.UserInfo import UserInfo
 from src.web.web_util.web_util import get_redis_conn
 
@@ -44,10 +43,9 @@ class BaseSpider(object):
         self.pool_flag = pool_flag
         if from_web:
             self.username = username
-            self.file_name_head = username
             self.nickname = nickname
         else:
-            self.username, self.password, self.file_name_head, self.nick_name = self.get_username_password()
+            self.username, self.password, self.nickname = self.get_username_password()
         self.mood_host = self.http_host + '/' + self.username + '/mood/'
         # 在爬取好友动态时username会变为好友的QQ号，所以此处需要备份
         self.raw_username = deepcopy(self.username)
@@ -84,7 +82,7 @@ class BaseSpider(object):
         try:
             with open(config_path, 'r', encoding='utf-8') as r:
                 userinfo = json.load(r)
-            return userinfo['username'], userinfo['password'], userinfo['file_name_head'], userinfo['nick_name']
+            return userinfo['username'], userinfo['password'], userinfo['nick_name']
         except:
             print("Error: File Not Found==============")
             print("请检查配置文件是否正确配置!!!!")
@@ -95,10 +93,10 @@ class BaseSpider(object):
     # 将响应字符串转化为标准Json
     def get_json(self, str1):
         arr = re.findall(r'[^()]+', str1)
-        json = ""
-        for i in range(1, len(arr) - 1):
-            json += arr[i]
-        return json
+        # for i in range(1, len(arr) - 1):
+        #     json += arr[i]
+        json = "".join(arr[1:-1])
+        return json.strip()
 
     # 从本地恢复数据（用于爬虫意外中断之后的数据恢复）
     def do_recover_from_exist_data(self):
@@ -151,7 +149,7 @@ class BaseSpider(object):
 
 
     def init_file_name(self):
-        logging.info('file_name_head:' + self.file_name_head)
+        logging.info('file_name_head:' + self.username)
 
         DATA_DIR_HEAD = self.USER_BASE_DIR + 'data/'
         self.CONTENT_FILE_NAME = DATA_DIR_HEAD + 'QQ_content.json'

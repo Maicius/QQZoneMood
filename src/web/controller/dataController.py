@@ -4,7 +4,7 @@ from src.util.constant import *
 import os
 
 from src.web.entity.UserInfo import UserInfo
-from src.web.web_util.web_util import get_pool, check_password, get_redis_conn
+from src.web.web_util.web_util import check_password, get_redis_conn
 
 data = Blueprint('data',__name__)
 
