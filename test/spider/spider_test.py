@@ -41,7 +41,7 @@ class SpiderTest(unittest.TestCase):
 
     # 测试下载图片，不下载动态
     def test_download_image(self):
-        sp = QQZoneSpider(use_redis=False, debug=False, mood_num=20, download_mood_detail=False,
+        sp = QQZoneSpider(use_redis=False, debug=False, mood_num=100, download_mood_detail=False,
                           download_like_detail=False, download_like_names=False, download_big_image=True,
                           download_small_image=True)
         sp.login()
