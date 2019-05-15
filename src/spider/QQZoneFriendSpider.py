@@ -5,16 +5,18 @@ import pandas as pd
 from src.util import util
 import math
 import threading
+import datetime
 from src.util.constant import BASE_DIR, FINISH_FRIEND_INFO_ALL, STOP_FRIEND_INFO_SPIDER_KEY, WEB_SPIDER_INFO, \
-    FRIEND_INFO_PRE, FRIEND_INFO_COUNT_KEY, EXPIRE_TIME_IN_SECONDS, FRIEND_LIST_KEY, STOP_SPIDER_KEY, STOP_SPIDER_FLAG
+    FRIEND_INFO_PRE, FRIEND_INFO_COUNT_KEY, EXPIRE_TIME_IN_SECONDS, FRIEND_LIST_KEY, STOP_SPIDER_KEY, STOP_SPIDER_FLAG, \
+    BASE_PATH
 
 
 class QQZoneFriendSpider(QQZoneSpider):
     """
     爬取自己的好友的数量、共同群组等基本信息（不是爬好友的动态）
     """
-    def __init__(self, use_redis=False, debug=False, analysis=False, recover=False,
-                 username='', mood_begin=0, mood_num=-1, stop_time='-1', from_web=True, nickname='', no_delete=True, cookie_text='',
+    def __init__(self, use_redis=False, debug=False, analysis=True, recover=False,
+                 username='', mood_begin=0, mood_num=-1, stop_time='-1', from_web=False, nickname='', no_delete=True, cookie_text='',
                  export_excel=False, export_csv = True, pool_flag='127.0.0.1'):
         """
         :param use_redis: 是否使用redis
@@ -35,7 +37,7 @@ class QQZoneFriendSpider(QQZoneSpider):
         self.FRIEND_DETAIL_LIST_FILE_NAME = FRIEND_DIR_HEAD + 'friend_detail_list.csv'
         self.FRIEND_DETAIL_EXCEL_FILE_NAME = FRIEND_DIR_HEAD + 'friend_detail_list.xlsx'
         # 头像下载到web的static文件夹，以便在web中调用
-        self.FRIEND_HEADER_IMAGE_PATH = '../web/static/image/header/' + self.username + '/'
+        self.FRIEND_HEADER_IMAGE_PATH = BASE_PATH + '/src/web/static/image/header/' + self.username + '/'
         util.check_dir_exist(USER_BASE_DIR + 'friend/')
         util.check_dir_exist(self.FRIEND_HEADER_IMAGE_PATH)
         self.friend_detail = []
@@ -63,11 +65,38 @@ class QQZoneFriendSpider(QQZoneSpider):
         return len(self.friend_list)
 
     def download_head_image(self):
-        for item in self.friend_list:
+        """
+        下载好友头像
+        不需要cookie验证
+        :return:
+        """
+        if len(self.friend_list) == 0:
+            self.load_friend_data()
+        friend_num = len(self.friend_list)
+        thread_num = self.calculate_thread_num(friend_num)
+        print("下载头像的线程数量：", thread_num)
+        begin_time = datetime.datetime.now()
+        thread_list = []
+        for i in range(thread_num):
+            t = threading.Thread(target=self.do_download_image, args=(i, friend_num, thread_num))
+            thread_list.append(t)
+        for t in thread_list:
+            t.setDaemon(False)
+            t.start()
+        for t in thread_list:
+            t.join()
+        print('耗时:', (datetime.datetime.now() - begin_time).seconds, '秒')
+        print("下载全部头像完成")
+
+    def do_download_image(self, index, friend_num, step = 1):
+        while index < friend_num:
+            item = self.friend_list[index]
             url = item['img']
-            print(url)
+            if self.debug:
+                print(url)
             name = item['uin']
             self.download_image(url, self.FRIEND_HEADER_IMAGE_PATH + str(name))
+            index += step
 
     def get_friend_detail(self):
         """
@@ -77,13 +106,14 @@ class QQZoneFriendSpider(QQZoneSpider):
         friend_num = self.get_friend_list()
         if self.use_redis:
             self.re.rpush(WEB_SPIDER_INFO + self.username, FRIEND_INFO_PRE + ":" + str(friend_num))
+            if not self.no_delete:
+                self.re.expire(WEB_SPIDER_INFO + self.username, EXPIRE_TIME_IN_SECONDS)
+
         self.user_info.friend_num = friend_num
-        # 保证每个线程至少爬20次，最多开10个线程
-        if friend_num >= 200:
-            thread_num = 10
-        else:
-            thread_num = math.ceil(friend_num / 20)
-        print("获取好友基本进行的线程数量：", thread_num)
+
+        thread_num = self.calculate_thread_num(friend_num)
+        print("获取好友基本信息的线程数量：", thread_num)
+        print("开始获取好友数据...")
         for i in range(thread_num):
             begin_index = i
             t = threading.Thread(target=self.do_get_friend_detail, args=(begin_index, friend_num, thread_num, True))
@@ -104,7 +134,15 @@ class QQZoneFriendSpider(QQZoneSpider):
                 self.re.expire(self.FRIEND_DETAIL_FILE_NAME, EXPIRE_TIME_IN_SECONDS)
         else:
             self.save_data_to_json(self.friend_detail, self.FRIEND_DETAIL_FILE_NAME)
+        print("获取好友数据成功，文件路径为：", self.FRIEND_DETAIL_FILE_NAME)
 
+    # 保证每个线程至少爬20次，最多开10个线程
+    def calculate_thread_num(self, num):
+        if num >= 200:
+            thread_num = 10
+        else:
+            thread_num = math.ceil(num / 20)
+        return thread_num
 
     def do_get_friend_detail(self, index, friend_num, step=1, until_stop_time=True):
         # 避免好友数量为0
@@ -127,10 +165,11 @@ class QQZoneFriendSpider(QQZoneSpider):
                 continue
             self.friend_detail.append(data)
             index += step
-            self.re.set(FRIEND_INFO_COUNT_KEY + self.username, len(self.friend_detail))
-            if not self.no_delete:
-                self.re.expire(FRIEND_INFO_COUNT_KEY + self.username, EXPIRE_TIME_IN_SECONDS)
-            until_stop_time = False if self.re.get(STOP_SPIDER_KEY + str(self.username)) == STOP_SPIDER_FLAG else True
+            if self.use_redis:
+                self.re.set(FRIEND_INFO_COUNT_KEY + self.username, len(self.friend_detail))
+                if not self.no_delete:
+                    self.re.expire(FRIEND_INFO_COUNT_KEY + self.username, EXPIRE_TIME_IN_SECONDS)
+                until_stop_time = False if self.re.get(STOP_SPIDER_KEY + str(self.username)) == STOP_SPIDER_FLAG else True
 
     def get_friend_list_url(self):
         friend_url = 'https://user.qzone.qq.com/proxy/domain/r.qzone.qq.com/cgi-bin/tfriend/friend_show_qqfriends.cgi?'
@@ -158,20 +197,31 @@ class QQZoneFriendSpider(QQZoneSpider):
 
     def load_friend_data(self):
         try:
-            self.friend_detail = self.re.get(self.FRIEND_DETAIL_FILE_NAME)
-            self.friend_list = self.re.get(self.FRIEND_LIST_FILE_NAME)
-            if self.friend_detail is None or self.friend_list is None:
+            if self.use_redis:
+                self.friend_detail = self.re.get(self.FRIEND_DETAIL_FILE_NAME)
+                self.friend_list = self.re.get(self.FRIEND_LIST_FILE_NAME)
+                if self.friend_detail is None or self.friend_list is None:
+                    raise BaseException
+            else:
                 raise BaseException
         except BaseException as e:
-            self.format_error(e, "Failed to load data from redis")
-            print("try to load data from json now")
+            if self.use_redis:
+                self.format_error(e, "Failed to load data from redis")
+                print("try to load data from json now")
             try:
                 self.friend_detail = self.load_data_from_json(self.FRIEND_DETAIL_FILE_NAME)
                 self.friend_list = self.load_data_from_json(self.FRIEND_LIST_FILE_NAME)
+
+                if self.friend_detail is None or self.friend_list is None:
+                    raise FileNotFoundError
                 print("Success to load data from json")
-            except BaseException as e:
-                self.format_error(e, "Failed to load data from json, Make sure the correct filename")
-                exit(1)
+            except FileNotFoundError as e:
+                self.format_error(e, "Failed to load data from json...")
+                print("now, try to start spider to get friend info...")
+                self.friend_list = []
+                self.friend_detail = []
+                self.login()
+                self.get_friend_detail()
 
     def clean_friend_data(self):
         """
@@ -240,8 +290,11 @@ class QQZoneFriendSpider(QQZoneSpider):
         return self.FRIEND_DETAIL_LIST_FILE_NAME
 
     def get_first_friend_info(self):
-        if self.friend_df is None:
-            self.friend_df = pd.read_csv(self.FRIEND_DETAIL_LIST_FILE_NAME)
+        if self.friend_df.empty:
+            try:
+                self.friend_df = pd.read_csv(self.FRIEND_DETAIL_LIST_FILE_NAME)
+            except FileNotFoundError:
+                self.clean_friend_data()
         self.get_single_friend()
         # self.user_info.friend_num = self.friend_df.shape[0]
         zero_index = self.friend_df[self.friend_df['add_friend_time'] == 0].index

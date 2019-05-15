@@ -1,4 +1,6 @@
 import datetime
+
+from src.threadPool.ImageThreadPool import ImageThreadPool
 from src.util import util
 from copy import deepcopy
 import json
@@ -76,6 +78,8 @@ class BaseSpider(object):
             self.user_info = UserInfo(self.username)
         self.user_info.QQ = self.username
         self.user_info.nickname = self.nickname
+
+        self.image_thread_pool = ImageThreadPool(20)
 
     def get_username_password(self):
         config_path = BASE_DIR + 'config/userinfo.json'
@@ -185,7 +189,7 @@ class BaseSpider(object):
             with open(file_name, encoding='utf-8') as content:
                 data = json.load(content)
             return data
-        except  BaseException as e:
+        except BaseException as e:
             self.format_error(e, 'Failed to load data ' + file_name)
 
     def delete_cache(self):
