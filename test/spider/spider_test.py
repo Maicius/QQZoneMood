@@ -66,6 +66,7 @@ class SpiderTest(unittest.TestCase):
         assert expect2 == sp.extract_tid_from_unikey(str2)
         assert expect3 == sp.extract_tid_from_unikey(str3)
 
+    # 测试只下载说说详情
     def test_capture_info(self):
         sp = QQZoneSpider(use_redis=True, debug=False, mood_num=20, download_mood_detail=False,
                           download_like_detail=True, download_like_names=False)
@@ -73,9 +74,15 @@ class SpiderTest(unittest.TestCase):
         sp.login()
         sp.get_mood_list()
 
-    #
+    # 并发获取200条说说数据
     def test_capture_info_parallel(self):
         sp = QQZoneSpider(use_redis=True, debug=False, mood_num=200)
         sp.login()
         sp.get_mood_list()
 
+    # 获取全部说说数据，不下载图片
+    def test_capture_main_data(self):
+        sp = QQZoneSpider(use_redis=True, debug=False)
+        sp.login()
+        sp.get_main_page_info()
+        sp.get_mood_list()
