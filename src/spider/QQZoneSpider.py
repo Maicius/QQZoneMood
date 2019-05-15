@@ -165,8 +165,8 @@ class QQZoneSpider(BaseSpider):
         mood_json = json.loads(self.get_json(mood))
         mood_num = mood_json['usrinfo']['msgnum']
         self.get_first_mood(mood_num, url_mood)
-        # 如果mood_num为-1，则下载全部的动态
-        if self.mood_num == -1:
+        # 如果mood_num为-1或指定的mood_num大于实际的动态数量，则下载全部的动态
+        if self.mood_num == -1 or self.mood_num > mood_num:
             self.mood_num = mood_num
         # 根据mood_num分配线程个数
         if self.mood_num >= 200:
@@ -343,7 +343,7 @@ class QQZoneSpider(BaseSpider):
                 # 因为这里错误较多，所以进行一次retry，如果不行则保留unikey
                 self.format_error(e, 'Retry to get like_url:' + unikeys)
                 try:
-                    like_content = json.loads(self.get_json(self.req.get(like_url, headers=self.headers).content.decode('utf-8')))
+                    like_content = json.loads(self.get_json(self.req.get(like_url, headers=self.headers, timeout=20).content.decode('utf-8')))
                     like_content['tid'] = tid
                     return like_content
                 except BaseException as e:
@@ -459,17 +459,24 @@ class QQZoneSpider(BaseSpider):
 
         return until_stop_time
 
+    def extract_tid_from_unikey(self, unikey):
+        tid = re.findall(re.compile('mood/(.*?)\.1'), unikey)
+        if len(tid) > 0:
+            return tid[0]
+        else:
+            return ''
+
     def retry_error_unikey(self):
         """
         重新下载第一次下载中失败的数据
-        :param download_image:
         :return:
         """
         # 深拷贝
         error_detail_unikeys = copy.deepcopy(self.error_like_detail_unikeys)
         self.error_like_detail_unikeys = []
         for error_detail_unikey in error_detail_unikeys:
-            like_detail = self.get_like_detail(error_detail_unikey)
+            tid = self.extract_tid_from_unikey(unikey=error_detail_unikey)
+            like_detail = self.get_like_detail(error_detail_unikey, tid)
             self.error_like_detail[error_detail_unikey] = like_detail
 
         error_mood_unikeys = copy.deepcopy(self.error_mood_unikeys)
