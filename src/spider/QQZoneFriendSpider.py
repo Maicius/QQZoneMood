@@ -5,8 +5,10 @@ import pandas as pd
 from src.util import util
 import math
 import threading
+import datetime
 from src.util.constant import BASE_DIR, FINISH_FRIEND_INFO_ALL, STOP_FRIEND_INFO_SPIDER_KEY, WEB_SPIDER_INFO, \
-    FRIEND_INFO_PRE, FRIEND_INFO_COUNT_KEY, EXPIRE_TIME_IN_SECONDS, FRIEND_LIST_KEY, STOP_SPIDER_KEY, STOP_SPIDER_FLAG
+    FRIEND_INFO_PRE, FRIEND_INFO_COUNT_KEY, EXPIRE_TIME_IN_SECONDS, FRIEND_LIST_KEY, STOP_SPIDER_KEY, STOP_SPIDER_FLAG, \
+    BASE_PATH
 
 
 class QQZoneFriendSpider(QQZoneSpider):
@@ -35,7 +37,7 @@ class QQZoneFriendSpider(QQZoneSpider):
         self.FRIEND_DETAIL_LIST_FILE_NAME = FRIEND_DIR_HEAD + 'friend_detail_list.csv'
         self.FRIEND_DETAIL_EXCEL_FILE_NAME = FRIEND_DIR_HEAD + 'friend_detail_list.xlsx'
         # 头像下载到web的static文件夹，以便在web中调用
-        self.FRIEND_HEADER_IMAGE_PATH = '../web/static/image/header/' + self.username + '/'
+        self.FRIEND_HEADER_IMAGE_PATH = BASE_PATH + '/src/web/static/image/header/' + self.username + '/'
         util.check_dir_exist(USER_BASE_DIR + 'friend/')
         util.check_dir_exist(self.FRIEND_HEADER_IMAGE_PATH)
         self.friend_detail = []
@@ -70,11 +72,31 @@ class QQZoneFriendSpider(QQZoneSpider):
         """
         if len(self.friend_list) == 0:
             self.load_friend_data()
-        for item in self.friend_list:
+        friend_num = len(self.friend_list)
+        thread_num = self.calculate_thread_num(friend_num)
+        print("下载头像的线程数量：", thread_num)
+        begin_time = datetime.datetime.now()
+        thread_list = []
+        for i in range(thread_num):
+            t = threading.Thread(target=self.do_download_image, args=(i, friend_num, thread_num))
+            thread_list.append(t)
+        for t in thread_list:
+            t.setDaemon(False)
+            t.start()
+        for t in thread_list:
+            t.join()
+        print('耗时:', (datetime.datetime.now() - begin_time).seconds, '秒')
+        print("下载全部头像完成")
+
+    def do_download_image(self, index, friend_num, step = 1):
+        while index < friend_num:
+            item = self.friend_list[index]
             url = item['img']
-            print(url)
+            if self.debug:
+                print(url)
             name = item['uin']
             self.download_image(url, self.FRIEND_HEADER_IMAGE_PATH + str(name))
+            index += step
 
     def get_friend_detail(self):
         """
@@ -88,11 +110,8 @@ class QQZoneFriendSpider(QQZoneSpider):
                 self.re.expire(WEB_SPIDER_INFO + self.username, EXPIRE_TIME_IN_SECONDS)
 
         self.user_info.friend_num = friend_num
-        # 保证每个线程至少爬20次，最多开10个线程
-        if friend_num >= 200:
-            thread_num = 10
-        else:
-            thread_num = math.ceil(friend_num / 20)
+
+        thread_num = self.calculate_thread_num(friend_num)
         print("获取好友基本信息的线程数量：", thread_num)
         print("开始获取好友数据...")
         for i in range(thread_num):
@@ -117,6 +136,13 @@ class QQZoneFriendSpider(QQZoneSpider):
             self.save_data_to_json(self.friend_detail, self.FRIEND_DETAIL_FILE_NAME)
         print("获取好友数据成功，文件路径为：", self.FRIEND_DETAIL_FILE_NAME)
 
+    # 保证每个线程至少爬20次，最多开10个线程
+    def calculate_thread_num(self, num):
+        if num >= 200:
+            thread_num = 10
+        else:
+            thread_num = math.ceil(num / 20)
+        return thread_num
 
     def do_get_friend_detail(self, index, friend_num, step=1, until_stop_time=True):
         # 避免好友数量为0
