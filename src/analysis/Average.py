@@ -87,9 +87,10 @@ class Average(object):
         print("平均点赞数量:", self.like_num_average)
         print("平均浏览量:", self.prd_num_average)
 
-    def calculate_cmt_rank(self, df):
+    def calculate_cmt_rank(self, df, export_csv=False):
         cmt_list = df['cmt_list']
-        print(cmt_list.shape)
+        if self.debug:
+            print(cmt_list.shape)
         cmt_list_csv = []
         wrong_count = 0
 
@@ -112,9 +113,11 @@ class Average(object):
                     wrong_count +=1
                     print(e, item3)
                     pass
-        print(wrong_count)
+        if self.debug:
+            print("wrong count:", wrong_count)
         cmt_df = pd.DataFrame(cmt_list_csv)
-        print(cmt_df.shape)
+        if self.debug:
+            print(cmt_df.shape)
         all_cmt_name_df = cmt_df['comment_name']
         cmt_names = cmt_df['comment_name'].drop_duplicates()
         cmt_result_csv = []
@@ -124,8 +127,8 @@ class Average(object):
             cmt_result_csv.append(dict(cmt_name=name, cmt_times=cmt_times))
         cmt_result_csv_df = pd.DataFrame(cmt_result_csv)
         cmt_result_csv_df.sort_values(by='cmt_times', inplace=True, ascending=False)
-
-        cmt_result_csv_df.to_csv(self.CMT_RESULT_NAMES)
+        if export_csv:
+            cmt_result_csv_df.to_csv(self.CMT_RESULT_NAMES)
         return cmt_result_csv_df
 
     def calculate_like_rank(self, df):

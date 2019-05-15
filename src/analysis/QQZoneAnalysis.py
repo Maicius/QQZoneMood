@@ -8,12 +8,12 @@ import matplotlib.pyplot as plt
 from src.spider.QQZoneFriendSpider import QQZoneFriendSpider
 from src.analysis.Average import Average
 from src.util.constant import BASE_DIR
-from src.util.util import get_standard_time_from_mktime2
+from src.util.util import get_standard_time_from_mktime2,check_dir_exist
 
 
 class QQZoneAnalysis(QQZoneFriendSpider):
     def __init__(self, use_redis=False, debug=False, username='', analysis_friend=False, mood_begin=0, mood_num=-1,
-                 stop_time='-1', from_web=True, nickname='', no_delete=True, cookie_text='', pool_flag='127.0.0.1'):
+                 stop_time='-1', from_web=False, nickname='', no_delete=True, cookie_text='', pool_flag='127.0.0.1'):
 
         QQZoneFriendSpider.__init__(self, use_redis, debug, recover=False, username=username, mood_num=mood_num,
                               mood_begin=mood_begin, stop_time=stop_time, from_web=from_web, nickname=nickname,
@@ -32,6 +32,7 @@ class QQZoneAnalysis(QQZoneFriendSpider):
 
     def init_analysis_path(self):
         RESULT_BASE_DIR = self.USER_BASE_DIR + "data/result/"
+
         self.MOOD_DATA_FILE_NAME = RESULT_BASE_DIR + 'mood_data.csv'
         self.MOOD_DATA_EXCEL_FILE_NAME = RESULT_BASE_DIR + 'mood_data.xlsx'
 
@@ -40,7 +41,11 @@ class QQZoneAnalysis(QQZoneFriendSpider):
         self.LABEL_FILE_EXCEL = LABEL_BASE_DIR + 'label_data.xlsx'
 
         self.label_path = self.USER_BASE_DIR + 'data/label/'
-        self.image_path = self.USER_BASE_DIR + '/image/'
+        self.image_path = self.USER_BASE_DIR + 'image/'
+        check_dir_exist(RESULT_BASE_DIR)
+        check_dir_exist(LABEL_BASE_DIR)
+        check_dir_exist(self.label_path)
+        check_dir_exist(self.image_path)
 
     def load_file_from_redis(self):
         self.do_recover_from_exist_data()
@@ -95,7 +100,7 @@ class QQZoneAnalysis(QQZoneFriendSpider):
         n_E = self.av.calculate_E(data_df)
         max_n_E = max(n_E)
         data_df['n_E'] = n_E
-        data_df['user'] = self.file_name_head
+        data_df['user'] = self.username
 
         self.mood_data_df = data_df
         date = self.mood_data_df.loc[self.mood_data_df.n_E == max_n_E, 'time'].values[0]
@@ -119,10 +124,12 @@ class QQZoneAnalysis(QQZoneFriendSpider):
         """
         if self.friend_df is None:
             self.friend_df = pd.read_csv(self.FRIEND_DETAIL_LIST_FILE_NAME)
+        if not self.has_clean_data:
+            self.get_useful_info_from_json()
         day_begin_time = self.mood_data_df['time_stamp'].apply(lambda x: get_standard_time_from_mktime2(x))
         day_time_stamp = self.mood_data_df['time_stamp']
         time_diff = day_time_stamp - day_begin_time
-        # 四个小时的时间差
+        # 3个小时的时间差
         time_step = 60 * 60 * 3
         time_state = time_diff.apply(lambda x: x // time_step)
         time_state_df = pd.DataFrame(time_state)
@@ -135,8 +142,8 @@ class QQZoneAnalysis(QQZoneFriendSpider):
         is_night = (time_state_df.loc[time_state_df['time_stamp'] == 0, 'count'].values[0] / time_state_df['count'].sum()) > 0.1
         self.mood_data_df['time_state'] = time_state
         self.time_step_df = pd.DataFrame(time_state)
-
-        print('send time:', self.mood_data_df.shape)
+        if self.debug:
+            print('send time:', self.mood_data_df.shape)
         self.user_info.most_time_state = most_state
         self.user_info.is_night = int(is_night)
 
@@ -278,7 +285,7 @@ class QQZoneAnalysis(QQZoneFriendSpider):
             self.like_list_names_df.append(dict(total_num=0, uin_list=[], tid=like['tid']))
 
     def drawWordCloud(self, word_text, filename, dict_type=False):
-        mask = imread('image/tom2.jpeg')
+        mask = imread(BASE_DIR + 'image/tom2.jpeg')
         my_wordcloud = WordCloud(
             background_color='white',  # 设置背景颜色
             mask=mask,  # 设置背景图片
@@ -305,14 +312,7 @@ class QQZoneAnalysis(QQZoneFriendSpider):
     def get_jieba_words(self, content):
         word_list = jieba.cut(content, cut_all=False)
         word_list2 = []
-        # waste_words = "现在 时候 这里 那里 今天 明天 非常 出去 各种 其实 真是 有点 只能 有些 只能 小时 baidu 还好 回到 好多 好的 继续 不会 起来 虽然 然饿 幸好一个 一些 一下 一样 一堆 所有 这样 那样 之后 只是 每次 所以 为了 还有 这么 那么 个人 因为 每次 但是 不想 出来 的话 这种 那种 开始 觉得 这个 那个 几乎 最后 自己 这些 那些 总之 " \
-        #               "有没有 没有 并且 然后 随便 可以 太大 应该 uin nick  真的 真好 可以 不要是不是 真的或者 可以之前 不能突然最近颇极十分就都马上立刻曾经居然重新" \
-        #               "不断已已经曾曾经刚刚正在将要、就、就要、马上、立刻、顿时、终于、常、常常、时常、时时、往往、渐渐、早晚、从来、终于、一向、向来、从来、总是、始终、" \
-        #               "水、赶紧、仍然、还是、屡次、依然、重新、还、再、再三、偶尔都、总、共、总共、统统、只、仅仅、单、净、光、一齐、一概、一律、单单、就大肆、肆意、特意、" \
-        #               "亲自、猛然、忽然、公然、连忙、赶紧、悄悄、暗暗、大力、稳步、阔步、单独、亲自难道、岂、究竟、偏偏、索性、简直、就、可、也许、难怪、大约、幸而、幸亏、" \
-        #               "反倒、反正、果然、居然、竟然、何尝、何必、明明、恰恰、未免、只好、不妨"
-
-        with open('../../resource/中文停用词库.txt', 'r', encoding='gbk') as r:
+        with open(BASE_DIR + '中文停用词库.txt', 'r', encoding='gbk') as r:
             waste_words = r.readlines()
         waste_words = list(map(lambda x: x.strip(), waste_words))
         waste_words.extend(['uin', 'nick'])
@@ -323,13 +323,12 @@ class QQZoneAnalysis(QQZoneFriendSpider):
         words_text = " ".join(word_list2)
         return words_text
 
-    def calculate_content_cloud(self, df):
+    def draw_content_cloud(self, df):
         content = df['content'].sum()
-
         words = self.get_jieba_words(content)
         self.drawWordCloud(words, self.username + '_content_')
 
-    def calculate_cmt_cloud(self, df):
+    def draw_cmt_cloud(self, df):
         cmt_df = self.av.calculate_cmt_rank(df)
         cmt_dict = {x[0]: x[1] for x in cmt_df.values}
         self.drawWordCloud(cmt_dict, self.username + '_cmt_', dict_type=True)
@@ -343,7 +342,7 @@ class QQZoneAnalysis(QQZoneFriendSpider):
         all_uin_count = all_uin_df.groupby(['nick']).count().reset_index()
         return all_uin_count
 
-    def calculate_like_cloud(self, df):
+    def draw_like_cloud(self, df):
         all_uin_count = self.rank_like_people(df)
         all_uin_dict = {str(x[0]): x[1] for x in all_uin_count.values}
         self.drawWordCloud(all_uin_dict, self.username + '_like_', dict_type=True)
@@ -365,6 +364,10 @@ class QQZoneAnalysis(QQZoneFriendSpider):
         print("保存清洗后的数据成功", self.username)
 
     def get_most_people(self):
+        """
+        计算点赞和评论最多的好友
+        :return:
+        """
         if not self.has_clean_data:
             self.get_useful_info_from_json()
         all_uin_count = self.rank_like_people(self.mood_data_df)
@@ -378,6 +381,12 @@ class QQZoneAnalysis(QQZoneFriendSpider):
 
 
     def calculate_history_like_agree(self):
+        """
+        计算历史上每条说说的内容、点赞量和评论量
+        :return:
+        """
+        if not self.has_clean_data:
+            self.get_useful_info_from_json()
         history_df = self.mood_data_df.loc[:, ['cmt_total_num', 'like_num', 'content', 'time']]
         history_json = history_df.to_json(orient='records', force_ascii=False)
         if self.use_redis:
@@ -395,9 +404,9 @@ def clean_label_data():
         analysis.save_data_to_csv()
         # analysis.save_data_to_excel()
         # analysis.export_label_data(analysis.mood_data_df)
-        # analysis.calculate_content_cloud(analysis.mood_data_df)
-        # analysis.calculate_cmt_cloud(analysis.mood_data_df)
-        analysis.calculate_like_cloud(analysis.mood_data_df)
+        # analysis.draw_content_cloud(analysis.mood_data_df)
+        # analysis.draw_cmt_cloud(analysis.mood_data_df)
+        analysis.draw_like_cloud(analysis.mood_data_df)
         # analysis.export_all_label_data()
 
 def get_most_people(username):

@@ -178,6 +178,7 @@ class BaseSpider(object):
         self.like_list_names = self.load_data_from_json(self.LIKE_LIST_NAME_FILE_NAME)
         self.mood_details = self.load_data_from_json(self.MOOD_DETAIL_FILE_NAME)
         self.like_detail = self.load_data_from_json(self.LIKE_DETAIL_FILE_NAME)
+        print("Success to Load Data From Json")
 
     def load_data_from_json(self, file_name):
         try:
