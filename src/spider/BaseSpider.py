@@ -184,7 +184,7 @@ class BaseSpider(object):
             with open(file_name, encoding='utf-8') as content:
                 data = json.load(content)
             return data
-        except  BaseException as e:
+        except BaseException as e:
             self.format_error(e, 'Failed to load data ' + file_name)
 
     def delete_cache(self):
