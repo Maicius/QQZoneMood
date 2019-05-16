@@ -51,7 +51,6 @@ class BaseSpider(object):
         self.mood_host = self.http_host + '/' + self.username + '/mood/'
         # 在爬取好友动态时username会变为好友的QQ号，所以此处需要备份
         self.raw_username = deepcopy(self.username)
-
         self.headers = {
             'host': 'user.qzone.qq.com',
             'accept-encoding': 'gzip, deflate, br',
@@ -62,14 +61,7 @@ class BaseSpider(object):
         }
         self.h5_headers = deepcopy(self.headers)
         self.h5_headers['host'] = self.h5_host
-        self.USER_BASE_DIR = BASE_DIR + self.username + '/'
-        logging_dir = self.USER_BASE_DIR + 'log/'
-        util.check_dir_exist(logging_dir)
-        logging.basicConfig(level=logging.DEBUG,
-                            format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
-                            datefmt='%a, %d %b %Y %H:%M:%S',
-                            filename=logging_dir + self.username + '.log',
-                            filemode='w+')
+
         if (use_redis):
             self.re = self.connect_redis()
 
@@ -155,6 +147,15 @@ class BaseSpider(object):
 
     def init_file_name(self):
         logging.info('file_name_head:' + self.username)
+        self.USER_BASE_DIR = BASE_DIR + self.username + '/'
+
+        logging_dir = self.USER_BASE_DIR + 'log/'
+        util.check_dir_exist(logging_dir)
+        logging.basicConfig(level=logging.DEBUG,
+                            format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
+                            datefmt='%a, %d %b %Y %H:%M:%S',
+                            filename=logging_dir + self.username + '.log',
+                            filemode='w+')
 
         DATA_DIR_HEAD = self.USER_BASE_DIR + 'data/'
         self.CONTENT_FILE_NAME = DATA_DIR_HEAD + 'QQ_content.json'

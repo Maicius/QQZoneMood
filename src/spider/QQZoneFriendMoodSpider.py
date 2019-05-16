@@ -29,8 +29,8 @@ class QQZoneFriendMoodSpider(QQZoneSpider):
             self.format_error(e, "friend_info.json文件不存在或格式错误，请按照friend_info.json.example文件进行修改")
             exit(1)
 
-    def change_username(self, friend_name):
-        self.username = friend_name['friend_name']
+    def change_username(self, friend_qq):
+        self.username = friend_qq
         self.mood_host = self.http_host + '/' + self.username + '/mood/'
 
 
@@ -50,9 +50,9 @@ class QQZoneFriendMoodSpider(QQZoneSpider):
 
     def get_friend_mood(self):
         self.login()
-        for name in self.friend_name_list:
-            print("begin to capture:", name['friend_name'])
-            self.change_username(name)
+        for friend in self.friend_name_list:
+            print("begin to capture:", friend['friend_qq'])
+            self.change_username(friend['friend_qq'])
             # 重新初始化参数
             self.init_parameter()
 
