@@ -673,6 +673,7 @@ class QQZoneSpider(BaseSpider):
             thread = self.image_thread_pool.get_thread()
             t = thread(target=self.save_image_concurrent, args=(image_content, name))
             t.start()
+            # t = self.image_thread_pool2.submit(self.save_image_concurrent, (image_content, name))
         except BaseException as e:
             self.format_error(e, 'Failed to download image:' + name)
 
