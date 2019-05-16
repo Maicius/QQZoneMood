@@ -668,11 +668,11 @@ class QQZoneSpider(BaseSpider):
             r = self.req.get(url=image_url, headers=self.headers, timeout=20)
             image_content = r.content
             # 异步保存图片，提高效率
-            t = threading.Thread(target=self.save_image_concurrent, args=(image_content, name))
-            t.start()
-            # thread = self.image_thread_pool.get_thread()
-            # t = thread(target=self.save_image_concurrent, args=(image_content, name))
+            # t = threading.Thread(target=self.save_image_concurrent, args=(image_content, name))
             # t.start()
+            thread = self.image_thread_pool.get_thread()
+            t = thread(target=self.save_image_concurrent, args=(image_content, name))
+            t.start()
         except BaseException as e:
             self.format_error(e, 'Failed to download image:' + name)
 
@@ -681,6 +681,6 @@ class QQZoneSpider(BaseSpider):
             file_image = open(name + '.jpg', 'wb+')
             file_image.write(image)
             file_image.close()
-            # self.image_thread_pool.add_thread()
+            self.image_thread_pool.add_thread()
         except BaseException as e:
             self.format_error(e, "Failed to save image:" + name)
