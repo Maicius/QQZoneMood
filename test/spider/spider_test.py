@@ -45,11 +45,12 @@ class SpiderTest(unittest.TestCase):
 
     # 测试下载图片，不下载动态
     def test_download_image(self):
-        sp = QQZoneSpider(use_redis=False, debug=False, mood_num=100, download_mood_detail=False,
+        sp = QQZoneSpider(use_redis=False, debug=False, mood_num=1000, download_mood_detail=False,
                           download_like_detail=False, download_like_names=False, download_big_image=True,
                           download_small_image=True)
         sp.login()
         sp.get_mood_list()
+        print("Thread Wait:", sp.image_thread_pool.time_spend)
 
     # 测试抽取tid
     def test_extract_tid(self):

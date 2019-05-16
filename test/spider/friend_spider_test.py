@@ -1,7 +1,6 @@
 import unittest
 
 from src.spider.QQZoneFriendSpider import QQZoneFriendSpider
-from src.util.constant import BASE_DIR
 
 class FriendSpiderTest(unittest.TestCase):
 
@@ -29,3 +28,4 @@ class FriendSpiderTest(unittest.TestCase):
     def test_download_friend_header(self):
         fs = QQZoneFriendSpider(use_redis=True, analysis=True)
         fs.download_head_image()
+        print("spend time to wait:", fs.image_thread_pool.time_spend)

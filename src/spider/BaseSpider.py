@@ -9,7 +9,7 @@ import re
 import logging
 from src.web.entity.UserInfo import UserInfo
 from src.web.web_util.web_util import get_redis_conn
-
+from concurrent.futures import ThreadPoolExecutor
 
 class BaseSpider(object):
     """
@@ -80,6 +80,7 @@ class BaseSpider(object):
         self.user_info.nickname = self.nickname
 
         self.image_thread_pool = ImageThreadPool(20)
+        self.image_thread_pool2 = ThreadPoolExecutor(max_workers=20)
 
     def get_username_password(self):
         config_path = BASE_DIR + 'config/userinfo.json'
