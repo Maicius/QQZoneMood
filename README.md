@@ -28,7 +28,7 @@
 
 - 运行方式(请确保已经安装了docker和docker-compose)：
 
-	> git clone git@github.com:Maicius/QQZoneMood.git
+	> git clone https://github.com/Maicius/QQZoneMood.git
 
 	> cd QQZoneMood
 
