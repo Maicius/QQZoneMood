@@ -81,4 +81,4 @@ def get_user_basic_info():
 
 
 if __name__ == '__main__':
-    capture_data()
+    capture_main_data()
