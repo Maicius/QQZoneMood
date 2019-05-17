@@ -67,7 +67,8 @@ def web_interface(username, nickname, stop_time, mood_num, cookie_text, no_delet
     sp.re.set(MOOD_FINISH_KEY + str(username), 1)
     sp.calculate_history_like_agree()
     sp.re.set(CLEAN_DATA_KEY + username, 1)
-    sp.re.lrem(WAITING_USER_LIST, 0, username)
+    # 对排队list中删除当前用户，注意该指令的传参方式与redis-cli中不同
+    sp.re.lrem(WAITING_USER_LIST, username)
 
 def get_user_basic_info():
     sp = QQZoneSpider(use_redis=True, debug=False, mood_begin=0, mood_num=-1,
