@@ -33,12 +33,17 @@ class QQZoneSpider(BaseSpider):
         :param mood_begin: 开始下载的动态序号，0表示从第0条动态开始下载
         :param mood_num: 下载的动态数量，最好设置为20的倍数
         :param stop_time: 停止下载的时间，-1表示全部数据；注意，这里是倒序，比如，stop_time="2016-01-01",表示爬取当前时间到2016年1月1日前的数据
-        :param recover: 是否从redis或文件中恢复数据（主要用于爬虫意外中断之后的数据恢复）
+        :param recover: 是否从redis或文件中恢复数据（主要用于爬虫意外中断之后的数据恢复），注意，此功能在多线程中不可用
         :param download_small_image: 是否下载缩略图，仅供预览用的小图，该步骤比较耗时，QQ空间提供了3中不同尺寸的图片，这里下载的是最小尺寸的图片
         :param download_big_image: 是否下载大图，QQ空间中保存的最大的图片，该步骤比较耗时
         :param download_mood_detail:是否下载动态详情
         :param download_like_detail:是否下载点赞的详情，包括点赞数量、评论数量、浏览量，该数据未被清除
         :param download_like_names:是否下载点赞的详情，主要包含点赞的人员列表，该数据有很多都被清空了
+        :param from_web: 表示是否来自web接口，如果为True，将该请求来自web接口，则不会读取配置文件
+        :param username: 在web模式中，传递过来的用户QQ号
+        :param nickname: 在web模式中，传递过来的用户昵称
+        :param no_delete: 是否在redis中缓存数据，如果为True,则不会删除，如果为False，则设置24小时的缓存时间
+        :param pool_flag: redis的连接池host，因为docker中host与外部不同，所以在启动程序时会自动判断是不是处于docker中
         """
         BaseSpider.__init__(self, use_redis=use_redis, debug=debug, mood_begin=mood_begin, mood_num=mood_num, stop_time=stop_time,
                             download_small_image=download_small_image, download_big_image=download_big_image,
