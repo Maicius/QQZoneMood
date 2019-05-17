@@ -1,10 +1,14 @@
 # QQZoneMood
 
--  抓取QQ空间说说内容并进行分析
+-  多线程抓取QQ空间说说内容并进行分析，提供基于Flask和avalon.js的web配置界面，以及配套的测试用例
 
 ![Image](resource/image/text.jpg)
 
 ![Image](resource/image/history.jpg)
+
+### 系统架构图
+
+![](resource/image/structure.png)
 
 ### docker版运行方式
 
@@ -36,7 +40,7 @@
 
 - 将更多的功能整合到docker版中
 - Web排队机制（为上线做准备）
-- Web展示界面优化
+- Web展示界面优化（想做成网易云年度歌单的风格）
 - 计算更多指标
 
 ### 已实现功能
@@ -45,17 +49,26 @@
 
 > 这部分主要是获取数据和进行基本的统计分析
 
-- QQ空间动态爬取
-	
-	> 包括用户和好友，但是为了保护隐私，没有提供一键爬取所有好友动态的功能
+- QQ空间动态爬取，包括：
+
+	> 1. 所有说说信息
+	> 2. 每条说说的详细信息（比1中的信息更全面，1中数据只显示每条说说的前10个评论）  
+	> 3. 每条说说的点赞人列表
+	> 4. 更加详细的点赞人列表（3中获取的数据有很多被清空了，这里能稳定获取到点赞的人数量、浏览量和评论量）
+	> 5. 所有说说的图片（可选择是下载大图、缩略图还是都下载）
 	
 - QQ空间好友基本信息爬取
-
-	> 包括共同好友数量、共同群组、添加好友时间
-
-- QQ空间中各种基本信息统计
-
-	> 包括各种点赞排行、评论排行、发送时间统计等
+	
+	> 1. 好友基本信息
+	> 2. 共同好友数量
+	> 2. 共同群组
+	> 3. 添加好友时间(可计算出用户在每个时间点的好友数量)
+	
+- 数据分析
+	
+	> 1. 数据清洗，将所有抓取的信息清洗为excel或csv
+	> 2. 包括各种点赞排行、评论排行、发送时间统计等
+	> 3. 历史说说一览表
 
 - 数据可视化
 
@@ -65,7 +78,11 @@
 
 	> 使用Flask + avalon.js + echarts.js 搭建的简易web界面，为普通用户提供一个快速获取数据的方法
 	
-##### 2.衍生功能
+	> 可视化爬虫过程
+	
+	> 可视化用户数据、历史说说记录
+	
+##### 2.衍生功能（这部分功能的代码没有完全添加到项目里）
 
 - QQ空间动态情感检测
 
@@ -109,21 +126,11 @@
 - templates：网页
 
 
-### 环境说明
+### 系统说明
 
-- python版本：3.6（推荐使用python3，因为本爬虫涉及大量文件交互，python3的编码管理比2中好很多）
-- 登陆使用的是Selenium， 无法识别验证码，抓取使用requests
-- 若出现图形验证码，程序在点击登陆后设置了5秒暂停，可以手动完成验证
-- 已经抓取到的信息有：
-
-	> 1. 所有说说信息
-	> 2. 每条说说的详细信息（比1中的信息更全面，1中数据只显示每条说说的前10个评论）  
-	> 3. 每条说说的点赞人列表
-	> 4. 更加详细的点赞人列表（3中获取的数据有很多被清空了，这里能稳定获取到点赞的人数量、浏览量和评论量）
-	> 5. 所有说说的图片（可选择是下载大图、缩略图还是都下载）
-	> 6. 用户好友数据(可计算出用户在每个时间的好友数量)
-
-- 存储方式：
+- python版本：3.6
+- 模拟登陆时若出现图形验证码，可以在点击登陆后设置5秒暂停，以手动完成验证
+- 数据存储方式：
 
 	> 目前提供了两种存储方式的接口（通过Spider中use_redis参数进行配置）:  
 	> 1. 存储到json文件中   
@@ -150,52 +157,36 @@
 	
 	> [可选]修改需要爬取的好友的QQ号和保存数据用的文件名前缀
 	
-- 3.\_\_init\_\_函数参数说明，请根据需要修改	
+- 3.\_\_init\_\_函数参数说明，请根据需要修改（所有参数都有默认值，即使不修改任何参与也能运行）	
 
 
-		 def __init__(self, use_redis=False, debug=False, mood_begin=0, mood_num=-1,
+		def __init__(self, use_redis=False, debug=False, mood_begin=0, mood_num=-1, stop_time='-1',
                  download_small_image=False, download_big_image=False,
-                 download_mood_detail=True, download_like_detail=True, download_like_names=True, recover=False):
+                 download_mood_detail=True, download_like_detail=True, download_like_names=True, recover=False,
+                 cookie_text=None, from_web=False, username='', nickname='', no_delete=True, pool_flag='127.0.0.1'):
 
-                :param use_redis: If true, use redis and json file to save data, if false, use json file only.
+        :param use_redis: If true, use redis and json file to save data, if false, use json file only.
         :param debug: If true, print info in console
         :param mood_begin: 开始下载的动态序号，0表示从第0条动态开始下载
         :param mood_num: 下载的动态数量，最好设置为20的倍数
         :param stop_time: 停止下载的时间，-1表示全部数据；注意，这里是倒序，比如，stop_time="2016-01-01",表示爬取当前时间到2016年1月1日前的数据
-        :param recover: 是否从redis或文件中恢复数据（主要用于爬虫意外中断之后的数据恢复）
+        :param recover: 是否从redis或文件中恢复数据（主要用于爬虫意外中断之后的数据恢复），注意，此功能在多线程中不可用
         :param download_small_image: 是否下载缩略图，仅供预览用的小图，该步骤比较耗时，QQ空间提供了3中不同尺寸的图片，这里下载的是最小尺寸的图片
         :param download_big_image: 是否下载大图，QQ空间中保存的最大的图片，该步骤比较耗时
         :param download_mood_detail:是否下载动态详情
         :param download_like_detail:是否下载点赞的详情，包括点赞数量、评论数量、浏览量，该数据未被清除
         :param download_like_names:是否下载点赞的详情，主要包含点赞的人员列表，该数据有很多都被清空了
+        :param from_web: 表示是否来自web接口，如果为True，将该请求来自web接口，则不会读取配置文件
+        :param username: 在web模式中，传递过来的用户QQ号
+        :param nickname: 在web模式中，传递过来的用户昵称
+        :param no_delete: 是否在redis中缓存数据，如果为True,则不会删除，如果为False，则设置24小时的缓存时间
+        :param pool_flag: redis的连接池host，因为docker中host与外部不同，所以在启动程序时会自动判断是不是处于docker中
         
 - 4.运行flask服务器
 
-> python3 src/web/server.py
+	> python3 src/web/server.py
 
-- 5.其它程序入口写在各个py文件的main函数中，待规范
-
-### 数据分析
-
-- python版本：3.6  
-- 已经实现的分析有：
-
-	> 1. 平均每条说说的点赞人数  
-	> 2. 说说点赞的总人数
-	> 3. 点赞最多的人物排名和点赞数
-	> 4. 评论最多的人物排名和评论数
-	> 5. 所有说说的内容分析（分词使用的是jieba）
-	> 6. 所有评论的内容分析
-
-- 待实现的目标有：
-
-	> 发什么样的内容容易获得点赞和评论(自然语言处理)
-
-	> 发什么样的图片容易获得点赞和评论(图像识别)
-
-	> [可选]人物画像：分析出人物的性格特点、爱好(知识图谱)
-
-	> [可选]历史事件抽取（自然语言处理、事件抽取）
+- 5.其它程序入口可以参考test中测试用例
 
 - 运行结果例图：
 ![IMAGE](resource/image/screen1.png)
