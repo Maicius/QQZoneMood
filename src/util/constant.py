@@ -53,7 +53,7 @@ SPIDERING_USER_LIST  = 'spidering_user_list'
 
 WAITING_USER_LIST = 'waiting_user_list'
 
-SPIDER_USER_NUM_LIMIT = 1
+SPIDER_USER_NUM_LIMIT = 2
 
 STOP_FRIEND_INFO_SPIDER_KEY = 'stop_friend_info_'
 FINISH_FRIEND_INFO_ALL = '获取全部好友基本信息完成'

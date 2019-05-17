@@ -77,7 +77,7 @@ def start_spider():
         init_redis_key(conn, qq)
         waiting_num = check_waiting_list(conn)
         # 如果排队用户大于阈值，就返回
-        if waiting_num > SPIDER_USER_NUM_LIMIT:
+        if waiting_num >= SPIDER_USER_NUM_LIMIT:
             result = dict(result=2, waiting_num=waiting_num)
             return json.dumps(result, ensure_ascii=False)
         else:

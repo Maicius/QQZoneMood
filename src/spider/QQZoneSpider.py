@@ -3,7 +3,7 @@
 # 包括动态内容、点赞的人、评论的人、评论的话
 # 登陆使用的是Selenium， 无法识别验证码
 # 若出现验证码，则先尝试手动从浏览器登陆并退出再运行程序
-
+from requests.adapters import HTTPAdapter
 from selenium import webdriver
 import requests
 import time
@@ -15,7 +15,7 @@ import datetime
 import logging
 from src.spider.BaseSpider import BaseSpider
 from src.util import util
-from src.util.constant import qzone_jother2
+from src.util.constant import qzone_jother2, SPIDER_USER_NUM_LIMIT
 import math
 import execjs
 import threading
@@ -53,6 +53,10 @@ class QQZoneSpider(BaseSpider):
 
 
         self.req = requests.Session()
+        connection_num = 20 * SPIDER_USER_NUM_LIMIT
+        # 设置连接池大小
+        self.req.mount('https://', HTTPAdapter(pool_connections=5, pool_maxsize=connection_num))
+        self.req.mount('http://', HTTPAdapter(pool_connections=5, pool_maxsize=connection_num))
         self.cookies = {}
         self.qzonetoken = ""
         self.g_tk = 0
