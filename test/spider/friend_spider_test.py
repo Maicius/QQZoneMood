@@ -12,7 +12,7 @@ class FriendSpiderTest(unittest.TestCase):
         fs.get_friend_list()
 
     def test_get_friend_detail(self):
-        fs = QQZoneFriendSpider(use_redis=False, analysis=False)
+        fs = QQZoneFriendSpider(use_redis=False, analysis=False, debug=True)
         fs.get_friend_detail()
 
     def test_clean_friend_data(self):

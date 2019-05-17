@@ -10,7 +10,6 @@ from src.util.constant import BASE_DIR, FINISH_FRIEND_INFO_ALL, STOP_FRIEND_INFO
     FRIEND_INFO_PRE, FRIEND_INFO_COUNT_KEY, EXPIRE_TIME_IN_SECONDS, FRIEND_LIST_KEY, STOP_SPIDER_KEY, STOP_SPIDER_FLAG, \
     BASE_PATH
 
-
 class QQZoneFriendSpider(QQZoneSpider):
     """
     爬取自己的好友的数量、共同群组等基本信息（不是爬好友的动态）
@@ -54,7 +53,7 @@ class QQZoneFriendSpider(QQZoneSpider):
         :return:
         """
         friend_list_url = self.get_friend_list_url()
-        friend_content = self.get_json(self.req.get(url=friend_list_url, headers=self.headers).content.decode('utf-8'))
+        friend_content = self.get_json(self.req.get(url=friend_list_url, headers=self.headers, timeout=20).content.decode('utf-8'))
         self.friend_list = json.loads(friend_content)['data']['items']
         if self.use_redis:
             self.re.set(FRIEND_LIST_KEY + self.username, json.dumps(self.friend_list, ensure_ascii=False))
@@ -103,28 +102,30 @@ class QQZoneFriendSpider(QQZoneSpider):
         根据好友列表获取好友详情
         :return:
         """
-        friend_num = self.get_friend_list()
-        if self.use_redis:
-            self.re.rpush(WEB_SPIDER_INFO + self.username, FRIEND_INFO_PRE + ":" + str(friend_num))
-            if not self.no_delete:
-                self.re.expire(WEB_SPIDER_INFO + self.username, EXPIRE_TIME_IN_SECONDS)
+        try:
+            friend_num = self.get_friend_list()
+            if self.use_redis:
+                self.re.rpush(WEB_SPIDER_INFO + self.username, FRIEND_INFO_PRE + ":" + str(friend_num))
+                if not self.no_delete:
+                    self.re.expire(WEB_SPIDER_INFO + self.username, EXPIRE_TIME_IN_SECONDS)
+            self.user_info.friend_num = friend_num
+            thread_num = self.calculate_thread_num(friend_num)
+            print("获取好友基本信息的线程数量：", thread_num)
+            print("开始获取好友数据...")
+            for i in range(thread_num):
+                begin_index = i
+                t = threading.Thread(target=self.do_get_friend_detail, args=(begin_index, friend_num, thread_num, True))
+                self.friend_thread_list.append(t)
+            for t in self.friend_thread_list:
+                t.setDaemon(False)
+                t.start()
 
-        self.user_info.friend_num = friend_num
+            # 等待全部子线程结束
+            for t in self.friend_thread_list:
+                t.join()
 
-        thread_num = self.calculate_thread_num(friend_num)
-        print("获取好友基本信息的线程数量：", thread_num)
-        print("开始获取好友数据...")
-        for i in range(thread_num):
-            begin_index = i
-            t = threading.Thread(target=self.do_get_friend_detail, args=(begin_index, friend_num, thread_num, True))
-            self.friend_thread_list.append(t)
-        for t in self.friend_thread_list:
-            t.setDaemon(False)
-            t.start()
-
-        # 等待全部子线程结束
-        for t in self.friend_thread_list:
-            t.join()
+        except BaseException as e:
+            self.format_error(e, "Faled to get friend info")
 
         if self.use_redis:
             self.re.set(STOP_FRIEND_INFO_SPIDER_KEY + self.username, FINISH_FRIEND_INFO_ALL)
@@ -154,7 +155,7 @@ class QQZoneFriendSpider(QQZoneSpider):
             if self.debug:
                 print('正在爬取好友:', uin, '数据...,', 'index=', index)
             url = self.get_friend_detail_url(uin)
-            content = self.get_json(self.req.get(url, headers=self.headers).content.decode('utf-8'))
+            content = self.get_json(self.req.get(url, headers=self.headers, timeout=20).content.decode('utf-8'))
             data = json.loads(content)
             try:
                 data = data['data']

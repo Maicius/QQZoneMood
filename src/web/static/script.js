@@ -35,32 +35,17 @@ let vm = avalon.define({
     user: {},
 
     init_parameter: function () {
-        stop_num = -1;
-        stop_date = '-1';
-        no_delete = false;
-        agree = false;
-        disable = 'false';
-        qq_cookie = '';
-        begin_spider = 0;
-        spider_info = [];
-        true_mood_num = -1;
-        spider_num = 0;
-        show_process = 0;
-        process_width = 0;
-        spider_text = SPIDER_TEXT.DOING;
-        spider_state = SPIDER_STATE.CONFIG;
-        clean_data_text = CLEAN_DATA_TEXT.DOING;
-        data_state = CLEAN_DATA_STATE.DOING;
-        visual_data_url = '';
-        password = '';
-        view_data_state = VIEW_DATA_STATE.config;
-
-        friend_info_spider_text = SPIDER_FRIEND_TEXT.DOING;
-        spider_friend_num = 0;
-        friend_process_width = 0;
-        all_friend_num = 0;
-        friend_info_spider_state = SPIDER_FRIEND_STATE.DOING;
-        user = {};
+        vm.spider_text = SPIDER_TEXT.DOING;
+        vm.spider_state = SPIDER_STATE.CONFIG;
+        vm.clean_data_text = CLEAN_DATA_TEXT.DOING;
+        vm.data_state = CLEAN_DATA_STATE.DOING;
+        vm.view_data_state = VIEW_DATA_STATE.config;
+        vm.friend_info_spider_text = SPIDER_FRIEND_TEXT.DOING;
+        vm.spider_friend_num = 0;
+        vm.friend_process_width = 0;
+        vm.all_friend_num = 0;
+        vm.friend_info_spider_state = SPIDER_FRIEND_STATE.DOING;
+        vm.user = {};
     },
     view_data: function () {
         if (vm.qq_id.length === 0 && vm.password.length === 0 && vm.nick_name.length === 0) {
@@ -116,6 +101,14 @@ let vm = avalon.define({
                             alert("请输入有效cookie");
                         } else if (data.result === 2) {
                             alert("当前有" + data.waiting_num + "位用户正在使用爬虫，请大约" + 5 * data.waiting_num + "分钟后再尝试");
+                        } else if (data.result === 3) {
+                            alert("您的账号已经在后台爬取");
+                            vm.begin_spider = 1;
+                            vm.spider_state = SPIDER_STATE.SPIDER;
+                            vm.friend_info_spider_state = SPIDER_FRIEND_STATE.DOING;
+                            vm.query_interval = setInterval(function () {
+                                vm.query_spider_info(vm.qq_id);
+                            }, 1000);
                         } else {
                             alert("未知错误:" + data.result)
                         }

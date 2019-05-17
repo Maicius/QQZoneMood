@@ -75,11 +75,16 @@ def start_spider():
                 result = dict(result="连接数据库失败，请刷新页面再尝试")
                 return json.dumps(result, ensure_ascii=False)
         init_redis_key(conn, qq)
-        waiting_num = check_waiting_list(conn)
+        waiting_list = check_waiting_list(conn)
         # 如果排队用户大于阈值，就返回
+        waiting_num = len(waiting_list)
         if waiting_num >= SPIDER_USER_NUM_LIMIT:
-            result = dict(result=2, waiting_num=waiting_num)
+            if qq not in waiting_list:
+                result = dict(result=2, waiting_num=waiting_num)
+            else:
+                result = dict(result=3, waiting_num=waiting_num)
             return json.dumps(result, ensure_ascii=False)
+
         else:
             # 放进数组，开始爬虫
             conn.rpush(WAITING_USER_LIST, qq)
@@ -147,5 +152,5 @@ def query_clean_data(QQ, password):
     return json.dumps(dict(finish=key), ensure_ascii=False)
 
 def check_waiting_list(conn):
-    waiting_num = conn.llen(WAITING_USER_LIST)
-    return waiting_num
+    waiting_list = conn.lrange(WAITING_USER_LIST, 0, -1)
+    return waiting_list

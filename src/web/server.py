@@ -20,7 +20,6 @@ def config():
     print("pool flag:", session.get(POOL_FLAG))
     return render_template("config.html")
 
-
 @app.route('/error')
 def error():
     return render_template("error.html")
