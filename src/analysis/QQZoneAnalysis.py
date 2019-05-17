@@ -30,6 +30,9 @@ class QQZoneAnalysis(QQZoneFriendSpider):
         self.av = Average(use_redis=False, file_name_head=username, analysis=True, debug=debug)
         self.init_analysis_path()
 
+        # 用于绘制词云图的字体，请更改为自己电脑上任意一款支持中文的字体，否则将无法显示中文
+        self.system_font = '/System/Library/Fonts/Hiragino Sans GB.ttc'
+
     def init_analysis_path(self):
         RESULT_BASE_DIR = self.USER_BASE_DIR + "data/result/"
 
@@ -284,14 +287,22 @@ class QQZoneAnalysis(QQZoneFriendSpider):
             self.format_error(e, "Error in parse like names")
             self.like_list_names_df.append(dict(total_num=0, uin_list=[], tid=like['tid']))
 
-    def drawWordCloud(self, word_text, filename, dict_type=False):
-        mask = imread(BASE_DIR + 'image/tom2.jpeg')
+    def drawWordCloud(self, word_text, filename, dict_type=False, background_image='image/tom2.jpeg'):
+        """
+
+        :param word_text:
+        :param filename:
+        :param dict_type:
+        :param background_image: 词云图的背景形状
+        :return:
+        """
+        mask = imread(BASE_DIR + background_image)
         my_wordcloud = WordCloud(
             background_color='white',  # 设置背景颜色
             mask=mask,  # 设置背景图片
             max_words=2000,  # 设置最大现实的字数
             stopwords=STOPWORDS,  # 设置停用词
-            font_path='/System/Library/Fonts/Hiragino Sans GB.ttc',  # 设置字体格式，如不设置显示不了中文
+            font_path=self.system_font,  # 设置字体格式，如不设置显示不了中文
             max_font_size=50,  # 设置字体最大值
             random_state=30,  # 设置有多少种随机生成状态，即有多少种配色方案
             scale=1.3
@@ -307,6 +318,7 @@ class QQZoneAnalysis(QQZoneFriendSpider):
         plt.axis("off")
         # 保存图片
         my_wordcloud.to_file(filename=self.image_path + filename + '.jpg')
+        print("result file path:", self.image_path + filename + '.jpg')
         plt.show()
 
     def get_jieba_words(self, content):
