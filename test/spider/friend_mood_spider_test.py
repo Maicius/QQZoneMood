@@ -16,3 +16,6 @@ class FriendMoodSpiderTest(unittest.TestCase):
     def test_get_friend_mood(self):
         fms = QQZoneFriendMoodSpider(mood_num=20)
         fms.get_friend_mood()
+
+if __name__ =='__main__':
+    unittest.main()

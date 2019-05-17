@@ -58,8 +58,8 @@ class AnalysisTest(unittest.TestCase):
         qa.calculate_history_like_agree()
         print(len(qa.re.get(qa.history_like_agree_file_name)))
 
-
-
+if __name__ =='__main__':
+    unittest.main()
 
 
 

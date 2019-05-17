@@ -29,3 +29,6 @@ class FriendSpiderTest(unittest.TestCase):
         fs = QQZoneFriendSpider(use_redis=True, analysis=True)
         fs.download_head_image()
         print("spend time to wait:", fs.image_thread_pool.time_spend)
+
+if __name__ =='__main__':
+    unittest.main()

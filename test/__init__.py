@@ -6,8 +6,8 @@ from test.spider.spider_test import SpiderTest
 from test.analysis.analysis_test import AnalysisTest
 
 if __name__ == '__main__':
-    # SpiderTest()
-    # FriendSpiderTest()
-    # FriendMoodSpiderTest()
+    SpiderTest()
+    FriendSpiderTest()
+    FriendMoodSpiderTest()
     AnalysisTest()
     unittest.main()

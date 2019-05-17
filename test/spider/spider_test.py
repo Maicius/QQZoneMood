@@ -87,3 +87,5 @@ class SpiderTest(unittest.TestCase):
         sp.login()
         sp.get_main_page_info()
         sp.get_mood_list()
+if __name__ =='__main__':
+    unittest.main()
