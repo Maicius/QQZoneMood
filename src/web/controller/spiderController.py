@@ -44,12 +44,11 @@ def query_spider_num(QQ, mood_num, password):
         return json.dumps(dict(finish=-2))
     info = conn.get(MOOD_COUNT_KEY + str(QQ))
     # 强制停止，保证在由于网络等原因导致爬取的说说数量有缺失时也能正常停止程序
-    finish_key = bool(conn.get(MOOD_FINISH_KEY + str(QQ)))
-
+    finish_key = conn.get(MOOD_FINISH_KEY + str(QQ))
     finish = 0
-    if finish_key or int(info) >= int(mood_num):
+    if finish_key == "1" or int(info) >= int(mood_num):
         finish = 1
-    return json.dumps(dict(num=info, finish=finish))
+    return json.dumps(dict(num=info, finish=finish, finish_key=finish_key))
 
 @spider.route('/start_spider', methods=['GET', 'POST'])
 def start_spider():
@@ -67,14 +66,23 @@ def start_spider():
         print("begin spider:", qq)
         pool_flag = session.get(POOL_FLAG)
         conn = get_redis_conn(pool_flag)
-        res = init_redis_key(conn, qq)
-        if not res:
+        if conn is None:
             try:
                 session[POOL_FLAG] = judge_pool()
-                init_redis_key(conn, qq)
+                pool_flag = session.get(POOL_FLAG)
+                conn = get_redis_conn(pool_flag)
             except BaseException:
                 result = dict(result="连接数据库失败，请刷新页面再尝试")
                 return json.dumps(result, ensure_ascii=False)
+        init_redis_key(conn, qq)
+        waiting_num = check_waiting_list(conn)
+        # 如果排队用户大于阈值，就返回
+        if waiting_num > SPIDER_USER_NUM_LIMIT:
+            result = dict(result=2, waiting_num=waiting_num)
+            return json.dumps(result, ensure_ascii=False)
+        else:
+            # 放进数组，开始爬虫
+            conn.rpush(WAITING_USER_LIST, qq)
         try:
             t = threading.Thread(target=web_interface,
                                  args=(qq, nick_name, stop_time, mood_num, cookie, no_delete, password, pool_flag))
@@ -138,3 +146,6 @@ def query_clean_data(QQ, password):
             sleep(0.1)
     return json.dumps(dict(finish=key), ensure_ascii=False)
 
+def check_waiting_list(conn):
+    waiting_num = conn.llen(WAITING_USER_LIST)
+    return waiting_num

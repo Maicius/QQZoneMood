@@ -53,6 +53,8 @@ SPIDERING_USER_LIST  = 'spidering_user_list'
 
 WAITING_USER_LIST = 'waiting_user_list'
 
+SPIDER_USER_NUM_LIMIT = 1
+
 STOP_FRIEND_INFO_SPIDER_KEY = 'stop_friend_info_'
 FINISH_FRIEND_INFO_ALL = '获取全部好友基本信息完成'
 
@@ -61,6 +63,7 @@ FRIEND_INFO_COUNT_KEY = 'friend_info_count_'
 HISTORY_LIKE_AGREE = 'history_like_agree_'
 
 FRIEND_LIST_KEY = 'friend_list_'
+
 
 if __name__ == '__main__':
     print(BASE_DIR)

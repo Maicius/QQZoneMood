@@ -69,7 +69,6 @@ def judge_pool():
             raise e
 
 def init_redis_key(conn, qq):
-
     if conn:
         conn.delete(WEB_SPIDER_INFO + qq)
         conn.set(MOOD_COUNT_KEY + qq, 0)

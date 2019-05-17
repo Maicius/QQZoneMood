@@ -41,8 +41,10 @@ def clear_cache(QQ, password):
         try:
             DATA_DIR_KEY = BASE_DIR + QQ + '/'
             if os.path.exists(DATA_DIR_KEY):
-                # 删除以 DATA_DIR_KEY 开头的所有key
-                conn.delete(DATA_DIR_KEY + '*')
+                # 删除有QQ号的所有key
+                delete_cmd = "redis-cli KEYS \"*" + QQ + "*\"|xargs redis-cli DEL"
+                print(delete_cmd)
+                os.system(delete_cmd)
                 # 删除 该路径下所有文件
                 os.system("rm -rf " + DATA_DIR_KEY)
                 # os.removedirs(os.path.join(BASE_DIR, QQ))

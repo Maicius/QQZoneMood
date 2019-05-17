@@ -6,7 +6,7 @@ sys.path.append(os.path.split(rootPath)[0])
 from src.analysis.QQZoneAnalysis import QQZoneAnalysis
 from src.spider.QQZoneSpider import QQZoneSpider
 from src.util.constant import WEB_SPIDER_INFO, MOOD_NUM_PRE, CLEAN_DATA_KEY, GET_MAIN_PAGE_FAILED, LOGIN_FAILED, \
-    USER_MAP_KEY, GET_MOOD_FAILED, MOOD_FINISH_KEY
+    USER_MAP_KEY, GET_MOOD_FAILED, MOOD_FINISH_KEY, WAITING_USER_LIST
 import threading
 
 # 使用selenium自动登陆，获取空间全部说说内容，不下载图片
@@ -67,8 +67,7 @@ def web_interface(username, nickname, stop_time, mood_num, cookie_text, no_delet
     sp.re.set(MOOD_FINISH_KEY + str(username), 1)
     sp.calculate_history_like_agree()
     sp.re.set(CLEAN_DATA_KEY + username, 1)
-
-
+    sp.re.lrem(WAITING_USER_LIST, 0, username)
 
 def get_user_basic_info():
     sp = QQZoneSpider(use_redis=True, debug=False, mood_begin=0, mood_num=-1,

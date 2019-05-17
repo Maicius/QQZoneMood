@@ -7,33 +7,35 @@ let vm = avalon.define({
     $id: 'qqzone',
     nick_name: '',
     qq_id: '',
-    stop_num: -1,
-    stop_date: '-1',
-    no_delete: false,
-    agree: false,
-    disable: 'false',
-    qq_cookie: '',
-    begin_spider: 0,
-    spider_info: [],
-    true_mood_num: -1,
-    spider_num: 0,
-    show_process: 0,
-    process_width: 0,
-    spider_text: SPIDER_TEXT.DOING,
-    spider_state: SPIDER_STATE.CONFIG,
-    clean_data_text: CLEAN_DATA_TEXT.DOING,
-    data_state: CLEAN_DATA_STATE.DOING,
-    visual_data_url: '',
-    password: '',
-    view_data_state: VIEW_DATA_STATE.config,
 
-    friend_info_spider_text: SPIDER_FRIEND_TEXT.DOING,
-    spider_friend_num: 0,
-    friend_process_width: 0,
-    all_friend_num: 0,
-    friend_info_spider_state: SPIDER_FRIEND_STATE.DOING,
-    user: {},
+    init_parameter: function () {
+        stop_num = -1;
+        stop_date = '-1';
+        no_delete = false;
+        agree = false;
+        disable = 'false';
+        qq_cookie = '';
+        begin_spider = 0;
+        spider_info = [];
+        true_mood_num = -1;
+        spider_num = 0;
+        show_process = 0;
+        process_width = 0;
+        spider_text = SPIDER_TEXT.DOING;
+        spider_state = SPIDER_STATE.CONFIG;
+        clean_data_text = CLEAN_DATA_TEXT.DOING;
+        data_state = CLEAN_DATA_STATE.DOING;
+        visual_data_url = '';
+        password = '';
+        view_data_state = VIEW_DATA_STATE.config;
 
+        friend_info_spider_text = SPIDER_FRIEND_TEXT.DOING;
+        spider_friend_num = 0;
+        friend_process_width = 0;
+        all_friend_num = 0;
+        friend_info_spider_state = SPIDER_FRIEND_STATE.DOING;
+        user = {};
+    },
     view_data: function () {
         if (vm.qq_id.length === 0 && vm.password.length === 0 && vm.nick_name.length === 0) {
             alert("QQ号、用户名和验证码不能为空");
@@ -84,10 +86,11 @@ let vm = avalon.define({
                                 vm.query_spider_info(vm.qq_id);
                             }, 1000);
 
-                        }else if(data.result === 0){
+                        } else if (data.result === 0) {
                             alert("请输入有效cookie");
-                        }
-                        else {
+                        } else if (data.result === 2) {
+                            alert("当前有" + data.waiting_num + "位用户正在使用爬虫，请大约" + 5 * data.waiting_num + "分钟后再尝试");
+                        } else {
                             alert("未知错误:" + data.result)
                         }
                     }
@@ -99,6 +102,8 @@ let vm = avalon.define({
 
     },
 
+    // 查询爬虫从登陆到获取主页信息的状态
+    // 在获取到好友数量后停止轮询
     query_spider_info: function (QQ) {
         $.ajax({
             url: '/spider/query_spider_info/' + QQ + '/' + sha1(vm.password),
@@ -113,15 +118,18 @@ let vm = avalon.define({
                     vm.show_process = 1;
                     vm.true_mood_num = data.mood_num;
 
-                    vm.query_num = setInterval(function () {
-                        vm.query_spider_num(vm.qq_id);
-                    }, 1000);
                 } else if (data.finish === 2) {
                     vm.all_friend_num = data.friend_num;
+                    // 停止spider_info的轮询
                     clearInterval(vm.query_interval);
+                    // 开始轮询好友数量
                     vm.query_friend_info = setInterval(function () {
                         vm.query_friend_info_num(vm.qq_id);
                     }, 500);
+                    // 开始轮询说说数量
+                    vm.query_num = setInterval(function () {
+                        vm.query_spider_num(vm.qq_id);
+                    }, 1000);
                 } else if (data.finish === -1) {
                     alert(data.info);
                     vm.show_process = 0;
@@ -149,7 +157,7 @@ let vm = avalon.define({
                         vm.spider_state = SPIDER_STATE.FINISH;
                         vm.spider_num = parseInt(data.num);
                         vm.process_width = Math.ceil(parseInt(vm.spider_num) / parseInt(vm.true_mood_num) * 100) + "%";
-                        vm.spider_friend_num = data.num;
+                        vm.spider_friend_num = parseInt(data.friend_num);
                         vm.friend_process_width = Math.ceil(parseInt(vm.spider_friend_num) / parseInt(vm.all_friend_num) * 100) + "%";
                         vm.query_clean_state();
                     } else {
@@ -181,10 +189,10 @@ let vm = avalon.define({
         })
     },
 
-    query_friend_info_num: function(QQ){
+    query_friend_info_num: function (QQ) {
         $.ajax({
             url: '/spider/query_friend_info_num/' + QQ + '/' + vm.all_friend_num + '/' + sha1(vm.password),
-            type:'GET',
+            type: 'GET',
             success: function (data) {
                 data = JSON.parse(data);
                 vm.spider_friend_num = data.num;
@@ -197,7 +205,7 @@ let vm = avalon.define({
                     clearInterval(vm.query_friend_info);
                 }
             }
-         })
+        })
     },
     query_clean_state: function () {
         $.ajax({
@@ -221,8 +229,9 @@ let vm = avalon.define({
             success: function (data) {
                 data = JSON.parse(data);
                 if (data.finish) {
+                    vm.init_parameter();
                     alert("清除缓存成功");
-                }else{
+                } else {
                     alert(data.info)
                 }
             }
@@ -306,4 +315,7 @@ vm.$watch("friend_info_spider_state", function (new_v, old_v) {
             vm.friend_info_spider_text = SPIDER_FRIEND_TEXT.FINISH;
 
     }
+});
+$(document).ready(function () {
+    vm.init_parameter();
 });
