@@ -2,6 +2,8 @@
 
 -  多线程抓取QQ空间说说内容并进行分析，提供基于Flask和avalon.js的web配置界面，以及配套的测试用例
 
+- 在线系统（只支持最多两个人同时爬取）:[QQ空间数据分析-小麦冬](http://app.xiaomaidong.com)
+
 ![Image](resource/image/text.jpg)
 
 ![Image](resource/image/history.jpg)
@@ -98,6 +100,10 @@
 
 
 ### 项目结构
+
+<img src="resource/image/file_structure.png" style="width:300px">
+
+说明如下：
 
 #### resource:存放数据文件（不包括web中的静态资源）
 #### src-spider:包括四个爬虫类和一个入口
@@ -199,4 +205,4 @@
 > QQ动态关键字词云
 
 ![Image](resource/image/relation.png)
-> 好友关系图
+> 使用Gephi软件生成的好友关系图
