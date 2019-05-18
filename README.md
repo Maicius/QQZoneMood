@@ -101,7 +101,7 @@
 
 ### 项目结构
 
-<img src="resource/image/file_structure.png" style="width:300px">
+<img src="resource/image/file_structure.pn" style="width:300px">
 
 说明如下：
 
