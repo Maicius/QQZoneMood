@@ -26,7 +26,7 @@ class QQZoneFriendMoodSpider(QQZoneSpider):
                 friend_info = json.load(r)
             return friend_info
         except BaseException as e:
-            self.format_error(e, "friend_info.json文件不存在或格式错误，请按照friend_info.json.example文件进行修改")
+            self.format_error(e, "friend_info.json does not exist!")
             exit(1)
 
     def change_username(self, friend_qq):

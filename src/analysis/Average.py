@@ -36,7 +36,7 @@ class Average(object):
 
     def read_data_from_csv(self):
         if self.filename == "":
-            self.format_error("文件名不能为空")
+            self.format_error("File name should not be empyty")
             exit(1)
         else:
             data_df = pd.DataFrame(pd.read_csv(self.filename))

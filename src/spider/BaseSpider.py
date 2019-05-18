@@ -73,6 +73,7 @@ class BaseSpider(object):
 
         self.image_thread_pool = ImageThreadPool(20)
         self.image_thread_pool2 = ThreadPoolExecutor(max_workers=20)
+        self.init_file_name()
 
     def get_username_password(self):
         config_path = BASE_DIR + 'config/userinfo.json'
@@ -128,6 +129,9 @@ class BaseSpider(object):
             # raise e
             pass
 
+    def logging_info(self, info):
+        logging.info(info)
+
     def init_parameter(self):
         self.mood_count = 0
         self.like_detail = []
@@ -146,16 +150,17 @@ class BaseSpider(object):
 
 
     def init_file_name(self):
-        logging.info('file_name_head:' + self.username)
-        self.USER_BASE_DIR = BASE_DIR + self.username + '/'
 
+        self.USER_BASE_DIR = BASE_DIR + self.username + '/'
         logging_dir = self.USER_BASE_DIR + 'log/'
+        print("logging_dir:", logging_dir)
         util.check_dir_exist(logging_dir)
-        logging.basicConfig(level=logging.DEBUG,
+        logging.basicConfig(level=logging.INFO,
                             format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
                             datefmt='%a, %d %b %Y %H:%M:%S',
                             filename=logging_dir + self.username + '.log',
                             filemode='w+')
+        logging.info('file_name_head:' + self.username)
 
         DATA_DIR_HEAD = self.USER_BASE_DIR + 'data/'
         self.CONTENT_FILE_NAME = DATA_DIR_HEAD + 'QQ_content.json'

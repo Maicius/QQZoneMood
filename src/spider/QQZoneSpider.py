@@ -60,7 +60,6 @@ class QQZoneSpider(BaseSpider):
         self.cookies = {}
         self.qzonetoken = ""
         self.g_tk = 0
-        self.init_file_name()
         self.init_parameter()
 
     def login(self):
@@ -253,7 +252,7 @@ class QQZoneSpider(BaseSpider):
                     self.save_data_to_redis(final_result=False)
             except BaseException as e:
                 print("ERROR===================")
-                logging.error('位置错误')
+                logging.error('wrong place')
                 logging.error(e)
                 print("因错误导致爬虫终止....现在临时保存数据")
                 self.save_all_data_to_json()
@@ -383,7 +382,7 @@ class QQZoneSpider(BaseSpider):
             self.user_info.first_mood_time = last_mood['createTime']
 
         except BaseException as e:
-            self.format_error(e, "获取第一次发表动态时间出错")
+            self.format_error(e, "Failed to get first send mood time")
 
     # 评论数量超过20的说说需要再循环爬取
     def get_all_cmt_num(self, cmt_num, tid):
@@ -635,7 +634,7 @@ class QQZoneSpider(BaseSpider):
                 print(self.user_info.mood_num)
                 print("Finish to get main page info")
         except BaseException as e:
-            self.format_error(e, "获取主页信息失败")
+            self.format_error(e, "Failed to get main page info")
         try:
             self.headers['referer'] = 'https://user.qzone.qq.com/1272082503/main'
             res = self.req.get(url=url2, headers=self.headers)
@@ -652,7 +651,7 @@ class QQZoneSpider(BaseSpider):
                 print("Finish to get first time")
             print("Success to Get Main Page Info!")
         except BaseException as e:
-            self.format_error(e, "获取第一次登陆时间失败")
+            self.format_error(e, "Failed to get first login time")
 
     def calculate_qzone_token(self):
         ctx = execjs.compile(

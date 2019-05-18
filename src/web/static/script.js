@@ -152,10 +152,10 @@ let vm = avalon.define({
                         vm.query_spider_num(vm.qq_id);
                     }, 1000);
                 } else if (data.finish === -1) {
-                    alert(data.info);
+                    clearInterval(vm.query_interval);
                     vm.show_process = 0;
                     vm.spider_state = SPIDER_STATE.CONFIG;
-                    clearInterval(vm.query_interval);
+                    alert(data.info);
                 } else if (data.finish === -2) {
                     clearInterval(vm.query_interval);
                     alert("识别码与QQ不匹配");
