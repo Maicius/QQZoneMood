@@ -78,19 +78,18 @@ def start_spider():
                 pool_flag = session.get(POOL_FLAG)
                 conn = get_redis_conn(pool_flag)
             except BaseException:
-                result = dict(result="连接数据库失败，请刷新页面再尝试")
+                result = dict(result="连接数据库失败，请稍后再尝试")
                 return json.dumps(result, ensure_ascii=False)
         init_redis_key(conn, qq)
         waiting_list = check_waiting_list(conn)
         # 如果排队用户大于阈值，就返回
         waiting_num = len(waiting_list)
-        if waiting_num >= SPIDER_USER_NUM_LIMIT:
-            if qq not in waiting_list:
-                result = dict(result=WAITING_USER_STATE, waiting_num=waiting_num)
-            else:
-                result = dict(result=ALREADY_IN, waiting_num=waiting_num)
+        if qq in waiting_list:
+            result = dict(result=ALREADY_IN, waiting_num=waiting_num)
             return json.dumps(result, ensure_ascii=False)
-
+        if waiting_num >= SPIDER_USER_NUM_LIMIT:
+            result = dict(result=WAITING_USER_STATE, waiting_num=waiting_num)
+            return json.dumps(result, ensure_ascii=False)
         else:
             # 放进数组，开始爬虫
             conn.rpush(WAITING_USER_LIST, qq)
