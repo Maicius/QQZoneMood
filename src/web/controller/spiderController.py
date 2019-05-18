@@ -85,7 +85,9 @@ def start_spider():
         # 如果排队用户大于阈值，就返回
         waiting_num = len(waiting_list)
         if qq in waiting_list:
-            result = dict(result=ALREADY_IN, waiting_num=waiting_num)
+            friend_num = conn.get(FRIEND_NUM_KEY + qq)
+            mood_num = conn.get(MOOD_NUM_KEY + qq)
+            result = dict(result=ALREADY_IN, waiting_num=waiting_num, friend_num=friend_num, mood_num=mood_num)
             return json.dumps(result, ensure_ascii=False)
         if waiting_num >= SPIDER_USER_NUM_LIMIT:
             result = dict(result=WAITING_USER_STATE, waiting_num=waiting_num)

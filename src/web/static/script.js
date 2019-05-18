@@ -99,7 +99,6 @@ let vm = avalon.define({
                             vm.query_interval = setInterval(function () {
                                 vm.query_spider_info(vm.qq_id);
                             }, 1000);
-
                         } else if (data.result === CHECK_COOKIE) {
                             alert("请输入有效cookie");
                         } else if (data.result === WAITING_USER_STATE) {
@@ -109,8 +108,15 @@ let vm = avalon.define({
                             vm.begin_spider = 1;
                             vm.spider_state = SPIDER_STATE.SPIDER;
                             vm.friend_info_spider_state = SPIDER_FRIEND_STATE.DOING;
-                            vm.query_interval = setInterval(function () {
-                                vm.query_spider_info(vm.qq_id);
+                            vm.all_friend_num = data.friend_num;
+                            vm.true_mood_num = data.mood_num;
+                            // 开始轮询好友数量
+                            vm.query_friend_info = setInterval(function () {
+                                vm.query_friend_info_num(vm.qq_id);
+                            }, 500);
+                            // 开始轮询说说数量
+                            vm.query_num = setInterval(function () {
+                                vm.query_spider_num(vm.qq_id);
                             }, 1000);
                         } else {
                             alert("未知错误:" + data.result)

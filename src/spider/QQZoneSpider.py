@@ -15,7 +15,7 @@ import datetime
 import logging
 from src.spider.BaseSpider import BaseSpider
 from src.util import util
-from src.util.constant import qzone_jother2, SPIDER_USER_NUM_LIMIT
+from src.util.constant import qzone_jother2, SPIDER_USER_NUM_LIMIT, EXPIRE_TIME_IN_SECONDS, MOOD_NUM_KEY
 import math
 import execjs
 import threading
@@ -629,7 +629,10 @@ class QQZoneSpider(BaseSpider):
             self.user_info.photo_num = data['XC']
             self.user_info.rz_num = data['RZ']
             self.mood_num = self.user_info.mood_num if self.mood_num == -1 else self.mood_num
-
+            if self.use_redis:
+                self.re.set(MOOD_NUM_KEY + self.username, self.mood_num)
+                if not self.no_delete:
+                    self.re.expire(MOOD_NUM_KEY + self.username, EXPIRE_TIME_IN_SECONDS)
             if self.debug:
                 print(self.user_info.mood_num)
                 print("Finish to get main page info")

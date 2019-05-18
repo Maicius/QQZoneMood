@@ -38,6 +38,9 @@ MOOD_COUNT_KEY = 'mood_count_'
 MOOD_FINISH_KEY = 'mood_finish_'
 FRIEND_FINISH_KEY = 'friend_finish_'
 
+MOOD_NUM_KEY = 'mood_num_'
+FRIEND_NUM_KEY = 'friend_num_'
+
 MOOD_NUM_PRE = 'QQ空间的说说数量'
 FRIEND_INFO_PRE = 'QQ好友数量'
 
@@ -63,6 +66,7 @@ FRIEND_INFO_COUNT_KEY = 'friend_info_count_'
 HISTORY_LIKE_AGREE = 'history_like_agree_'
 
 FRIEND_LIST_KEY = 'friend_list_'
+
 
 
 if __name__ == '__main__':

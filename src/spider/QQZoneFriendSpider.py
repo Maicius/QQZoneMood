@@ -8,7 +8,8 @@ import threading
 import datetime
 from src.util.constant import BASE_DIR, FINISH_FRIEND_INFO_ALL, STOP_FRIEND_INFO_SPIDER_KEY, WEB_SPIDER_INFO, \
     FRIEND_INFO_PRE, FRIEND_INFO_COUNT_KEY, EXPIRE_TIME_IN_SECONDS, FRIEND_LIST_KEY, STOP_SPIDER_KEY, STOP_SPIDER_FLAG, \
-    BASE_PATH
+    BASE_PATH, FRIEND_NUM_KEY
+
 
 class QQZoneFriendSpider(QQZoneSpider):
     """
@@ -104,6 +105,10 @@ class QQZoneFriendSpider(QQZoneSpider):
         """
         try:
             friend_num = self.get_friend_list()
+            if self.use_redis:
+                self.re.set(FRIEND_NUM_KEY + self.username, friend_num)
+                if not self.no_delete:
+                    self.re.expire(FRIEND_NUM_KEY + self.username, EXPIRE_TIME_IN_SECONDS)
             if self.use_redis:
                 self.re.rpush(WEB_SPIDER_INFO + self.username, FRIEND_INFO_PRE + ":" + str(friend_num))
                 if not self.no_delete:
