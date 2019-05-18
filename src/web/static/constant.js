@@ -38,3 +38,10 @@ const SPIDER_FRIEND_STATE = {
     FINISH : 1
 };
 
+const INVALID_LOGIN = -2;
+const SUCCESS_STATE = 1;
+const FINISH_FRIEND = 2;
+const FAILED_STATE = -1;
+const WAITING_USER_STATE = -3;
+const ALREADY_IN = -4;
+const CHECK_COOKIE = 0;

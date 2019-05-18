@@ -7,6 +7,8 @@ from src.spider.main import web_interface
 import threading
 from time import sleep
 
+from src.web.web_util.web_constant import INVALID_LOGIN, SUCCESS_STATE, FAILED_STATE, FINISH_FRIEND, WAITING_USER_STATE, \
+    ALREADY_IN, CHECK_COOKIE
 from src.web.web_util.web_util import check_password, md5_password, init_redis_key, get_redis_conn, judge_pool
 
 spider = Blueprint('spider',__name__)
@@ -16,21 +18,21 @@ def query_spider_info(QQ, password):
     pool_flag = session.get(POOL_FLAG)
     conn = get_redis_conn(pool_flag)
     if not check_password(conn, QQ, password):
-        return json.dumps(dict(finish=-2))
+        return json.dumps(dict(finish=INVALID_LOGIN, info=0))
     info = conn.lpop(WEB_SPIDER_INFO + QQ)
     finish = 0
     mood_num = -1
     friend_num = 0
     if info is not None:
         if info.find(FRIEND_INFO_PRE) != -1:
-            finish = 2
+            finish = FINISH_FRIEND
             friend_num = int(info.split(':')[1])
         elif info.find(MOOD_NUM_PRE) != -1:
-            finish = 1
+            finish = SUCCESS_STATE
             mood_num = int(info.split(':')[1])
         elif info.find("失败") != -1:
-            finish = -1
-            mood_num = -1
+            finish = FAILED_STATE
+            mood_num = FAILED_STATE
 
     result = dict(info=info, finish=finish, mood_num=mood_num, friend_num=friend_num)
     return json.dumps(result, ensure_ascii=False)
@@ -41,13 +43,13 @@ def query_spider_num(QQ, mood_num, password):
     pool_flag = session.get(POOL_FLAG)
     conn = get_redis_conn(pool_flag)
     if not check_password(conn, QQ, password):
-        return json.dumps(dict(finish=-2))
+        return json.dumps(dict(finish=INVALID_LOGIN))
     info = conn.get(MOOD_COUNT_KEY + str(QQ))
     # 强制停止，保证在由于网络等原因导致爬取的说说数量有缺失时也能正常停止程序
     finish_key = conn.get(MOOD_FINISH_KEY + str(QQ))
     finish = 0
     if finish_key == "1" or int(info) >= int(mood_num):
-        finish = 1
+        finish = SUCCESS_STATE
     return json.dumps(dict(num=info, finish=finish, finish_key=finish_key))
 
 @spider.route('/start_spider', methods=['GET', 'POST'])
@@ -59,7 +61,7 @@ def start_spider():
         mood_num = int(request.form['mood_num'])
         cookie = request.form['cookie']
         if cookie == None or len(cookie) < 10:
-            return json.dumps(dict(result=0), ensure_ascii=False)
+            return json.dumps(dict(result=CHECK_COOKIE), ensure_ascii=False)
         no_delete = False if request.form['no_delete'] == 'false' else True
         password = request.form['password']
         password = md5_password(password)
@@ -80,9 +82,9 @@ def start_spider():
         waiting_num = len(waiting_list)
         if waiting_num >= SPIDER_USER_NUM_LIMIT:
             if qq not in waiting_list:
-                result = dict(result=2, waiting_num=waiting_num)
+                result = dict(result=WAITING_USER_STATE, waiting_num=waiting_num)
             else:
-                result = dict(result=3, waiting_num=waiting_num)
+                result = dict(result=ALREADY_IN, waiting_num=waiting_num)
             return json.dumps(result, ensure_ascii=False)
 
         else:
@@ -92,7 +94,7 @@ def start_spider():
             t = threading.Thread(target=web_interface,
                                  args=(qq, nick_name, stop_time, mood_num, cookie, no_delete, password, pool_flag))
             t.start()
-            result = dict(result=1)
+            result = dict(result=SUCCESS_STATE)
             return json.dumps(result, ensure_ascii=False)
         except BaseException as e:
             result = dict(result=e)
@@ -106,7 +108,7 @@ def stop_spider(QQ, password):
     pool_flag = session.get(POOL_FLAG)
     conn = get_redis_conn(pool_flag)
     if not check_password(conn, QQ, password):
-        return json.dumps(dict(finish=-2))
+        return json.dumps(dict(finish=INVALID_LOGIN))
     # 更新标记位，停止爬虫
     conn.set(STOP_SPIDER_KEY + QQ, STOP_SPIDER_FLAG)
     stop = 0
@@ -130,7 +132,7 @@ def query_friend_info_num(QQ, friend_num, password):
     if conn is None:
         return json.dumps(dict(num="数据库未连接", finish=0))
     if not check_password(conn, QQ, password):
-        return json.dumps(dict(finish=-2))
+        return json.dumps(dict(finish=INVALID_LOGIN))
     info = conn.get(FRIEND_INFO_COUNT_KEY + str(QQ))
     finish = 0
     if int(info) >= int(friend_num):
@@ -142,7 +144,7 @@ def query_clean_data(QQ, password):
     pool_flag = session.get(POOL_FLAG)
     conn = get_redis_conn(pool_flag)
     if not check_password(conn, QQ, password):
-        return json.dumps(dict(finish=-2), ensure_ascii=False)
+        return json.dumps(dict(finish=INVALID_LOGIN), ensure_ascii=False)
     while True:
         key = conn.get(CLEAN_DATA_KEY + QQ)
         if key == '1':

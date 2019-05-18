@@ -46,6 +46,7 @@ let vm = avalon.define({
         vm.all_friend_num = 0;
         vm.friend_info_spider_state = SPIDER_FRIEND_STATE.DOING;
         vm.user = {};
+        vm.spider_info = []
     },
     view_data: function () {
         if (vm.qq_id.length === 0 && vm.password.length === 0 && vm.nick_name.length === 0) {
@@ -56,7 +57,6 @@ let vm = avalon.define({
                 type: 'GET',
 
                 success: function (res) {
-                    clearInterval(vm.query_num);
                     res = JSON.parse(res);
                     if (res.finish) {
                         vm.view_data_state = VIEW_DATA_STATE.data;
@@ -65,7 +65,7 @@ let vm = avalon.define({
                     } else {
                         alert("暂无该用户数据, 请先运行爬虫");
                     }
-
+                    clearInterval(vm.query_num);
                 }
             })
         }
@@ -88,7 +88,7 @@ let vm = avalon.define({
                     },
                     success: function (data) {
                         data = JSON.parse(data);
-                        if (data.result === 1) {
+                        if (data.result === SUCCESS_STATE) {
                             //alert("success");
                             vm.begin_spider = 1;
                             vm.spider_state = SPIDER_STATE.SPIDER;
@@ -97,11 +97,11 @@ let vm = avalon.define({
                                 vm.query_spider_info(vm.qq_id);
                             }, 1000);
 
-                        } else if (data.result === 0) {
+                        } else if (data.result === CHECK_COOKIE) {
                             alert("请输入有效cookie");
-                        } else if (data.result === 2) {
+                        } else if (data.result === WAITING_USER_STATE) {
                             alert("当前有" + data.waiting_num + "位用户正在使用爬虫，请大约" + 5 * data.waiting_num + "分钟后再尝试");
-                        } else if (data.result === 3) {
+                        } else if (data.result === ALREADY_IN) {
                             alert("您的账号已经在后台爬取");
                             vm.begin_spider = 1;
                             vm.spider_state = SPIDER_STATE.SPIDER;
@@ -132,7 +132,6 @@ let vm = avalon.define({
                 if (data.info.length > 2) {
                     vm.spider_info.push(data.info);
                 }
-
                 if (data.finish === 1) {
                     vm.show_process = 1;
                     vm.true_mood_num = data.mood_num;
