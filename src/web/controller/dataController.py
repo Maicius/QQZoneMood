@@ -47,6 +47,7 @@ def clear_cache(QQ, password):
                 os.system(delete_cmd)
                 # 删除 该路径下所有文件
                 os.system("rm -rf " + DATA_DIR_KEY)
+                conn.hdel(USER_MAP_KEY, QQ)
                 # os.removedirs(os.path.join(BASE_DIR, QQ))
                 finish = 1
             else:
