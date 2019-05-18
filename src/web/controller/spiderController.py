@@ -17,9 +17,12 @@ spider = Blueprint('spider',__name__)
 def query_spider_info(QQ, password):
     pool_flag = session.get(POOL_FLAG)
     conn = get_redis_conn(pool_flag)
-    if not check_password(conn, QQ, password):
-        return json.dumps(dict(finish=INVALID_LOGIN, info=0))
     info = conn.lpop(WEB_SPIDER_INFO + QQ)
+    if not check_password(conn, QQ, password):
+        if info is not None and info.find("登陆失败") != -1:
+            return json.dumps(dict(finish=FAILED_STATE, info=info))
+        else:
+            return json.dumps(dict(finish=INVALID_LOGIN, info=0))
     finish = 0
     mood_num = -1
     friend_num = 0
@@ -36,6 +39,7 @@ def query_spider_info(QQ, password):
 
     result = dict(info=info, finish=finish, mood_num=mood_num, friend_num=friend_num)
     return json.dumps(result, ensure_ascii=False)
+
 
 
 @spider.route('/query_spider_num/<QQ>/<mood_num>/<password>')

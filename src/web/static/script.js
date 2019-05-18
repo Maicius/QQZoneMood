@@ -135,11 +135,11 @@ let vm = avalon.define({
                 if (data.info.length > 2) {
                     vm.spider_info.push(data.info);
                 }
-                if (data.finish === 1) {
+                if (data.finish === SUCCESS_STATE) {
                     vm.show_process = 1;
                     vm.true_mood_num = data.mood_num;
 
-                } else if (data.finish === 2) {
+                } else if (data.finish === FINISH_FRIEND) {
                     vm.all_friend_num = data.friend_num;
                     // 停止spider_info的轮询
                     clearInterval(vm.query_interval);
@@ -151,13 +151,15 @@ let vm = avalon.define({
                     vm.query_num = setInterval(function () {
                         vm.query_spider_num(vm.qq_id);
                     }, 1000);
-                } else if (data.finish === -1) {
+                } else if (data.finish === FAILED_STATE) {
                     clearInterval(vm.query_interval);
                     vm.show_process = 0;
                     vm.spider_state = SPIDER_STATE.CONFIG;
+                    vm.init_parameter();
                     alert(data.info);
-                } else if (data.finish === -2) {
+                } else if (data.finish === INVALID_LOGIN) {
                     clearInterval(vm.query_interval);
+                    vm.init_parameter();
                     alert("识别码与QQ不匹配");
                 }
             }
