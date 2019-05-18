@@ -23,15 +23,17 @@ def web_interface(username, nickname, stop_time, mood_num, cookie_text, no_delet
     sp = QQZoneAnalysis(use_redis=True, debug=False, username=username, analysis_friend=True, from_web=True,
                         nickname=nickname, stop_time=stop_time, mood_num=mood_num, no_delete=no_delete, cookie_text=cookie_text, pool_flag=pool_flag)
     try:
+        # 存储用户密码
+        sp.re.hset(USER_MAP_KEY, username, password)
         sp.logging_info(username + "init success")
         sp.login()
         sp.logging_info(username + "logging success")
         sp.re.rpush(WEB_SPIDER_INFO + username, "用户" + str(sp.username) + "登陆成功")
-        # 存储用户密码
-        sp.re.hset(USER_MAP_KEY, username, password)
     except BaseException as e:
         sp.format_error(e, "logging failed")
         sp.re.rpush(WEB_SPIDER_INFO + username, GET_MAIN_PAGE_FAILED)
+        # 删除用户密码
+        sp.re.hdel(USER_MAP_KEY, username)
     try:
         sp.get_main_page_info()
         sp.logging_info("get main page success")

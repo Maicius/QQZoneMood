@@ -662,7 +662,7 @@ class QQZoneSpider(BaseSpider):
         url = 'https://user.qzone.qq.com/' + self.raw_username + '/main'
         if self.debug:
             print(url)
-        res = self.req.get(url=url, headers=self.headers)
+        res = self.req.get(url=url, headers=self.headers, timeout=20)
         if self.debug:
             print("qzone token main page:", res.status_code)
         content = res.content.decode("utf-8")
