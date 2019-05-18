@@ -30,7 +30,7 @@ LOGIN_FAILED = "登陆失败，请检查QQ号和cookie是否正确"
 
 GET_MOOD_FAILED = "获取主页信息失败，请检查QQ号和cookie是否正确，可更换cookie再进行尝试"
 
-GET_MAIN_PAGE_FAILED = "登陆失败，请检查cookie是否正确"
+GET_MAIN_PAGE_FAILED = "获取主页信息失败"
 
 FINISH_ALL_INFO = "获取全部信息完成"
 

@@ -31,18 +31,17 @@ def web_interface(username, nickname, stop_time, mood_num, cookie_text, no_delet
         sp.re.rpush(WEB_SPIDER_INFO + username, "用户" + str(sp.username) + "登陆成功")
     except BaseException as e:
         sp.format_error(e, "logging failed")
-        sp.re.rpush(WEB_SPIDER_INFO + username, GET_MAIN_PAGE_FAILED)
+        sp.re.rpush(WEB_SPIDER_INFO + username, LOGIN_FAILED)
         # 删除用户密码
         sp.re.hdel(USER_MAP_KEY, username)
     try:
         sp.get_main_page_info()
         sp.logging_info("get main page success")
-
         sp.re.rpush(WEB_SPIDER_INFO + username, "获取主页信息成功")
         sp.re.rpush(WEB_SPIDER_INFO + username, MOOD_NUM_PRE + ":" + str(sp.mood_num))
     except BaseException as e:
         sp.format_error(e, "get main page failed")
-        sp.re.rpush(WEB_SPIDER_INFO + username, LOGIN_FAILED)
+        sp.re.rpush(WEB_SPIDER_INFO + username, GET_MAIN_PAGE_FAILED)
 
     try:
 
