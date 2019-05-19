@@ -36,9 +36,12 @@ def query_spider_info(QQ, password):
         elif info.find("失败") != -1:
             finish = FAILED_STATE
             mood_num = FAILED_STATE
-
-    result = dict(info=info, finish=finish, mood_num=mood_num, friend_num=friend_num)
-    return json.dumps(result, ensure_ascii=False)
+        result = dict(info=info, finish=finish, mood_num=mood_num, friend_num=friend_num)
+        return json.dumps(result, ensure_ascii=False)
+    else:
+        info = ''
+        result = dict(info=info, finish=finish, mood_num=mood_num, friend_num=friend_num)
+        return json.dumps(result, ensure_ascii=False)
 
 
 

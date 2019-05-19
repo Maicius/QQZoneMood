@@ -144,7 +144,20 @@ let vm = avalon.define({
                 if (data.finish === SUCCESS_STATE) {
                     vm.show_process = 1;
                     vm.true_mood_num = data.mood_num;
-
+                    // 不知是什么原因，在docker中，会出现finish =1，但是mood_num == -1的失败情况
+                    // 出现这种情况后就停止爬虫
+                    if (data.mood_num === -1) {
+                        clearInterval(vm.query_interval);
+                        $.ajax({
+                            url: '/spider/stop_spider/' + vm.qq_id + '/' + sha1(vm.password),
+                            type: 'get',
+                            success: function (data) {
+                                console.log(data);
+                            }
+                        });
+                        vm.init_parameter();
+                        alert("由于网络等原因，获取数据失败，请稍后再尝试");
+                    }
                 } else if (data.finish === FINISH_FRIEND) {
                     vm.all_friend_num = data.friend_num;
                     // 停止spider_info的轮询
