@@ -3,11 +3,9 @@ import subprocess
 import time
 import datetime
 import redis
-import logging
 
 from src.util import util
 from src.util.constant import BASE_DIR
-from copy import deepcopy
 WAITING_USER_LIST = 'waiting_user_list'
 
 class CheckUser(object):
@@ -15,18 +13,18 @@ class CheckUser(object):
         self.user_set = set()
         self.user_dict = {}
         self.pool = redis.ConnectionPool(host=host, port=6379, decode_responses=True)
-        date = datetime.datetime.now().strftime('%Y-%m-%d')
-        logging_dir = BASE_DIR + 'user_log/'
-        print("logging_user_dir:", logging_dir)
-        util.check_dir_exist(logging_dir)
-        logging.basicConfig(level=logging.INFO,
-                            format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
-                            datefmt='%a, %d %b %Y %H:%M:%S',
-                            filename=logging_dir + date + '.log',
-                            filemode='w+')
+        # date = datetime.datetime.now().strftime('%Y-%m-%d')
+        # logging_dir = BASE_DIR + 'user_log/'
+        # print("logging_user_dir:", logging_dir)
+        # util.check_dir_exist(logging_dir)
+        # logging.basicConfig(level=logging.INFO,
+        #                     format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
+        #                     datefmt='%a, %d %b %Y %H:%M:%S',
+        #                     filename=logging_dir + date + '.log',
+        #                     filemode='w+')
 
     def check_exist(self):
-        logging.info(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + 'database is running')
+        # logging.info(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + 'database is running')
         conn = redis.Redis(connection_pool=self.pool)
         waiting_user_set = set(conn.lrange(WAITING_USER_LIST, 0, -1))
         if not self.user_set:
@@ -38,17 +36,16 @@ class CheckUser(object):
                 self.user_dict[item] = 1
             else:
                 self.user_dict[item] += 1
-            logging.info(
-                datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')+'---' + item + ':' + str(self.user_dict[item]))
+            # logging.info(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')+'---' + item + ':' + str(self.user_dict[item]))
         indexs = self.user_dict.keys()
 
         for index in indexs:
             if index not in self.user_set:
-                logging.info(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')+'---' + index + ' no longer exist, delete it from dict')
+                # logging.info(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')+'---' + index + ' no longer exist, delete it from dict')
                 self.user_dict[index] = 0
             if self.user_dict[index] >= 10:
                 conn.lrem(WAITING_USER_LIST, index)
-                logging.info(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')+'---' + index + ' time >= 10, delete it from redis')
+                print(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')+'---' + index + ' time >= 10, delete it from redis')
                 self.user_dict[index] = 0
 
 
