@@ -1,3 +1,4 @@
+from src.util.check_redis import CheckUser
 from src.util.constant import *
 import redis
 import hashlib
@@ -6,7 +7,7 @@ import os
 curPath = os.path.abspath(os.path.dirname(__file__))
 rootPath = os.path.split(curPath)[0]
 sys.path.append(os.path.split(rootPath)[0])
-
+import time
 # 共享redis连接池
 def connect_redis():
     pool = redis.ConnectionPool(host=REDIS_HOST, port=6379, decode_responses=True)
@@ -98,3 +99,11 @@ def check_waiting(conn, QQ):
         conn.rpush(WAITING_USER_LIST, QQ)
     else:
         conn.rpush(SPIDERING_USER_LIST, QQ)
+
+def begin_check_redis():
+    host = judge_pool()
+    cu = CheckUser(host)
+    print("begin to check:", host)
+    while True:
+        cu.check_exist()
+        time.sleep(60)
