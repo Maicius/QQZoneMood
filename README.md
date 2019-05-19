@@ -36,7 +36,7 @@
 
 	> docker-compose up
 	
-	> 浏览器里输入地址: [http://localhost:5000](http://localhost:5000)
+	> 浏览器里输入地址: [http://localhost:80](http://localhost:80)
 
 ### TO DO...
 
