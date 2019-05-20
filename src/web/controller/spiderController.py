@@ -145,6 +145,8 @@ def stop_spider_force(QQ, password):
     conn.set(STOP_SPIDER_KEY + QQ, STOP_SPIDER_FLAG)
     # 从waiting_list中删除该用户
     conn.lrem(WAITING_USER_LIST, QQ)
+
+    conn.hdel(USER_MAP_KEY, QQ)
     return json.dumps(dict(finish=1))
 
 
