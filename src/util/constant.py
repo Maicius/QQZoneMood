@@ -32,6 +32,8 @@ GET_MOOD_FAILED = "获取主页信息失败，请检查QQ号和cookie是否正�
 
 GET_MAIN_PAGE_FAILED = "获取主页信息失败"
 
+GET_FIRST_LOGIN_TIME = "获取第一次登陆时间失败"
+
 FINISH_ALL_INFO = "获取全部信息完成"
 
 MOOD_COUNT_KEY = 'mood_count_'

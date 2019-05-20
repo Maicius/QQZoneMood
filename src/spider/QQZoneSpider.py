@@ -15,7 +15,8 @@ import datetime
 import logging
 from src.spider.BaseSpider import BaseSpider
 from src.util import util
-from src.util.constant import qzone_jother2, SPIDER_USER_NUM_LIMIT, EXPIRE_TIME_IN_SECONDS, MOOD_NUM_KEY
+from src.util.constant import qzone_jother2, SPIDER_USER_NUM_LIMIT, EXPIRE_TIME_IN_SECONDS, MOOD_NUM_KEY, \
+    WEB_SPIDER_INFO, GET_MAIN_PAGE_FAILED, MOOD_NUM_PRE, GET_FIRST_LOGIN_TIME
 import math
 import execjs
 import threading
@@ -636,8 +637,11 @@ class QQZoneSpider(BaseSpider):
             if self.debug:
                 print(self.user_info.mood_num)
                 print("Finish to get main page info")
+            self.re.rpush(WEB_SPIDER_INFO + self.username, "获取主页信息成功")
+            self.re.rpush(WEB_SPIDER_INFO + self.username, MOOD_NUM_PRE + ":" + str(self.mood_num))
         except BaseException as e:
             self.format_error(e, "Failed to get main page info")
+            self.re.rpush(WEB_SPIDER_INFO + self.username, GET_MAIN_PAGE_FAILED)
         try:
             self.headers['referer'] = 'https://user.qzone.qq.com/1272082503/main'
             res = self.req.get(url=url2, headers=self.headers)
@@ -655,6 +659,7 @@ class QQZoneSpider(BaseSpider):
             print("Success to Get Main Page Info!")
         except BaseException as e:
             self.format_error(e, "Failed to get first login time")
+            self.re.rpush(WEB_SPIDER_INFO + self.username, GET_FIRST_LOGIN_TIME)
 
     def calculate_qzone_token(self):
         ctx = execjs.compile(
