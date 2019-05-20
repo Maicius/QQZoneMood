@@ -145,11 +145,11 @@ let vm = avalon.define({
                     vm.show_process = 1;
                     vm.true_mood_num = data.mood_num;
                     // 不知是什么原因，在docker中，会出现finish =1，但是mood_num == -1的失败情况
-                    // 出现这种情况后就停止爬虫
+                    // 出现这种情况后就强制停止爬虫
                     if (data.mood_num === -1) {
                         clearInterval(vm.query_interval);
                         $.ajax({
-                            url: '/spider/stop_spider/' + vm.qq_id + '/' + sha1(vm.password),
+                            url: '/spider/stop_spider_force/' + vm.qq_id + '/' + sha1(vm.password),
                             type: 'get',
                             success: function (data) {
                                 console.log(data);

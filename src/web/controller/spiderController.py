@@ -1,4 +1,4 @@
-from flask import Blueprint,session
+from flask import Blueprint, session
 
 import json
 from src.util.constant import *
@@ -11,7 +11,8 @@ from src.web.web_util.web_constant import INVALID_LOGIN, SUCCESS_STATE, FAILED_S
     ALREADY_IN, CHECK_COOKIE
 from src.web.web_util.web_util import check_password, md5_password, init_redis_key, get_redis_conn, judge_pool
 
-spider = Blueprint('spider',__name__)
+spider = Blueprint('spider', __name__)
+
 
 @spider.route('/query_spider_info/<QQ>/<password>')
 def query_spider_info(QQ, password):
@@ -44,7 +45,6 @@ def query_spider_info(QQ, password):
         return json.dumps(result, ensure_ascii=False)
 
 
-
 @spider.route('/query_spider_num/<QQ>/<mood_num>/<password>')
 def query_spider_num(QQ, mood_num, password):
     pool_flag = session.get(POOL_FLAG)
@@ -58,6 +58,7 @@ def query_spider_num(QQ, mood_num, password):
     if finish_key == "1" or int(info) >= int(mood_num):
         finish = SUCCESS_STATE
     return json.dumps(dict(num=info, finish=finish, finish_key=finish_key))
+
 
 @spider.route('/start_spider', methods=['GET', 'POST'])
 def start_spider():
@@ -133,6 +134,21 @@ def stop_spider(QQ, password):
     friend_num = conn.get(FRIEND_INFO_COUNT_KEY + str(QQ))
     return json.dumps(dict(num=num, finish=stop, friend_num=friend_num))
 
+# 强制停止spider
+@spider.route('/stop_spider_force/<QQ>/<password>')
+def stop_spider_force(QQ, password):
+    pool_flag = session.get(POOL_FLAG)
+    conn = get_redis_conn(pool_flag)
+    if not check_password(conn, QQ, password):
+        return json.dumps(dict(finish=INVALID_LOGIN))
+    # 更新标记位，停止爬虫
+    conn.set(STOP_SPIDER_KEY + QQ, STOP_SPIDER_FLAG)
+    # 从waiting_list中删除该用户
+    conn.lrem(WAITING_USER_LIST, QQ)
+    return json.dumps(dict(finish=1))
+
+
+
 @spider.route('/query_friend_info_num/<QQ>/<friend_num>/<password>')
 def query_friend_info_num(QQ, friend_num, password):
     pool_flag = session.get(POOL_FLAG)
@@ -147,6 +163,7 @@ def query_friend_info_num(QQ, friend_num, password):
         finish = 1
     return json.dumps(dict(num=info, finish=finish))
 
+
 @spider.route('/query_clean_data/<QQ>/<password>')
 def query_clean_data(QQ, password):
     pool_flag = session.get(POOL_FLAG)
@@ -160,6 +177,7 @@ def query_clean_data(QQ, password):
         else:
             sleep(0.1)
     return json.dumps(dict(finish=key), ensure_ascii=False)
+
 
 def check_waiting_list(conn):
     waiting_list = conn.lrange(WAITING_USER_LIST, 0, -1)
