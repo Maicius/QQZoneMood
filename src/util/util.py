@@ -130,6 +130,10 @@ def format_error(e, msg=""):
     print(msg)
     print('ERROR===================')
 
+def date_to_millis(d):
+    return int(time.mktime(d.timetuple())) * 1000
+
+
 if __name__ =='__main__':
     print(get_mktime('2018-09-6'))
     print(get_mktime('2018-9-06'))
