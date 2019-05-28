@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 from src.spider.QQZoneFriendMoodSpider import QQZoneFriendMoodSpider
 from src.analysis.Average import Average
 from src.util.constant import BASE_DIR
-from src.util.util import get_standard_time_from_mktime2,check_dir_exist
+from src.util.util import get_standard_time_from_mktime2
 
 
 class QQZoneAnalysis(QQZoneFriendMoodSpider):
