@@ -36,6 +36,8 @@ class QQZoneFriendMoodSpider(QQZoneFriendSpider):
         self.username = friend_qq
         self.nickname = nick_name
         self.mood_host = self.http_host + '/' + self.username + '/mood/'
+        self.init_file_name()
+        self.init_parameter()
 
     # 构造点赞的人的URL，好友的点赞url与自己的url不一样
     def get_aggree_url(self, unikey):
@@ -73,8 +75,6 @@ class QQZoneFriendMoodSpider(QQZoneFriendSpider):
             self.init_file_name()
 
             self.get_mood_list()
-            # 重置
-            self.reset_username()
 
     def reset_username(self):
         self.username = deepcopy(self.raw_username)

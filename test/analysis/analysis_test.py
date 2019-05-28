@@ -58,6 +58,23 @@ class AnalysisTest(unittest.TestCase):
         qa.calculate_history_like_agree()
         print(len(qa.re.get(qa.history_like_agree_file_name)))
 
+    def test_get_friend_data(self):
+        qa = QQZoneAnalysis(use_redis=True)
+        qa.get_friend_mood()
+
+    def test_clean_friend_data(self):
+        qa = QQZoneAnalysis(use_redis=True)
+        qa.change_username("850053825", "fuyuko")
+        qa.get_useful_info_from_json()
+        assert qa.has_clean_data == True
+
+    def test_draw_friend_cmt_cloud(self):
+        qa = QQZoneAnalysis(use_redis=True)
+        qa.change_username("850053825", "fuyuko")
+        qa.get_useful_info_from_json()
+        qa.draw_cmt_cloud(qa.mood_data_df)
+
+
 if __name__ =='__main__':
     unittest.main()
 
