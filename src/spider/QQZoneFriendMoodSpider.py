@@ -36,6 +36,8 @@ class QQZoneFriendMoodSpider(QQZoneFriendSpider):
         self.username = friend_qq
         self.nickname = nick_name
         self.mood_host = self.http_host + '/' + self.username + '/mood/'
+        self.init_file_name()
+        self.init_parameter()
 
     # 构造点赞的人的URL，好友的点赞url与自己的url不一样
     def get_aggree_url(self, unikey):
@@ -51,7 +53,7 @@ class QQZoneFriendMoodSpider(QQZoneFriendSpider):
         url = url + parse.urlencode(params)
         return url
 
-    def get_friend_mood(self, friend_qq='', nick_name='佚名'):
+    def get_friend_mood(self, friend_qq='', nick_name='佚名', mood_num = -1):
         """
         获取好友动态
         :param friend_qq:
@@ -65,6 +67,7 @@ class QQZoneFriendMoodSpider(QQZoneFriendSpider):
             self.friend_name_list.clear()
             self.friend_name_list.append(dict(friend_qq=friend_qq, nick_name=nick_name))
         for friend in self.friend_name_list:
+            self.mood_num = mood_num
             print("begin to capture:", friend['friend_qq'])
             self.change_username(friend['friend_qq'], friend['nick_name'])
             # 重新初始化参数
@@ -73,14 +76,17 @@ class QQZoneFriendMoodSpider(QQZoneFriendSpider):
             self.init_file_name()
 
             self.get_mood_list()
-            # 重置
-            self.reset_username()
 
     def reset_username(self):
+        """
+        重置用户名昵称和文件名
+        :return:
+        """
         self.username = deepcopy(self.raw_username)
         self.nickname = deepcopy(self.raw_nickname)
         self.mood_host = self.http_host + '/' + self.username + '/mood/'
-
+        self.init_file_name()
+        self.init_parameter()
 
 if __name__ == '__main__':
     qqfriend = QQZoneFriendMoodSpider(use_redis=True, debug=False, mood_begin=0, mood_num=500,

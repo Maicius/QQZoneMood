@@ -4,7 +4,7 @@ from src.threadPool.ImageThreadPool import ImageThreadPool
 from src.util import util
 from copy import deepcopy
 import json
-from src.util.constant import BASE_DIR, EXPIRE_TIME_IN_SECONDS
+from src.util.constant import BASE_DIR, EXPIRE_TIME_IN_SECONDS, BASE_PATH
 import re
 import logging
 from src.web.entity.UserInfo import UserInfo
@@ -152,7 +152,10 @@ class BaseSpider(object):
 
 
     def init_file_name(self):
-
+        """
+        初始化所有文件名
+        :return:
+        """
         self.USER_BASE_DIR = BASE_DIR + self.username + '/'
         logging_dir = self.USER_BASE_DIR + 'log/'
         print("logging_dir:", logging_dir)
@@ -184,7 +187,39 @@ class BaseSpider(object):
         util.check_dir_exist(ERROR_DIR_HEAD)
         util.check_dir_exist(self.SMALL_IMAGE_DIR)
         util.check_dir_exist(self.BIG_IMAGE_DIR)
+
+        USER_BASE_DIR = BASE_DIR + self.username + '/'
+        util.check_dir_exist(USER_BASE_DIR)
+        FRIEND_DIR_HEAD = USER_BASE_DIR + 'friend/'
+        self.FRIEND_LIST_FILE_NAME = FRIEND_DIR_HEAD + 'friend_list.json'
+        self.FRIEND_DETAIL_FILE_NAME = FRIEND_DIR_HEAD + 'friend_detail.json'
+        self.FRIEND_DETAIL_LIST_FILE_NAME = FRIEND_DIR_HEAD + 'friend_detail_list.csv'
+        self.FRIEND_DETAIL_EXCEL_FILE_NAME = FRIEND_DIR_HEAD + 'friend_detail_list.xlsx'
+        # 头像下载到web的static文件夹，以便在web中调用
+        self.FRIEND_HEADER_IMAGE_PATH = BASE_PATH + '/src/web/static/image/header/' + self.username + '/'
+        util.check_dir_exist(USER_BASE_DIR + 'friend/')
+        util.check_dir_exist(self.FRIEND_HEADER_IMAGE_PATH)
+        self.init_analysis_path()
         print("Init file Name Finish:", self.USER_BASE_DIR)
+
+    def init_analysis_path(self):
+        self.friend_dir = BASE_DIR + self.username + '/friend/' + 'friend_detail_list.csv'
+        self.history_like_agree_file_name = BASE_DIR +  self.username + '/friend/' + 'history_like_list.json'
+        RESULT_BASE_DIR = self.USER_BASE_DIR + "data/result/"
+
+        self.MOOD_DATA_FILE_NAME = RESULT_BASE_DIR + 'mood_data.csv'
+        self.MOOD_DATA_EXCEL_FILE_NAME = RESULT_BASE_DIR + 'mood_data.xlsx'
+
+        LABEL_BASE_DIR = self.USER_BASE_DIR + "data/label/"
+        self.LABEL_FILE_CSV = LABEL_BASE_DIR + 'label_data.csv'
+        self.LABEL_FILE_EXCEL = LABEL_BASE_DIR + 'label_data.xlsx'
+
+        self.label_path = self.USER_BASE_DIR + 'data/label/'
+        self.image_path = self.USER_BASE_DIR + 'image/'
+        util.check_dir_exist(RESULT_BASE_DIR)
+        util.check_dir_exist(LABEL_BASE_DIR)
+        util.check_dir_exist(self.label_path)
+        util.check_dir_exist(self.image_path)
 
     def load_all_data_from_json(self):
         self.content = self.load_data_from_json(self.CONTENT_FILE_NAME)

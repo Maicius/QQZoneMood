@@ -8,14 +8,14 @@ import matplotlib.pyplot as plt
 from src.spider.QQZoneFriendMoodSpider import QQZoneFriendMoodSpider
 from src.analysis.Average import Average
 from src.util.constant import BASE_DIR
-from src.util.util import get_standard_time_from_mktime2,check_dir_exist
+from src.util.util import get_standard_time_from_mktime2
 
 
 class QQZoneAnalysis(QQZoneFriendMoodSpider):
     def __init__(self, use_redis=False, debug=False, username='', analysis_friend=False, mood_begin=0, mood_num=-1,
                  stop_time='-1', from_web=False, nickname='', no_delete=True, cookie_text='', pool_flag='127.0.0.1'):
 
-        QQZoneFriendMoodSpider.__init__(self, use_redis, debug, recover=False, username=username, mood_num=mood_num,
+        QQZoneFriendMoodSpider.__init__(self, use_redis=use_redis, debug=debug, recover=False, username=username, mood_num=mood_num,
                               mood_begin=mood_begin, stop_time=stop_time, from_web=from_web, nickname=nickname,
                               no_delete=no_delete, cookie_text=cookie_text, analysis=True, export_excel=True, export_csv=False, pool_flag=pool_flag)
         self.mood_data = []
@@ -24,31 +24,11 @@ class QQZoneAnalysis(QQZoneFriendMoodSpider):
         self.like_list_names_df = []
         self.analysis_friend = analysis_friend
         self.has_clean_data = False
-        self.friend_dir = BASE_DIR + self.username + '/friend/' + 'friend_detail_list.csv'
-        self.history_like_agree_file_name = BASE_DIR +  self.username + '/friend/' + 'history_like_list.json'
 
         self.av = Average(use_redis=False, file_name_head=username, analysis=True, debug=debug)
-        self.init_analysis_path()
 
         # 用于绘制词云图的字体，请更改为自己电脑上任意一款支持中文的字体，否则将无法显示中文
         self.system_font = '/System/Library/Fonts/Hiragino Sans GB.ttc'
-
-    def init_analysis_path(self):
-        RESULT_BASE_DIR = self.USER_BASE_DIR + "data/result/"
-
-        self.MOOD_DATA_FILE_NAME = RESULT_BASE_DIR + 'mood_data.csv'
-        self.MOOD_DATA_EXCEL_FILE_NAME = RESULT_BASE_DIR + 'mood_data.xlsx'
-
-        LABEL_BASE_DIR = self.USER_BASE_DIR + "data/label/"
-        self.LABEL_FILE_CSV = LABEL_BASE_DIR + 'label_data.csv'
-        self.LABEL_FILE_EXCEL = LABEL_BASE_DIR + 'label_data.xlsx'
-
-        self.label_path = self.USER_BASE_DIR + 'data/label/'
-        self.image_path = self.USER_BASE_DIR + 'image/'
-        check_dir_exist(RESULT_BASE_DIR)
-        check_dir_exist(LABEL_BASE_DIR)
-        check_dir_exist(self.label_path)
-        check_dir_exist(self.image_path)
 
     def load_file_from_redis(self):
         self.do_recover_from_exist_data()

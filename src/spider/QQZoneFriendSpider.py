@@ -6,10 +6,9 @@ from src.util import util
 import math
 import threading
 import datetime
-from src.util.constant import BASE_DIR, FINISH_FRIEND_INFO_ALL, STOP_FRIEND_INFO_SPIDER_KEY, WEB_SPIDER_INFO, \
+from src.util.constant import FINISH_FRIEND_INFO_ALL, STOP_FRIEND_INFO_SPIDER_KEY, WEB_SPIDER_INFO, \
     FRIEND_INFO_PRE, FRIEND_INFO_COUNT_KEY, EXPIRE_TIME_IN_SECONDS, FRIEND_LIST_KEY, STOP_SPIDER_KEY, STOP_SPIDER_FLAG, \
-    BASE_PATH, FRIEND_NUM_KEY
-
+    FRIEND_NUM_KEY
 
 class QQZoneFriendSpider(QQZoneSpider):
     """
@@ -33,17 +32,6 @@ class QQZoneFriendSpider(QQZoneSpider):
 
         if self.g_tk == 0 and analysis == False:
             self.login()
-        USER_BASE_DIR = BASE_DIR + self.username + '/'
-        util.check_dir_exist(USER_BASE_DIR)
-        FRIEND_DIR_HEAD = USER_BASE_DIR + 'friend/'
-        self.FRIEND_LIST_FILE_NAME = FRIEND_DIR_HEAD + 'friend_list.json'
-        self.FRIEND_DETAIL_FILE_NAME = FRIEND_DIR_HEAD + 'friend_detail.json'
-        self.FRIEND_DETAIL_LIST_FILE_NAME = FRIEND_DIR_HEAD + 'friend_detail_list.csv'
-        self.FRIEND_DETAIL_EXCEL_FILE_NAME = FRIEND_DIR_HEAD + 'friend_detail_list.xlsx'
-        # 头像下载到web的static文件夹，以便在web中调用
-        self.FRIEND_HEADER_IMAGE_PATH = BASE_PATH + '/src/web/static/image/header/' + self.username + '/'
-        util.check_dir_exist(USER_BASE_DIR + 'friend/')
-        util.check_dir_exist(self.FRIEND_HEADER_IMAGE_PATH)
         self.friend_detail = []
         self.friend_list = []
         self.friend_df = pd.DataFrame()

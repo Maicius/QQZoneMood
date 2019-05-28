@@ -5,7 +5,7 @@ rootPath = os.path.split(curPath)[0]
 sys.path.append(os.path.split(rootPath)[0])
 from src.analysis.QQZoneAnalysis import QQZoneAnalysis
 from src.spider.QQZoneSpider import QQZoneSpider
-from src.util.constant import WEB_SPIDER_INFO, MOOD_NUM_PRE, CLEAN_DATA_KEY, GET_MAIN_PAGE_FAILED, LOGIN_FAILED, \
+from src.util.constant import WEB_SPIDER_INFO, CLEAN_DATA_KEY, LOGIN_FAILED, \
     USER_MAP_KEY, GET_MOOD_FAILED, MOOD_FINISH_KEY, WAITING_USER_LIST
 import threading
 
