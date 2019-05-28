@@ -86,6 +86,10 @@ class QQZoneSpider(BaseSpider):
         self.h5_headers['cookie'] = self.cookies
 
     def login_with_qr_code(self):
+        """
+        扫描二维码登陆
+        :return:
+        """
         self.cookies = cookiejar.CookieJar()
         cookies = cookiejar.Cookie(version=0, name='_qz_referrer', value='qzone.qq.com', port=None, port_specified=False,
                             domain='qq.com',
@@ -127,8 +131,8 @@ class QQZoneSpider(BaseSpider):
             raise ValueError
         logging.info("scan qr code success")
         # 删除QRCode文件
-        if os.path.exists(self.QR_CODE_PATH):
-            os.remove(self.QR_CODE_PATH)
+        if os.path.exists(self.QR_CODE_PATH + '.jpg'):
+            os.remove(self.QR_CODE_PATH + '.jpg')
 
         self.nickname = ret[11]
         cookie = ''
