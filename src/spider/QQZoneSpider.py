@@ -12,6 +12,7 @@ import re
 import json
 import copy
 import datetime
+import random
 import logging
 from src.spider.BaseSpider import BaseSpider
 from src.util import util
@@ -21,6 +22,8 @@ import math
 import execjs
 import threading
 from src.util.constant import FINISH_ALL_INFO, MOOD_COUNT_KEY, STOP_SPIDER_KEY, STOP_SPIDER_FLAG
+import os
+from http import cookiejar
 
 class QQZoneSpider(BaseSpider):
     def __init__(self, use_redis=False, debug=False, mood_begin=0, mood_num=-1, stop_time='-1',
@@ -46,12 +49,13 @@ class QQZoneSpider(BaseSpider):
         :param no_delete: 是否在redis中缓存数据，如果为True,则不会删除，如果为False，则设置24小时的缓存时间
         :param pool_flag: redis的连接池host，因为docker中host与外部不同，所以在启动程序时会自动判断是不是处于docker中
         """
-        BaseSpider.__init__(self, use_redis=use_redis, debug=debug, mood_begin=mood_begin, mood_num=mood_num, stop_time=stop_time,
+        BaseSpider.__init__(self, use_redis=use_redis, debug=debug, mood_begin=mood_begin, mood_num=mood_num,
+                            stop_time=stop_time,
                             download_small_image=download_small_image, download_big_image=download_big_image,
                             download_mood_detail=download_mood_detail, download_like_detail=download_like_detail,
                             download_like_names=download_like_names, recover=recover, cookie_text=cookie_text,
-                            from_web=from_web, username=username, nickname=nickname, no_delete=no_delete, pool_flag=pool_flag)
-
+                            from_web=from_web, username=username, nickname=nickname, no_delete=no_delete,
+                            pool_flag=pool_flag)
 
         self.req = requests.Session()
         connection_num = 20 * SPIDER_USER_NUM_LIMIT
@@ -62,6 +66,7 @@ class QQZoneSpider(BaseSpider):
         self.qzonetoken = ""
         self.g_tk = 0
         self.init_parameter()
+        self.qzone_login_url = 'https://xui.ptlogin2.qq.com/cgi-bin/xlogin?proxy_url=https%3A//qzs.qq.com/qzone/v6/portal/proxy.html&daid=5&&hide_title_bar=1&low_login=0&qlogin_auto_login=1&no_verifyimg=1&link_target=blank&appid=549000912&style=22&target=self&s_url=https%3A%2F%2Fqzs.qq.com%2Fqzone%2Fv5%2Floginsucc.html%3Fpara%3Dizone&pt_qr_app=%E6%89%8B%E6%9C%BAQQ%E7%A9%BA%E9%97%B4&pt_qr_link=https%3A//z.qzone.com/download.html&self_regurl=https%3A//qzs.qq.com/qzone/v6/reg/index.html&pt_qr_help_link=https%3A//z.qzone.com/download.html&pt_no_auth=0'
 
     def login(self):
         """
@@ -79,6 +84,79 @@ class QQZoneSpider(BaseSpider):
             print("finish to calculate g_tk")
         self.headers['cookie'] = self.cookies
         self.h5_headers['cookie'] = self.cookies
+
+    def login_with_qr_code(self):
+        self.cookies = cookiejar.CookieJar()
+        cookies = cookiejar.Cookie(version=0, name='_qz_referrer', value='qzone.qq.com', port=None, port_specified=False,
+                            domain='qq.com',
+                            domain_specified=False, domain_initial_dot=False, path='/', path_specified=True,
+                            secure=False, expires=None, discard=True, comment=None, comment_url=None,
+                            rest={'HttpOnly': None}, rfc2109=False)
+        self.cookies.set_cookie(cookies)
+        self.headers['host'] = 'ssl.ptlogin2.qq.com'
+        self.headers['referer'] = 'https://qzone.qq.com/'
+        start_time = util.date_to_millis(datetime.datetime.utcnow())
+        wait_time = 0
+        login_url = 'https://ssl.ptlogin2.qq.com/ptqrshow?appid=549000912&e=2&l=M&s=3&d=72&v=4&t=0.{0}6252926{1}2285{2}86&daid=5'.format(
+            random.randint(0, 9), random.randint(0, 9), random.randint(0, 9))
+        while wait_time < 100:
+            wait_time += 1
+            qr_res = self.req.get(url=login_url, headers=self.headers)
+            self.save_image_concurrent(qr_res.content, self.QR_CODE_PATH)
+            self.cookies = qr_res.cookies
+            login_sig = self.get_cookie('pt_login_sig')
+            qr_sig = self.get_cookie('qrsig')
+
+            if self.debug:
+                print("success to download qr code")
+            logging.info("success to download qr code")
+            while True:
+                self.headers['referer'] = self.qzone_login_url
+                res = self.req.get(
+                    'https://ssl.ptlogin2.qq.com/ptqrlogin?u1=https%3A%2F%2Fqzs.qq.com%2Fqzone%2Fv5%2Floginsucc.html%3Fpara%3Dizone&ptqrtoken={0}&ptredirect=0&h=1&t=1&g=1&from_ui=1&ptlang=2052&action=0-0-{1}&js_ver=10220&js_type=1&login_sig={2}&pt_uistyle=40&aid=549000912&daid=5&'.format(
+                        self.get_qr_token(qr_sig), util.date_to_millis(datetime.datetime.utcnow()) - start_time,
+                        login_sig), headers=self.headers).content.decode("utf-8")
+                ret = res.split("'")
+                if ret[1] == '65' or ret[1] == '0':  # 65: QRCode 失效, 0: 验证成功, 66: 未失效, 67: 验证中
+                    break
+                time.sleep(2)
+            if ret[1] == '0':
+                break
+        if ret[1] != '0':
+            self.format_error("Failed to login with qr code")
+            raise ValueError
+        logging.info("scan qr code success")
+        # 删除QRCode文件
+        if os.path.exists(self.QR_CODE_PATH):
+            os.remove(self.QR_CODE_PATH)
+
+        self.nickname = ret[11]
+        cookie = ''
+        for elem in self.cookies:
+            cookie += elem.name + "=" + elem.value + ";"
+        self.cookies = cookie
+        self.get_g_tk()
+        self.headers['cookie'] = self.cookies
+        self.h5_headers['cookie'] = self.cookies
+        print("Login success,", self.username)
+
+    def get_cookie(self, key):
+        for c in self.cookies:
+            if c.name == key:
+                return c.value
+        return ''
+
+    def change_dict_to_cookie(self, cookie):
+        cookies = ''
+        for key, val in cookie.items():
+            cookies += key + '=' + str(val) + '; '
+        return cookies
+
+    def get_qr_token(self, qrsig):
+        e = 0
+        for i in qrsig:
+            e += (e << 5) + ord(i)
+        return 2147483647 & e
 
     # 核心加密字段
     def get_g_tk(self):
@@ -191,7 +269,8 @@ class QQZoneSpider(BaseSpider):
             # pos必须为20的倍数
             start_pos = i * step
             stop_pos = (i + 1) * step if i + 1 < self.thread_num else self.mood_num
-            t = threading.Thread(target=self.get_mood_in_range, args=(start_pos, stop_pos, recover_index_split, url_mood, True))
+            t = threading.Thread(target=self.get_mood_in_range,
+                                 args=(start_pos, stop_pos, recover_index_split, url_mood, True))
             self.thread_list.append(t)
 
         for t in self.thread_list:
@@ -246,7 +325,8 @@ class QQZoneSpider(BaseSpider):
                     # 获取数据
                     until_stop_time = self.do_get_infos(unikeys, until_stop_time)
                     if self.use_redis:
-                        until_stop_time = False if self.re.get(STOP_SPIDER_KEY+ str(self.username)) == STOP_SPIDER_FLAG else True
+                        until_stop_time = False if self.re.get(
+                            STOP_SPIDER_KEY + str(self.username)) == STOP_SPIDER_FLAG else True
                 pos += 20
                 # 每抓100条保存一次数据
                 if pos % 100 == 0 and self.use_redis:
@@ -262,6 +342,7 @@ class QQZoneSpider(BaseSpider):
                 print("ERROR===================")
                 # raise e
         pass
+
     # 构造点赞的人的URL
     def get_aggree_url(self, unikey):
         url = 'https://user.qzone.qq.com/proxy/domain/users.qzone.qq.com/cgi-bin/likes/get_like_list_app?'
@@ -320,18 +401,18 @@ class QQZoneSpider(BaseSpider):
     def get_cmt_detail_url(self, start, top_id):
         url = 'https://h5.qzone.qq.com/proxy/domain/taotao.qzone.qq.com/cgi-bin/emotion_cgi_getcmtreply_v6?'
         params = {
-            'format':'jsonp',
-            'g_tk':self.g_tk,
-            'hostUin':self.username,
-            'inCharset':'',
-            'need_private_comment':1,
-            'num':20,
-            'order':0,
-            'outCharset':'',
-            'qzonetoken':'',
-            'random':'',
-            'ref':'',
-            'start':start,
+            'format': 'jsonp',
+            'g_tk': self.g_tk,
+            'hostUin': self.username,
+            'inCharset': '',
+            'need_private_comment': 1,
+            'num': 20,
+            'order': 0,
+            'outCharset': '',
+            'qzonetoken': '',
+            'random': '',
+            'ref': '',
+            'start': start,
             'topicId': top_id,
             'uin': self.raw_username
         }
@@ -344,7 +425,8 @@ class QQZoneSpider(BaseSpider):
         like_url = self.get_like_detail_url(unikeys)
         if unikeys != '':
             try:
-                like_content = json.loads(self.get_json(self.req.get(like_url, headers=self.headers, timeout=20).content.decode('utf-8')))
+                like_content = json.loads(
+                    self.get_json(self.req.get(like_url, headers=self.headers, timeout=20).content.decode('utf-8')))
                 # like_content是所有的点赞信息，其中like字段为点赞数目，list是点赞的人列表，有的数据中list为空
                 like_content['tid'] = tid
                 return like_content
@@ -352,7 +434,8 @@ class QQZoneSpider(BaseSpider):
                 # 因为这里错误较多，所以进行一次retry，如果不行则保留unikey
                 self.format_error(e, 'Retry to get like_url:' + unikeys)
                 try:
-                    like_content = json.loads(self.get_json(self.req.get(like_url, headers=self.headers, timeout=20).content.decode('utf-8')))
+                    like_content = json.loads(
+                        self.get_json(self.req.get(like_url, headers=self.headers, timeout=20).content.decode('utf-8')))
                     like_content['tid'] = tid
                     return like_content
                 except BaseException as e:
@@ -599,7 +682,7 @@ class QQZoneSpider(BaseSpider):
             "uin": self.raw_username,
             "g_tk": self.g_tk,
             "param": "3_" + self.raw_username + "_0|8_8_" + self.raw_username + "_0_1_0_0_1|16",
-            "qzonetoken":""
+            "qzonetoken": ""
         }
         url = base_url + parse.urlencode(params)
 
@@ -608,7 +691,7 @@ class QQZoneSpider(BaseSpider):
             "uin": self.raw_username,
             "g_tk": self.g_tk,
             "login_uin": self.raw_username,
-            "rd":'',
+            "rd": '',
             "num": 3,
             "noflower": 1,
             "qzonetoken": self.qzonetoken
@@ -663,7 +746,8 @@ class QQZoneSpider(BaseSpider):
 
     def calculate_qzone_token(self):
         ctx = execjs.compile(
-            '''function qzonetoken(){ location = 'http://user.qzone.qq.com/%s'; return %s}''' % (self.raw_username, qzone_jother2))
+            '''function qzonetoken(){ location = 'http://user.qzone.qq.com/%s'; return %s}''' % (
+                self.raw_username, qzone_jother2))
         return ctx.call("qzonetoken")
 
     def get_qzone_token(self):

@@ -200,6 +200,7 @@ class BaseSpider(object):
         util.check_dir_exist(USER_BASE_DIR + 'friend/')
         util.check_dir_exist(self.FRIEND_HEADER_IMAGE_PATH)
         self.init_analysis_path()
+        self.QR_CODE_PATH = self.USER_BASE_DIR + 'qr.png'
         print("Init file Name Finish:", self.USER_BASE_DIR)
 
     def init_analysis_path(self):
