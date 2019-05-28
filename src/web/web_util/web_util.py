@@ -59,7 +59,7 @@ def judge_pool():
         conn = redis.Redis(connection_pool=pool)
         conn.set('redis_success', 1)
         return REDIS_HOST
-    except BaseException as e:
+    except BaseException:
         try:
             docker_pool = get_docker_pool()
             conn = redis.Redis(connection_pool=docker_pool)

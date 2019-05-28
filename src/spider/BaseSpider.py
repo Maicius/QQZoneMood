@@ -51,6 +51,8 @@ class BaseSpider(object):
         self.mood_host = self.http_host + '/' + self.username + '/mood/'
         # 在爬取好友动态时username会变为好友的QQ号，所以此处需要备份
         self.raw_username = deepcopy(self.username)
+        self.raw_nickname = deepcopy(self.nickname)
+
         self.headers = {
             'host': 'user.qzone.qq.com',
             'accept-encoding': 'gzip, deflate, br',

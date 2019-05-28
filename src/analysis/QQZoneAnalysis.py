@@ -5,17 +5,17 @@ import jieba
 from wordcloud import WordCloud, ImageColorGenerator, STOPWORDS
 from scipy.misc import imread
 import matplotlib.pyplot as plt
-from src.spider.QQZoneFriendSpider import QQZoneFriendSpider
+from src.spider.QQZoneFriendMoodSpider import QQZoneFriendMoodSpider
 from src.analysis.Average import Average
 from src.util.constant import BASE_DIR
 from src.util.util import get_standard_time_from_mktime2,check_dir_exist
 
 
-class QQZoneAnalysis(QQZoneFriendSpider):
+class QQZoneAnalysis(QQZoneFriendMoodSpider):
     def __init__(self, use_redis=False, debug=False, username='', analysis_friend=False, mood_begin=0, mood_num=-1,
                  stop_time='-1', from_web=False, nickname='', no_delete=True, cookie_text='', pool_flag='127.0.0.1'):
 
-        QQZoneFriendSpider.__init__(self, use_redis, debug, recover=False, username=username, mood_num=mood_num,
+        QQZoneFriendMoodSpider.__init__(self, use_redis, debug, recover=False, username=username, mood_num=mood_num,
                               mood_begin=mood_begin, stop_time=stop_time, from_web=from_web, nickname=nickname,
                               no_delete=no_delete, cookie_text=cookie_text, analysis=True, export_excel=True, export_csv=False, pool_flag=pool_flag)
         self.mood_data = []
@@ -428,7 +428,6 @@ def get_most_people(username):
 def export_mood_df(username):
     analysis = QQZoneAnalysis(use_redis=True, debug=True, username=username, analysis_friend=False, from_web=True)
     analysis.export_mood_df()
-
 
 
 if __name__ == '__main__':

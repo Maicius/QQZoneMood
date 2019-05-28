@@ -17,7 +17,9 @@ class QQZoneFriendSpider(QQZoneSpider):
     """
     def __init__(self, use_redis=False, debug=False, analysis=True, recover=False,
                  username='', mood_begin=0, mood_num=-1, stop_time='-1', from_web=False, nickname='', no_delete=True, cookie_text='',
-                 export_excel=False, export_csv = True, pool_flag='127.0.0.1'):
+                 export_excel=False, export_csv = True, pool_flag='127.0.0.1',
+                 download_small_image=False, download_big_image=False,
+                 download_mood_detail=True, download_like_detail=True, download_like_names=True):
         """
         :param use_redis: 是否使用redis
         :param debug: 是否开启debug模式
@@ -25,7 +27,9 @@ class QQZoneFriendSpider(QQZoneSpider):
         """
         QQZoneSpider.__init__(self, use_redis, debug, recover=recover, username=username, mood_num=mood_num,
                               mood_begin=mood_begin, stop_time=stop_time, from_web=from_web, nickname=nickname,
-                              no_delete=no_delete, cookie_text=cookie_text, pool_flag=pool_flag)
+                              no_delete=no_delete, cookie_text=cookie_text, pool_flag=pool_flag,                               download_small_image=download_small_image, download_big_image=download_big_image,
+                              download_mood_detail=download_mood_detail, download_like_detail=download_like_detail,
+                              download_like_names=download_like_names)
 
         if self.g_tk == 0 and analysis == False:
             self.login()
