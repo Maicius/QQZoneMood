@@ -6,13 +6,17 @@ class FriendAnalysisTest(unittest.TestCase):
 
     def setUp(self) -> None:
         self.qa = QQZoneAnalysis(use_redis=True)
-        self.qa.change_username("850053825", "fuyuko")
+        self.qa.change_username("458246290", "fuyuko")
+
+    def tearDown(self) -> None:
+        pass
 
     def test_init(self) -> None:
         pass
 
     def test_get_friend_data(self):
-        self.qa.get_friend_mood()
+        self.qa.reset_username()
+        self.qa.get_friend_mood("458246290", "fuyuko", mood_num=20)
 
     def test_clean_friend_data(self):
         self.qa.get_useful_info_from_json()
