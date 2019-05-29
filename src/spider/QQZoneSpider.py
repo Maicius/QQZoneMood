@@ -142,6 +142,7 @@ class QQZoneSpider(BaseSpider):
         self.get_g_tk()
         self.headers['cookie'] = self.cookies
         self.h5_headers['cookie'] = self.cookies
+        self.headers['host'] = 'user.qzone.qq.com'
         print("Login success,", self.username)
 
     def get_cookie(self, key):
