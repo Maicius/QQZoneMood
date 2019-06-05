@@ -196,11 +196,11 @@ class BaseSpider(object):
         self.FRIEND_DETAIL_LIST_FILE_NAME = FRIEND_DIR_HEAD + 'friend_detail_list.csv'
         self.FRIEND_DETAIL_EXCEL_FILE_NAME = FRIEND_DIR_HEAD + 'friend_detail_list.xlsx'
         # 头像下载到web的static文件夹，以便在web中调用
-        self.FRIEND_HEADER_IMAGE_PATH = BASE_PATH + '/src/web/static/image/header/' + self.username + '/'
+        self.FRIEND_HEADER_IMAGE_PATH = BASE_PATH + '/src/web/static/image/' + self.username + '/header/'
         util.check_dir_exist(USER_BASE_DIR + 'friend/')
         util.check_dir_exist(self.FRIEND_HEADER_IMAGE_PATH)
         self.init_analysis_path()
-        self.QR_CODE_PATH = self.USER_BASE_DIR + 'qr'
+        self.QR_CODE_PATH = BASE_PATH + '/src/web/static/image/' + self.username + '/' + 'qr'
         print("Init file Name Finish:", self.USER_BASE_DIR)
 
     def init_analysis_path(self):

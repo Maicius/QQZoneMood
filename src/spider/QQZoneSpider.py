@@ -103,10 +103,10 @@ class QQZoneSpider(BaseSpider):
         wait_time = 0
         login_url = 'https://ssl.ptlogin2.qq.com/ptqrshow?appid=549000912&e=2&l=M&s=3&d=72&v=4&t=0.{0}6252926{1}2285{2}86&daid=5'.format(
             random.randint(0, 9), random.randint(0, 9), random.randint(0, 9))
-        while wait_time < 100:
+        while wait_time < 60:
             wait_time += 1
             qr_res = self.req.get(url=login_url, headers=self.headers)
-            self.save_image_concurrent(qr_res.content, self.QR_CODE_PATH)
+            self.save_image_single(qr_res.content, self.QR_CODE_PATH)
             self.cookies = qr_res.cookies
             login_sig = self.get_cookie('pt_login_sig')
             qr_sig = self.get_cookie('qrsig')
@@ -119,8 +119,10 @@ class QQZoneSpider(BaseSpider):
                 res = self.req.get(
                     'https://ssl.ptlogin2.qq.com/ptqrlogin?u1=https%3A%2F%2Fqzs.qq.com%2Fqzone%2Fv5%2Floginsucc.html%3Fpara%3Dizone&ptqrtoken={0}&ptredirect=0&h=1&t=1&g=1&from_ui=1&ptlang=2052&action=0-0-{1}&js_ver=10220&js_type=1&login_sig={2}&pt_uistyle=40&aid=549000912&daid=5&'.format(
                         self.get_qr_token(qr_sig), util.date_to_millis(datetime.datetime.utcnow()) - start_time,
-                        login_sig), headers=self.headers).content.decode("utf-8")
-                ret = res.split("'")
+                        login_sig), headers=self.headers)
+                content = res.content.decode("utf-8")
+
+                ret = content.split("'")
                 if ret[1] == '65' or ret[1] == '0':  # 65: QRCode 失效, 0: 验证成功, 66: 未失效, 67: 验证中
                     break
                 time.sleep(2)
@@ -131,17 +133,19 @@ class QQZoneSpider(BaseSpider):
             raise ValueError
         logging.info("scan qr code success")
         # 删除QRCode文件
-        if os.path.exists(self.QR_CODE_PATH + '.jpg'):
-            os.remove(self.QR_CODE_PATH + '.jpg')
-
+        if os.path.exists(self.QR_CODE_PATH):
+            os.remove(self.QR_CODE_PATH)
         self.nickname = ret[11]
+        self.headers['host'] = 'user.qzone.qq.com'
+        res = self.req.get('https://user.qzone.qq.com/1272082503/main', headers=self.headers, cookies=self.cookies)
         cookie = ''
+        self.cookies = res.cookies
         for elem in self.cookies:
             cookie += elem.name + "=" + elem.value + ";"
         self.cookies = cookie
         self.get_g_tk()
-        self.headers['cookie'] = self.cookies
-        self.h5_headers['cookie'] = self.cookies
+        # self.headers['cookie'] = self.cookies
+        # self.h5_headers['cookie'] = self.cookies
         self.headers['host'] = 'user.qzone.qq.com'
         print("Login success,", self.username)
 
@@ -709,7 +713,7 @@ class QQZoneSpider(BaseSpider):
         url, url2 = self.get_main_page_url()
         # self.headers['host'] = 'user.qzone.qq.com'
         try:
-            res = self.req.get(url=url, headers=self.headers)
+            res = self.req.get(url=url, headers=self.headers, cookies=self.cookies)
             if self.debug:
                 print("主页信息状态:", res.status_code)
             content = json.loads(self.get_json(res.content.decode("utf-8")))
@@ -788,5 +792,13 @@ class QQZoneSpider(BaseSpider):
             file_image.write(image)
             file_image.close()
             self.image_thread_pool.add_thread()
+        except BaseException as e:
+            self.format_error(e, "Failed to save image:" + name)
+
+    def save_image_single(self, image, name):
+        try:
+            file_image = open(name + '.jpg', 'wb+')
+            file_image.write(image)
+            file_image.close()
         except BaseException as e:
             self.format_error(e, "Failed to save image:" + name)

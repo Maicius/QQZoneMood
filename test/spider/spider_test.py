@@ -89,7 +89,10 @@ class SpiderTest(unittest.TestCase):
         sp.get_mood_list()
 
     def test_login_with_qr_code(self):
-        sp = QQZoneSpider(use_redis=True, debug=True)
+        sp = QQZoneSpider(use_redis=True, debug=True, mood_num=200)
         sp.login_with_qr_code()
+        sp.get_main_page_info()
+        sp.get_mood_list()
+
 if __name__ =='__main__':
     unittest.main()

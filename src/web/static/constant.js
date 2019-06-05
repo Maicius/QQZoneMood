@@ -8,7 +8,7 @@ const SPIDER_STATE = {
 
 const SPIDER_TEXT = {
     STOP: '正在停止爬虫并保存数据...',
-    DOING : '正在获取说说数据:',
+    DOING: '正在获取说说数据:',
     FINISH: '成功获取说说数据:'
 };
 
@@ -24,18 +24,25 @@ const CLEAN_DATA_STATE = {
 
 const VIEW_DATA_STATE = {
     config: 0,
-    data:1
+    data: 1
 };
 
 const SPIDER_FRIEND_TEXT = {
     STOP: '正在停止爬虫并保存数据...',
-    DOING : '正在获取好友数据:',
+    DOING: '正在获取好友数据:',
     FINISH: '成功获取好友数据:'
 };
 
 const SPIDER_FRIEND_STATE = {
-    DOING : 0,
-    FINISH : 1
+    DOING: 0,
+    FINISH: 1
+};
+
+const LOGIN_STATE = {
+    UNLOGIN: 0,
+    LOGIN_SUCCESS: 2,
+    LOGINING: 1,
+    LOGIN_FAIELD: -1
 };
 
 const INVALID_LOGIN = -2;

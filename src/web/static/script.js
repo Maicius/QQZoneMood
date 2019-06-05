@@ -33,6 +33,8 @@ let vm = avalon.define({
     all_friend_num: 0,
     friend_info_spider_state: SPIDER_FRIEND_STATE.DOING,
     user: {},
+    qr_code_path: '',
+    login_state: LOGIN_STATE.UNLOGIN,
 
     init_parameter: function () {
         vm.spider_text = SPIDER_TEXT.DOING;
@@ -50,6 +52,10 @@ let vm = avalon.define({
         vm.friend_info_spider_state = SPIDER_FRIEND_STATE.DOING;
         vm.user = {};
         vm.spider_info = []
+    },
+
+    start_get_data: function(){
+
     },
     view_data: function () {
         if (vm.qq_id.length === 0 && vm.password.length === 0 && vm.nick_name.length === 0) {
@@ -75,7 +81,7 @@ let vm = avalon.define({
     },
 
     submit_data: function () {
-        if (vm.qq_id !== '' && vm.nick_name !== '' && vm.cookie !== '') {
+        if (vm.qq_id !== '' && vm.nick_name !== '') {
             if (agree) {
                 $.ajax({
                     url: "/spider/start_spider",
@@ -85,7 +91,6 @@ let vm = avalon.define({
                         qq: vm.qq_id,
                         stop_time: vm.stop_date,
                         mood_num: vm.stop_num,
-                        cookie: vm.qq_cookie,
                         no_delete: vm.no_delete,
                         password: sha1(vm.password)
                     },

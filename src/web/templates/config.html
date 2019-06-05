@@ -13,7 +13,6 @@
 <div class="wrapper">
     <nav class="navbar navbar-dark bg-dark">
         <a class="navbar-brand" href="#">QQ空间数据分析</a>
-        <a class="navbar-brand" href="#">QQ空间数据分析</a>
     </nav>
     <div ms-visible="@view_data_state == 0">
         <div class="main_container col-lg-8 col-md-12">
@@ -52,12 +51,15 @@
                                placeholder="相当于您在本站的密码！不是QQ密码！！！" title="用于获取数据结果的识别码，不是QQ密码">
                     </div>
                 </div>
-                <div class="form-group">
-                    <label for="cookie">Cookie</label>
+                <div class="form-group form-control col-md-12 col-lg-8" ms-visible="@login_state == 1">
+                    <p >用手机QQ扫描该二维码即可登陆QQ空间</p>
+                    <p style="color:red">谨慎！有可能会泄漏隐私！！！</p>
 
-                    <textarea class="form-control col-md-12 col-lg-8" id="cookie" rows="8" style="margin: 20px auto"
-                              placeholder="请在网页上登陆QQ空间并复制cookie到此处" ms-duplex="@qq_cookie"></textarea>
-                    <a href="/cookie" target="_blank">cookie是什么？怎么获取cookie？</a>
+{#                    <textarea class="form-control col-md-12 col-lg-8" id="cookie" rows="8" style="margin: 20px auto"#}
+{#                              placeholder="请在网页上登陆QQ空间并复制cookie到此处" ms-duplex="@qq_cookie"></textarea>#}
+{#                    <a href="/cookie" target="_blank">cookie是什么？怎么获取cookie？</a>#}
+                    <img src="@qr_code_path" alt=""/>
+
                 </div>
                 <div :class="['card', 'col-lg-8', 'col-md-12', 'my_card']" ms-visible="@spider_state == 0">
                     <div class="card-body">
@@ -87,6 +89,7 @@
                            disabled="disabled">
                     <label class="form-check-label" for="no_delete">数据永久存储(开发者选项，普通用户勿选)</label>
                 </div>
+
                 <button type="button" class="btn btn-primary" :click="@submit_data()" disabled="disabled"
                         id="start_get">
                     开始获取
