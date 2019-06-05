@@ -58,11 +58,12 @@ class QQZoneSpider(BaseSpider):
                             pool_flag=pool_flag)
 
         self.req = requests.Session()
+        self.cookies = cookiejar.CookieJar()
+        self.req.cookies = self.cookies
         connection_num = 20 * SPIDER_USER_NUM_LIMIT
         # 设置连接池大小
         self.req.mount('https://', HTTPAdapter(pool_connections=5, pool_maxsize=connection_num))
         self.req.mount('http://', HTTPAdapter(pool_connections=5, pool_maxsize=connection_num))
-        self.cookies = {}
         self.qzonetoken = ""
         self.g_tk = 0
         self.init_parameter()
@@ -90,7 +91,7 @@ class QQZoneSpider(BaseSpider):
         扫描二维码登陆
         :return:
         """
-        self.cookies = cookiejar.CookieJar()
+
         cookies = cookiejar.Cookie(version=0, name='_qz_referrer', value='qzone.qq.com', port=None, port_specified=False,
                             domain='qq.com',
                             domain_specified=False, domain_initial_dot=False, path='/', path_specified=True,
@@ -107,10 +108,8 @@ class QQZoneSpider(BaseSpider):
             wait_time += 1
             qr_res = self.req.get(url=login_url, headers=self.headers)
             self.save_image_single(qr_res.content, self.QR_CODE_PATH)
-            self.cookies = qr_res.cookies
             login_sig = self.get_cookie('pt_login_sig')
             qr_sig = self.get_cookie('qrsig')
-
             if self.debug:
                 print("success to download qr code")
             logging.info("success to download qr code")
@@ -136,24 +135,48 @@ class QQZoneSpider(BaseSpider):
         if os.path.exists(self.QR_CODE_PATH):
             os.remove(self.QR_CODE_PATH)
         self.nickname = ret[11]
+        self.req.get(url=ret[5])
+        self.username = re.findall(r'uin=([0-9]+?)&', ret[5])[0]
         self.headers['host'] = 'user.qzone.qq.com'
-        res = self.req.get('https://user.qzone.qq.com/1272082503/main', headers=self.headers, cookies=self.cookies)
-        cookie = ''
-        self.cookies = res.cookies
-        for elem in self.cookies:
-            cookie += elem.name + "=" + elem.value + ";"
-        self.cookies = cookie
-        self.get_g_tk()
-        # self.headers['cookie'] = self.cookies
-        # self.h5_headers['cookie'] = self.cookies
+        print("login success")
+        skey = self.get_cookie('p_skey')
+        self.g_tk = self.get_GTK(skey)
         self.headers['host'] = 'user.qzone.qq.com'
+        self.headers.pop('referer')
+        self.get_qzone_token()
         print("Login success,", self.username)
+
 
     def get_cookie(self, key):
         for c in self.cookies:
             if c.name == key:
                 return c.value
         return ''
+
+    def get_GTK(self, skey):
+        hash = 5381
+        for i in range(0, len(skey)):
+            hash += (hash << 5) + self.utf8_unicode(skey[i])
+        return hash & 0x7fffffff
+
+    def utf8_unicode(self, c):
+        if len(c) == 1:
+            return ord(c)
+        elif len(c) == 2:
+            n = (ord(c[0]) & 0x3f) << 6
+            n += ord(c[1]) & 0x3f
+            return n
+        elif len(c) == 3:
+            n = (ord(c[0]) & 0x1f) << 12
+            n += (ord(c[1]) & 0x3f) << 6
+            n += ord(c[2]) & 0x3f
+            return n
+        else:
+            n = (ord(c[0]) & 0x0f) << 18
+            n += (ord(c[1]) & 0x3f) << 12
+            n += (ord(c[2]) & 0x3f) << 6
+            n += ord(c[3]) & 0x3f
+            return n
 
     def change_dict_to_cookie(self, cookie):
         cookies = ''
@@ -691,7 +714,7 @@ class QQZoneSpider(BaseSpider):
             "uin": self.raw_username,
             "g_tk": self.g_tk,
             "param": "3_" + self.raw_username + "_0|8_8_" + self.raw_username + "_0_1_0_0_1|16",
-            "qzonetoken": ""
+            "qzonetoken": self.qzonetoken
         }
         url = base_url + parse.urlencode(params)
 
@@ -713,7 +736,7 @@ class QQZoneSpider(BaseSpider):
         url, url2 = self.get_main_page_url()
         # self.headers['host'] = 'user.qzone.qq.com'
         try:
-            res = self.req.get(url=url, headers=self.headers, cookies=self.cookies)
+            res = self.req.get(url=url, headers=self.headers)
             if self.debug:
                 print("主页信息状态:", res.status_code)
             content = json.loads(self.get_json(res.content.decode("utf-8")))
@@ -724,18 +747,21 @@ class QQZoneSpider(BaseSpider):
             self.mood_num = self.user_info.mood_num if self.mood_num == -1 else self.mood_num
             if self.use_redis:
                 self.re.set(MOOD_NUM_KEY + self.username, self.mood_num)
+                self.re.rpush(WEB_SPIDER_INFO + self.username, "获取主页信息成功")
+                self.re.rpush(WEB_SPIDER_INFO + self.username, MOOD_NUM_PRE + ":" + str(self.mood_num))
                 if not self.no_delete:
                     self.re.expire(MOOD_NUM_KEY + self.username, EXPIRE_TIME_IN_SECONDS)
+
             if self.debug:
                 print(self.user_info.mood_num)
                 print("Finish to get main page info")
-            self.re.rpush(WEB_SPIDER_INFO + self.username, "获取主页信息成功")
-            self.re.rpush(WEB_SPIDER_INFO + self.username, MOOD_NUM_PRE + ":" + str(self.mood_num))
+
         except BaseException as e:
             self.format_error(e, "Failed to get main page info")
-            self.re.rpush(WEB_SPIDER_INFO + self.username, GET_MAIN_PAGE_FAILED)
+            if self.use_redis:
+                self.re.rpush(WEB_SPIDER_INFO + self.username, GET_MAIN_PAGE_FAILED)
         try:
-            self.headers['referer'] = 'https://user.qzone.qq.com/1272082503/main'
+            self.headers['referer'] = 'https://user.qzone.qq.com/' + self.raw_username + '/main'
             res = self.req.get(url=url2, headers=self.headers)
             if self.debug:
                 print("获取登陆时间状态:", res.status_code)
@@ -751,7 +777,8 @@ class QQZoneSpider(BaseSpider):
             print("Success to Get Main Page Info!")
         except BaseException as e:
             self.format_error(e, "Failed to get first login time")
-            self.re.rpush(WEB_SPIDER_INFO + self.username, GET_FIRST_LOGIN_TIME)
+            if self.use_redis:
+                self.re.rpush(WEB_SPIDER_INFO + self.username, GET_FIRST_LOGIN_TIME)
 
     def calculate_qzone_token(self):
         ctx = execjs.compile(

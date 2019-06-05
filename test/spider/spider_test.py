@@ -91,6 +91,7 @@ class SpiderTest(unittest.TestCase):
     def test_login_with_qr_code(self):
         sp = QQZoneSpider(use_redis=True, debug=True, mood_num=200)
         sp.login_with_qr_code()
+        print("Login success")
         sp.get_main_page_info()
         sp.get_mood_list()
 
