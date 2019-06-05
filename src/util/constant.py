@@ -28,6 +28,8 @@ LOGIN_SUCCESS = "登陆成功！"
 
 LOGIN_FAILED = "登陆失败，请重新扫描二维码或稍后再试"
 
+WEB_IMAGE_PATH = BASE_PATH + '/src/web/static/image/'
+
 GET_MOOD_FAILED = "获取主页信息失败"
 
 GET_MAIN_PAGE_FAILED = "获取主页信息失败"
