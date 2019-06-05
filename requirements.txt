@@ -6,7 +6,7 @@ jieba
 lxml
 matplotlib
 pandas
-redis
+redis == 2.10.5
 requests
 schedule
 selenium
