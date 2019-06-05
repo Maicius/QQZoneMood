@@ -14,6 +14,7 @@ import copy
 import datetime
 import random
 import logging
+import matplotlib.pyplot as plt
 from src.spider.BaseSpider import BaseSpider
 from src.util import util
 from src.util.constant import qzone_jother2, SPIDER_USER_NUM_LIMIT, EXPIRE_TIME_IN_SECONDS, MOOD_NUM_KEY, \
@@ -58,11 +59,12 @@ class QQZoneSpider(BaseSpider):
                             pool_flag=pool_flag)
 
         self.req = requests.Session()
+        self.cookies = cookiejar.CookieJar()
+        self.req.cookies = self.cookies
         connection_num = 20 * SPIDER_USER_NUM_LIMIT
         # 设置连接池大小
         self.req.mount('https://', HTTPAdapter(pool_connections=5, pool_maxsize=connection_num))
         self.req.mount('http://', HTTPAdapter(pool_connections=5, pool_maxsize=connection_num))
-        self.cookies = {}
         self.qzonetoken = ""
         self.g_tk = 0
         self.init_parameter()
@@ -90,7 +92,7 @@ class QQZoneSpider(BaseSpider):
         扫描二维码登陆
         :return:
         """
-        self.cookies = cookiejar.CookieJar()
+
         cookies = cookiejar.Cookie(version=0, name='_qz_referrer', value='qzone.qq.com', port=None, port_specified=False,
                             domain='qq.com',
                             domain_specified=False, domain_initial_dot=False, path='/', path_specified=True,
@@ -103,24 +105,26 @@ class QQZoneSpider(BaseSpider):
         wait_time = 0
         login_url = 'https://ssl.ptlogin2.qq.com/ptqrshow?appid=549000912&e=2&l=M&s=3&d=72&v=4&t=0.{0}6252926{1}2285{2}86&daid=5'.format(
             random.randint(0, 9), random.randint(0, 9), random.randint(0, 9))
-        while wait_time < 100:
+        while wait_time < 60:
             wait_time += 1
             qr_res = self.req.get(url=login_url, headers=self.headers)
-            self.save_image_concurrent(qr_res.content, self.QR_CODE_PATH)
-            self.cookies = qr_res.cookies
+            self.save_image_single(qr_res.content, self.QR_CODE_PATH)
             login_sig = self.get_cookie('pt_login_sig')
             qr_sig = self.get_cookie('qrsig')
 
             if self.debug:
                 print("success to download qr code")
             logging.info("success to download qr code")
+            self.show_image(self.QR_CODE_PATH + '.jpg')
             while True:
                 self.headers['referer'] = self.qzone_login_url
                 res = self.req.get(
                     'https://ssl.ptlogin2.qq.com/ptqrlogin?u1=https%3A%2F%2Fqzs.qq.com%2Fqzone%2Fv5%2Floginsucc.html%3Fpara%3Dizone&ptqrtoken={0}&ptredirect=0&h=1&t=1&g=1&from_ui=1&ptlang=2052&action=0-0-{1}&js_ver=10220&js_type=1&login_sig={2}&pt_uistyle=40&aid=549000912&daid=5&'.format(
                         self.get_qr_token(qr_sig), util.date_to_millis(datetime.datetime.utcnow()) - start_time,
-                        login_sig), headers=self.headers).content.decode("utf-8")
-                ret = res.split("'")
+                        login_sig), headers=self.headers)
+                content = res.content.decode("utf-8")
+
+                ret = content.split("'")
                 if ret[1] == '65' or ret[1] == '0':  # 65: QRCode 失效, 0: 验证成功, 66: 未失效, 67: 验证中
                     break
                 time.sleep(2)
@@ -133,22 +137,51 @@ class QQZoneSpider(BaseSpider):
         # 删除QRCode文件
         if os.path.exists(self.QR_CODE_PATH + '.jpg'):
             os.remove(self.QR_CODE_PATH + '.jpg')
-
+            print("success to delete qr code")
         self.nickname = ret[11]
-        cookie = ''
-        for elem in self.cookies:
-            cookie += elem.name + "=" + elem.value + ";"
-        self.cookies = cookie
-        self.get_g_tk()
-        self.headers['cookie'] = self.cookies
-        self.h5_headers['cookie'] = self.cookies
+        self.req.get(url=ret[5])
+        self.username = re.findall(r'uin=([0-9]+?)&', ret[5])[0]
+        self.headers['host'] = 'user.qzone.qq.com'
+        print("login success")
+        skey = self.get_cookie('p_skey')
+        self.g_tk = self.get_GTK(skey)
+        self.headers['host'] = 'user.qzone.qq.com'
+        self.headers.pop('referer')
+        self.get_qzone_token()
+        self.init_user_info()
         print("Login success,", self.username)
+
 
     def get_cookie(self, key):
         for c in self.cookies:
             if c.name == key:
                 return c.value
         return ''
+
+    def get_GTK(self, skey):
+        hash = 5381
+        for i in range(0, len(skey)):
+            hash += (hash << 5) + self.utf8_unicode(skey[i])
+        return hash & 0x7fffffff
+
+    def utf8_unicode(self, c):
+        if len(c) == 1:
+            return ord(c)
+        elif len(c) == 2:
+            n = (ord(c[0]) & 0x3f) << 6
+            n += ord(c[1]) & 0x3f
+            return n
+        elif len(c) == 3:
+            n = (ord(c[0]) & 0x1f) << 12
+            n += (ord(c[1]) & 0x3f) << 6
+            n += ord(c[2]) & 0x3f
+            return n
+        else:
+            n = (ord(c[0]) & 0x0f) << 18
+            n += (ord(c[1]) & 0x3f) << 12
+            n += (ord(c[2]) & 0x3f) << 6
+            n += ord(c[3]) & 0x3f
+            return n
 
     def change_dict_to_cookie(self, cookie):
         cookies = ''
@@ -686,7 +719,7 @@ class QQZoneSpider(BaseSpider):
             "uin": self.raw_username,
             "g_tk": self.g_tk,
             "param": "3_" + self.raw_username + "_0|8_8_" + self.raw_username + "_0_1_0_0_1|16",
-            "qzonetoken": ""
+            "qzonetoken": self.qzonetoken
         }
         url = base_url + parse.urlencode(params)
 
@@ -719,18 +752,21 @@ class QQZoneSpider(BaseSpider):
             self.mood_num = self.user_info.mood_num if self.mood_num == -1 else self.mood_num
             if self.use_redis:
                 self.re.set(MOOD_NUM_KEY + self.username, self.mood_num)
+                self.re.rpush(WEB_SPIDER_INFO + self.username, "获取主页信息成功")
+                self.re.rpush(WEB_SPIDER_INFO + self.username, MOOD_NUM_PRE + ":" + str(self.mood_num))
                 if not self.no_delete:
                     self.re.expire(MOOD_NUM_KEY + self.username, EXPIRE_TIME_IN_SECONDS)
+
             if self.debug:
                 print(self.user_info.mood_num)
                 print("Finish to get main page info")
-            self.re.rpush(WEB_SPIDER_INFO + self.username, "获取主页信息成功")
-            self.re.rpush(WEB_SPIDER_INFO + self.username, MOOD_NUM_PRE + ":" + str(self.mood_num))
+
         except BaseException as e:
             self.format_error(e, "Failed to get main page info")
-            self.re.rpush(WEB_SPIDER_INFO + self.username, GET_MAIN_PAGE_FAILED)
+            if self.use_redis:
+                self.re.rpush(WEB_SPIDER_INFO + self.username, GET_MAIN_PAGE_FAILED)
         try:
-            self.headers['referer'] = 'https://user.qzone.qq.com/1272082503/main'
+            self.headers['referer'] = 'https://user.qzone.qq.com/' + self.raw_username + '/main'
             res = self.req.get(url=url2, headers=self.headers)
             if self.debug:
                 print("获取登陆时间状态:", res.status_code)
@@ -746,7 +782,8 @@ class QQZoneSpider(BaseSpider):
             print("Success to Get Main Page Info!")
         except BaseException as e:
             self.format_error(e, "Failed to get first login time")
-            self.re.rpush(WEB_SPIDER_INFO + self.username, GET_FIRST_LOGIN_TIME)
+            if self.use_redis:
+                self.re.rpush(WEB_SPIDER_INFO + self.username, GET_FIRST_LOGIN_TIME)
 
     def calculate_qzone_token(self):
         ctx = execjs.compile(
@@ -765,27 +802,3 @@ class QQZoneSpider(BaseSpider):
         qzonetoken = re.findall(re.compile("g_qzonetoken = \(function\(\)\{ try\{return \"(.*)?\""), content)[0]
         self.qzonetoken = qzonetoken
         print("qzone_token:", qzonetoken)
-
-    def download_image(self, url, name):
-        image_url = url
-        try:
-            r = self.req.get(url=image_url, headers=self.headers, timeout=20)
-            image_content = r.content
-            # 异步保存图片，提高效率
-            # t = threading.Thread(target=self.save_image_concurrent, args=(image_content, name))
-            # t.start()
-            thread = self.image_thread_pool.get_thread()
-            t = thread(target=self.save_image_concurrent, args=(image_content, name))
-            t.start()
-            # t = self.image_thread_pool2.submit(self.save_image_concurrent, (image_content, name))
-        except BaseException as e:
-            self.format_error(e, 'Failed to download image:' + name)
-
-    def save_image_concurrent(self, image, name):
-        try:
-            file_image = open(name + '.jpg', 'wb+')
-            file_image.write(image)
-            file_image.close()
-            self.image_thread_pool.add_thread()
-        except BaseException as e:
-            self.format_error(e, "Failed to save image:" + name)

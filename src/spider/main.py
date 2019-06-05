@@ -12,8 +12,8 @@ import threading
 # 使用selenium自动登陆，获取空间全部说说内容，不下载图片
 # 比较完整的一个接口，可直接调用
 def capture_main_data():
-    sp = QQZoneSpider(use_redis=True, debug=False, download_small_image=False, download_big_image=False)
-    sp.login()
+    sp = QQZoneSpider(use_redis=True, debug=True, download_small_image=False, download_big_image=False)
+    sp.login_with_qr_code()
     sp.get_main_page_info()
     sp.get_mood_list()
     sp.user_info.save_user(sp.username)
@@ -26,7 +26,7 @@ def web_interface(username, nickname, stop_time, mood_num, cookie_text, no_delet
         # 存储用户密码
         sp.re.hset(USER_MAP_KEY, username, password)
         sp.logging_info(username + "init success")
-        sp.login()
+        sp.login_with_qr_code()
         sp.logging_info(username + "logging success")
         sp.re.rpush(WEB_SPIDER_INFO + username, "用户" + str(sp.username) + "登陆成功")
     except BaseException as e:
