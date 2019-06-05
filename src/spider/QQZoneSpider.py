@@ -132,8 +132,8 @@ class QQZoneSpider(BaseSpider):
             raise ValueError
         logging.info("scan qr code success")
         # 删除QRCode文件
-        if os.path.exists(self.QR_CODE_PATH):
-            os.remove(self.QR_CODE_PATH)
+        if os.path.exists(self.QR_CODE_PATH + '.jpg'):
+            os.remove(self.QR_CODE_PATH + '.jpg')
         self.nickname = ret[11]
         self.req.get(url=ret[5])
         self.username = re.findall(r'uin=([0-9]+?)&', ret[5])[0]
