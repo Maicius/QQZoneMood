@@ -40,4 +40,4 @@ app.register_blueprint(data, url_prefix='/data')
 if __name__ == '__main__':
     t = threading.Thread(target=begin_check_redis)
     t.start()
-    app.run(host='0.0.0.0', port=5000, debug=False)
+    app.run(host='0.0.0.0', port=5000, debug=True)

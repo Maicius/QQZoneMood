@@ -52,3 +52,5 @@ const FAILED_STATE = -1;
 const WAITING_USER_STATE = -3;
 const ALREADY_IN = -4;
 const CHECK_COOKIE = 0;
+
+const LOGGING_STATE = 3;

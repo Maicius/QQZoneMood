@@ -51,7 +51,8 @@ let vm = avalon.define({
         vm.true_mood_num = -1;
         vm.friend_info_spider_state = SPIDER_FRIEND_STATE.DOING;
         vm.user = {};
-        vm.spider_info = []
+        vm.spider_info = [];
+        vm.login_state = LOGIN_STATE.UNLOGIN;
     },
 
     start_get_data: function(){
@@ -143,10 +144,12 @@ let vm = avalon.define({
             type: 'GET',
             success: function (data) {
                 data = JSON.parse(data);
-                if (data.info.length > 2) {
+                if (data.info.length > 2 && data.finish !== LOGGING_STATE) {
+                    vm.login_state = LOGIN_STATE.LOGIN_SUCCESS;
                     vm.spider_info.push(data.info);
                 }
                 if (data.finish === SUCCESS_STATE) {
+
                     vm.show_process = 1;
                     vm.true_mood_num = data.mood_num;
                     // 不知是什么原因，在docker中，会出现finish =1，但是mood_num == -1的失败情况
@@ -180,11 +183,18 @@ let vm = avalon.define({
                     vm.show_process = 0;
                     vm.spider_state = SPIDER_STATE.CONFIG;
                     vm.init_parameter();
+                    vm.login_state = LOGIN_STATE.LOGIN_FAIELD;
                     alert(data.info);
                 } else if (data.finish === INVALID_LOGIN) {
                     clearInterval(vm.query_interval);
                     vm.init_parameter();
                     alert("识别码与QQ不匹配");
+                } else if(data.finish === LOGGING_STATE) {
+                    vm.login_state = LOGIN_STATE.LOGINING;
+                    vm.qr_code_path = 'static/image/qr' + data.info;
+                    var image = new Image;
+                    $('#qr_container').append(image);
+                    image.src = vm.qr_code_path;
                 }
             }
         })

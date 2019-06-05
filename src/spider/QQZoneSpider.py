@@ -14,11 +14,10 @@ import copy
 import datetime
 import random
 import logging
-import matplotlib.pyplot as plt
 from src.spider.BaseSpider import BaseSpider
 from src.util import util
 from src.util.constant import qzone_jother2, SPIDER_USER_NUM_LIMIT, EXPIRE_TIME_IN_SECONDS, MOOD_NUM_KEY, \
-    WEB_SPIDER_INFO, GET_MAIN_PAGE_FAILED, MOOD_NUM_PRE, GET_FIRST_LOGIN_TIME
+    WEB_SPIDER_INFO, GET_MAIN_PAGE_FAILED, MOOD_NUM_PRE, GET_FIRST_LOGIN_TIME, LOGIN_SUCCESS, LOGIN_FAILED
 import math
 import execjs
 import threading
@@ -92,7 +91,6 @@ class QQZoneSpider(BaseSpider):
         扫描二维码登陆
         :return:
         """
-
         cookies = cookiejar.Cookie(version=0, name='_qz_referrer', value='qzone.qq.com', port=None, port_specified=False,
                             domain='qq.com',
                             domain_specified=False, domain_initial_dot=False, path='/', path_specified=True,
@@ -115,7 +113,11 @@ class QQZoneSpider(BaseSpider):
             if self.debug:
                 print("success to download qr code")
             logging.info("success to download qr code")
-            self.show_image(self.QR_CODE_PATH + '.jpg')
+            # 如果不是从网页发来的请求，就本地展示二维码
+            if not self.from_web and wait_time <= 1:
+                self.show_image(self.QR_CODE_PATH + '.jpg')
+            elif self.from_web and wait_time <= 1:
+                self.re.lpush(WEB_SPIDER_INFO + self.username, self.random_qr_name + ".jpg")
             while True:
                 self.headers['referer'] = self.qzone_login_url
                 res = self.req.get(
@@ -125,12 +127,17 @@ class QQZoneSpider(BaseSpider):
                 content = res.content.decode("utf-8")
 
                 ret = content.split("'")
-                if ret[1] == '65' or ret[1] == '0':  # 65: QRCode 失效, 0: 验证成功, 66: 未失效, 67: 验证中
+                if ret[1] == '65':  # 65: QRCode 失效, 0: 验证成功, 66: 未失效, 67: 验证中
+                    if self.use_redis:
+                        self.re.lpush(WEB_SPIDER_INFO + self.username, LOGIN_FAILED)
+                    break
+                elif ret[1] == '0':
                     break
                 time.sleep(2)
             if ret[1] == '0':
                 break
         if ret[1] != '0':
+            self.re.lpush(WEB_SPIDER_INFO + self.username, LOGIN_FAILED)
             self.format_error("Failed to login with qr code")
             raise ValueError
         logging.info("scan qr code success")
@@ -147,8 +154,11 @@ class QQZoneSpider(BaseSpider):
         self.g_tk = self.get_GTK(skey)
         self.headers['host'] = 'user.qzone.qq.com'
         self.headers.pop('referer')
-        self.get_qzone_token()
         self.init_user_info()
+        self.get_qzone_token()
+
+        if self.use_redis:
+            self.re.lpush(WEB_SPIDER_INFO + self.username, LOGIN_SUCCESS)
         print("Login success,", self.username)
 
 
