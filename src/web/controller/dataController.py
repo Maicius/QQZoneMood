@@ -40,6 +40,7 @@ def clear_cache(QQ, password):
     else:
         try:
             DATA_DIR_KEY = BASE_DIR + QQ + '/'
+            WEB_IMAGE_PATH_DIR = WEB_IMAGE_PATH + QQ + '/'
             if os.path.exists(DATA_DIR_KEY):
                 # 删除有QQ号的所有key
                 # 该方法在docker中无法使用，因为该容器内无redis-cli
@@ -48,6 +49,7 @@ def clear_cache(QQ, password):
                 # os.system(delete_cmd)
                 # 删除 该路径下所有文件
                 os.system("rm -rf " + DATA_DIR_KEY)
+                os.system("rm -rf " + WEB_IMAGE_PATH_DIR)
                 conn.hdel(USER_MAP_KEY, QQ)
 
                 # redis的del不支持正则表达式，因此只能循环删除

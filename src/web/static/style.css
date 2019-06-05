@@ -79,3 +79,16 @@
 .qr_container img {
     width: 80%;
 }
+.cloud_img {
+    margin: 10px auto;
+}
+
+.cloud_img img{
+    width: 100%;
+}
+.download_button {
+    margin: 10px auto;
+    text-align: center;
+    padding: 10px;
+    display: block;
+}

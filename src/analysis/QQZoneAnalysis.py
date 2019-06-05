@@ -7,7 +7,7 @@ from scipy.misc import imread
 import matplotlib.pyplot as plt
 from src.spider.QQZoneFriendMoodSpider import QQZoneFriendMoodSpider
 from src.analysis.Average import Average
-from src.util.constant import BASE_DIR
+from src.util.constant import BASE_DIR, SYSTEM_FONT
 from src.util.util import get_standard_time_from_mktime2
 
 
@@ -28,7 +28,8 @@ class QQZoneAnalysis(QQZoneFriendMoodSpider):
         self.av = Average(use_redis=False, file_name_head=username, analysis=True, debug=debug)
 
         # 用于绘制词云图的字体，请更改为自己电脑上任意一款支持中文的字体，否则将无法显示中文
-        self.system_font = '/System/Library/Fonts/Hiragino Sans GB.ttc'
+        self.system_font = SYSTEM_FONT
+
 
     def load_file_from_redis(self):
         self.do_recover_from_exist_data()
@@ -297,9 +298,13 @@ class QQZoneAnalysis(QQZoneFriendMoodSpider):
         plt.imshow(my_wordcloud)
         plt.axis("off")
         # 保存图片
-        my_wordcloud.to_file(filename=self.image_path + filename + '.jpg')
-        print("result file path:", self.image_path + filename + '.jpg')
-        plt.show()
+        if not self.from_web:
+            my_wordcloud.to_file(filename=self.image_path + filename + '.jpg')
+            print("result file path:", self.image_path + filename + '.jpg')
+            plt.show()
+        else:
+            my_wordcloud.to_file(filename=self.web_image_bash_path + filename + '.jpg')
+            print("result file path:", self.web_image_bash_path + filename + '.jpg')
 
     def get_jieba_words(self, content):
         word_list = jieba.cut(content, cut_all=False)
@@ -318,12 +323,12 @@ class QQZoneAnalysis(QQZoneFriendMoodSpider):
     def draw_content_cloud(self, df):
         content = df['content'].sum()
         words = self.get_jieba_words(content)
-        self.drawWordCloud(words, self.username + '_content_')
+        self.drawWordCloud(words, self.username + '_content')
 
     def draw_cmt_cloud(self, df):
         cmt_df = self.av.calculate_cmt_rank(df)
         cmt_dict = {x[0]: x[1] for x in cmt_df.values}
-        self.drawWordCloud(cmt_dict, self.username + '_cmt_', dict_type=True)
+        self.drawWordCloud(cmt_dict, self.username + '_cmt', dict_type=True)
 
     def rank_like_people(self, df):
         uin_list = df['uin_list']
@@ -337,7 +342,7 @@ class QQZoneAnalysis(QQZoneFriendMoodSpider):
     def draw_like_cloud(self, df):
         all_uin_count = self.rank_like_people(df)
         all_uin_dict = {str(x[0]): x[1] for x in all_uin_count.values}
-        self.drawWordCloud(all_uin_dict, self.username + '_like_', dict_type=True)
+        self.drawWordCloud(all_uin_dict, self.username + '_like', dict_type=True)
 
     def export_mood_df(self, export_csv=True, export_excel=True):
         """

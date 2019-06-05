@@ -26,7 +26,7 @@ let vm = avalon.define({
     visual_data_url: '',
     password: '',
     view_data_state: VIEW_DATA_STATE.config,
-
+    image_path: 'static/image/',
     friend_info_spider_text: SPIDER_FRIEND_TEXT.DOING,
     spider_friend_num: 0,
     friend_process_width: 0,
@@ -55,7 +55,7 @@ let vm = avalon.define({
         vm.login_state = LOGIN_STATE.UNLOGIN;
     },
 
-    start_get_data: function(){
+    start_get_data: function () {
 
     },
     view_data: function () {
@@ -189,7 +189,7 @@ let vm = avalon.define({
                     clearInterval(vm.query_interval);
                     vm.init_parameter();
                     alert("识别码与QQ不匹配");
-                } else if(data.finish === LOGGING_STATE) {
+                } else if (data.finish === LOGGING_STATE) {
                     vm.login_state = LOGIN_STATE.LOGINING;
                     vm.qr_code_path = 'static/image/qr' + data.info;
                     var image = new Image;
@@ -272,6 +272,21 @@ let vm = avalon.define({
                 data = JSON.parse(data);
                 if (data.finish === '1') {
                     vm.data_state = CLEAN_DATA_STATE.FINISH;
+                    var image1 = new Image;
+                    var cloud_img1 = $('#like_cloud_img');
+                    cloud_img1.append(image1);
+                    image1.src = vm.image_path + vm.qq_id + "/" + vm.qq_id + "_cmt.jpg";
+                    image1.alt="经常给您评论的好友们";
+                    var cloud_img2 = $('#cmt_cloud_img');
+                    var image2 = new Image;
+                    cloud_img2.append(image2);
+                    image2.src = vm.image_path + vm.qq_id + "/" + vm.qq_id + "_like.jpg";
+                    image2.alt="经常给您点赞的好友们";
+                    // var cloud_img3 = $('#content_cloud_img');
+                    // var image3 = new Image;
+                    // cloud_img3.append(image3);
+                    // image3.src = vm.image_path + vm.qq_id + "/" + vm.qq_id+ "_content.jpg";
+                    // image2.alt="您QQ空间说说的关键字";
                 } else if (data.finish === -2) {
                     alert("识别码与QQ不匹配");
                 }

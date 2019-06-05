@@ -64,14 +64,14 @@ class BaseSpider(object):
 
         if not from_web:
             self.username, self.password, self.nickname = self.get_username_password()
-            self.init_user_info()
+
         else:
             self.username = username
             self.nickname = nickname
             # 保存用户的二维码名称，传递给前端
             if self.use_redis:
                 self.re.hset(QR_CODE_MAP_KEY, self.username, self.random_qr_name)
-
+        self.init_user_info()
 
         self.image_thread_pool = ImageThreadPool(20)
 
@@ -207,7 +207,9 @@ class BaseSpider(object):
         self.FRIEND_DETAIL_LIST_FILE_NAME = FRIEND_DIR_HEAD + 'friend_detail_list.csv'
         self.FRIEND_DETAIL_EXCEL_FILE_NAME = FRIEND_DIR_HEAD + 'friend_detail_list.xlsx'
         # 头像下载到web的static文件夹，以便在web中调用
+
         self.FRIEND_HEADER_IMAGE_PATH = BASE_PATH + '/src/web/static/image/' + self.username + '/header/'
+        self.web_image_bash_path = BASE_PATH + '/src/web/static/image/'+ self.username + '/'
         util.check_dir_exist(USER_BASE_DIR + 'friend/')
         util.check_dir_exist(self.FRIEND_HEADER_IMAGE_PATH)
         self.init_analysis_path()

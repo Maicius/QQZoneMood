@@ -46,9 +46,9 @@
                 <div class="form-group row">
                     <div class="col-lg-6 col-md-12 row my_form">
                         <label for="password" class="col-lg-3 col-md-3 label_text"
-                               title="只会爬取停止日期前的动态,如2014-01-01，如果值为-1则表示爬取全部动态">识别码</label>
+                               title="用于获取数据结果的校验码，不是QQ密码">校验码</label>
                         <input type="text" class="form-control col-lg-8 col-md-12" id="password" ms-duplex="@password"
-                               placeholder="相当于您在本站的密码！不是QQ密码！！！" title="用于获取数据结果的识别码，不是QQ密码">
+                               placeholder="相当于您在本站的密码！不是QQ密码！！！" title="用于获取数据结果的校验码，不是QQ密码">
                     </div>
                 </div>
                 <div :class="['card', 'col-lg-8', 'col-md-12', 'my_card']" ms-visible="@spider_state == 0">
@@ -62,7 +62,7 @@
                            target="_blank">点此查看具体功能</a>
                         <p class="card-text danger">因涉及大量数据分析，所有数据不得不缓存在服务器上！！！</p>
                         <p class="card-text danger">缓存时间为24小时(24小时后会自动删除)</p>
-                        <p class="card-text">24小时内您可以根据QQ号和识别码访问本站数据</p>
+                        <p class="card-text">24小时内您可以根据QQ号和校验码直接访问缓存数据</p>
                         <p class="card-text danger">开发者只能保证不会滥用数据，但无法保证网站不会被攻击</p>
                         <p class="card-text danger">所以为避免造成隐私泄漏，普通用户请在离开网页时点击下方清除缓存！！！</p>
                         <p class="card-text">受限于网络带宽和服务器，许多功能并未开放</p>
@@ -159,21 +159,31 @@
             <div class="large_dom" id="history_dom">
                 hello
             </div>
-            <div class="btn-group row" style="margin: 20px auto">
-                <a class="btn btn-primary"
+            <div class="cloud_img col-lg-5 col-md-12" id="cmt_cloud_img">
+                <h4>下面是经常给您评论的好友</h4>
+            </div>
+            <div class="cloud_img col-lg-5 col-md-12" id="like_cloud_img">
+                <h4>下面是经常给您点赞的好友</h4>
+{#            </div>#}
+{#            <div class="cloud_img col-lg-5 col-md-12" id="content_cloud_img">#}
+{#                <h4>下面是您说说的关键词</h4>#}
+{#            </div>#}
+            </div>
+            <div class="download_button">
+                <a class="btn btn-primary col-md-8 download_button"
                    :attr="{href:'/data/download_file/' + @qq_id + '/' + @encrypt() + '/' + 'mood'}"
                    id="download_excel"
                    title="下载数据">
                     下载说说数据(Excel)
                 </a>
-                <a class="btn btn-primary"
+                <a class="btn btn-primary col-md-8 download_button"
                    :attr="{href:'/data/download_file/' + @qq_id + '/' + @encrypt() + '/' + 'friend'}"
                    id="download_friend"
-                   title="下载数据" style="margin-left: 20px;color: white; cursor: pointer">
+                   title="下载数据" style="color: white; cursor: pointer">
                     下载好友数据(Excel)
                 </a>
-                <a class="btn btn-primary btn_href" :click="@return_config()" id="return_config"
-                   title="返回配置" style="margin-left: 20px;color: white; cursor: pointer">
+                <a class="btn btn-primary btn_href col-md-8 download_button" :click="@return_config()" id="return_config"
+                   title="返回配置" style="color: white; cursor: pointer">
                     返回配置
                 </a>
             </div>

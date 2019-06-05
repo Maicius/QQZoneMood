@@ -28,6 +28,8 @@ LOGIN_SUCCESS = "登陆成功！"
 
 LOGIN_FAILED = "登陆失败，请重新扫描二维码或稍后再试"
 
+WEB_IMAGE_PATH = BASE_PATH + '/src/web/static/image/'
+
 GET_MOOD_FAILED = "获取主页信息失败"
 
 GET_MAIN_PAGE_FAILED = "获取主页信息失败"
@@ -71,7 +73,11 @@ HISTORY_LIKE_AGREE = 'history_like_agree_'
 
 FRIEND_LIST_KEY = 'friend_list_'
 
+# 电脑上的中文字体
+UBUNTU_SYSTEM_FONT_PATH = '/usr/share/fonts/Songti.ttc'
+MAC_SYSTEM_FONT_PATH = '/System/Library/Fonts/Hiragino Sans GB.ttc'
 
+SYSTEM_FONT = UBUNTU_SYSTEM_FONT_PATH
 
 if __name__ == '__main__':
     print(BASE_DIR)
