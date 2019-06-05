@@ -168,21 +168,22 @@
 {#            <div class="cloud_img col-lg-5 col-md-12" id="content_cloud_img">#}
 {#                <h4>下面是您说说的关键词</h4>#}
 {#            </div>#}
-            <div class="btn-group row" style="margin: 20px auto">
-                <a class="btn btn-primary"
+            </div>
+            <div class="download_button">
+                <a class="btn btn-primary col-md-8 download_button"
                    :attr="{href:'/data/download_file/' + @qq_id + '/' + @encrypt() + '/' + 'mood'}"
                    id="download_excel"
                    title="下载数据">
                     下载说说数据(Excel)
                 </a>
-                <a class="btn btn-primary"
+                <a class="btn btn-primary col-md-8 download_button"
                    :attr="{href:'/data/download_file/' + @qq_id + '/' + @encrypt() + '/' + 'friend'}"
                    id="download_friend"
-                   title="下载数据" style="margin-left: 20px;color: white; cursor: pointer">
+                   title="下载数据" style="color: white; cursor: pointer">
                     下载好友数据(Excel)
                 </a>
-                <a class="btn btn-primary btn_href" :click="@return_config()" id="return_config"
-                   title="返回配置" style="margin-left: 20px;color: white; cursor: pointer">
+                <a class="btn btn-primary btn_href col-md-8 download_button" :click="@return_config()" id="return_config"
+                   title="返回配置" style="color: white; cursor: pointer">
                     返回配置
                 </a>
             </div>

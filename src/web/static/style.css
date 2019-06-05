@@ -86,3 +86,9 @@
 .cloud_img img{
     width: 100%;
 }
+.download_button {
+    margin: 10px auto;
+    text-align: center;
+    padding: 10px;
+    display: block;
+}
