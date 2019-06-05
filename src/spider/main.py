@@ -36,10 +36,7 @@ def web_interface(username, nickname, stop_time, mood_num, cookie_text, no_delet
         sp.re.hdel(USER_MAP_KEY, username)
     sp.get_main_page_info()
     sp.logging_info("get main page success")
-
-
     try:
-
         # 获取动态的数据
         t1 = threading.Thread(target=sp.get_mood_list)
         # 获取好友数据
@@ -64,6 +61,11 @@ def web_interface(username, nickname, stop_time, mood_num, cookie_text, no_delet
     sp.get_most_people()
     sp.calculate_send_time()
     sp.user_info.save_user()
+
+    sp.draw_cmt_cloud(sp.mood_data_df)
+    sp.draw_like_cloud(sp.mood_data_df)
+    # sp.draw_content_cloud(sp.mood_data_df)
+
     # 保存说说数据
     sp.export_mood_df()
     sp.re.set(MOOD_FINISH_KEY + str(username), 1)
@@ -78,9 +80,7 @@ def get_user_basic_info():
                       download_small_image=False, download_big_image=False,
                       download_mood_detail=True, download_like_detail=True,
                       download_like_names=True, recover=False, cookie_text=None)
-
     return sp.user_info
-
 
 if __name__ == '__main__':
     capture_main_data()
