@@ -14,6 +14,7 @@ import copy
 import datetime
 import random
 import logging
+import matplotlib.pyplot as plt
 from src.spider.BaseSpider import BaseSpider
 from src.util import util
 from src.util.constant import qzone_jother2, SPIDER_USER_NUM_LIMIT, EXPIRE_TIME_IN_SECONDS, MOOD_NUM_KEY, \
@@ -110,9 +111,11 @@ class QQZoneSpider(BaseSpider):
             self.save_image_single(qr_res.content, self.QR_CODE_PATH)
             login_sig = self.get_cookie('pt_login_sig')
             qr_sig = self.get_cookie('qrsig')
+
             if self.debug:
                 print("success to download qr code")
             logging.info("success to download qr code")
+            self.show_image(self.QR_CODE_PATH + '.jpg')
             while True:
                 self.headers['referer'] = self.qzone_login_url
                 res = self.req.get(
@@ -144,6 +147,7 @@ class QQZoneSpider(BaseSpider):
         self.headers['host'] = 'user.qzone.qq.com'
         self.headers.pop('referer')
         self.get_qzone_token()
+        self.init_user_info()
         print("Login success,", self.username)
 
 
@@ -797,35 +801,3 @@ class QQZoneSpider(BaseSpider):
         qzonetoken = re.findall(re.compile("g_qzonetoken = \(function\(\)\{ try\{return \"(.*)?\""), content)[0]
         self.qzonetoken = qzonetoken
         print("qzone_token:", qzonetoken)
-
-    def download_image(self, url, name):
-        image_url = url
-        try:
-            r = self.req.get(url=image_url, headers=self.headers, timeout=20)
-            image_content = r.content
-            # 异步保存图片，提高效率
-            # t = threading.Thread(target=self.save_image_concurrent, args=(image_content, name))
-            # t.start()
-            thread = self.image_thread_pool.get_thread()
-            t = thread(target=self.save_image_concurrent, args=(image_content, name))
-            t.start()
-            # t = self.image_thread_pool2.submit(self.save_image_concurrent, (image_content, name))
-        except BaseException as e:
-            self.format_error(e, 'Failed to download image:' + name)
-
-    def save_image_concurrent(self, image, name):
-        try:
-            file_image = open(name + '.jpg', 'wb+')
-            file_image.write(image)
-            file_image.close()
-            self.image_thread_pool.add_thread()
-        except BaseException as e:
-            self.format_error(e, "Failed to save image:" + name)
-
-    def save_image_single(self, image, name):
-        try:
-            file_image = open(name + '.jpg', 'wb+')
-            file_image.write(image)
-            file_image.close()
-        except BaseException as e:
-            self.format_error(e, "Failed to save image:" + name)

@@ -9,7 +9,10 @@ import re
 import logging
 from src.web.entity.UserInfo import UserInfo
 from src.web.web_util.web_util import get_redis_conn
-from concurrent.futures import ThreadPoolExecutor
+import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
+import threading
+import random
 
 class BaseSpider(object):
     """
@@ -43,16 +46,7 @@ class BaseSpider(object):
         self.debug = debug
         self.cookie_text = cookie_text
         self.pool_flag = pool_flag
-        if from_web:
-            self.username = username
-            self.nickname = nickname
-        else:
-            self.username, self.password, self.nickname = self.get_username_password()
-        self.mood_host = self.http_host + '/' + self.username + '/mood/'
-        # 在爬取好友动态时username会变为好友的QQ号，所以此处需要备份
-        self.raw_username = deepcopy(self.username)
-        self.raw_nickname = deepcopy(self.nickname)
-
+        self.QR_CODE_PATH  = BASE_PATH + '/src/web/static/image/qr' + str(random.random())
         self.headers = {
             'host': 'user.qzone.qq.com',
             'accept-encoding': 'gzip, deflate, br',
@@ -63,19 +57,26 @@ class BaseSpider(object):
         }
         self.h5_headers = deepcopy(self.headers)
         self.h5_headers['host'] = self.h5_host
-
-        if (use_redis):
+        if not from_web:
+            self.init_user_info()
+        if use_redis:
             self.re = self.connect_redis()
 
+        self.image_thread_pool = ImageThreadPool(20)
+
+    def init_user_info(self):
+        self.username, self.password, self.nickname = self.get_username_password()
+        self.init_file_name()
+        self.mood_host = self.http_host + '/' + self.username + '/mood/'
+        # 在爬取好友动态时username会变为好友的QQ号，所以此处需要备份
+        self.raw_username = deepcopy(self.username)
+        self.raw_nickname = deepcopy(self.nickname)
         self.user_info = UserInfo(self.username).load()
         if self.user_info is None:
             self.user_info = UserInfo(self.username)
         self.user_info.QQ = self.username
         self.user_info.nickname = self.nickname
 
-        self.image_thread_pool = ImageThreadPool(20)
-        self.image_thread_pool2 = ThreadPoolExecutor(max_workers=20)
-        self.init_file_name()
 
     def get_username_password(self):
         config_path = BASE_DIR + 'config/userinfo.json'
@@ -200,7 +201,7 @@ class BaseSpider(object):
         util.check_dir_exist(USER_BASE_DIR + 'friend/')
         util.check_dir_exist(self.FRIEND_HEADER_IMAGE_PATH)
         self.init_analysis_path()
-        self.QR_CODE_PATH = BASE_PATH + '/src/web/static/image/' + self.username + '/' + 'qr'
+
         print("Init file Name Finish:", self.USER_BASE_DIR)
 
     def init_analysis_path(self):
@@ -355,6 +356,48 @@ class BaseSpider(object):
             return cmt_num
         else:
             return -1
+
+    def download_image(self, url, name):
+        image_url = url
+        try:
+            r = self.req.get(url=image_url, headers=self.headers, timeout=20)
+            image_content = r.content
+            # 异步保存图片，提高效率
+            # t = threading.Thread(target=self.save_image_concurrent, args=(image_content, name))
+            # t.start()
+            thread = self.image_thread_pool.get_thread()
+            t = thread(target=self.save_image_concurrent, args=(image_content, name))
+            t.start()
+            # t = self.image_thread_pool2.submit(self.save_image_concurrent, (image_content, name))
+        except BaseException as e:
+            self.format_error(e, 'Failed to download image:' + name)
+
+    def save_image_concurrent(self, image, name):
+        try:
+            file_image = open(name + '.jpg', 'wb+')
+            file_image.write(image)
+            file_image.close()
+            self.image_thread_pool.add_thread()
+        except BaseException as e:
+            self.format_error(e, "Failed to save image:" + name)
+
+    def save_image_single(self, image, name):
+        try:
+            file_image = open(name + '.jpg', 'wb+')
+            file_image.write(image)
+            file_image.close()
+        except BaseException as e:
+            self.format_error(e, "Failed to save image:" + name)
+
+    def show_image(self, file_path):
+        t = threading.Thread(target=self.do_show_image, args=(file_path,))
+        t.start()
+
+    def do_show_image(self, file_path):
+        image = mpimg.imread(file_path)
+        plt.imshow(image)
+        plt.axis('off')
+        plt.show()
 
     def result_report(self):
         print("#######################")
