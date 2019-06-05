@@ -71,3 +71,11 @@
     color: white;
     cursor: pointer;
 }
+
+.qr_container {
+    margin: 10px auto;
+}
+
+.qr_container img {
+    width: 80%;
+}

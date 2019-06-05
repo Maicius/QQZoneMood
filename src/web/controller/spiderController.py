@@ -8,7 +8,7 @@ import threading
 from time import sleep
 
 from src.web.web_util.web_constant import INVALID_LOGIN, SUCCESS_STATE, FAILED_STATE, FINISH_FRIEND, WAITING_USER_STATE, \
-    ALREADY_IN, CHECK_COOKIE
+    ALREADY_IN, CHECK_COOKIE, LOGGING_STATE
 from src.web.web_util.web_util import check_password, md5_password, init_redis_key, get_redis_conn, judge_pool
 
 spider = Blueprint('spider', __name__)
@@ -28,7 +28,10 @@ def query_spider_info(QQ, password):
     mood_num = -1
     friend_num = 0
     if info is not None:
-        if info.find(FRIEND_INFO_PRE) != -1:
+        if info.find(".jpg") != -1:
+            finish = LOGGING_STATE
+
+        elif info.find(FRIEND_INFO_PRE) != -1:
             finish = FINISH_FRIEND
             friend_num = int(info.split(':')[1])
         elif info.find(MOOD_NUM_PRE) != -1:
@@ -43,7 +46,6 @@ def query_spider_info(QQ, password):
         info = ''
         result = dict(info=info, finish=finish, mood_num=mood_num, friend_num=friend_num)
         return json.dumps(result, ensure_ascii=False)
-
 
 @spider.route('/query_spider_num/<QQ>/<mood_num>/<password>')
 def query_spider_num(QQ, mood_num, password):
@@ -67,9 +69,9 @@ def start_spider():
         qq = request.form['qq']
         stop_time = str(request.form['stop_time'])
         mood_num = int(request.form['mood_num'])
-        cookie = request.form['cookie']
-        if cookie == None or len(cookie) < 10:
-            return json.dumps(dict(result=CHECK_COOKIE), ensure_ascii=False)
+        # cookie = request.form['cookie']
+        # if cookie == None or len(cookie) < 10:
+        #     return json.dumps(dict(result=CHECK_COOKIE), ensure_ascii=False)
         no_delete = False if request.form['no_delete'] == 'false' else True
         password = request.form['password']
         password = md5_password(password)
@@ -101,7 +103,7 @@ def start_spider():
             conn.rpush(WAITING_USER_LIST, qq)
         try:
             t = threading.Thread(target=web_interface,
-                                 args=(qq, nick_name, stop_time, mood_num, cookie, no_delete, password, pool_flag))
+                                 args=(qq, nick_name, stop_time, mood_num, "xxx", no_delete, password, pool_flag))
             t.start()
             result = dict(result=SUCCESS_STATE)
             return json.dumps(result, ensure_ascii=False)
@@ -148,8 +150,6 @@ def stop_spider_force(QQ, password):
 
     conn.hdel(USER_MAP_KEY, QQ)
     return json.dumps(dict(finish=1))
-
-
 
 @spider.route('/query_friend_info_num/<QQ>/<friend_num>/<password>')
 def query_friend_info_num(QQ, friend_num, password):

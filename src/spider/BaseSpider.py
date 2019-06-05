@@ -4,7 +4,7 @@ from src.threadPool.ImageThreadPool import ImageThreadPool
 from src.util import util
 from copy import deepcopy
 import json
-from src.util.constant import BASE_DIR, EXPIRE_TIME_IN_SECONDS, BASE_PATH
+from src.util.constant import BASE_DIR, EXPIRE_TIME_IN_SECONDS, BASE_PATH, QR_CODE_MAP_KEY
 import re
 import logging
 from src.web.entity.UserInfo import UserInfo
@@ -46,7 +46,9 @@ class BaseSpider(object):
         self.debug = debug
         self.cookie_text = cookie_text
         self.pool_flag = pool_flag
-        self.QR_CODE_PATH  = BASE_PATH + '/src/web/static/image/qr' + str(random.random())
+        self.from_web = from_web
+        self.random_qr_name = str(random.random())
+        self.QR_CODE_PATH  = BASE_PATH + '/src/web/static/image/qr' + self.random_qr_name
         self.headers = {
             'host': 'user.qzone.qq.com',
             'accept-encoding': 'gzip, deflate, br',
@@ -57,15 +59,23 @@ class BaseSpider(object):
         }
         self.h5_headers = deepcopy(self.headers)
         self.h5_headers['host'] = self.h5_host
-        if not from_web:
-            self.init_user_info()
         if use_redis:
             self.re = self.connect_redis()
+
+        if not from_web:
+            self.username, self.password, self.nickname = self.get_username_password()
+            self.init_user_info()
+        else:
+            self.username = username
+            self.nickname = nickname
+            # 保存用户的二维码名称，传递给前端
+            if self.use_redis:
+                self.re.hset(QR_CODE_MAP_KEY, self.username, self.random_qr_name)
+
 
         self.image_thread_pool = ImageThreadPool(20)
 
     def init_user_info(self):
-        self.username, self.password, self.nickname = self.get_username_password()
         self.init_file_name()
         self.mood_host = self.http_host + '/' + self.username + '/mood/'
         # 在爬取好友动态时username会变为好友的QQ号，所以此处需要备份

@@ -24,11 +24,11 @@ EXPIRE_TIME_IN_SECONDS = 24 * 60 * 60
 
 WEB_SPIDER_INFO = "web_redis_info_"
 
-LOGIN_SUCCESS = "获取主页信息成功"
+LOGIN_SUCCESS = "登陆成功！"
 
-LOGIN_FAILED = "登陆失败，请检查QQ号和cookie是否正确"
+LOGIN_FAILED = "登陆失败，请重新扫描二维码或稍后再试"
 
-GET_MOOD_FAILED = "获取主页信息失败，请检查QQ号和cookie是否正确，可更换cookie再进行尝试"
+GET_MOOD_FAILED = "获取主页信息失败"
 
 GET_MAIN_PAGE_FAILED = "获取主页信息失败"
 
@@ -59,6 +59,8 @@ SPIDERING_USER_LIST  = 'spidering_user_list'
 WAITING_USER_LIST = 'waiting_user_list'
 
 SPIDER_USER_NUM_LIMIT = 2
+
+QR_CODE_MAP_KEY = 'qr_code_map_key'
 
 STOP_FRIEND_INFO_SPIDER_KEY = 'stop_friend_info_'
 FINISH_FRIEND_INFO_ALL = '获取全部好友基本信息完成'

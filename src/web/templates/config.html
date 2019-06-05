@@ -29,20 +29,20 @@
                                ms-duplex="@qq_id">
                     </div>
                 </div>
-{#                <div class="form-group row">#}
-{#                    <div class="col-lg-6 col-md-12 row my_form">#}
-{#                        <label for="stop_num" class="col-lg-3 col-md-3 label_text"#}
-{#                               title="爬取动态的数量，如果值为-1表示爬取全部动态">停止数量</label>#}
-{#                        <input type="text" class="form-control col-lg-8 col-md-12" id="stop_num"#}
-{#                               title="爬取动态的数量，如果值为-1表示爬取全部动态" placeholder="-1" ms-duplex="@stop_num">#}
-{#                    </div>#}
-{#                    <div class="col-lg-6 col-md-12 row my_form">#}
-{#                        <label for="stop_date" class="col-lg-3 col-md-3 label_text"#}
-{#                               title="只会爬取停止日期前的动态,如2014-01-01，如果值为-1则表示爬取全部动态">停止日期</label>#}
-{#                        <input type="text" class="form-control col-lg-8 col-md-12" id="stop_date" ms-duplex="@stop_date"#}
-{#                               placeholder="2010-01-01" title="只会爬取停止日期前的动态，如果值为-1则表示爬取全部动态">#}
-{#                    </div>#}
-{#                </div>#}
+                {#                <div class="form-group row">#}
+                {#                    <div class="col-lg-6 col-md-12 row my_form">#}
+                {#                        <label for="stop_num" class="col-lg-3 col-md-3 label_text"#}
+                {#                               title="爬取动态的数量，如果值为-1表示爬取全部动态">停止数量</label>#}
+                {#                        <input type="text" class="form-control col-lg-8 col-md-12" id="stop_num"#}
+                {#                               title="爬取动态的数量，如果值为-1表示爬取全部动态" placeholder="-1" ms-duplex="@stop_num">#}
+                {#                    </div>#}
+                {#                    <div class="col-lg-6 col-md-12 row my_form">#}
+                {#                        <label for="stop_date" class="col-lg-3 col-md-3 label_text"#}
+                {#                               title="只会爬取停止日期前的动态,如2014-01-01，如果值为-1则表示爬取全部动态">停止日期</label>#}
+                {#                        <input type="text" class="form-control col-lg-8 col-md-12" id="stop_date" ms-duplex="@stop_date"#}
+                {#                               placeholder="2010-01-01" title="只会爬取停止日期前的动态，如果值为-1则表示爬取全部动态">#}
+                {#                    </div>#}
+                {#                </div>#}
                 <div class="form-group row">
                     <div class="col-lg-6 col-md-12 row my_form">
                         <label for="password" class="col-lg-3 col-md-3 label_text"
@@ -50,16 +50,6 @@
                         <input type="text" class="form-control col-lg-8 col-md-12" id="password" ms-duplex="@password"
                                placeholder="相当于您在本站的密码！不是QQ密码！！！" title="用于获取数据结果的识别码，不是QQ密码">
                     </div>
-                </div>
-                <div class="form-group form-control col-md-12 col-lg-8" ms-visible="@login_state == 1">
-                    <p >用手机QQ扫描该二维码即可登陆QQ空间</p>
-                    <p style="color:red">谨慎！有可能会泄漏隐私！！！</p>
-
-{#                    <textarea class="form-control col-md-12 col-lg-8" id="cookie" rows="8" style="margin: 20px auto"#}
-{#                              placeholder="请在网页上登陆QQ空间并复制cookie到此处" ms-duplex="@qq_cookie"></textarea>#}
-{#                    <a href="/cookie" target="_blank">cookie是什么？怎么获取cookie？</a>#}
-                    <img src="@qr_code_path" alt=""/>
-
                 </div>
                 <div :class="['card', 'col-lg-8', 'col-md-12', 'my_card']" ms-visible="@spider_state == 0">
                     <div class="card-body">
@@ -90,20 +80,34 @@
                     <label class="form-check-label" for="no_delete">数据永久存储(开发者选项，普通用户勿选)</label>
                 </div>
 
-                <button type="button" class="btn btn-primary" :click="@submit_data()" disabled="disabled"
-                        id="start_get">
-                    开始获取
-                </button>
-                <button type="button" class="btn btn-danger" :click="@clear_cache()" id="delete_cache"
-                        style="margin-left: 10px">清除缓存
-                </button>
-                <button type="button" class="btn btn-primary" :click="@view_data()" id="view_data" title="查看数据"
-                        style="margin-left: 10px">
-                    查看数据
-                </button>
+                <div class="form-group form-control col-md-12 col-lg-8 qr_container" ms-visible="@login_state == 1"
+                     id="qr_container">
+                    <p>用手机QQ扫描该二维码即可登陆QQ空间</p>
+                    <p style="color:red">谨慎！有可能会泄漏隐私！！！</p>
+
+                    {#                    <textarea class="form-control col-md-12 col-lg-8" id="cookie" rows="8" style="margin: 20px auto"#}
+                    {#                              placeholder="请在网页上登陆QQ空间并复制cookie到此处" ms-duplex="@qq_cookie"></textarea>#}
+                    {#                    <a href="/cookie" target="_blank">cookie是什么？怎么获取cookie？</a>#}
+
+                </div>
+
+                <div class="btn btn-group" style="margin: 20px auto">
+                    <button type="button" class="btn btn-primary col-xs-5" :click="@submit_data()" disabled="disabled"
+                            id="start_get">
+                        开始获取
+                    </button>
+                    <button type="button" class="btn btn-danger col-xs-5" :click="@clear_cache()" id="delete_cache"
+                            style="margin-left: 10px">清除缓存
+                    </button>
+                    <button type="button" class="btn btn-primary col-xs-12" :click="@view_data()" id="view_data"
+                            title="查看数据"
+                            style="margin-left: 10px">
+                        查看数据
+                    </button>
+                </div>
             </form>
 
-            <div class="spider_phase" ms-visible="@spider_state != 0">
+            <div class="spider_phase" ms-visible="@login_state > 1">
                 <div class="my_process col-lg-8 col-md-12">
                     <!--ms-for: info in @spider_info-->
                     <p>{$info$}</p>
@@ -115,7 +119,8 @@
                              aria-valuemin="0" aria-valuemax="100" :css="{width: @process_width}">
                         </div>
                     </div>
-                    <H4 style="margin-top:20px">{$friend_info_spider_text$}{$spider_friend_num$} / {$all_friend_num$}</H4>
+                    <H4 style="margin-top:20px">{$friend_info_spider_text$}{$spider_friend_num$} /
+                        {$all_friend_num$}</H4>
                     <div class="progress">
                         <div :class="['progress-bar',(@spider_state == 1 ? ('progress-bar-animated', 'progress-bar-striped'): 'bg-success')]"
                              role="progressbar"
@@ -154,13 +159,15 @@
             <div class="large_dom" id="history_dom">
                 hello
             </div>
-            <div class="btn-group row" style="margin-top: 20px">
-                <a class="btn btn-primary" :attr="{href:'/data/download_file/' + @qq_id + '/' + @encrypt() + '/' + 'mood'}"
+            <div class="btn-group row" style="margin: 20px auto">
+                <a class="btn btn-primary"
+                   :attr="{href:'/data/download_file/' + @qq_id + '/' + @encrypt() + '/' + 'mood'}"
                    id="download_excel"
                    title="下载数据">
                     下载说说数据(Excel)
                 </a>
-                <a class="btn btn-primary" :attr="{href:'/data/download_file/' + @qq_id + '/' + @encrypt() + '/' + 'friend'}"
+                <a class="btn btn-primary"
+                   :attr="{href:'/data/download_file/' + @qq_id + '/' + @encrypt() + '/' + 'friend'}"
                    id="download_friend"
                    title="下载数据" style="margin-left: 20px;color: white; cursor: pointer">
                     下载好友数据(Excel)
