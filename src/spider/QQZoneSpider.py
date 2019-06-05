@@ -105,7 +105,7 @@ class QQZoneSpider(BaseSpider):
             random.randint(0, 9), random.randint(0, 9), random.randint(0, 9))
         while wait_time < 60:
             wait_time += 1
-            qr_res = self.req.get(url=login_url, headers=self.headers)
+            qr_res = self.req.get(url=login_url, headers=self.headers, timeout=20)
             self.save_image_single(qr_res.content, self.QR_CODE_PATH)
             login_sig = self.get_cookie('pt_login_sig')
             qr_sig = self.get_cookie('qrsig')
