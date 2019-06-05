@@ -73,7 +73,11 @@ HISTORY_LIKE_AGREE = 'history_like_agree_'
 
 FRIEND_LIST_KEY = 'friend_list_'
 
+# 电脑上的中文字体
+UBUNTU_SYSTEM_FONT_PATH = '/usr/share/fonts/Songti.ttc'
+MAC_SYSTEM_FONT_PATH = '/System/Library/Fonts/Hiragino Sans GB.ttc'
 
+SYSTEM_FONT = UBUNTU_SYSTEM_FONT_PATH
 
 if __name__ == '__main__':
     print(BASE_DIR)

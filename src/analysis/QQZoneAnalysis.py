@@ -7,7 +7,7 @@ from scipy.misc import imread
 import matplotlib.pyplot as plt
 from src.spider.QQZoneFriendMoodSpider import QQZoneFriendMoodSpider
 from src.analysis.Average import Average
-from src.util.constant import BASE_DIR
+from src.util.constant import BASE_DIR, SYSTEM_FONT
 from src.util.util import get_standard_time_from_mktime2
 
 
@@ -28,7 +28,8 @@ class QQZoneAnalysis(QQZoneFriendMoodSpider):
         self.av = Average(use_redis=False, file_name_head=username, analysis=True, debug=debug)
 
         # 用于绘制词云图的字体，请更改为自己电脑上任意一款支持中文的字体，否则将无法显示中文
-        self.system_font = '/System/Library/Fonts/Hiragino Sans GB.ttc'
+        self.system_font = SYSTEM_FONT
+
 
     def load_file_from_redis(self):
         self.do_recover_from_exist_data()

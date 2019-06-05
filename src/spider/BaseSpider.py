@@ -64,14 +64,14 @@ class BaseSpider(object):
 
         if not from_web:
             self.username, self.password, self.nickname = self.get_username_password()
-            self.init_user_info()
+
         else:
             self.username = username
             self.nickname = nickname
             # 保存用户的二维码名称，传递给前端
             if self.use_redis:
                 self.re.hset(QR_CODE_MAP_KEY, self.username, self.random_qr_name)
-
+        self.init_user_info()
 
         self.image_thread_pool = ImageThreadPool(20)
 

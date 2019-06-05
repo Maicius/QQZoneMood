@@ -36,7 +36,6 @@ app.register_blueprint(spider, url_prefix='/spider')
 app.register_blueprint(data, url_prefix='/data')
 
 
-
 if __name__ == '__main__':
     t = threading.Thread(target=begin_check_redis)
     t.start()

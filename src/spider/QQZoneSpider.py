@@ -154,7 +154,7 @@ class QQZoneSpider(BaseSpider):
         self.g_tk = self.get_GTK(skey)
         self.headers['host'] = 'user.qzone.qq.com'
         self.headers.pop('referer')
-        self.init_user_info()
+        # self.init_user_info()
         self.get_qzone_token()
 
         if self.use_redis:
