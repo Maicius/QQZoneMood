@@ -200,14 +200,17 @@
 ![Image](resource/image/comment.jpg)
 ![Image3](resource/image/comment_content.jpg)
 ![Image](resource/image/bike2.png)
+
 > QQ动态关键字词云
 
 ![QQ空间说说按点赞和评论数分类图](resource/image/shuoshuoPie.png)  
+
 > QQ空间说说按点赞和评论数分类图
 
 <img src="resource/image/show_qr.JPG" style="width:230px">
 <img src="resource/image/show_like.JPG" style="width:230px">
 <img src="resource/image/show_cmt.JPG" style="width:230px">
+
 > 手机端运行截图
 
 
