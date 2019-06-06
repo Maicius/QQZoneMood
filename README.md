@@ -2,7 +2,7 @@
 
 -  多线程抓取QQ空间说说内容并进行分析，提供基于Flask和avalon.js的web配置界面，以及配套的测试用例
 
-- 在线系统（只支持最多两个人同时爬取）:[QQ空间数据分析-小麦冬](http://app.xiaomaidong.com)
+- 在线系统（支持移动端）:[QQ空间数据分析-小麦冬](http://app.xiaomaidong.com)
 
 ![Image](resource/image/text.jpg)
 
@@ -198,6 +198,9 @@
 ![IMAGE](resource/image/screen1.png)
 ![image](resource/image/image2.png)
 ![Image](resource/image/comment.jpg)
+![image](resource/image/show_qr.JPG)
+![image](resource/image/show_like.JPG)
+![image](resource/image/show_cmt.JPG)
 ![Image3](resource/image/comment_content.jpg)
 ![Image](resource/image/bike2.png)
 ![QQ空间说说按点赞和评论数分类图](resource/image/shuoshuoPie.png)  
