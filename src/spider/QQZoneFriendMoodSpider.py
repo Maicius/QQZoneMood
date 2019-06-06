@@ -19,7 +19,10 @@ class QQZoneFriendMoodSpider(QQZoneFriendSpider):
                               download_mood_detail=download_mood_detail, download_like_detail=download_like_detail,
                               download_like_names=download_like_names, nickname=nickname, no_delete=no_delete, cookie_text=cookie_text,
                               recover=recover, export_excel=export_excel, pool_flag=pool_flag, analysis=analysis)
-        self.friend_name_list = self.get_friend_username()
+        if not self.from_web:
+            self.friend_name_list = self.get_friend_username()
+        else:
+            self.friend_name_list = []
         self.base_dir = ''
 
     def get_friend_username(self):
