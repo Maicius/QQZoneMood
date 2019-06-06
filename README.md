@@ -207,9 +207,9 @@
 
 > QQ空间说说按点赞和评论数分类图
 
-<img src="resource/image/show_qr.JPG" style="width:230px">
-<img src="resource/image/show_like.JPG" style="width:230px">
-<img src="resource/image/show_cmt.JPG" style="width:230px">
+<img src="resource/image/show_qr.JPG" style="width:32%">
+<img src="resource/image/show_like.JPG" style="width:32%">
+<img src="resource/image/show_cmt.JPG" style="width:32%">
 
 > 手机端运行截图
 
