@@ -198,14 +198,19 @@
 ![IMAGE](resource/image/screen1.png)
 ![image](resource/image/image2.png)
 ![Image](resource/image/comment.jpg)
-![image](resource/image/show_qr.JPG)
-![image](resource/image/show_like.JPG)
-![image](resource/image/show_cmt.JPG)
 ![Image3](resource/image/comment_content.jpg)
 ![Image](resource/image/bike2.png)
-![QQ空间说说按点赞和评论数分类图](resource/image/shuoshuoPie.png)  
-
 > QQ动态关键字词云
+
+![QQ空间说说按点赞和评论数分类图](resource/image/shuoshuoPie.png)  
+> QQ空间说说按点赞和评论数分类图
+
+<img src="resource/image/show_qr.JPG" style="width:230px">
+<img src="resource/image/show_like.JPG" style="width:230px">
+<img src="resource/image/show_cmt.JPG" style="width:230px">
+> 手机端运行截图
+
+
 
 ![Image](resource/image/relation.png)
 > 使用Gephi软件生成的好友关系图
