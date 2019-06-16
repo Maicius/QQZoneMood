@@ -64,7 +64,7 @@ def web_interface(username, nickname, stop_time, mood_num, cookie_text, no_delet
 
     sp.draw_cmt_cloud(sp.mood_data_df)
     sp.draw_like_cloud(sp.mood_data_df)
-    # sp.draw_content_cloud(sp.mood_data_df)
+    sp.draw_content_cloud(sp.mood_data_df)
 
     # 保存说说数据
     sp.export_mood_df()
