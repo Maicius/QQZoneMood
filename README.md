@@ -12,7 +12,7 @@
 
 ![](resource/image/structure.png)
 
-### docker版运行方式
+### 运行方式
 
 - 本项目将网页配置版本打包为docker（以下简称docker版），本版本计划部署到线上
 
@@ -28,7 +28,7 @@
 
 	> 4.数据可视化和下载（excel表）
 
-- 运行方式(请确保已经安装了docker和docker-compose)：
+- docker版运行方式(请确保已经安装了docker和docker-compose)：
 
 	> git clone https://github.com/Maicius/QQZoneMood.git
 
@@ -37,6 +37,21 @@
 	> docker-compose up
 	
 	> 浏览器里输入地址: [http://localhost:80](http://localhost:80)
+
+- 完整版运行方式：
+
+	> git clone https://github.com/Maicius/QQZoneMood.git
+	
+	> cd QQZoneMood/config
+	
+	> mv userinfo.json.example userinfo.json
+	
+	> mv friend\_info.json.example friend\_info.json
+	
+	> 根据自己需求修改上述两个配置文件
+	
+	> 在 test中提供了多个程序入口，可根据自己需要选择运行
+	
 
 ### TO DO...
 
