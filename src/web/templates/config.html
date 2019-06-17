@@ -142,6 +142,7 @@
             </div>
             <div class="spider_finish" ms-visible="@spider_state == 2">
                 <div class="col-lg-8 col-md-12" style="margin: 20px auto 50px auto">
+                    <p> {$$}</p>
                     <a href="javascript:void(0);" :click="@view_data()" :visible="@data_state == 1">点击此处查看数据分析结果</a>
                 </div>
             </div>
@@ -159,6 +160,7 @@
                 <p>你在{$user.first_friend_time$}添加了第一位好友<i class="highlight-keyword">{$user.first_friend$}</i></p>
                 <p>至今已拥有{$user.friend_num$}位好友</p>
                 <p ms-visible="@user.single_friend > 0">其中{$user.most_friend$}和你拥有最多的共同好友，{$user.most_common_friend_num$}位</p>
+                <p ms-visible="@user.most_group_member > 0">QQ群{$user.most_group$}一定对你很重要吧，你一共在这结识了{$user.most_group_member$}位好友</p>
                 <p>好友中给你点赞最多的是<i class="highlight-keyword">{$user.like_friend_name$}</i>，给你评论最多的是<i
                         class="highlight-keyword">{$user.cmt_friend_name$}</i></p>
             </div>

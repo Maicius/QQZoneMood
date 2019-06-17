@@ -52,7 +52,8 @@ class UserInfo(object):
                     cmt_friend_name_header=self.cmt_friend_name_header, first_mood_time=self.first_mood_time,
                     cmt_friend_name=self.cmt_friend_name, single_friend=self.single_friend, most_date = self.most_date,
                     most_time_state=self.most_time_state, is_night = self.is_night, most_friend=self.most_friend,
-                    most_common_friend_num=self.most_common_friend_num)
+                    most_common_friend_num=self.most_common_friend_num, most_group=self.most_group,
+                    most_group_member=self.most_group_member)
 
     def save_user(self):
         data = self.to_dict()
@@ -96,3 +97,5 @@ class UserInfo(object):
         self.is_night = data['is_night']
         self.most_friend = data['most_friend']
         self.most_common_friend_num = data['most_common_friend_num']
+        self.most_group = data['most_group']
+        self.most_group_member = data['most_group_member']

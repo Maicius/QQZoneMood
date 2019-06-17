@@ -66,11 +66,14 @@ def web_interface(username, nickname, stop_time, mood_num, cookie_text, no_delet
     sp.calculate_send_time()
     # 计算共同好友最多的人
     sp.get_most_common_friend()
+    # 计算共同群组
+    sp.get_most_group()
     sp.user_info.save_user()
 
     sp.draw_cmt_cloud(sp.mood_data_df)
     sp.draw_like_cloud(sp.mood_data_df)
-    sp.draw_content_cloud(sp.mood_data_df)
+    # 说说中的关键字，这个比较花时间
+    # sp.draw_content_cloud(sp.mood_data_df)
 
     # 保存说说数据
     sp.export_mood_df()

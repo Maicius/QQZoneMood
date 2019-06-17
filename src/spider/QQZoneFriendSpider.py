@@ -305,10 +305,27 @@ class QQZoneFriendSpider(QQZoneSpider):
                 self.friend_df = pd.read_csv(self.FRIEND_DETAIL_LIST_FILE_NAME)
             except FileNotFoundError:
                 self.clean_friend_data()
-        max_index = self.friend_df['common_friend_num'].max()
-        most_friend = self.friend_df.loc[self.friend_df['common_friend_num'] == max_index, ['common_friend_num', 'nick_name']].values[0]
-        self.user_info.most_common_friend_num = most_friend[0]
-        self.user_info.most_friend = most_friend[1]
+        self.friend_df.fillna('', inplace=True)
+        common_group_names = self.friend_df['common_group_names']
+        common_group_names_list = []
+        for item in common_group_names:
+            if item != '':
+                try:
+                    if type(item) != list:
+                        item = json.loads(item.replace('\'', '\"'))
+                    common_group_names_list.extend(item)
+                except:
+                    pass
+
+        if len(common_group_names_list) > 0:
+            df = pd.DataFrame(common_group_names_list)
+            df['count'] = 1
+            result = df.groupby(by='name').agg({'count': sum}).reset_index()
+            most_group = result.loc[result['count'] == result['count'].max(), :].values[0]
+
+            self.user_info.most_group = most_group[0]
+            self.user_info.most_group_member = most_group[1]
+            print(most_group)
 
 
 
