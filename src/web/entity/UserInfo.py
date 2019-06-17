@@ -32,6 +32,12 @@ class UserInfo(object):
 
     is_night = ''
 
+    most_friend = ''
+    most_common_friend_num = 0
+
+    most_group = ''
+    most_group_member = 0
+
     is_none = True
     def __init__(self, username):
         self.temp_dir = BASE_DIR + username + '/temp/'
@@ -45,7 +51,8 @@ class UserInfo(object):
                     like_friend_name=self.like_friend_name, like_friend_header=self.like_friend_header,
                     cmt_friend_name_header=self.cmt_friend_name_header, first_mood_time=self.first_mood_time,
                     cmt_friend_name=self.cmt_friend_name, single_friend=self.single_friend, most_date = self.most_date,
-                    most_time_state=self.most_time_state, is_night = self.is_night)
+                    most_time_state=self.most_time_state, is_night = self.is_night, most_friend=self.most_friend,
+                    most_common_friend_num=self.most_common_friend_num)
 
     def save_user(self):
         data = self.to_dict()
@@ -87,3 +94,5 @@ class UserInfo(object):
         self.most_date = data['most_date']
         self.most_time_state = data['most_time_state']
         self.is_night = data['is_night']
+        self.most_friend = data['most_friend']
+        self.most_common_friend_num = data['most_common_friend_num']

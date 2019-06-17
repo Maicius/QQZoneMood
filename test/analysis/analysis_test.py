@@ -58,6 +58,10 @@ class AnalysisTest(unittest.TestCase):
         qa.calculate_history_like_agree()
         print(len(qa.re.get(qa.history_like_agree_file_name)))
 
+    def test_most_common_friend(self):
+        qa = QQZoneAnalysis(use_redis=True, export_csv=True)
+        qa.get_most_common_friend()
+
 if __name__ =='__main__':
     unittest.main()
 

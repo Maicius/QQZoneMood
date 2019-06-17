@@ -287,6 +287,31 @@ class QQZoneFriendSpider(QQZoneSpider):
     def get_friend_result_file_name(self):
         return self.FRIEND_DETAIL_LIST_FILE_NAME
 
+    def get_most_common_friend(self):
+        if self.friend_df.empty:
+            try:
+                self.friend_df = pd.read_csv(self.FRIEND_DETAIL_LIST_FILE_NAME)
+            except FileNotFoundError:
+                self.clean_friend_data()
+
+        max_index = self.friend_df['common_friend_num'].max()
+        most_friend = self.friend_df.loc[self.friend_df['common_friend_num'] == max_index, ['common_friend_num', 'nick_name']].values[0]
+        self.user_info.most_common_friend_num = most_friend[0]
+        self.user_info.most_friend = most_friend[1]
+
+    def get_most_group(self):
+        if self.friend_df.empty:
+            try:
+                self.friend_df = pd.read_csv(self.FRIEND_DETAIL_LIST_FILE_NAME)
+            except FileNotFoundError:
+                self.clean_friend_data()
+        max_index = self.friend_df['common_friend_num'].max()
+        most_friend = self.friend_df.loc[self.friend_df['common_friend_num'] == max_index, ['common_friend_num', 'nick_name']].values[0]
+        self.user_info.most_common_friend_num = most_friend[0]
+        self.user_info.most_friend = most_friend[1]
+
+
+
     def get_first_friend_info(self):
         if self.friend_df.empty:
             try:

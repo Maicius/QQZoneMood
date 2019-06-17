@@ -212,6 +212,7 @@ let vm = avalon.define({
                     vm.login_state = LOGIN_STATE.LOGINING;
                     vm.qr_code_path = 'static/image/qr' + data.info;
                     var image = new Image;
+                    $('#qr_container').empty();
                     $('#qr_container').append(image);
                     image.src = vm.qr_code_path;
                 } else if (data.finish === NOT_MATCH_STATE) {
@@ -312,11 +313,13 @@ let vm = avalon.define({
     show_cloud_image: function () {
         var image1 = new Image;
         var cloud_img1 = $('#like_cloud_img');
+        cloud_img1.empty();
         cloud_img1.append(image1);
         image1.src = vm.image_path + vm.qq_id + "/" + vm.qq_id + "_cmt.jpg";
         image1.alt = "经常给您评论的好友们";
         var cloud_img2 = $('#cmt_cloud_img');
         var image2 = new Image;
+        cloud_img2.empty();
         cloud_img2.append(image2);
         image2.src = vm.image_path + vm.qq_id + "/" + vm.qq_id + "_like.jpg";
         image2.alt = "经常给您点赞的好友们";
