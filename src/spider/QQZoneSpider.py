@@ -18,7 +18,7 @@ from src.spider.BaseSpider import BaseSpider
 from src.util import util
 from src.util.constant import qzone_jother2, SPIDER_USER_NUM_LIMIT, EXPIRE_TIME_IN_SECONDS, MOOD_NUM_KEY, \
     WEB_SPIDER_INFO, GET_MAIN_PAGE_FAILED, MOOD_NUM_PRE, GET_FIRST_LOGIN_TIME, LOGIN_SUCCESS, LOGIN_FAILED, \
-    LOGIN_NOT_MATCH, FORCE_STOP_SPIDER_FLAG
+    LOGIN_NOT_MATCH, FORCE_STOP_SPIDER_FLAG, FINISH_USER_NUM_KEY
 import math
 import execjs
 import threading

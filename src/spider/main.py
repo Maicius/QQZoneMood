@@ -6,7 +6,7 @@ sys.path.append(os.path.split(rootPath)[0])
 from src.analysis.QQZoneAnalysis import QQZoneAnalysis
 from src.spider.QQZoneSpider import QQZoneSpider
 from src.util.constant import WEB_SPIDER_INFO, CLEAN_DATA_KEY, LOGIN_FAILED, \
-    USER_MAP_KEY, GET_MOOD_FAILED, MOOD_FINISH_KEY, WAITING_USER_LIST
+    USER_MAP_KEY, GET_MOOD_FAILED, MOOD_FINISH_KEY, WAITING_USER_LIST, FINISH_USER_NUM_KEY
 import threading
 
 # 使用selenium自动登陆，获取空间全部说说内容，不下载图片
@@ -80,6 +80,10 @@ def web_interface(username, nickname, stop_time, mood_num, cookie_text, no_delet
     sp.re.set(MOOD_FINISH_KEY + str(username), 1)
     sp.calculate_history_like_agree()
     sp.re.set(CLEAN_DATA_KEY + username, 1)
+    now_user = sp.re.get(FINISH_USER_NUM_KEY)
+    if now_user is None:
+        now_user = 0
+    sp.re.set(FINISH_USER_NUM_KEY, now_user + 1)
     # 对排队list中删除当前用户，注意该指令的传参方式与redis-cli中不同
     sp.re.lrem(WAITING_USER_LIST, username)
 

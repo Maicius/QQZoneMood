@@ -36,7 +36,8 @@ let vm = avalon.define({
     qr_code_path: '',
     login_state: LOGIN_STATE.UNLOGIN,
     force_stop: false,
-
+    waiting_user_num: 0,
+    finish_user_num: 0,
     init_parameter: function () {
         vm.spider_text = SPIDER_TEXT.DOING;
         vm.spider_state = SPIDER_STATE.CONFIG;
@@ -58,6 +59,16 @@ let vm = avalon.define({
         vm.qr_code_path = '';
     },
 
+    query_finish_num: function () {
+        $.ajax({
+            url: 'spider/query_finish_user_num',
+            success: function (res) {
+                data = JSON.parse(res);
+                vm.finish_user_num = data.finish_user_num;
+                vm.waiting_user_num = data.waiting_user_num;
+            }
+        });
+    },
     force_stop_spider: function () {
         var message = confirm("该操作会强制停止爬虫，导致数据丢失(之后您可以重新启动爬虫)，您确认要进行该操作吗？");
         if (message) {
@@ -422,4 +433,10 @@ vm.$watch("friend_info_spider_state", function (new_v, old_v) {
         case SPIDER_FRIEND_STATE.FINISH:
             vm.friend_info_spider_text = SPIDER_FRIEND_TEXT.FINISH;
     }
+});
+
+$(document).ready(function () {
+    setInterval(function () {
+        vm.query_finish_num();
+    }, 10000);
 });

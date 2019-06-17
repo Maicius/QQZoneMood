@@ -17,6 +17,7 @@
     </nav>
     <div ms-visible="@view_data_state == 0">
         <div class="main_container col-lg-8 col-md-12">
+
             <form>
                 <div class="form-group row">
                     <div class="col-lg-6 col-md-12 row my_form">
@@ -52,6 +53,12 @@
                                placeholder="设置您在本站的密码！请不要与QQ密码相同！！！" title="用于获取数据结果的校验码，不是QQ密码">
                     </div>
                 </div>
+                <div :class="['card', 'col-lg-4', 'col-md-10', 'tip_card']">
+                    <div class="card-body">
+                        <p class="card-text">本站已成功帮助{$finish_user_num$}位用户获取数据</p>
+                        <p class="card-text">当前使用爬虫人数: {$waiting_user_num$}</p>
+                    </div>
+                </div>
                 <div :class="['card', 'col-lg-8', 'col-md-12', 'my_card']" ms-visible="@spider_state == 0">
                     <div class="card-body">
                         <h5 class="card-title">用户须知</h5>
@@ -66,6 +73,7 @@
                         <p class="card-text">24小时内您可以根据QQ号和校验码直接访问缓存数据</p>
                         <p class="card-text danger">开发者只能保证不会滥用数据，但无法保证网站不会被攻击</p>
                         <p class="card-text danger">所以为避免造成隐私泄漏，普通用户请在离开网页时点击下方清除缓存！！！</p>
+                        <p class="card-text">为保证程序正常运行，只允许最多2位用户同时使用爬虫</p>
                         <p class="card-text">受限于网络带宽和服务器，许多功能并未开放</p>
                         <p class="card-text">开发者可以自行运行项目源代码</p>
                         <a href="https://github.com/Maicius/QQZoneMood" class="card-link" target="_blank">开源项目地址</a>
@@ -107,7 +115,6 @@
                     </button>
                 </div>
             </form>
-
             <div class="spider_phase" ms-visible="@login_state > 1">
                 <div class="my_process col-lg-8 col-md-12">
                     <!--ms-for: info in @spider_info-->

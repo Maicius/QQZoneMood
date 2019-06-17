@@ -76,6 +76,8 @@ HISTORY_LIKE_AGREE = 'history_like_agree_'
 
 FRIEND_LIST_KEY = 'friend_list_'
 
+FINISH_USER_NUM_KEY = 'finish_user_num_key'
+
 # 电脑上的中文字体
 UBUNTU_SYSTEM_FONT_PATH = '/usr/share/fonts/Songti.ttc'
 MAC_SYSTEM_FONT_PATH = '/System/Library/Fonts/Hiragino Sans GB.ttc'

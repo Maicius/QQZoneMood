@@ -186,3 +186,14 @@ def query_clean_data(QQ, password):
 def check_waiting_list(conn):
     waiting_list = conn.lrange(WAITING_USER_LIST, 0, -1)
     return waiting_list
+
+@spider.route('/query_finish_user_num')
+def query_finish_user_num():
+    pool_flag = session.get(POOL_FLAG)
+    conn = get_redis_conn(pool_flag)
+    finish_user_num = conn.get(FINISH_USER_NUM_KEY)
+    if finish_user_num is None:
+        finish_user_num = 0
+    waiting_list = check_waiting_list(conn)
+    waiting_num = len(waiting_list)
+    return json.dumps(dict(finish_user_num=finish_user_num, waiting_user_num=waiting_num))
