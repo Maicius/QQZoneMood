@@ -7,7 +7,7 @@ from scipy.misc import imread
 import matplotlib.pyplot as plt
 from src.spider.QQZoneFriendMoodSpider import QQZoneFriendMoodSpider
 from src.analysis.Average import Average
-from src.util.constant import BASE_DIR, SYSTEM_FONT
+from src.util.constant import BASE_DIR, SYSTEM_FONT, EXPIRE_TIME_IN_SECONDS
 from src.util.util import get_standard_time_from_mktime2
 
 
@@ -388,6 +388,8 @@ class QQZoneAnalysis(QQZoneFriendMoodSpider):
         history_json = history_df.to_json(orient='records', force_ascii=False)
         if self.use_redis:
             self.re.set(self.history_like_agree_file_name, json.dumps(history_json, ensure_ascii=False))
+            if not self.no_delete:
+                self.re.expire(self.history_like_agree_file_name, EXPIRE_TIME_IN_SECONDS)
         else:
             self.save_data_to_json(history_json, self.history_like_agree_file_name)
 
