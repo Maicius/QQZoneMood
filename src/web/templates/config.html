@@ -171,26 +171,26 @@
                 <p>{$user.first_time$}, 你第一次登陆了QQ空间</p>
                 <p ms-visible="@user.first_mood_time !== ''">{$user.first_mood_time$}, 你发表了第一条动态</p>
                 <p>{$user.years$}年来，你一共写了{$user.mood_num$}条说说，并上传了{$user.photo_num$}张照片</p>
-                <p>{$user.most_date$}似乎是对你很重要的一天，因为这天你收获了好友们最多的祝福</p>
+                <p ms-visible="@user.most_date !== ''">{$user.most_date$}似乎是对你很重要的一天，因为这天你收获了好友们最多的祝福</p>
                 <p ms-visible="@user.is_night > 0">你是一个夜猫子，经常在深夜发说说</p>
-                <p>你在{$user.first_friend_time$}添加了第一位好友<i class="highlight-keyword">{$user.first_friend$}</i></p>
+                <p ms-visible="@user.first_friend_time !== ''">你在{$user.first_friend_time$}添加了第一位好友<i class="highlight-keyword">{$user.first_friend$}</i></p>
                 <p>至今已拥有{$user.friend_num$}位好友</p>
                 <p ms-visible="@user.single_friend > 0">
                     其中{$user.most_friend$}和你拥有最多的共同好友，{$user.most_common_friend_num$}位</p>
                 <p ms-visible="@user.most_group_member > 0">
                     QQ群{$user.most_group$}一定对你很重要吧，你一共在这结识了{$user.most_group_member$}位好友</p>
-                <p>好友中给你点赞最多的是<i class="highlight-keyword">{$user.like_friend_name$}</i>，给你评论最多的是<i
+                <p ms-visible="@user.like_friend_name !== ''">好友中给你点赞最多的是<i class="highlight-keyword">{$user.like_friend_name$}</i>，给你评论最多的是<i
                         class="highlight-keyword">{$user.cmt_friend_name$}</i></p>
             </div>
-            <div class="large_dom" id="history_dom">
+            <div class="large_dom" id="history_dom" ms-visible="@user.first_mood_time !== ''">
                 hello
             </div>
-            <p>下面是经常给您点赞的好友</p>
-            <div class="cloud_img col-lg-5 col-md-12" id="cmt_cloud_img">
+            <p ms-visible="@user.like_friend_name !== ''">下面是经常给您点赞的好友</p>
+            <div class="cloud_img col-lg-5 col-md-12" id="cmt_cloud_img" ms-visible="@user.like_friend_name !== ''">
 
             </div>
-            <p>下面是经常给您评论的好友</p>
-            <div class="cloud_img col-lg-5 col-md-12" id="like_cloud_img">
+            <p ms-visible="@user.cmt_friend_name !== ''">下面是经常给您评论的好友</p>
+            <div class="cloud_img col-lg-5 col-md-12" id="like_cloud_img" ms-visible="@user.cmt_friend_name !== ''">
 
                 {#            </div>#}
                 {#            <div class="cloud_img col-lg-5 col-md-12" id="content_cloud_img">#}

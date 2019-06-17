@@ -41,13 +41,12 @@ def get_docker_pool():
         print(e)
 
 def get_redis_conn(pool_flag):
-
     if pool_flag == REDIS_HOST:
         pool = get_pool()
         conn = redis.Redis(connection_pool=pool)
         return conn
 
-    elif pool_flag == REDIS_HOST_DOCKER:
+    else:
         docker_pool = get_docker_pool()
         conn = redis.Redis(connection_pool=docker_pool)
         return conn
@@ -85,9 +84,16 @@ def init_redis_key(conn, qq):
 
 
 def check_password(conn, QQ, password):
-    redis_pass = conn.hget(USER_MAP_KEY, QQ)
+    if conn is not None:
+        redis_pass = conn.hget(USER_MAP_KEY, QQ)
+    else:
+        host = judge_pool()
+        conn = get_redis_conn(host)
+        redis_pass = conn.hget(USER_MAP_KEY, QQ)
     password = md5_password(password)
     return redis_pass == password
+
+
 
 def md5_password(password):
     md5 = hashlib.md5()

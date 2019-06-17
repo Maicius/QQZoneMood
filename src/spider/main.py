@@ -55,30 +55,32 @@ def web_interface(username, nickname, stop_time, mood_num, cookie_text, no_delet
     except BaseException:
         sp.re.rpush(WEB_SPIDER_INFO + username, GET_MOOD_FAILED)
         exit(1)
+    sp.re.set(MOOD_FINISH_KEY + str(username), 1)
 
     # 清洗好友数据
-    sp.clean_friend_data()
-    # 获取第一位好友数据
-    sp.get_first_friend_info()
-    # 清洗说说数据并计算点赞最多的人和评论最多的人
-    sp.get_most_people()
-    # 计算发送动态的时间
-    sp.calculate_send_time()
-    # 计算共同好友最多的人
-    sp.get_most_common_friend()
-    # 计算共同群组
-    sp.get_most_group()
+    friend_data_state = sp.clean_friend_data()
+    if friend_data_state:
+        # 获取第一位好友数据
+        sp.get_first_friend_info()
+        # 计算共同好友最多的人
+        sp.get_most_common_friend()
+        # 计算共同群组
+        sp.get_most_group()
+
+    if not sp.mood_data_df.empty:
+        # 清洗说说数据并计算点赞最多的人和评论最多的人
+        sp.get_most_people()
+        # 计算发送动态的时间
+        sp.calculate_send_time()
+        sp.draw_cmt_cloud(sp.mood_data_df)
+        sp.draw_like_cloud(sp.mood_data_df)
+        # 说说中的关键字，这个比较花时间
+        # sp.draw_content_cloud(sp.mood_data_df)
+        # 保存说说数据
+        sp.export_mood_df()
+        sp.calculate_history_like_agree()
+
     sp.user_info.save_user()
-
-    sp.draw_cmt_cloud(sp.mood_data_df)
-    sp.draw_like_cloud(sp.mood_data_df)
-    # 说说中的关键字，这个比较花时间
-    # sp.draw_content_cloud(sp.mood_data_df)
-
-    # 保存说说数据
-    sp.export_mood_df()
-    sp.re.set(MOOD_FINISH_KEY + str(username), 1)
-    sp.calculate_history_like_agree()
     sp.re.set(CLEAN_DATA_KEY + username, 1)
     now_user = sp.re.get(FINISH_USER_NUM_KEY)
     if now_user is None:

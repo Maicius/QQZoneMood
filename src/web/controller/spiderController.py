@@ -59,6 +59,8 @@ def query_spider_num(QQ, mood_num, password):
     # 强制停止，保证在由于网络等原因导致爬取的说说数量有缺失时也能正常停止程序
     finish_key = conn.get(MOOD_FINISH_KEY + str(QQ))
     finish = 0
+    if mood_num == "null":
+        mood_num = 0
     if finish_key == "1" or int(info) >= int(mood_num):
         finish = SUCCESS_STATE
     return json.dumps(dict(num=info, finish=finish, finish_key=finish_key))
@@ -157,12 +159,12 @@ def stop_spider_force(QQ, password):
 def query_friend_info_num(QQ, friend_num, password):
     pool_flag = session.get(POOL_FLAG)
     conn = get_redis_conn(pool_flag)
-    if conn is None:
-        return json.dumps(dict(num="数据库未连接", finish=0))
     if not check_password(conn, QQ, password):
         return json.dumps(dict(finish=INVALID_LOGIN))
     info = conn.get(FRIEND_INFO_COUNT_KEY + str(QQ))
     finish = 0
+    if friend_num == "null":
+        friend_num = 0
     if int(info) >= int(friend_num):
         finish = 1
     return json.dumps(dict(num=info, finish=finish))
@@ -191,6 +193,9 @@ def check_waiting_list(conn):
 def query_finish_user_num():
     pool_flag = session.get(POOL_FLAG)
     conn = get_redis_conn(pool_flag)
+    if conn is None:
+        host = judge_pool()
+        conn = get_redis_conn(host)
     finish_user_num = conn.get(FINISH_USER_NUM_KEY)
     if finish_user_num is None:
         finish_user_num = 0

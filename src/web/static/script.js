@@ -59,6 +59,7 @@ let vm = avalon.define({
         vm.login_state = LOGIN_STATE.UNLOGIN;
         vm.agree = false;
         vm.qr_code_path = '';
+        vm.change_tip();
     },
 
     query_finish_num: function () {
@@ -156,8 +157,12 @@ let vm = avalon.define({
                             vm.begin_spider = 1;
                             vm.spider_state = SPIDER_STATE.SPIDER;
                             vm.friend_info_spider_state = SPIDER_FRIEND_STATE.DOING;
-                            vm.all_friend_num = data.friend_num;
-                            vm.true_mood_num = data.mood_num;
+                            if (data.friend_num){
+                                vm.all_friend_num = data.friend_num;
+                            }
+                            if (data.mood_num){
+                                vm.true_mood_num = data.mood_num;
+                            }
                             // 开始轮询好友数量
                             vm.query_friend_info = setInterval(function () {
                                 vm.query_friend_info_num(vm.qq_id);
@@ -193,7 +198,9 @@ let vm = avalon.define({
                 if (data.finish === SUCCESS_STATE) {
 
                     vm.show_process = 1;
-                    vm.true_mood_num = data.mood_num;
+                    if (data.mood_num) {
+                        vm.true_mood_num = data.mood_num;
+                    }
                     // 不知是什么原因，在docker中，会出现finish =1，但是mood_num == -1的失败情况
                     // 出现这种情况后就强制停止爬虫
                     if (data.mood_num === -1) {
@@ -209,7 +216,11 @@ let vm = avalon.define({
                         alert("由于网络等原因，获取数据失败，请稍后再尝试");
                     }
                 } else if (data.finish === FINISH_FRIEND) {
-                    vm.all_friend_num = data.friend_num;
+
+                    if (data.friend_num) {
+                        vm.all_friend_num = data.friend_num;
+                    }
+
                     // 停止spider_info的轮询
                     clearInterval(vm.query_interval);
                     // 开始轮询好友数量

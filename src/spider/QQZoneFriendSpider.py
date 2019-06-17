@@ -232,6 +232,9 @@ class QQZoneFriendSpider(QQZoneSpider):
         print("valid friend num:", friend_total_num)
         friend_list_df = pd.DataFrame(self.friend_list)
         self.friend_detail_list = []
+        if friend_total_num == 0:
+            print("该用户没有好友")
+            return False
         for friend in self.friend_detail:
             try:
                 friend_uin = friend['friendUin']
@@ -266,6 +269,7 @@ class QQZoneFriendSpider(QQZoneSpider):
             print("Finish to clean friend data...")
             print("File Name:", self.FRIEND_DETAIL_LIST_FILE_NAME)
         self.friend_df = friend_df
+        return True
 
     def get_friend_total_num(self):
         self.load_friend_data()

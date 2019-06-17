@@ -74,6 +74,10 @@ class QQZoneAnalysis(QQZoneFriendMoodSpider):
         mood_data_df = pd.DataFrame(self.mood_data)
         like_detail_df = pd.DataFrame(self.like_detail_df)
         like_list_df = pd.DataFrame(self.like_list_names_df)
+        if mood_data_df.empty:
+            self.has_clean_data = True
+            print("该用户没有数据")
+            return
         data_df = pd.merge(left=mood_data_df, right=like_detail_df, how='inner', left_on='tid', right_on='tid')
         data_df = pd.merge(left=data_df, right=like_list_df, how='inner', left_on='tid', right_on='tid')
 
