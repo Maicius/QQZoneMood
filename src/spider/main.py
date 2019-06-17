@@ -29,6 +29,7 @@ def web_interface(username, nickname, stop_time, mood_num, cookie_text, no_delet
     state = sp.login_with_qr_code()
     if not state:
         exit(1)
+
     try:
         sp.logging_info(username + "logging success")
         sp.re.rpush(WEB_SPIDER_INFO + username, "用户" + str(sp.username) + "登陆成功")
@@ -37,6 +38,8 @@ def web_interface(username, nickname, stop_time, mood_num, cookie_text, no_delet
         sp.re.rpush(WEB_SPIDER_INFO + username, LOGIN_FAILED)
         # 删除用户密码
         sp.re.hdel(USER_MAP_KEY, username)
+        exit(1)
+
     sp.get_main_page_info()
     sp.logging_info("get main page success")
     try:

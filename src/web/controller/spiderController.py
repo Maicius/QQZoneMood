@@ -32,6 +32,7 @@ def query_spider_info(QQ, password):
         if info.find(".jpg") != -1:
             finish = LOGGING_STATE
         elif info.find(LOGIN_NOT_MATCH) != -1:
+            conn.lrem(WAITING_USER_LIST, QQ)
             finish = NOT_MATCH_STATE
         elif info.find(FRIEND_INFO_PRE) != -1:
             finish = FINISH_FRIEND
