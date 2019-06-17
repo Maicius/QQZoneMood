@@ -38,6 +38,8 @@ let vm = avalon.define({
     force_stop: false,
     waiting_user_num: 0,
     finish_user_num: 0,
+    warm_tip: WARM_TIP[0],
+    warm_tip_index: 0,
     init_parameter: function () {
         vm.spider_text = SPIDER_TEXT.DOING;
         vm.spider_state = SPIDER_STATE.CONFIG;
@@ -68,6 +70,16 @@ let vm = avalon.define({
                 vm.waiting_user_num = data.waiting_user_num;
             }
         });
+    },
+
+    change_tip: function () {
+        var tip_len = WARM_TIP.length;
+        if (vm.warm_tip_index < tip_len - 1) {
+            vm.warm_tip_index += 1;
+        } else {
+            vm.warm_tip_index = 0;
+        }
+        vm.warm_tip = WARM_TIP[vm.warm_tip_index];
     },
     force_stop_spider: function () {
         var message = confirm("该操作会强制停止爬虫，导致数据丢失(之后您可以重新启动爬虫)，您确认要进行该操作吗？");
@@ -436,7 +448,12 @@ vm.$watch("friend_info_spider_state", function (new_v, old_v) {
 });
 
 $(document).ready(function () {
+    vm.query_finish_num();
     setInterval(function () {
         vm.query_finish_num();
     }, 10000);
+
+    setInterval(function () {
+        vm.change_tip();
+    }, 6000);
 });

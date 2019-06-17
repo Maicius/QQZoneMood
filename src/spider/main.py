@@ -83,6 +83,8 @@ def web_interface(username, nickname, stop_time, mood_num, cookie_text, no_delet
     now_user = sp.re.get(FINISH_USER_NUM_KEY)
     if now_user is None:
         now_user = 0
+    else:
+        now_user = int(now_user)
     sp.re.set(FINISH_USER_NUM_KEY, now_user + 1)
     # 对排队list中删除当前用户，注意该指令的传参方式与redis-cli中不同
     sp.re.lrem(WAITING_USER_LIST, username)

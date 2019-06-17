@@ -92,3 +92,14 @@
     padding: 10px;
     display: block;
 }
+
+.tip_card {
+    text-align: center;
+    position: relative;
+    margin: 10px auto;
+    font-size: 14px;
+}
+
+body {
+    background: #eee8d8;
+}

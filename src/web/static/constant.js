@@ -45,6 +45,22 @@ const LOGIN_STATE = {
     LOGIN_FAIELD: -1
 };
 
+const WARM_TIP = [
+    {
+        one: '如进度条长时间未走动',
+        second: '请点击 强制停止 按钮'
+    },
+    {
+        one: '如想提前结束爬虫并保存数据',
+        second: '请点击下方 停止 按钮'
+    },
+    {
+        one: '爬虫启动后可以直接退出本页面',
+        second: '稍后凭QQ号和校验码可直接查询数据'
+    }
+];
+
+
 const INVALID_LOGIN = -2;
 const SUCCESS_STATE = 1;
 const FINISH_FRIEND = 2;
