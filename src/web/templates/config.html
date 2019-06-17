@@ -134,6 +134,11 @@
                         ms-visible="@spider_state==1">
                     停止
                 </button>
+                <button type="button" class="btn btn-danger" :click="@force_stop_spider()" id="stop_spider"
+                        title="立即停止爬虫并保存数据"
+                        ms-visible="@spider_state==1" style="margin-left: 10px;">
+                    强制停止
+                </button>
             </div>
             <div class="spider_finish" ms-visible="@spider_state == 2">
                 <div class="col-lg-8 col-md-12" style="margin: 20px auto 50px auto">
@@ -165,10 +170,10 @@
             </div>
             <div class="cloud_img col-lg-5 col-md-12" id="like_cloud_img">
                 <h4>下面是经常给您评论的好友</h4>
-{#            </div>#}
-{#            <div class="cloud_img col-lg-5 col-md-12" id="content_cloud_img">#}
-{#                <h4>下面是您说说的关键词</h4>#}
-{#            </div>#}
+                {#            </div>#}
+                {#            <div class="cloud_img col-lg-5 col-md-12" id="content_cloud_img">#}
+                {#                <h4>下面是您说说的关键词</h4>#}
+                {#            </div>#}
             </div>
             <div class="download_button">
                 <a class="btn btn-primary col-md-8 download_button"
@@ -183,7 +188,8 @@
                    title="下载数据" style="color: white; cursor: pointer">
                     下载好友数据(Excel)
                 </a>
-                <a class="btn btn-primary btn_href col-md-8 download_button" :click="@return_config()" id="return_config"
+                <a class="btn btn-primary btn_href col-md-8 download_button" :click="@return_config()"
+                   id="return_config"
                    title="返回配置" style="color: white; cursor: pointer">
                     返回配置
                 </a>

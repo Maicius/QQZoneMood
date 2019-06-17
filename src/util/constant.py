@@ -26,6 +26,8 @@ WEB_SPIDER_INFO = "web_redis_info_"
 
 LOGIN_SUCCESS = "登陆成功！"
 
+LOGIN_NOT_MATCH = "QQ号不匹配"
+
 LOGIN_FAILED = "登陆失败，请重新扫描二维码或稍后再试"
 
 WEB_IMAGE_PATH = BASE_PATH + '/src/web/static/image/'
@@ -50,6 +52,7 @@ FRIEND_INFO_PRE = 'QQ好友数量'
 
 STOP_SPIDER_KEY = 'stop_spider_'
 STOP_SPIDER_FLAG = 'stop'
+FORCE_STOP_SPIDER_FLAG = 'force'
 SPIDER_FLAG = 'continue'
 
 CLEAN_DATA_KEY = 'clean_data_'

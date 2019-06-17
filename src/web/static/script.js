@@ -35,6 +35,7 @@ let vm = avalon.define({
     user: {},
     qr_code_path: '',
     login_state: LOGIN_STATE.UNLOGIN,
+    force_stop: false,
 
     init_parameter: function () {
         vm.spider_text = SPIDER_TEXT.DOING;
@@ -53,14 +54,30 @@ let vm = avalon.define({
         vm.user = {};
         vm.spider_info = [];
         vm.login_state = LOGIN_STATE.UNLOGIN;
+        vm.agree = false;
+        vm.qr_code_path = '';
     },
 
-    start_get_data: function () {
-
+    force_stop_spider: function () {
+        var message = confirm("该操作会强制停止爬虫，导致数据丢失(之后您可以重新启动爬虫)，您确认要进行该操作吗？");
+        if (message) {
+            $.ajax({
+                url: "spider/stop_spider_force/" + vm.qq_id + '/' + sha1(vm.password),
+                type: 'GET',
+                success: function (res) {
+                    clearInterval(vm.query_num);
+                    clearInterval(vm.query_friend_info);
+                    vm.spider_text = SPIDER_TEXT.STOP;
+                    vm.init_parameter();
+                    vm.force_stop = true;
+                    alert("停止爬虫成功");
+                }
+            })
+        }
     },
     view_data: function () {
         if (vm.qq_id.length === 0 && vm.password.length === 0 && vm.nick_name.length === 0) {
-            alert("QQ号、用户名和验证码不能为空");
+            alert("QQ号、用户名和校验码不能为空");
         } else {
             $.ajax({
                 url: '/data/userinfo/' + vm.qq_id + '/' + vm.nick_name + '/' + sha1(vm.password),
@@ -98,6 +115,7 @@ let vm = avalon.define({
                     },
                     success: function (data) {
                         data = JSON.parse(data);
+                        vm.force_stop = false;
                         if (data.result === SUCCESS_STATE) {
                             //alert("success");
                             vm.begin_spider = 1;
@@ -189,13 +207,17 @@ let vm = avalon.define({
                 } else if (data.finish === INVALID_LOGIN) {
                     clearInterval(vm.query_interval);
                     vm.init_parameter();
-                    alert("识别码与QQ不匹配");
+                    alert(WRONG_PASSWORD_QQ);
                 } else if (data.finish === LOGGING_STATE) {
                     vm.login_state = LOGIN_STATE.LOGINING;
                     vm.qr_code_path = 'static/image/qr' + data.info;
                     var image = new Image;
                     $('#qr_container').append(image);
                     image.src = vm.qr_code_path;
+                } else if (data.finish === NOT_MATCH_STATE) {
+                    clearInterval(vm.query_interval);
+                    vm.init_parameter();
+                    alert("输入的QQ号与扫码登陆的不一致 \n为保证用户的信息安全，我们只提供用户爬取自己的空间数据的功能！");
                 }
             }
         })
@@ -219,7 +241,7 @@ let vm = avalon.define({
                         vm.friend_process_width = Math.ceil(parseInt(vm.spider_friend_num) / parseInt(vm.all_friend_num) * 100) + "%";
                         vm.query_clean_state();
                     } else {
-                        alert("识别码与QQ不匹配");
+                        alert(WRONG_PASSWORD_QQ);
                     }
                 }
             });
@@ -239,8 +261,11 @@ let vm = avalon.define({
                     vm.data_state = CLEAN_DATA_STATE.DOING;
                     vm.query_clean_state();
                 } else if (data.finish === -2) {
-                    alert("识别码与QQ不匹配");
-                    clearInterval(vm.query_num);
+                    if (!vm.force_stop) {
+                        alert(WRONG_PASSWORD_QQ);
+                        clearInterval(vm.query_num);
+                    }
+
                 }
 
             }
@@ -259,8 +284,11 @@ let vm = avalon.define({
                     clearInterval(vm.query_friend_info);
                     vm.friend_info_spider_state = SPIDER_FRIEND_STATE.FINISH;
                 } else if (data.finish === -2) {
-                    alert("识别码与QQ不匹配");
-                    clearInterval(vm.query_friend_info);
+                    if (!vm.force_stop) {
+                        alert(WRONG_PASSWORD_QQ);
+                        clearInterval(vm.query_friend_info);
+                    }
+
                 }
             }
         })
@@ -275,7 +303,7 @@ let vm = avalon.define({
                     vm.data_state = CLEAN_DATA_STATE.FINISH;
 
                 } else if (data.finish === -2) {
-                    alert("识别码与QQ不匹配");
+                    alert(WRONG_PASSWORD_QQ);
                 }
             }
         })
@@ -309,7 +337,7 @@ let vm = avalon.define({
                     vm.init_parameter();
                     alert("清除缓存成功");
                 } else {
-                    alert(data.info)
+                    alert(data.info);
                 }
             }
         })

@@ -22,11 +22,14 @@ def capture_main_data():
 def web_interface(username, nickname, stop_time, mood_num, cookie_text, no_delete, password, pool_flag):
     sp = QQZoneAnalysis(use_redis=True, debug=False, username=username, analysis_friend=True, from_web=True,
                         nickname=nickname, stop_time=stop_time, mood_num=mood_num, no_delete=no_delete, cookie_text=cookie_text, pool_flag=pool_flag)
+
+    # 存储用户和校验码
+    sp.re.hset(USER_MAP_KEY, username, password)
+    sp.logging_info(username + "init success")
+    state = sp.login_with_qr_code()
+    if not state:
+        exit(1)
     try:
-        # 存储用户密码
-        sp.re.hset(USER_MAP_KEY, username, password)
-        sp.logging_info(username + "init success")
-        sp.login_with_qr_code()
         sp.logging_info(username + "logging success")
         sp.re.rpush(WEB_SPIDER_INFO + username, "用户" + str(sp.username) + "登陆成功")
     except BaseException as e:

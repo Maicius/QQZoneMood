@@ -17,7 +17,8 @@ import logging
 from src.spider.BaseSpider import BaseSpider
 from src.util import util
 from src.util.constant import qzone_jother2, SPIDER_USER_NUM_LIMIT, EXPIRE_TIME_IN_SECONDS, MOOD_NUM_KEY, \
-    WEB_SPIDER_INFO, GET_MAIN_PAGE_FAILED, MOOD_NUM_PRE, GET_FIRST_LOGIN_TIME, LOGIN_SUCCESS, LOGIN_FAILED
+    WEB_SPIDER_INFO, GET_MAIN_PAGE_FAILED, MOOD_NUM_PRE, GET_FIRST_LOGIN_TIME, LOGIN_SUCCESS, LOGIN_FAILED, \
+    LOGIN_NOT_MATCH, FORCE_STOP_SPIDER_FLAG
 import math
 import execjs
 import threading
@@ -147,7 +148,14 @@ class QQZoneSpider(BaseSpider):
             print("success to delete qr code")
         self.nickname = ret[11]
         self.req.get(url=ret[5])
-        self.username = re.findall(r'uin=([0-9]+?)&', ret[5])[0]
+        username = re.findall(r'uin=([0-9]+?)&', ret[5])[0]
+
+        # 避免获取别人信息
+        if username != self.username:
+            self.re.lpush(WEB_SPIDER_INFO + self.username, LOGIN_NOT_MATCH)
+            self.username = username
+            return False
+
         self.headers['host'] = 'user.qzone.qq.com'
         print("login success")
         skey = self.get_cookie('p_skey')
@@ -156,10 +164,10 @@ class QQZoneSpider(BaseSpider):
         self.headers.pop('referer')
         # self.init_user_info()
         self.get_qzone_token()
-
         if self.use_redis:
             self.re.lpush(WEB_SPIDER_INFO + self.username, LOGIN_SUCCESS)
         print("Login success,", self.username)
+        return True
 
 
     def get_cookie(self, key):
@@ -329,17 +337,23 @@ class QQZoneSpider(BaseSpider):
         for t in self.thread_list:
             t.join()
 
-        # 保存所有数据到指定文件
-        print('保存最终数据中...')
-        if self.use_redis:
-            self.re.set(STOP_SPIDER_KEY + self.username, FINISH_ALL_INFO)
-        if (self.debug):
-            print('Error Unikeys Num:', len(self.error_like_detail_unikeys))
-            print('Retry to get them...')
-        self.retry_error_unikey()
-        self.save_all_data_to_json()
-        self.result_report()
-        print("finish===================")
+        # 如果不是强制停止的，就保存数据
+        force_key = self.re.get(FORCE_STOP_SPIDER_FLAG + self.username)
+        if force_key != FORCE_STOP_SPIDER_FLAG:
+            # 保存所有数据到指定文件
+            print('保存最终数据中...')
+            if self.use_redis:
+                self.re.set(STOP_SPIDER_KEY + self.username, FINISH_ALL_INFO)
+            if (self.debug):
+                print('Error Unikeys Num:', len(self.error_like_detail_unikeys))
+                print('Retry to get them...')
+            self.retry_error_unikey()
+            self.save_all_data_to_json()
+            self.result_report()
+            print("finish===================")
+        else:
+            self.re.delete(FORCE_STOP_SPIDER_FLAG + self.username)
+
 
     def find_best_step(self, mood_num, thread_num):
         step = int(mood_num / thread_num // 20 * 20)
@@ -377,7 +391,9 @@ class QQZoneSpider(BaseSpider):
                 pos += 20
                 # 每抓100条保存一次数据
                 if pos % 100 == 0 and self.use_redis:
-                    self.save_data_to_redis(final_result=False)
+                    force_key = self.re.get(FORCE_STOP_SPIDER_FLAG + self.username)
+                    if force_key != FORCE_STOP_SPIDER_FLAG:
+                        self.save_data_to_redis(final_result=False)
             except BaseException as e:
                 print("ERROR===================")
                 logging.error('wrong place')

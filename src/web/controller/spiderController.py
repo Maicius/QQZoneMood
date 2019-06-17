@@ -7,8 +7,9 @@ from src.spider.main import web_interface
 import threading
 from time import sleep
 
+from src.web.controller.dataController import do_clear_data_by_user
 from src.web.web_util.web_constant import INVALID_LOGIN, SUCCESS_STATE, FAILED_STATE, FINISH_FRIEND, WAITING_USER_STATE, \
-    ALREADY_IN, CHECK_COOKIE, LOGGING_STATE
+    ALREADY_IN, CHECK_COOKIE, LOGGING_STATE, NOT_MATCH_STATE
 from src.web.web_util.web_util import check_password, md5_password, init_redis_key, get_redis_conn, judge_pool
 
 spider = Blueprint('spider', __name__)
@@ -30,7 +31,8 @@ def query_spider_info(QQ, password):
     if info is not None:
         if info.find(".jpg") != -1:
             finish = LOGGING_STATE
-
+        elif info.find(LOGIN_NOT_MATCH) != -1:
+            finish = NOT_MATCH_STATE
         elif info.find(FRIEND_INFO_PRE) != -1:
             finish = FINISH_FRIEND
             friend_num = int(info.split(':')[1])
@@ -143,13 +145,13 @@ def stop_spider_force(QQ, password):
     conn = get_redis_conn(pool_flag)
     if not check_password(conn, QQ, password):
         return json.dumps(dict(finish=INVALID_LOGIN))
-    # 更新标记位，停止爬虫
+    # 删除与该用户有关的数据
+    finish = do_clear_data_by_user(QQ, conn)
+    # 重新设置标记位
     conn.set(STOP_SPIDER_KEY + QQ, STOP_SPIDER_FLAG)
-    # 从waiting_list中删除该用户
-    conn.lrem(WAITING_USER_LIST, QQ)
+    conn.set(FORCE_STOP_SPIDER_FLAG + QQ, FORCE_STOP_SPIDER_FLAG)
 
-    conn.hdel(USER_MAP_KEY, QQ)
-    return json.dumps(dict(finish=1))
+    return json.dumps(dict(finish=finish))
 
 @spider.route('/query_friend_info_num/<QQ>/<friend_num>/<password>')
 def query_friend_info_num(QQ, friend_num, password):

@@ -78,6 +78,7 @@ def init_redis_key(conn, qq):
         conn.set(CLEAN_DATA_KEY + qq, 0)
         conn.set(FRIEND_INFO_COUNT_KEY + qq, 0)
         conn.set(MOOD_FINISH_KEY + qq, 0)
+        conn.set(FORCE_STOP_SPIDER_FLAG + qq, 0)
         return 1
     else:
         return 0

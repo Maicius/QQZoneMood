@@ -54,3 +54,6 @@ const ALREADY_IN = -4;
 const CHECK_COOKIE = 0;
 
 const LOGGING_STATE = 3;
+const NOT_MATCH_STATE = -5;
+
+const WRONG_PASSWORD_QQ = "QQ号校验码不匹配,如果在爬虫过程中出现此问题，通常是网络错误，请稍后再试";
