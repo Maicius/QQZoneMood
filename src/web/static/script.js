@@ -156,6 +156,7 @@ let vm = avalon.define({
                             alert("您的账号已经在后台爬取");
                             vm.begin_spider = 1;
                             vm.spider_state = SPIDER_STATE.SPIDER;
+                            vm.login_state = LOGIN_STATE.LOGIN_SUCCESS;
                             vm.friend_info_spider_state = SPIDER_FRIEND_STATE.DOING;
                             if (data.friend_num){
                                 vm.all_friend_num = data.friend_num;
