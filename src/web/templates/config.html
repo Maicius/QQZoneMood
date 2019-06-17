@@ -113,21 +113,30 @@
                     <!--ms-for: info in @spider_info-->
                     <p>{$info$}</p>
                     <!--ms-for-end:-->
-                    <H4>{$spider_text$}{$spider_num$} / {$true_mood_num$}</H4>
+                    <p style="font-size: 20px">{$spider_text$}{$spider_num$} / {$true_mood_num$}</p>
                     <div class="progress">
                         <div :class="['progress-bar',(@spider_state == 1 ? ('progress-bar-animated', 'progress-bar-striped'): 'bg-success')]"
                              role="progressbar"
                              aria-valuemin="0" aria-valuemax="100" :css="{width: @process_width}">
                         </div>
                     </div>
-                    <H4 style="margin-top:20px">{$friend_info_spider_text$}{$spider_friend_num$} /
-                        {$all_friend_num$}</H4>
+                    <p style="margin-top:20px; font-size: 20px">{$friend_info_spider_text$}{$spider_friend_num$} /
+                        {$all_friend_num$}</p>
                     <div class="progress">
                         <div :class="['progress-bar',(@spider_state == 1 ? ('progress-bar-animated', 'progress-bar-striped'): 'bg-success')]"
                              role="progressbar"
                              aria-valuemin="0" aria-valuemax="100" :css="{width: @friend_process_width}">
                         </div>
                     </div>
+                    <div :class="['card', 'col-lg-6', 'col-md-10', 'my_card']">
+                        <div class="card-body">
+                            <h5 class="card-title">小提示</h5>
+                            <p class="card-text">如进度条长时间未走动</p>
+                            <p class="card-text">请点击"停止"或"强制停止"按钮</p>
+                        </div>
+                    </div>
+                    <p style="margin-top: 10px"></p>
+                    <p></p>
                 </div>
                 <button type="button" class="btn btn-primary" :click="@stop_spider()" id="stop_spider"
                         title="立即停止爬虫并保存数据"
@@ -142,7 +151,7 @@
             </div>
             <div class="spider_finish" ms-visible="@spider_state == 2">
                 <div class="col-lg-8 col-md-12" style="margin: 20px auto 50px auto">
-                    <p> {$$}</p>
+                    <p ms-visible="@data_state == 0"> {$clean_data_text$}</p>
                     <a href="javascript:void(0);" :click="@view_data()" :visible="@data_state == 1">点击此处查看数据分析结果</a>
                 </div>
             </div>
@@ -159,8 +168,10 @@
                 <p ms-visible="@user.is_night > 0">你是一个夜猫子，经常在深夜发说说</p>
                 <p>你在{$user.first_friend_time$}添加了第一位好友<i class="highlight-keyword">{$user.first_friend$}</i></p>
                 <p>至今已拥有{$user.friend_num$}位好友</p>
-                <p ms-visible="@user.single_friend > 0">其中{$user.most_friend$}和你拥有最多的共同好友，{$user.most_common_friend_num$}位</p>
-                <p ms-visible="@user.most_group_member > 0">QQ群{$user.most_group$}一定对你很重要吧，你一共在这结识了{$user.most_group_member$}位好友</p>
+                <p ms-visible="@user.single_friend > 0">
+                    其中{$user.most_friend$}和你拥有最多的共同好友，{$user.most_common_friend_num$}位</p>
+                <p ms-visible="@user.most_group_member > 0">
+                    QQ群{$user.most_group$}一定对你很重要吧，你一共在这结识了{$user.most_group_member$}位好友</p>
                 <p>好友中给你点赞最多的是<i class="highlight-keyword">{$user.like_friend_name$}</i>，给你评论最多的是<i
                         class="highlight-keyword">{$user.cmt_friend_name$}</i></p>
             </div>

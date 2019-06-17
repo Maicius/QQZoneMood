@@ -13,7 +13,7 @@ const SPIDER_TEXT = {
 };
 
 const CLEAN_DATA_TEXT = {
-    DOING: '数据分析中...',
+    DOING: '数据分析中,请稍后...',
     FINISH: '数据分析完成，请点击下方链接或查看数据按钮进行查看'
 };
 
