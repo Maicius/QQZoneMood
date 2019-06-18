@@ -69,7 +69,7 @@ def web_interface(username, nickname, stop_time, mood_num, cookie_text, no_delet
         sp.get_most_common_friend()
         # 计算共同群组
         sp.get_most_group()
-
+    sp.get_useful_info_from_json()
     if not sp.mood_data_df.empty:
         # 清洗说说数据并计算点赞最多的人和评论最多的人
         sp.get_most_people()
