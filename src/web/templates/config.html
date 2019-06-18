@@ -64,12 +64,12 @@
                         <h5 class="card-title">用户须知</h5>
                         <h6 class="card-subtitle mb-2 text-muted">请务必完整的阅读</h6>
                         <p class="card-text">此程序为QQ空间爬虫</p>
-                        <p class="card-text">程序会根据扫描登陆的二维码自动获取用户的QQ空间里的内容</p>
-                        <p class="card-text">可以对QQ空间的数据进行备份和可视化</p>
+                        <p class="card-text">可以用于对QQ空间的数据进行备份和可视化</p>
+                        <p class="card-text">点击下方开始获取后扫码登陆QQ空间即可开始运行</p>
                         <a class="card-text" href="https://github.com/Maicius/QQZoneMood/blob/master/README.md"
                            target="_blank">点此查看具体功能</a>
                         <p class="card-text danger">因涉及大量数据分析，所有数据不得不缓存在服务器上！！！</p>
-                        <p class="card-text danger">缓存时间为24小时(24小时后会自动删除)</p>
+                        <p class="card-text danger">缓存时间为24小时</p>
                         <p class="card-text">24小时内您可以根据QQ号和校验码直接访问缓存数据</p>
                         <p class="card-text danger">开发者只能保证不会滥用数据，但无法保证网站不会被攻击</p>
                         <p class="card-text danger">所以为避免造成隐私泄漏，普通用户请在离开网页时点击下方清除缓存！！！</p>
@@ -88,16 +88,13 @@
                            disabled="disabled">
                     <label class="form-check-label" for="no_delete">数据永久存储(开发者选项，普通用户勿选)</label>
                 </div>
-
-                <div class="form-group form-control col-md-12 col-lg-8 qr_container" ms-visible="@login_state == 1"
-                     id="qr_container">
+                <div ms-visible="@login_state == 1" class="col-md-12 col-lg-8 qr_container">
                     <p>用手机QQ扫描该二维码即可登陆QQ空间</p>
                     <p style="color:red">谨慎！有可能会泄漏隐私！！！</p>
+                    <div class="form-group form-control"
+                         id="qr_container">
 
-                    {#                    <textarea class="form-control col-md-12 col-lg-8" id="cookie" rows="8" style="margin: 20px auto"#}
-                    {#                              placeholder="请在网页上登陆QQ空间并复制cookie到此处" ms-duplex="@qq_cookie"></textarea>#}
-                    {#                    <a href="/cookie" target="_blank">cookie是什么？怎么获取cookie？</a>#}
-
+                    </div>
                 </div>
 
                 <div class="btn btn-group" style="margin: 20px auto">
@@ -173,7 +170,8 @@
                 <p>{$user.years$}年来，你一共写了{$user.mood_num$}条说说，并上传了{$user.photo_num$}张照片</p>
                 <p ms-visible="@user.most_date !== ''">{$user.most_date$}似乎是对你很重要的一天，因为这天你收获了好友们最多的祝福</p>
                 <p ms-visible="@user.is_night > 0">你是一个夜猫子，经常在深夜发说说</p>
-                <p ms-visible="@user.first_friend_time !== ''">你在{$user.first_friend_time$}添加了第一位好友<i class="highlight-keyword">{$user.first_friend$}</i></p>
+                <p ms-visible="@user.first_friend_time !== ''">你在{$user.first_friend_time$}添加了第一位好友<i
+                        class="highlight-keyword">{$user.first_friend$}</i></p>
                 <p>至今已拥有{$user.friend_num$}位好友</p>
                 <p ms-visible="@user.single_friend > 0">
                     其中{$user.most_friend$}和你拥有最多的共同好友，{$user.most_common_friend_num$}位</p>
