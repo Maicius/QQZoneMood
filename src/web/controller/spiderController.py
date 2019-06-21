@@ -77,9 +77,6 @@ def start_spider():
         qq = request.form['qq']
         stop_time = str(request.form['stop_time'])
         mood_num = int(request.form['mood_num'])
-        # cookie = request.form['cookie']
-        # if cookie == None or len(cookie) < 10:
-        #     return json.dumps(dict(result=CHECK_COOKIE), ensure_ascii=False)
         no_delete = False if request.form['no_delete'] == 'false' else True
         password = request.form['password']
         password = md5_password(password)
@@ -98,11 +95,15 @@ def start_spider():
         waiting_list = check_waiting_list(conn)
         # 如果排队用户大于阈值，就返回
         waiting_num = len(waiting_list)
-        if qq in waiting_list:
+        login_success = conn.get(USER_LOGIN_STATE + qq)
+        if qq in waiting_list and login_success == "1":
             friend_num = conn.get(FRIEND_NUM_KEY + qq)
             mood_num = conn.get(MOOD_NUM_KEY + qq)
             result = dict(result=ALREADY_IN, waiting_num=waiting_num, friend_num=friend_num, mood_num=mood_num)
             return json.dumps(result, ensure_ascii=False)
+        elif qq in waiting_list and login_success == "0":
+            conn.lrem(WAITING_USER_LIST, qq)
+
         if waiting_num >= SPIDER_USER_NUM_LIMIT:
             result = dict(result=WAITING_USER_STATE, waiting_num=waiting_num)
             return json.dumps(result, ensure_ascii=False)

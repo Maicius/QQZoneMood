@@ -59,6 +59,8 @@ CLEAN_DATA_KEY = 'clean_data_'
 
 USER_MAP_KEY = 'qq_user_map'
 
+USER_LOGIN_STATE = 'qq_user_login_state_'
+
 SPIDERING_USER_LIST  = 'spidering_user_list'
 
 WAITING_USER_LIST = 'waiting_user_list'

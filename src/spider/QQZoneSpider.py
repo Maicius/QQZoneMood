@@ -140,11 +140,12 @@ class QQZoneSpider(BaseSpider):
 
         # 删除QRCode文件
         self.remove_qr_code()
+
+        # 登陆失败
         if ret[1] != '0':
             self.re.lpush(WEB_SPIDER_INFO + self.username, LOGIN_FAILED)
-
             self.format_error("Failed to login with qr code")
-            raise ValueError
+            return False
         logging.info("scan qr code success")
 
         self.nickname = ret[11]

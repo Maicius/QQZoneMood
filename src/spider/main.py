@@ -6,7 +6,7 @@ sys.path.append(os.path.split(rootPath)[0])
 from src.analysis.QQZoneAnalysis import QQZoneAnalysis
 from src.spider.QQZoneSpider import QQZoneSpider
 from src.util.constant import WEB_SPIDER_INFO, CLEAN_DATA_KEY, LOGIN_FAILED, \
-    USER_MAP_KEY, GET_MOOD_FAILED, MOOD_FINISH_KEY, WAITING_USER_LIST, FINISH_USER_NUM_KEY
+    USER_MAP_KEY, GET_MOOD_FAILED, MOOD_FINISH_KEY, WAITING_USER_LIST, FINISH_USER_NUM_KEY, USER_LOGIN_STATE
 import threading
 
 # 使用selenium自动登陆，获取空间全部说说内容，不下载图片
@@ -23,24 +23,21 @@ def web_interface(username, nickname, stop_time, mood_num, cookie_text, no_delet
     sp = QQZoneAnalysis(use_redis=True, debug=False, username=username, analysis_friend=True, from_web=True,
                         nickname=nickname, stop_time=stop_time, mood_num=mood_num, no_delete=no_delete, cookie_text=cookie_text, pool_flag=pool_flag)
 
-    # 存储用户和校验码
     sp.re.hset(USER_MAP_KEY, username, password)
+    sp.re.set(USER_LOGIN_STATE + username, 0)
     sp.logging_info(username + "init success")
     state = sp.login_with_qr_code()
+    sp.remove_qr_code()
+    # 登陆失败就退出本线程
     if not state:
+        sp.logging_info(username + "logging failed")
+        sp.re.rpush(WEB_SPIDER_INFO + username, LOGIN_FAILED)
         exit(1)
-
-    try:
+    else:
+        # 存储登陆状态
         sp.logging_info(username + "logging success")
         sp.re.rpush(WEB_SPIDER_INFO + username, "用户" + str(sp.username) + "登陆成功")
-        sp.remove_qr_code()
-    except BaseException as e:
-        sp.format_error(e, "logging failed")
-        sp.remove_qr_code()
-        sp.re.rpush(WEB_SPIDER_INFO + username, LOGIN_FAILED)
-        # 删除用户密码
-        sp.re.hdel(USER_MAP_KEY, username)
-        exit(1)
+        sp.re.set(USER_LOGIN_STATE + username, 1)
 
     sp.get_main_page_info()
     sp.logging_info("get main page success")
