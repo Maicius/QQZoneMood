@@ -180,7 +180,7 @@
                 <p ms-visible="@user.like_friend_name !== ''">好友中给你点赞最多的是<i class="highlight-keyword">{$user.like_friend_name$}</i>，给你评论最多的是<i
                         class="highlight-keyword">{$user.cmt_friend_name$}</i></p>
             </div>
-            <div class="large_dom" id="history_dom" ms-visible="@user.first_mood_time !== ''">
+            <div class="large_dom" id="history_dom" ms-visible="@user.most_date !== ''">
                 hello
             </div>
             <p ms-visible="@user.like_friend_name !== ''">下面是经常给您点赞的好友</p>
@@ -199,7 +199,7 @@
                 <a class="btn btn-primary col-md-8 download_button"
                    :attr="{href:'/data/download_file/' + @qq_id + '/' + @encrypt() + '/' + 'mood'}"
                    id="download_excel"
-                   title="下载数据" ms-visible="@user.first_mood_time !== ''">
+                   title="下载数据" ms-visible="@user.most_date !== ''">
                     下载说说数据(Excel)
                 </a>
                 <a class="btn btn-primary col-md-8 download_button"

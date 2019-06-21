@@ -28,7 +28,7 @@ LOGIN_SUCCESS = "登陆成功！"
 
 LOGIN_NOT_MATCH = "QQ号不匹配"
 
-LOGIN_FAILED = "登陆失败，请重新扫描二维码或稍后再试"
+LOGIN_FAILED = "由于网络等原因登陆失败，请重新扫描二维码或稍后再试"
 
 WEB_IMAGE_PATH = BASE_PATH + '/src/web/static/image/'
 

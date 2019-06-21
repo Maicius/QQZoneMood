@@ -17,7 +17,6 @@ app.config['PERMANENT_SESSION_LIFETIME']=timedelta(days=7)
 host = judge_pool()
 conn = get_redis_conn(host)
 conn.delete(WAITING_USER_LIST)
-conn.delete(USER_MAP_KEY)
 @app.route('/')
 def config():
     session[POOL_FLAG] = judge_pool()
