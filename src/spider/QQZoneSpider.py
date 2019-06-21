@@ -137,15 +137,16 @@ class QQZoneSpider(BaseSpider):
                 time.sleep(2)
             if ret[1] == '0':
                 break
+
+        # 删除QRCode文件
+        self.remove_qr_code()
         if ret[1] != '0':
             self.re.lpush(WEB_SPIDER_INFO + self.username, LOGIN_FAILED)
+
             self.format_error("Failed to login with qr code")
             raise ValueError
         logging.info("scan qr code success")
-        # 删除QRCode文件
-        if os.path.exists(self.QR_CODE_PATH + '.jpg'):
-            os.remove(self.QR_CODE_PATH + '.jpg')
-            print("success to delete qr code")
+
         self.nickname = ret[11]
         self.req.get(url=ret[5])
         username = re.findall(r'uin=([0-9]+?)&', ret[5])[0]
@@ -169,6 +170,10 @@ class QQZoneSpider(BaseSpider):
         print("Login success,", self.username)
         return True
 
+    def remove_qr_code(self):
+        if os.path.exists(self.QR_CODE_PATH + '.jpg'):
+            os.remove(self.QR_CODE_PATH + '.jpg')
+            print("success to delete qr code")
 
     def get_cookie(self, key):
         for c in self.cookies:

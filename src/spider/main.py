@@ -33,8 +33,10 @@ def web_interface(username, nickname, stop_time, mood_num, cookie_text, no_delet
     try:
         sp.logging_info(username + "logging success")
         sp.re.rpush(WEB_SPIDER_INFO + username, "用户" + str(sp.username) + "登陆成功")
+        sp.remove_qr_code()
     except BaseException as e:
         sp.format_error(e, "logging failed")
+        sp.remove_qr_code()
         sp.re.rpush(WEB_SPIDER_INFO + username, LOGIN_FAILED)
         # 删除用户密码
         sp.re.hdel(USER_MAP_KEY, username)
