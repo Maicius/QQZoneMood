@@ -33,6 +33,7 @@ def query_spider_info(QQ, password):
             finish = LOGGING_STATE
         elif info.find(LOGIN_NOT_MATCH) != -1:
             conn.lrem(WAITING_USER_LIST, QQ)
+            conn.hdel(USER_MAP_KEY, QQ)
             finish = NOT_MATCH_STATE
         elif info.find(FRIEND_INFO_PRE) != -1:
             finish = FINISH_FRIEND
@@ -41,6 +42,8 @@ def query_spider_info(QQ, password):
             finish = SUCCESS_STATE
             mood_num = int(info.split(':')[1])
         elif info.find("失败") != -1:
+            conn.lrem(WAITING_USER_LIST, QQ)
+            conn.hdel(USER_MAP_KEY, QQ)
             finish = FAILED_STATE
             mood_num = FAILED_STATE
         result = dict(info=info, finish=finish, mood_num=mood_num, friend_num=friend_num)

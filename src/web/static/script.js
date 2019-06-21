@@ -59,7 +59,8 @@ let vm = avalon.define({
         vm.login_state = LOGIN_STATE.UNLOGIN;
         vm.agree = false;
         vm.qr_code_path = '';
-        vm.change_tip();
+        vm.query_finish_num();
+
     },
 
     query_finish_num: function () {
@@ -238,6 +239,7 @@ let vm = avalon.define({
                     vm.spider_state = SPIDER_STATE.CONFIG;
                     vm.init_parameter();
                     vm.login_state = LOGIN_STATE.LOGIN_FAIELD;
+
                     alert(data.info);
                 } else if (data.finish === INVALID_LOGIN) {
                     clearInterval(vm.query_interval);
