@@ -1,6 +1,7 @@
 import time
 import os
 import pandas as pd
+import re
 # %a 星期的简写。如 星期三为Web
 # %A 星期的全写。如 星期三为Wednesday
 # %b 月份的简写。如4月份为Apr
@@ -129,6 +130,14 @@ def format_error(e, msg=""):
     print(e)
     print(msg)
     print('ERROR===================')
+
+def date_to_millis(d):
+    return int(time.mktime(d.timetuple())) * 1000
+
+def remove_waste_emoji(text):
+    text = re.subn(re.compile('\[em\].*?\[\/em\]'), '', text)[0]
+    text = re.subn(re.compile('@\{.*?\}'), '', text)[0]
+    return text
 
 if __name__ =='__main__':
     print(get_mktime('2018-09-6'))

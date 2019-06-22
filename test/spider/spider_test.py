@@ -9,7 +9,6 @@ class SpiderTest(unittest.TestCase):
     """
     对Spider进行测试
     """
-
     def test_connect_redis(self):
         bs = BaseSpider(use_redis=True, from_web=True)
         bs.connect_redis()
@@ -39,7 +38,7 @@ class SpiderTest(unittest.TestCase):
         sp.login()
 
     def test_get_main_page(self):
-        sp = QQZoneSpider(use_redis=False, debug=False)
+        sp = QQZoneSpider(use_redis=False, debug=True)
         sp.login()
         sp.get_main_page_info()
 
@@ -87,3 +86,17 @@ class SpiderTest(unittest.TestCase):
         sp.login()
         sp.get_main_page_info()
         sp.get_mood_list()
+
+    def test_simple_qr_login(self):
+        sp = QQZoneSpider(use_redis=True, debug=True, mood_num=200)
+        sp.login_with_qr_code()
+
+    def test_login_with_qr_code(self):
+        sp = QQZoneSpider(use_redis=True, debug=True, mood_num=200)
+        sp.login_with_qr_code()
+        print("Login success")
+        sp.get_main_page_info()
+        sp.get_mood_list()
+
+if __name__ =='__main__':
+    unittest.main()

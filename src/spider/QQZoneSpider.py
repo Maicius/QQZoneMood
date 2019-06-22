@@ -3,7 +3,7 @@
 # 包括动态内容、点赞的人、评论的人、评论的话
 # 登陆使用的是Selenium， 无法识别验证码
 # 若出现验证码，则先尝试手动从浏览器登陆并退出再运行程序
-
+from requests.adapters import HTTPAdapter
 from selenium import webdriver
 import requests
 import time
@@ -12,14 +12,19 @@ import re
 import json
 import copy
 import datetime
+import random
 import logging
 from src.spider.BaseSpider import BaseSpider
 from src.util import util
-from src.util.constant import qzone_jother2
+from src.util.constant import qzone_jother2, SPIDER_USER_NUM_LIMIT, EXPIRE_TIME_IN_SECONDS, MOOD_NUM_KEY, \
+    WEB_SPIDER_INFO, GET_MAIN_PAGE_FAILED, MOOD_NUM_PRE, GET_FIRST_LOGIN_TIME, LOGIN_SUCCESS, LOGIN_FAILED, \
+    LOGIN_NOT_MATCH, FORCE_STOP_SPIDER_FLAG, FINISH_USER_NUM_KEY
 import math
 import execjs
 import threading
 from src.util.constant import FINISH_ALL_INFO, MOOD_COUNT_KEY, STOP_SPIDER_KEY, STOP_SPIDER_FLAG
+import os
+from http import cookiejar
 
 class QQZoneSpider(BaseSpider):
     def __init__(self, use_redis=False, debug=False, mood_begin=0, mood_num=-1, stop_time='-1',
@@ -33,26 +38,37 @@ class QQZoneSpider(BaseSpider):
         :param mood_begin: 开始下载的动态序号，0表示从第0条动态开始下载
         :param mood_num: 下载的动态数量，最好设置为20的倍数
         :param stop_time: 停止下载的时间，-1表示全部数据；注意，这里是倒序，比如，stop_time="2016-01-01",表示爬取当前时间到2016年1月1日前的数据
-        :param recover: 是否从redis或文件中恢复数据（主要用于爬虫意外中断之后的数据恢复）
+        :param recover: 是否从redis或文件中恢复数据（主要用于爬虫意外中断之后的数据恢复），注意，此功能在多线程中不可用
         :param download_small_image: 是否下载缩略图，仅供预览用的小图，该步骤比较耗时，QQ空间提供了3中不同尺寸的图片，这里下载的是最小尺寸的图片
         :param download_big_image: 是否下载大图，QQ空间中保存的最大的图片，该步骤比较耗时
         :param download_mood_detail:是否下载动态详情
         :param download_like_detail:是否下载点赞的详情，包括点赞数量、评论数量、浏览量，该数据未被清除
         :param download_like_names:是否下载点赞的详情，主要包含点赞的人员列表，该数据有很多都被清空了
+        :param from_web: 表示是否来自web接口，如果为True，将该请求来自web接口，则不会读取配置文件
+        :param username: 在web模式中，传递过来的用户QQ号
+        :param nickname: 在web模式中，传递过来的用户昵称
+        :param no_delete: 是否在redis中缓存数据，如果为True,则不会删除，如果为False，则设置24小时的缓存时间
+        :param pool_flag: redis的连接池host，因为docker中host与外部不同，所以在启动程序时会自动判断是不是处于docker中
         """
-        BaseSpider.__init__(self, use_redis=use_redis, debug=debug, mood_begin=mood_begin, mood_num=mood_num, stop_time=stop_time,
+        BaseSpider.__init__(self, use_redis=use_redis, debug=debug, mood_begin=mood_begin, mood_num=mood_num,
+                            stop_time=stop_time,
                             download_small_image=download_small_image, download_big_image=download_big_image,
                             download_mood_detail=download_mood_detail, download_like_detail=download_like_detail,
                             download_like_names=download_like_names, recover=recover, cookie_text=cookie_text,
-                            from_web=from_web, username=username, nickname=nickname, no_delete=no_delete, pool_flag=pool_flag)
-
+                            from_web=from_web, username=username, nickname=nickname, no_delete=no_delete,
+                            pool_flag=pool_flag)
 
         self.req = requests.Session()
-        self.cookies = {}
+        self.cookies = cookiejar.CookieJar()
+        self.req.cookies = self.cookies
+        connection_num = 20 * SPIDER_USER_NUM_LIMIT
+        # 设置连接池大小
+        self.req.mount('https://', HTTPAdapter(pool_connections=5, pool_maxsize=connection_num))
+        self.req.mount('http://', HTTPAdapter(pool_connections=5, pool_maxsize=connection_num))
         self.qzonetoken = ""
         self.g_tk = 0
-        self.init_file_name()
         self.init_parameter()
+        self.qzone_login_url = 'https://xui.ptlogin2.qq.com/cgi-bin/xlogin?proxy_url=https%3A//qzs.qq.com/qzone/v6/portal/proxy.html&daid=5&&hide_title_bar=1&low_login=0&qlogin_auto_login=1&no_verifyimg=1&link_target=blank&appid=549000912&style=22&target=self&s_url=https%3A%2F%2Fqzs.qq.com%2Fqzone%2Fv5%2Floginsucc.html%3Fpara%3Dizone&pt_qr_app=%E6%89%8B%E6%9C%BAQQ%E7%A9%BA%E9%97%B4&pt_qr_link=https%3A//z.qzone.com/download.html&self_regurl=https%3A//qzs.qq.com/qzone/v6/reg/index.html&pt_qr_help_link=https%3A//z.qzone.com/download.html&pt_no_auth=0'
 
     def login(self):
         """
@@ -70,6 +86,138 @@ class QQZoneSpider(BaseSpider):
             print("finish to calculate g_tk")
         self.headers['cookie'] = self.cookies
         self.h5_headers['cookie'] = self.cookies
+
+    def login_with_qr_code(self):
+        """
+        扫描二维码登陆
+        :return:
+        """
+        cookies = cookiejar.Cookie(version=0, name='_qz_referrer', value='qzone.qq.com', port=None, port_specified=False,
+                            domain='qq.com',
+                            domain_specified=False, domain_initial_dot=False, path='/', path_specified=True,
+                            secure=False, expires=None, discard=True, comment=None, comment_url=None,
+                            rest={'HttpOnly': None}, rfc2109=False)
+        self.cookies.set_cookie(cookies)
+        self.headers['host'] = 'ssl.ptlogin2.qq.com'
+        self.headers['referer'] = 'https://qzone.qq.com/'
+        start_time = util.date_to_millis(datetime.datetime.utcnow())
+        wait_time = 0
+        login_url = 'https://ssl.ptlogin2.qq.com/ptqrshow?appid=549000912&e=2&l=M&s=3&d=72&v=4&t=0.{0}6252926{1}2285{2}86&daid=5'.format(
+            random.randint(0, 9), random.randint(0, 9), random.randint(0, 9))
+        while wait_time < 60:
+            wait_time += 1
+            qr_res = self.req.get(url=login_url, headers=self.headers, timeout=20)
+            self.save_image_single(qr_res.content, self.QR_CODE_PATH)
+            login_sig = self.get_cookie('pt_login_sig')
+            qr_sig = self.get_cookie('qrsig')
+
+            if self.debug:
+                print("success to download qr code")
+            logging.info("success to download qr code")
+            # 如果不是从网页发来的请求，就本地展示二维码
+            if not self.from_web and wait_time <= 1:
+                self.show_image(self.QR_CODE_PATH + '.jpg')
+            elif self.from_web and wait_time <= 1:
+                self.re.lpush(WEB_SPIDER_INFO + self.username, self.random_qr_name + ".jpg")
+            while True:
+                self.headers['referer'] = self.qzone_login_url
+                res = self.req.get(
+                    'https://ssl.ptlogin2.qq.com/ptqrlogin?u1=https%3A%2F%2Fqzs.qq.com%2Fqzone%2Fv5%2Floginsucc.html%3Fpara%3Dizone&ptqrtoken={0}&ptredirect=0&h=1&t=1&g=1&from_ui=1&ptlang=2052&action=0-0-{1}&js_ver=10220&js_type=1&login_sig={2}&pt_uistyle=40&aid=549000912&daid=5&'.format(
+                        self.get_qr_token(qr_sig), util.date_to_millis(datetime.datetime.utcnow()) - start_time,
+                        login_sig), headers=self.headers)
+                content = res.content.decode("utf-8")
+
+                ret = content.split("'")
+                if ret[1] == '65':  # 65: QRCode 失效, 0: 验证成功, 66: 未失效, 67: 验证中
+                    if self.use_redis:
+                        self.re.lpush(WEB_SPIDER_INFO + self.username, LOGIN_FAILED)
+                    break
+                elif ret[1] == '0':
+                    break
+                time.sleep(2)
+            if ret[1] == '0':
+                break
+
+        # 删除QRCode文件
+        self.remove_qr_code()
+
+        # 登陆失败
+        if ret[1] != '0':
+            self.re.lpush(WEB_SPIDER_INFO + self.username, LOGIN_FAILED)
+            self.format_error("Failed to login with qr code")
+            return False
+        logging.info("scan qr code success")
+
+        self.nickname = ret[11]
+        self.req.get(url=ret[5])
+        username = re.findall(r'uin=([0-9]+?)&', ret[5])[0]
+
+        # 避免获取别人信息
+        if username != self.username:
+            self.re.lpush(WEB_SPIDER_INFO + self.username, LOGIN_NOT_MATCH)
+            self.username = username
+            return False
+
+        self.headers['host'] = 'user.qzone.qq.com'
+        print("login success")
+        skey = self.get_cookie('p_skey')
+        self.g_tk = self.get_GTK(skey)
+        self.headers['host'] = 'user.qzone.qq.com'
+        self.headers.pop('referer')
+        # self.init_user_info()
+        self.get_qzone_token()
+        if self.use_redis:
+            self.re.lpush(WEB_SPIDER_INFO + self.username, LOGIN_SUCCESS)
+        print("Login success,", self.username)
+        return True
+
+    def remove_qr_code(self):
+        if os.path.exists(self.QR_CODE_PATH + '.jpg'):
+            os.remove(self.QR_CODE_PATH + '.jpg')
+            print("success to delete qr code")
+
+    def get_cookie(self, key):
+        for c in self.cookies:
+            if c.name == key:
+                return c.value
+        return ''
+
+    def get_GTK(self, skey):
+        hash = 5381
+        for i in range(0, len(skey)):
+            hash += (hash << 5) + self.utf8_unicode(skey[i])
+        return hash & 0x7fffffff
+
+    def utf8_unicode(self, c):
+        if len(c) == 1:
+            return ord(c)
+        elif len(c) == 2:
+            n = (ord(c[0]) & 0x3f) << 6
+            n += ord(c[1]) & 0x3f
+            return n
+        elif len(c) == 3:
+            n = (ord(c[0]) & 0x1f) << 12
+            n += (ord(c[1]) & 0x3f) << 6
+            n += ord(c[2]) & 0x3f
+            return n
+        else:
+            n = (ord(c[0]) & 0x0f) << 18
+            n += (ord(c[1]) & 0x3f) << 12
+            n += (ord(c[2]) & 0x3f) << 6
+            n += ord(c[3]) & 0x3f
+            return n
+
+    def change_dict_to_cookie(self, cookie):
+        cookies = ''
+        for key, val in cookie.items():
+            cookies += key + '=' + str(val) + '; '
+        return cookies
+
+    def get_qr_token(self, qrsig):
+        e = 0
+        for i in qrsig:
+            e += (e << 5) + ord(i)
+        return 2147483647 & e
 
     # 核心加密字段
     def get_g_tk(self):
@@ -182,7 +330,8 @@ class QQZoneSpider(BaseSpider):
             # pos必须为20的倍数
             start_pos = i * step
             stop_pos = (i + 1) * step if i + 1 < self.thread_num else self.mood_num
-            t = threading.Thread(target=self.get_mood_in_range, args=(start_pos, stop_pos, recover_index_split, url_mood, True))
+            t = threading.Thread(target=self.get_mood_in_range,
+                                 args=(start_pos, stop_pos, recover_index_split, url_mood, True))
             self.thread_list.append(t)
 
         for t in self.thread_list:
@@ -194,17 +343,23 @@ class QQZoneSpider(BaseSpider):
         for t in self.thread_list:
             t.join()
 
-        # 保存所有数据到指定文件
-        print('保存最终数据中...')
-        if self.use_redis:
-            self.re.set(STOP_SPIDER_KEY + self.username, FINISH_ALL_INFO)
-        if (self.debug):
-            print('Error Unikeys Num:', len(self.error_like_detail_unikeys))
-            print('Retry to get them...')
-        self.retry_error_unikey()
-        self.save_all_data_to_json()
-        self.result_report()
-        print("finish===================")
+        # 如果不是强制停止的，就保存数据
+        force_key = self.re.get(FORCE_STOP_SPIDER_FLAG + self.username)
+        if force_key != FORCE_STOP_SPIDER_FLAG:
+            # 保存所有数据到指定文件
+            print('保存最终数据中...')
+            if self.use_redis:
+                self.re.set(STOP_SPIDER_KEY + self.username, FINISH_ALL_INFO)
+            if (self.debug):
+                print('Error Unikeys Num:', len(self.error_like_detail_unikeys))
+                print('Retry to get them...')
+            self.retry_error_unikey()
+            self.save_all_data_to_json()
+            self.result_report()
+            print("finish===================")
+        else:
+            self.re.delete(FORCE_STOP_SPIDER_FLAG + self.username)
+
 
     def find_best_step(self, mood_num, thread_num):
         step = int(mood_num / thread_num // 20 * 20)
@@ -237,14 +392,17 @@ class QQZoneSpider(BaseSpider):
                     # 获取数据
                     until_stop_time = self.do_get_infos(unikeys, until_stop_time)
                     if self.use_redis:
-                        until_stop_time = False if self.re.get(STOP_SPIDER_KEY+ str(self.username)) == STOP_SPIDER_FLAG else True
+                        until_stop_time = False if self.re.get(
+                            STOP_SPIDER_KEY + str(self.username)) == STOP_SPIDER_FLAG else True
                 pos += 20
                 # 每抓100条保存一次数据
                 if pos % 100 == 0 and self.use_redis:
-                    self.save_data_to_redis(final_result=False)
+                    force_key = self.re.get(FORCE_STOP_SPIDER_FLAG + self.username)
+                    if force_key != FORCE_STOP_SPIDER_FLAG:
+                        self.save_data_to_redis(final_result=False)
             except BaseException as e:
                 print("ERROR===================")
-                logging.error('位置错误')
+                logging.error('wrong place')
                 logging.error(e)
                 print("因错误导致爬虫终止....现在临时保存数据")
                 self.save_all_data_to_json()
@@ -253,6 +411,7 @@ class QQZoneSpider(BaseSpider):
                 print("ERROR===================")
                 # raise e
         pass
+
     # 构造点赞的人的URL
     def get_aggree_url(self, unikey):
         url = 'https://user.qzone.qq.com/proxy/domain/users.qzone.qq.com/cgi-bin/likes/get_like_list_app?'
@@ -311,18 +470,18 @@ class QQZoneSpider(BaseSpider):
     def get_cmt_detail_url(self, start, top_id):
         url = 'https://h5.qzone.qq.com/proxy/domain/taotao.qzone.qq.com/cgi-bin/emotion_cgi_getcmtreply_v6?'
         params = {
-            'format':'jsonp',
-            'g_tk':self.g_tk,
-            'hostUin':self.username,
-            'inCharset':'',
-            'need_private_comment':1,
-            'num':20,
-            'order':0,
-            'outCharset':'',
-            'qzonetoken':'',
-            'random':'',
-            'ref':'',
-            'start':start,
+            'format': 'jsonp',
+            'g_tk': self.g_tk,
+            'hostUin': self.username,
+            'inCharset': '',
+            'need_private_comment': 1,
+            'num': 20,
+            'order': 0,
+            'outCharset': '',
+            'qzonetoken': '',
+            'random': '',
+            'ref': '',
+            'start': start,
             'topicId': top_id,
             'uin': self.raw_username
         }
@@ -335,7 +494,8 @@ class QQZoneSpider(BaseSpider):
         like_url = self.get_like_detail_url(unikeys)
         if unikeys != '':
             try:
-                like_content = json.loads(self.get_json(self.req.get(like_url, headers=self.headers, timeout=20).content.decode('utf-8')))
+                like_content = json.loads(
+                    self.get_json(self.req.get(like_url, headers=self.headers, timeout=20).content.decode('utf-8')))
                 # like_content是所有的点赞信息，其中like字段为点赞数目，list是点赞的人列表，有的数据中list为空
                 like_content['tid'] = tid
                 return like_content
@@ -343,7 +503,8 @@ class QQZoneSpider(BaseSpider):
                 # 因为这里错误较多，所以进行一次retry，如果不行则保留unikey
                 self.format_error(e, 'Retry to get like_url:' + unikeys)
                 try:
-                    like_content = json.loads(self.get_json(self.req.get(like_url, headers=self.headers, timeout=20).content.decode('utf-8')))
+                    like_content = json.loads(
+                        self.get_json(self.req.get(like_url, headers=self.headers, timeout=20).content.decode('utf-8')))
                     like_content['tid'] = tid
                     return like_content
                 except BaseException as e:
@@ -374,7 +535,7 @@ class QQZoneSpider(BaseSpider):
             self.user_info.first_mood_time = last_mood['createTime']
 
         except BaseException as e:
-            self.format_error(e, "获取第一次发表动态时间出错")
+            self.format_error(e, "Failed to get first send mood time")
 
     # 评论数量超过20的说说需要再循环爬取
     def get_all_cmt_num(self, cmt_num, tid):
@@ -590,7 +751,7 @@ class QQZoneSpider(BaseSpider):
             "uin": self.raw_username,
             "g_tk": self.g_tk,
             "param": "3_" + self.raw_username + "_0|8_8_" + self.raw_username + "_0_1_0_0_1|16",
-            "qzonetoken":""
+            "qzonetoken": self.qzonetoken
         }
         url = base_url + parse.urlencode(params)
 
@@ -599,7 +760,7 @@ class QQZoneSpider(BaseSpider):
             "uin": self.raw_username,
             "g_tk": self.g_tk,
             "login_uin": self.raw_username,
-            "rd":'',
+            "rd": '',
             "num": 3,
             "noflower": 1,
             "qzonetoken": self.qzonetoken
@@ -621,14 +782,23 @@ class QQZoneSpider(BaseSpider):
             self.user_info.photo_num = data['XC']
             self.user_info.rz_num = data['RZ']
             self.mood_num = self.user_info.mood_num if self.mood_num == -1 else self.mood_num
+            if self.use_redis:
+                self.re.set(MOOD_NUM_KEY + self.username, self.mood_num)
+                self.re.rpush(WEB_SPIDER_INFO + self.username, "获取主页信息成功")
+                self.re.rpush(WEB_SPIDER_INFO + self.username, MOOD_NUM_PRE + ":" + str(self.mood_num))
+                if not self.no_delete:
+                    self.re.expire(MOOD_NUM_KEY + self.username, EXPIRE_TIME_IN_SECONDS)
 
             if self.debug:
                 print(self.user_info.mood_num)
                 print("Finish to get main page info")
+
         except BaseException as e:
-            self.format_error(e, "获取主页信息失败")
+            self.format_error(e, "Failed to get main page info")
+            if self.use_redis:
+                self.re.rpush(WEB_SPIDER_INFO + self.username, GET_MAIN_PAGE_FAILED)
         try:
-            self.headers['referer'] = 'https://user.qzone.qq.com/1272082503/main'
+            self.headers['referer'] = 'https://user.qzone.qq.com/' + self.raw_username + '/main'
             res = self.req.get(url=url2, headers=self.headers)
             if self.debug:
                 print("获取登陆时间状态:", res.status_code)
@@ -643,45 +813,24 @@ class QQZoneSpider(BaseSpider):
                 print("Finish to get first time")
             print("Success to Get Main Page Info!")
         except BaseException as e:
-            self.format_error(e, "获取第一次登陆时间失败")
+            self.format_error(e, "Failed to get first login time")
+            if self.use_redis:
+                self.re.rpush(WEB_SPIDER_INFO + self.username, GET_FIRST_LOGIN_TIME)
 
     def calculate_qzone_token(self):
         ctx = execjs.compile(
-            '''function qzonetoken(){ location = 'http://user.qzone.qq.com/%s'; return %s}''' % (self.raw_username, qzone_jother2))
+            '''function qzonetoken(){ location = 'http://user.qzone.qq.com/%s'; return %s}''' % (
+                self.raw_username, qzone_jother2))
         return ctx.call("qzonetoken")
 
     def get_qzone_token(self):
         url = 'https://user.qzone.qq.com/' + self.raw_username + '/main'
         if self.debug:
             print(url)
-        res = self.req.get(url=url, headers=self.headers)
+        res = self.req.get(url=url, headers=self.headers, timeout=20)
         if self.debug:
             print("qzone token main page:", res.status_code)
         content = res.content.decode("utf-8")
         qzonetoken = re.findall(re.compile("g_qzonetoken = \(function\(\)\{ try\{return \"(.*)?\""), content)[0]
         self.qzonetoken = qzonetoken
         print("qzone_token:", qzonetoken)
-
-    def download_image(self, url, name):
-        image_url = url
-        try:
-            r = self.req.get(url=image_url, headers=self.headers, timeout=20)
-            image_content = r.content
-            # 异步保存图片，提高效率
-            # t = threading.Thread(target=self.save_image_concurrent, args=(image_content, name))
-            # t.start()
-            thread = self.image_thread_pool.get_thread()
-            t = thread(target=self.save_image_concurrent, args=(image_content, name))
-            t.start()
-            # t = self.image_thread_pool2.submit(self.save_image_concurrent, (image_content, name))
-        except BaseException as e:
-            self.format_error(e, 'Failed to download image:' + name)
-
-    def save_image_concurrent(self, image, name):
-        try:
-            file_image = open(name + '.jpg', 'wb+')
-            file_image.write(image)
-            file_image.close()
-            self.image_thread_pool.add_thread()
-        except BaseException as e:
-            self.format_error(e, "Failed to save image:" + name)

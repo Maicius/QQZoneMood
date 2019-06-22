@@ -1,3 +1,4 @@
+from src.util.check_redis import CheckUser
 from src.util.constant import *
 import redis
 import hashlib
@@ -6,7 +7,7 @@ import os
 curPath = os.path.abspath(os.path.dirname(__file__))
 rootPath = os.path.split(curPath)[0]
 sys.path.append(os.path.split(rootPath)[0])
-
+import time
 # 共享redis连接池
 def connect_redis():
     pool = redis.ConnectionPool(host=REDIS_HOST, port=6379, decode_responses=True)
@@ -40,13 +41,12 @@ def get_docker_pool():
         print(e)
 
 def get_redis_conn(pool_flag):
-
     if pool_flag == REDIS_HOST:
         pool = get_pool()
         conn = redis.Redis(connection_pool=pool)
         return conn
 
-    elif pool_flag == REDIS_HOST_DOCKER:
+    else:
         docker_pool = get_docker_pool()
         conn = redis.Redis(connection_pool=docker_pool)
         return conn
@@ -58,7 +58,7 @@ def judge_pool():
         conn = redis.Redis(connection_pool=pool)
         conn.set('redis_success', 1)
         return REDIS_HOST
-    except BaseException as e:
+    except BaseException:
         try:
             docker_pool = get_docker_pool()
             conn = redis.Redis(connection_pool=docker_pool)
@@ -69,7 +69,6 @@ def judge_pool():
             raise e
 
 def init_redis_key(conn, qq):
-
     if conn:
         conn.delete(WEB_SPIDER_INFO + qq)
         conn.set(MOOD_COUNT_KEY + qq, 0)
@@ -78,15 +77,23 @@ def init_redis_key(conn, qq):
         conn.set(CLEAN_DATA_KEY + qq, 0)
         conn.set(FRIEND_INFO_COUNT_KEY + qq, 0)
         conn.set(MOOD_FINISH_KEY + qq, 0)
+        conn.set(FORCE_STOP_SPIDER_FLAG + qq, 0)
         return 1
     else:
         return 0
 
 
 def check_password(conn, QQ, password):
-    redis_pass = conn.hget(USER_MAP_KEY, QQ)
+    if conn is not None:
+        redis_pass = conn.hget(USER_MAP_KEY, QQ)
+    else:
+        host = judge_pool()
+        conn = get_redis_conn(host)
+        redis_pass = conn.hget(USER_MAP_KEY, QQ)
     password = md5_password(password)
     return redis_pass == password
+
+
 
 def md5_password(password):
     md5 = hashlib.md5()
@@ -99,3 +106,11 @@ def check_waiting(conn, QQ):
         conn.rpush(WAITING_USER_LIST, QQ)
     else:
         conn.rpush(SPIDERING_USER_LIST, QQ)
+
+def begin_check_redis():
+    host = judge_pool()
+    cu = CheckUser(host)
+    print("begin to check:", host)
+    while True:
+        cu.check_exist()
+        time.sleep(60)

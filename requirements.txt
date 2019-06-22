@@ -6,13 +6,13 @@ jieba
 lxml
 matplotlib
 pandas
-redis
+redis == 2.10.5
 requests
 schedule
 selenium
 sha1
-wordcloud
+wordcloud == 1.3.1
 pyExecjs
 Flask
-scipy
+scipy == 0.19.1
 openpyxl

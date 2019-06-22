@@ -13,9 +13,11 @@
 <div class="wrapper">
     <nav class="navbar navbar-dark bg-dark">
         <a class="navbar-brand" href="#">QQ空间数据分析</a>
+        <a class="navbar-brand" href="http://www.xiaomaidong.com">小麦冬</a>
     </nav>
     <div ms-visible="@view_data_state == 0">
         <div class="main_container col-lg-8 col-md-12">
+
             <form>
                 <div class="form-group row">
                     <div class="col-lg-6 col-md-12 row my_form">
@@ -29,49 +31,49 @@
                                ms-duplex="@qq_id">
                     </div>
                 </div>
-                <div class="form-group row">
-                    <div class="col-lg-6 col-md-12 row my_form">
-                        <label for="stop_num" class="col-lg-3 col-md-3 label_text"
-                               title="爬取动态的数量，如果值为-1表示爬取全部动态">停止数量</label>
-                        <input type="text" class="form-control col-lg-8 col-md-12" id="stop_num"
-                               title="爬取动态的数量，如果值为-1表示爬取全部动态" placeholder="-1" ms-duplex="@stop_num">
-                    </div>
-                    <div class="col-lg-6 col-md-12 row my_form">
-                        <label for="stop_date" class="col-lg-3 col-md-3 label_text"
-                               title="只会爬取停止日期前的动态,如2014-01-01，如果值为-1则表示爬取全部动态">停止日期</label>
-                        <input type="text" class="form-control col-lg-8 col-md-12" id="stop_date" ms-duplex="@stop_date"
-                               placeholder="2010-01-01" title="只会爬取停止日期前的动态，如果值为-1则表示爬取全部动态">
-                    </div>
-                </div>
+                {#                <div class="form-group row">#}
+                {#                    <div class="col-lg-6 col-md-12 row my_form">#}
+                {#                        <label for="stop_num" class="col-lg-3 col-md-3 label_text"#}
+                {#                               title="爬取动态的数量，如果值为-1表示爬取全部动态">停止数量</label>#}
+                {#                        <input type="text" class="form-control col-lg-8 col-md-12" id="stop_num"#}
+                {#                               title="爬取动态的数量，如果值为-1表示爬取全部动态" placeholder="-1" ms-duplex="@stop_num">#}
+                {#                    </div>#}
+                {#                    <div class="col-lg-6 col-md-12 row my_form">#}
+                {#                        <label for="stop_date" class="col-lg-3 col-md-3 label_text"#}
+                {#                               title="只会爬取停止日期前的动态,如2014-01-01，如果值为-1则表示爬取全部动态">停止日期</label>#}
+                {#                        <input type="text" class="form-control col-lg-8 col-md-12" id="stop_date" ms-duplex="@stop_date"#}
+                {#                               placeholder="2010-01-01" title="只会爬取停止日期前的动态，如果值为-1则表示爬取全部动态">#}
+                {#                    </div>#}
+                {#                </div>#}
                 <div class="form-group row">
                     <div class="col-lg-6 col-md-12 row my_form">
                         <label for="password" class="col-lg-3 col-md-3 label_text"
-                               title="只会爬取停止日期前的动态,如2014-01-01，如果值为-1则表示爬取全部动态">识别码</label>
+                               title="用于获取数据结果的校验码，不是QQ密码">校验码</label>
                         <input type="text" class="form-control col-lg-8 col-md-12" id="password" ms-duplex="@password"
-                               placeholder="用于获取数据结果的识别码，不是QQ密码！！！" title="用于获取数据结果的识别码，不是QQ密码">
+                               placeholder="设置您在本站的密码！请不要与QQ密码相同！！！" title="用于获取数据结果的校验码，不是QQ密码">
                     </div>
                 </div>
-                <div class="form-group">
-                    <label for="cookie">Cookie</label>
-
-                    <textarea class="form-control col-md-12 col-lg-8" id="cookie" rows="8" style="margin: 20px auto"
-                              placeholder="请在网页上登陆QQ空间并复制cookie到此处" ms-duplex="@qq_cookie"></textarea>
-                    <a href="#">cookie是什么？怎么获取cookie？</a>
+                <div :class="['card', 'col-lg-4', 'col-md-10', 'my_card']">
+                    <div class="card-body">
+                        <p class="card-text">本站已成功帮助{$finish_user_num$}位用户获取数据</p>
+                        <p class="card-text">当前使用爬虫人数: {$waiting_user_num$}</p>
+                    </div>
                 </div>
                 <div :class="['card', 'col-lg-8', 'col-md-12', 'my_card']" ms-visible="@spider_state == 0">
                     <div class="card-body">
                         <h5 class="card-title">用户须知</h5>
                         <h6 class="card-subtitle mb-2 text-muted">请务必完整的阅读</h6>
                         <p class="card-text">此程序为QQ空间爬虫</p>
-                        <p class="card-text">程序会根据输入的QQ号和cookie自动获取用户的QQ空间里的内容</p>
-                        <p class="card-text">可以对QQ空间的数据进行备份和可视化</p>
+                        <p class="card-text">可以用于对QQ空间的数据进行备份和可视化</p>
+                        <p class="card-text">点击下方开始获取后扫码登陆QQ空间即可开始运行</p>
                         <a class="card-text" href="https://github.com/Maicius/QQZoneMood/blob/master/README.md"
                            target="_blank">点此查看具体功能</a>
                         <p class="card-text danger">因涉及大量数据分析，所有数据不得不缓存在服务器上！！！</p>
-                        <p class="card-text danger">缓存时间为24小时(24小时后会自动删除)</p>
-                        <p class="card-text">24小时内您可以根据QQ号和识别码访问本站数据</p>
+                        <p class="card-text danger">缓存时间为24小时</p>
+                        <p class="card-text">24小时内您可以根据QQ号和校验码直接访问缓存数据</p>
                         <p class="card-text danger">开发者只能保证不会滥用数据，但无法保证网站不会被攻击</p>
                         <p class="card-text danger">所以为避免造成隐私泄漏，普通用户请在离开网页时点击下方清除缓存！！！</p>
+                        <p class="card-text">为保证程序正常运行，只允许最多2位用户同时使用爬虫</p>
                         <p class="card-text">受限于网络带宽和服务器，许多功能并未开放</p>
                         <p class="card-text">开发者可以自行运行项目源代码</p>
                         <a href="https://github.com/Maicius/QQZoneMood" class="card-link" target="_blank">开源项目地址</a>
@@ -86,48 +88,75 @@
                            disabled="disabled">
                     <label class="form-check-label" for="no_delete">数据永久存储(开发者选项，普通用户勿选)</label>
                 </div>
-                <button type="button" class="btn btn-primary" :click="@submit_data()" disabled="disabled"
-                        id="start_get">
-                    开始获取
-                </button>
-                <button type="button" class="btn btn-danger" :click="@clear_cache()" id="delete_cache"
-                        style="margin-left: 10px">清除缓存
-                </button>
-                <button type="button" class="btn btn-primary" :click="@view_data()" id="view_data" title="查看数据"
-                        style="margin-left: 10px">
-                    查看数据
-                </button>
-            </form>
+                <div ms-visible="@login_state == 1" class="col-md-12 col-lg-8 qr_container">
+                    <p style="color:red">用手机QQ扫描该二维码即可登陆QQ空间</p>
+                    <p style="color:red">谨慎！存在一定的隐私泄漏风险！！！</p>
+                    <div class="form-group form-control"
+                         id="qr_container">
 
-            <div class="spider_phase" ms-visible="@spider_state != 0">
+                    </div>
+                </div>
+
+                <div class="btn btn-group" style="margin: 20px auto">
+                    <button type="button" class="btn btn-primary col-xs-5" :click="@submit_data()" disabled="disabled"
+                            id="start_get">
+                        开始获取
+                    </button>
+                    <button type="button" class="btn btn-danger col-xs-5" :click="@clear_cache()" id="delete_cache"
+                            style="margin-left: 10px">清除缓存
+                    </button>
+                    <button type="button" class="btn btn-primary col-xs-12" :click="@view_data()" id="view_data"
+                            title="查看数据"
+                            style="margin-left: 10px">
+                        查看数据
+                    </button>
+                </div>
+            </form>
+            <div class="spider_phase" ms-visible="@login_state > 1">
                 <div class="my_process col-lg-8 col-md-12">
                     <!--ms-for: info in @spider_info-->
                     <p>{$info$}</p>
                     <!--ms-for-end:-->
-                    <H4>{$spider_text$}{$spider_num$} / {$true_mood_num$}</H4>
+                    <p style="font-size: 18px">{$spider_text$}{$spider_num$} / {$true_mood_num$}</p>
                     <div class="progress">
                         <div :class="['progress-bar',(@spider_state == 1 ? ('progress-bar-animated', 'progress-bar-striped'): 'bg-success')]"
                              role="progressbar"
                              aria-valuemin="0" aria-valuemax="100" :css="{width: @process_width}">
                         </div>
                     </div>
-                    <H4 style="margin-top:20px">{$friend_info_spider_text$}{$spider_friend_num$} / {$all_friend_num$}</H4>
+                    <p style="margin-top:20px; font-size: 18px">{$friend_info_spider_text$}{$spider_friend_num$} /
+                        {$all_friend_num$}</p>
                     <div class="progress">
                         <div :class="['progress-bar',(@spider_state == 1 ? ('progress-bar-animated', 'progress-bar-striped'): 'bg-success')]"
                              role="progressbar"
                              aria-valuemin="0" aria-valuemax="100" :css="{width: @friend_process_width}">
                         </div>
                     </div>
+                    <div :class="['card', 'col-lg-6', 'col-md-10', 'tip_card']">
+                        <div class="card-body">
+                            <h5 class="card-title">小提示</h5>
+                            <p class="card-text">{$warm_tip.one$}</p>
+                            <p class="card-text">{$warm_tip.second$}</p>
+                        </div>
+                    </div>
+                    <p style="margin-top: 10px"></p>
+                    <p></p>
                 </div>
                 <button type="button" class="btn btn-primary" :click="@stop_spider()" id="stop_spider"
                         title="立即停止爬虫并保存数据"
                         ms-visible="@spider_state==1">
                     停止
                 </button>
+                <button type="button" class="btn btn-danger" :click="@force_stop_spider()" id="stop_spider"
+                        title="立即停止爬虫并保存数据"
+                        ms-visible="@spider_state==1" style="margin-left: 10px;">
+                    强制停止
+                </button>
             </div>
             <div class="spider_finish" ms-visible="@spider_state == 2">
                 <div class="col-lg-8 col-md-12" style="margin: 20px auto 50px auto">
-                    <p style="text-align: center">{$clean_data_text$}</p>
+                    <p ms-visible="@data_state == 0"> {$clean_data_text$}</p>
+                    <a href="javascript:void(0);" :click="@view_data()" :visible="@data_state == 1">点击此处查看数据分析结果</a>
                 </div>
             </div>
         </div>
@@ -137,32 +166,51 @@
             <div class="welcome">
                 <p>Hello, {$user.nickname$}</p>
                 <p>{$user.first_time$}, 你第一次登陆了QQ空间</p>
-                <p>{$user.first_mood_time$}, 你发表了第一条动态</p>
+                <p ms-visible="@user.first_mood_time !== ''">{$user.first_mood_time$}, 你发表了第一条动态</p>
                 <p>{$user.years$}年来，你一共写了{$user.mood_num$}条说说，并上传了{$user.photo_num$}张照片</p>
-                <p>{$user.most_date$}似乎是对你很重要的一天，因为这天你收获了好友们最多的祝福</p>
+                <p ms-visible="@user.most_date !== ''">{$user.most_date$}似乎是对你很重要的一天，因为这天你收获了好友们最多的祝福</p>
                 <p ms-visible="@user.is_night > 0">你是一个夜猫子，经常在深夜发说说</p>
-                <p>你在{$user.first_friend_time$}添加了第一位好友<i class="highlight-keyword">{$user.first_friend$}</i></p>
+                <p ms-visible="@user.first_friend_time !== ''">你在{$user.first_friend_time$}添加了第一位好友<i
+                        class="highlight-keyword">{$user.first_friend$}</i></p>
                 <p>至今已拥有{$user.friend_num$}位好友</p>
-                <p ms-visible="@user.single_friend > 0">然而其中{$user.single_friend$}位是单向好友</p>
-                <p>好友中给你点赞最多的是<i class="highlight-keyword">{$user.like_friend_name$}</i>，给你评论最多的是<i
+                <p ms-visible="@user.single_friend > 0">
+                    其中{$user.most_friend$}和你拥有最多的共同好友，{$user.most_common_friend_num$}位</p>
+                <p ms-visible="@user.most_group_member > 0">
+                    {$user.most_group$}一定对您很重要吧，您一共在这结识了{$user.most_group_member$}位好友</p>
+                <p ms-visible="@user.like_friend_name !== ''">好友中给你点赞最多的是<i class="highlight-keyword">{$user.like_friend_name$}</i>，给你评论最多的是<i
                         class="highlight-keyword">{$user.cmt_friend_name$}</i></p>
             </div>
-            <div class="large_dom" id="history_dom">
+            <div class="large_dom" id="history_dom" ms-visible="@user.most_date !== ''">
                 hello
             </div>
-            <div class="btn-group row" style="margin-top: 20px">
-                <a class="btn btn-primary" :attr="{href:'/data/download_file/' + @qq_id + '/' + @encrypt() + '/' + 'mood'}"
+            <p ms-visible="@user.like_friend_name !== ''">下面是经常给您点赞的好友</p>
+            <div class="cloud_img col-lg-5 col-md-12" id="cmt_cloud_img" ms-visible="@user.like_friend_name !== ''">
+
+            </div>
+            <p ms-visible="@user.cmt_friend_name !== ''">下面是经常给您评论的好友</p>
+            <div class="cloud_img col-lg-5 col-md-12" id="like_cloud_img" ms-visible="@user.cmt_friend_name !== ''">
+
+                {#            </div>#}
+                {#            <div class="cloud_img col-lg-5 col-md-12" id="content_cloud_img">#}
+                {#                <h4>下面是您说说的关键词</h4>#}
+                {#            </div>#}
+            </div>
+            <div class="download_button">
+                <a class="btn btn-primary col-md-8 download_button"
+                   :attr="{href:'/data/download_file/' + @qq_id + '/' + @encrypt() + '/' + 'mood'}"
                    id="download_excel"
-                   title="下载数据">
+                   title="下载数据" ms-visible="@user.most_date !== ''">
                     下载说说数据(Excel)
                 </a>
-                <a class="btn btn-primary" :attr="{href:'/data/download_file/' + @qq_id + '/' + @encrypt() + '/' + 'friend'}"
+                <a class="btn btn-primary col-md-8 download_button"
+                   :attr="{href:'/data/download_file/' + @qq_id + '/' + @encrypt() + '/' + 'friend'}"
                    id="download_friend"
-                   title="下载数据" style="margin-left: 20px;color: white; cursor: pointer">
+                   title="下载数据" style="color: white; cursor: pointer" ms-visible="@user.first_friend_time !== ''">
                     下载好友数据(Excel)
                 </a>
-                <a class="btn btn-primary btn_href" :click="@return_config()" id="return_config"
-                   title="返回配置" style="margin-left: 20px;color: white; cursor: pointer">
+                <a class="btn btn-primary btn_href col-md-8 download_button" :click="@return_config()"
+                   id="return_config"
+                   title="返回配置" style="color: white; cursor: pointer">
                     返回配置
                 </a>
             </div>

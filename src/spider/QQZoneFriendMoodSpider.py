@@ -1,22 +1,28 @@
-from src.spider.QQZoneSpider import QQZoneSpider
+from src.spider.QQZoneFriendSpider import QQZoneFriendSpider
 import json
 from urllib import parse
 from src.util.constant import BASE_DIR
+from copy import deepcopy
 
-class QQZoneFriendMoodSpider(QQZoneSpider):
+class QQZoneFriendMoodSpider(QQZoneFriendSpider):
     """
     爬取指定好友的动态
     """
-    def __init__(self, use_redis=False, debug=False, mood_begin=0, mood_num=-1, stop_time='-1',
+    def __init__(self, use_redis=False, debug=False, analysis=True, recover=False,
+                 username='', mood_begin=0, mood_num=-1, stop_time='-1', from_web=False, nickname='', no_delete=True, cookie_text='',
+                 export_excel=False, export_csv = True, pool_flag='127.0.0.1',
                  download_small_image=False, download_big_image=False,
-                 download_mood_detail=True, download_like_detail=True, download_like_names=True, recover=False):
-        QQZoneSpider.__init__(self, use_redis=use_redis, debug=debug,
-                              mood_begin=mood_begin, mood_num=mood_num, stop_time=stop_time,
+                 download_mood_detail=True, download_like_detail=True, download_like_names=True):
+        QQZoneFriendSpider.__init__(self, use_redis=use_redis, debug=debug, username=username, export_csv=export_csv,
+                              mood_begin=mood_begin, mood_num=mood_num, stop_time=stop_time, from_web=from_web,
                               download_small_image=download_small_image, download_big_image=download_big_image,
                               download_mood_detail=download_mood_detail, download_like_detail=download_like_detail,
-                              download_like_names=download_like_names,
-                              recover=recover)
-        self.friend_name_list = self.get_friend_username()
+                              download_like_names=download_like_names, nickname=nickname, no_delete=no_delete, cookie_text=cookie_text,
+                              recover=recover, export_excel=export_excel, pool_flag=pool_flag, analysis=analysis)
+        if not self.from_web:
+            self.friend_name_list = self.get_friend_username()
+        else:
+            self.friend_name_list = []
         self.base_dir = ''
 
     def get_friend_username(self):
@@ -26,15 +32,17 @@ class QQZoneFriendMoodSpider(QQZoneSpider):
                 friend_info = json.load(r)
             return friend_info
         except BaseException as e:
-            self.format_error(e, "friend_info.json文件不存在或格式错误，请按照friend_info.json.example文件进行修改")
+            self.format_error(e, "friend_info.json does not exist!")
             exit(1)
 
-    def change_username(self, friend_name):
-        self.username = friend_name['friend_name']
+    def change_username(self, friend_qq, nick_name):
+        self.username = friend_qq
+        self.nickname = nick_name
         self.mood_host = self.http_host + '/' + self.username + '/mood/'
+        self.init_file_name()
+        self.init_parameter()
 
-
-    # 构造点赞的人的URL
+    # 构造点赞的人的URL，好友的点赞url与自己的url不一样
     def get_aggree_url(self, unikey):
         url = 'https://user.qzone.qq.com/proxy/domain/users.qzone.qq.com/cgi-bin/likes/get_like_list_app?'
         params = {
@@ -48,11 +56,23 @@ class QQZoneFriendMoodSpider(QQZoneSpider):
         url = url + parse.urlencode(params)
         return url
 
-    def get_friend_mood(self):
-        self.login()
-        for name in self.friend_name_list:
-            print("begin to capture:", name['friend_name'])
-            self.change_username(name)
+    def get_friend_mood(self, friend_qq='', nick_name='佚名', mood_num = -1):
+        """
+        获取好友动态
+        :param friend_qq:
+        :param nick_name:
+        :return:
+        """
+        if self.g_tk == 0:
+            self.login()
+        if friend_qq != '':
+            print("因传入参数不为空，所以舍弃配置文件friend_info.json的内容")
+            self.friend_name_list.clear()
+            self.friend_name_list.append(dict(friend_qq=friend_qq, nick_name=nick_name))
+        for friend in self.friend_name_list:
+            self.mood_num = mood_num
+            print("begin to capture:", friend['friend_qq'])
+            self.change_username(friend['friend_qq'], friend['nick_name'])
             # 重新初始化参数
             self.init_parameter()
 
@@ -60,6 +80,16 @@ class QQZoneFriendMoodSpider(QQZoneSpider):
 
             self.get_mood_list()
 
+    def reset_username(self):
+        """
+        重置用户名昵称和文件名
+        :return:
+        """
+        self.username = deepcopy(self.raw_username)
+        self.nickname = deepcopy(self.raw_nickname)
+        self.mood_host = self.http_host + '/' + self.username + '/mood/'
+        self.init_file_name()
+        self.init_parameter()
 
 if __name__ == '__main__':
     qqfriend = QQZoneFriendMoodSpider(use_redis=True, debug=False, mood_begin=0, mood_num=500,

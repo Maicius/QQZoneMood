@@ -5,47 +5,31 @@ import jieba
 from wordcloud import WordCloud, ImageColorGenerator, STOPWORDS
 from scipy.misc import imread
 import matplotlib.pyplot as plt
-from src.spider.QQZoneFriendSpider import QQZoneFriendSpider
+from src.spider.QQZoneFriendMoodSpider import QQZoneFriendMoodSpider
 from src.analysis.Average import Average
-from src.util.constant import BASE_DIR
-from src.util.util import get_standard_time_from_mktime2,check_dir_exist
+from src.util.constant import BASE_DIR, SYSTEM_FONT, EXPIRE_TIME_IN_SECONDS
+from src.util.util import get_standard_time_from_mktime2
 
 
-class QQZoneAnalysis(QQZoneFriendSpider):
+class QQZoneAnalysis(QQZoneFriendMoodSpider):
     def __init__(self, use_redis=False, debug=False, username='', analysis_friend=False, mood_begin=0, mood_num=-1,
-                 stop_time='-1', from_web=False, nickname='', no_delete=True, cookie_text='', pool_flag='127.0.0.1'):
+                 stop_time='-1', from_web=False, nickname='', no_delete=True, cookie_text='', pool_flag='127.0.0.1', exprot_excel=True, export_csv=False):
 
-        QQZoneFriendSpider.__init__(self, use_redis, debug, recover=False, username=username, mood_num=mood_num,
+        QQZoneFriendMoodSpider.__init__(self, use_redis=use_redis, debug=debug, recover=False, username=username, mood_num=mood_num,
                               mood_begin=mood_begin, stop_time=stop_time, from_web=from_web, nickname=nickname,
-                              no_delete=no_delete, cookie_text=cookie_text, analysis=True, export_excel=True, export_csv=False, pool_flag=pool_flag)
+                              no_delete=no_delete, cookie_text=cookie_text, analysis=True, export_excel=exprot_excel, export_csv=export_csv, pool_flag=pool_flag)
         self.mood_data = []
         self.mood_data_df = pd.DataFrame()
         self.like_detail_df = []
         self.like_list_names_df = []
         self.analysis_friend = analysis_friend
         self.has_clean_data = False
-        self.friend_dir = BASE_DIR + self.username + '/friend/' + 'friend_detail_list.csv'
-        self.history_like_agree_file_name = BASE_DIR +  self.username + '/friend/' + 'history_like_list.json'
 
         self.av = Average(use_redis=False, file_name_head=username, analysis=True, debug=debug)
-        self.init_analysis_path()
 
-    def init_analysis_path(self):
-        RESULT_BASE_DIR = self.USER_BASE_DIR + "data/result/"
+        # 用于绘制词云图的字体，请更改为自己电脑上任意一款支持中文的字体，否则将无法显示中文
+        self.system_font = SYSTEM_FONT
 
-        self.MOOD_DATA_FILE_NAME = RESULT_BASE_DIR + 'mood_data.csv'
-        self.MOOD_DATA_EXCEL_FILE_NAME = RESULT_BASE_DIR + 'mood_data.xlsx'
-
-        LABEL_BASE_DIR = self.USER_BASE_DIR + "data/label/"
-        self.LABEL_FILE_CSV = LABEL_BASE_DIR + 'label_data.csv'
-        self.LABEL_FILE_EXCEL = LABEL_BASE_DIR + 'label_data.xlsx'
-
-        self.label_path = self.USER_BASE_DIR + 'data/label/'
-        self.image_path = self.USER_BASE_DIR + 'image/'
-        check_dir_exist(RESULT_BASE_DIR)
-        check_dir_exist(LABEL_BASE_DIR)
-        check_dir_exist(self.label_path)
-        check_dir_exist(self.image_path)
 
     def load_file_from_redis(self):
         self.do_recover_from_exist_data()
@@ -90,6 +74,10 @@ class QQZoneAnalysis(QQZoneFriendSpider):
         mood_data_df = pd.DataFrame(self.mood_data)
         like_detail_df = pd.DataFrame(self.like_detail_df)
         like_list_df = pd.DataFrame(self.like_list_names_df)
+        if mood_data_df.empty:
+            self.has_clean_data = True
+            print("该用户没有数据")
+            return
         data_df = pd.merge(left=mood_data_df, right=like_detail_df, how='inner', left_on='tid', right_on='tid')
         data_df = pd.merge(left=data_df, right=like_list_df, how='inner', left_on='tid', right_on='tid')
 
@@ -284,14 +272,22 @@ class QQZoneAnalysis(QQZoneFriendSpider):
             self.format_error(e, "Error in parse like names")
             self.like_list_names_df.append(dict(total_num=0, uin_list=[], tid=like['tid']))
 
-    def drawWordCloud(self, word_text, filename, dict_type=False):
-        mask = imread(BASE_DIR + 'image/tom2.jpeg')
+    def drawWordCloud(self, word_text, filename, dict_type=False, background_image='image/tom2.jpeg'):
+        """
+
+        :param word_text:
+        :param filename:
+        :param dict_type:
+        :param background_image: 词云图的背景形状
+        :return:
+        """
+        mask = imread(BASE_DIR + background_image)
         my_wordcloud = WordCloud(
             background_color='white',  # 设置背景颜色
             mask=mask,  # 设置背景图片
             max_words=2000,  # 设置最大现实的字数
             stopwords=STOPWORDS,  # 设置停用词
-            font_path='/System/Library/Fonts/Hiragino Sans GB.ttc',  # 设置字体格式，如不设置显示不了中文
+            font_path=self.system_font,  # 设置字体格式，如不设置显示不了中文
             max_font_size=50,  # 设置字体最大值
             random_state=30,  # 设置有多少种随机生成状态，即有多少种配色方案
             scale=1.3
@@ -306,8 +302,13 @@ class QQZoneAnalysis(QQZoneFriendSpider):
         plt.imshow(my_wordcloud)
         plt.axis("off")
         # 保存图片
-        my_wordcloud.to_file(filename=self.image_path + filename + '.jpg')
-        plt.show()
+        if not self.from_web:
+            my_wordcloud.to_file(filename=self.image_path + filename + '.jpg')
+            print("result file path:", self.image_path + filename + '.jpg')
+            plt.show()
+        else:
+            my_wordcloud.to_file(filename=self.web_image_bash_path + filename + '.jpg')
+            print("result file path:", self.web_image_bash_path + filename + '.jpg')
 
     def get_jieba_words(self, content):
         word_list = jieba.cut(content, cut_all=False)
@@ -326,12 +327,12 @@ class QQZoneAnalysis(QQZoneFriendSpider):
     def draw_content_cloud(self, df):
         content = df['content'].sum()
         words = self.get_jieba_words(content)
-        self.drawWordCloud(words, self.username + '_content_')
+        self.drawWordCloud(words, self.username + '_content')
 
     def draw_cmt_cloud(self, df):
         cmt_df = self.av.calculate_cmt_rank(df)
         cmt_dict = {x[0]: x[1] for x in cmt_df.values}
-        self.drawWordCloud(cmt_dict, self.username + '_cmt_', dict_type=True)
+        self.drawWordCloud(cmt_dict, self.username + '_cmt', dict_type=True)
 
     def rank_like_people(self, df):
         uin_list = df['uin_list']
@@ -345,7 +346,7 @@ class QQZoneAnalysis(QQZoneFriendSpider):
     def draw_like_cloud(self, df):
         all_uin_count = self.rank_like_people(df)
         all_uin_dict = {str(x[0]): x[1] for x in all_uin_count.values}
-        self.drawWordCloud(all_uin_dict, self.username + '_like_', dict_type=True)
+        self.drawWordCloud(all_uin_dict, self.username + '_like', dict_type=True)
 
     def export_mood_df(self, export_csv=True, export_excel=True):
         """
@@ -391,6 +392,8 @@ class QQZoneAnalysis(QQZoneFriendSpider):
         history_json = history_df.to_json(orient='records', force_ascii=False)
         if self.use_redis:
             self.re.set(self.history_like_agree_file_name, json.dumps(history_json, ensure_ascii=False))
+            if not self.no_delete:
+                self.re.expire(self.history_like_agree_file_name, EXPIRE_TIME_IN_SECONDS)
         else:
             self.save_data_to_json(history_json, self.history_like_agree_file_name)
 
@@ -416,7 +419,6 @@ def get_most_people(username):
 def export_mood_df(username):
     analysis = QQZoneAnalysis(use_redis=True, debug=True, username=username, analysis_friend=False, from_web=True)
     analysis.export_mood_df()
-
 
 
 if __name__ == '__main__':

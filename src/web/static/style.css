@@ -29,7 +29,7 @@
 }
 
 .my_form {
-    margin-top: 20px;
+    margin: 20px auto;
     text-align: center;
 }
 
@@ -70,4 +70,36 @@
 .btn_href {
     color: white;
     cursor: pointer;
+}
+
+.qr_container {
+    margin: 10px auto;
+}
+
+.qr_container img {
+    width: 80%;
+}
+.cloud_img {
+    margin: 10px auto;
+}
+
+.cloud_img img{
+    width: 100%;
+}
+.download_button {
+    margin: 10px auto;
+    text-align: center;
+    padding: 10px;
+    display: block;
+}
+
+.tip_card {
+    text-align: center;
+    position: relative;
+    margin: 10px auto;
+    font-size: 14px;
+}
+
+body {
+    background: #eee8d8;
 }

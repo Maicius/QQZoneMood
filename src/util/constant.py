@@ -24,13 +24,19 @@ EXPIRE_TIME_IN_SECONDS = 24 * 60 * 60
 
 WEB_SPIDER_INFO = "web_redis_info_"
 
-LOGIN_SUCCESS = "获取主页信息成功"
+LOGIN_SUCCESS = "登陆成功！"
 
-LOGIN_FAILED = "登陆失败，请检查QQ号和cookie是否正确"
+LOGIN_NOT_MATCH = "QQ号不匹配"
 
-GET_MOOD_FAILED = "获取主页信息失败，请检查QQ号和cookie是否正确，可更换cookie再进行尝试"
+LOGIN_FAILED = "由于网络等原因登陆失败，请重新扫描二维码或稍后再试"
+
+WEB_IMAGE_PATH = BASE_PATH + '/src/web/static/image/'
+
+GET_MOOD_FAILED = "获取主页信息失败"
 
 GET_MAIN_PAGE_FAILED = "获取主页信息失败"
+
+GET_FIRST_LOGIN_TIME = "获取第一次登陆时间失败"
 
 FINISH_ALL_INFO = "获取全部信息完成"
 
@@ -38,20 +44,30 @@ MOOD_COUNT_KEY = 'mood_count_'
 MOOD_FINISH_KEY = 'mood_finish_'
 FRIEND_FINISH_KEY = 'friend_finish_'
 
+MOOD_NUM_KEY = 'mood_num_'
+FRIEND_NUM_KEY = 'friend_num_'
+
 MOOD_NUM_PRE = 'QQ空间的说说数量'
 FRIEND_INFO_PRE = 'QQ好友数量'
 
 STOP_SPIDER_KEY = 'stop_spider_'
 STOP_SPIDER_FLAG = 'stop'
+FORCE_STOP_SPIDER_FLAG = 'force'
 SPIDER_FLAG = 'continue'
 
 CLEAN_DATA_KEY = 'clean_data_'
 
 USER_MAP_KEY = 'qq_user_map'
 
+USER_LOGIN_STATE = 'qq_user_login_state_'
+
 SPIDERING_USER_LIST  = 'spidering_user_list'
 
 WAITING_USER_LIST = 'waiting_user_list'
+
+SPIDER_USER_NUM_LIMIT = 2
+
+QR_CODE_MAP_KEY = 'qr_code_map_key'
 
 STOP_FRIEND_INFO_SPIDER_KEY = 'stop_friend_info_'
 FINISH_FRIEND_INFO_ALL = '获取全部好友基本信息完成'
@@ -61,6 +77,14 @@ FRIEND_INFO_COUNT_KEY = 'friend_info_count_'
 HISTORY_LIKE_AGREE = 'history_like_agree_'
 
 FRIEND_LIST_KEY = 'friend_list_'
+
+FINISH_USER_NUM_KEY = 'finish_user_num_key'
+
+# 电脑上的中文字体
+UBUNTU_SYSTEM_FONT_PATH = '/usr/share/fonts/Songti.ttc'
+MAC_SYSTEM_FONT_PATH = '/System/Library/Fonts/Hiragino Sans GB.ttc'
+
+SYSTEM_FONT = UBUNTU_SYSTEM_FONT_PATH
 
 if __name__ == '__main__':
     print(BASE_DIR)
