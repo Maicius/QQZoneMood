@@ -1,7 +1,7 @@
 import unittest
-
+import time
 from src.spider.QQZoneFriendSpider import QQZoneFriendSpider
-
+import datetime
 class FriendSpiderTest(unittest.TestCase):
 
     def test_init(self):
@@ -13,7 +13,9 @@ class FriendSpiderTest(unittest.TestCase):
 
     def test_get_friend_detail(self):
         fs = QQZoneFriendSpider(use_redis=False, analysis=False, debug=True)
+        t1 = datetime.datetime.now()
         fs.get_friend_detail()
+        print("耗时：", (datetime.datetime.now() - t1).seconds)
 
     def test_clean_friend_data(self):
         fs = QQZoneFriendSpider(use_redis=False, analysis=True, export_csv=False)

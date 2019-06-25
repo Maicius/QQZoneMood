@@ -6,7 +6,7 @@ from flask import request
 from src.spider.main import web_interface
 import threading
 from time import sleep
-
+import multiprocessing
 from src.web.controller.dataController import do_clear_data_by_user
 from src.web.web_util.web_constant import INVALID_LOGIN, SUCCESS_STATE, FAILED_STATE, FINISH_FRIEND, WAITING_USER_STATE, \
     ALREADY_IN, CHECK_COOKIE, LOGGING_STATE, NOT_MATCH_STATE
@@ -111,9 +111,9 @@ def start_spider():
             # 放进数组，开始爬虫
             conn.rpush(WAITING_USER_LIST, qq)
         try:
-            t = threading.Thread(target=web_interface,
+            p = multiprocessing.Process(target=web_interface,
                                  args=(qq, nick_name, stop_time, mood_num, "xxx", no_delete, password, pool_flag))
-            t.start()
+            p.start()
             result = dict(result=SUCCESS_STATE)
             return json.dumps(result, ensure_ascii=False)
         except BaseException as e:

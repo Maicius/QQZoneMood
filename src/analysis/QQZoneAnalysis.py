@@ -302,6 +302,7 @@ class QQZoneAnalysis(QQZoneFriendMoodSpider):
         plt.imshow(my_wordcloud)
         plt.axis("off")
         # 保存图片
+        print(self.image_path + filename + '.jpg')
         if not self.from_web:
             my_wordcloud.to_file(filename=self.image_path + filename + '.jpg')
             print("result file path:", self.image_path + filename + '.jpg')
@@ -324,12 +325,16 @@ class QQZoneAnalysis(QQZoneFriendMoodSpider):
         words_text = " ".join(word_list2)
         return words_text
 
-    def draw_content_cloud(self, df):
+    def draw_content_cloud(self, df=None):
+        if df is None:
+            df = self.mood_data_df
         content = df['content'].sum()
         words = self.get_jieba_words(content)
         self.drawWordCloud(words, self.username + '_content')
 
-    def draw_cmt_cloud(self, df):
+    def draw_cmt_cloud(self, df=None):
+        if df is None:
+            df = self.mood_data_df
         cmt_df = self.av.calculate_cmt_rank(df)
         cmt_dict = {x[0]: x[1] for x in cmt_df.values}
         self.drawWordCloud(cmt_dict, self.username + '_cmt', dict_type=True)
@@ -343,7 +348,9 @@ class QQZoneAnalysis(QQZoneFriendMoodSpider):
         all_uin_count = all_uin_df.groupby(['nick']).count().reset_index()
         return all_uin_count
 
-    def draw_like_cloud(self, df):
+    def draw_like_cloud(self, df=None):
+        if df is None:
+            df = self.mood_data_df
         all_uin_count = self.rank_like_people(df)
         all_uin_dict = {str(x[0]): x[1] for x in all_uin_count.values}
         self.drawWordCloud(all_uin_dict, self.username + '_like', dict_type=True)

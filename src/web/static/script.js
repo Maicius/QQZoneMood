@@ -360,11 +360,12 @@ let vm = avalon.define({
         cloud_img2.append(image2);
         image2.src = vm.image_path + vm.qq_id + "/" + vm.qq_id + "_like.jpg";
         image2.alt = "经常给您点赞的好友们";
-        // var cloud_img3 = $('#content_cloud_img');
-        // var image3 = new Image;
-        // cloud_img3.append(image3);
-        // image3.src = vm.image_path + vm.qq_id + "/" + vm.qq_id+ "_content.jpg";
-        // image2.alt="您QQ空间说说的关键字";
+        var cloud_img3 = $('#content_cloud_img');
+        var image3 = new Image;
+        cloud_img3.empty();
+        cloud_img3.append(image3);
+        image3.src = vm.image_path + vm.qq_id + "/" + vm.qq_id+ "_content.jpg";
+        image2.alt="您QQ空间说说的关键字";
     },
     clear_cache: function () {
         clearInterval(vm.query_num);

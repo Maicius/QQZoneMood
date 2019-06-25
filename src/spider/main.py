@@ -8,6 +8,7 @@ from src.spider.QQZoneSpider import QQZoneSpider
 from src.util.constant import WEB_SPIDER_INFO, CLEAN_DATA_KEY, LOGIN_FAILED, \
     USER_MAP_KEY, GET_MOOD_FAILED, MOOD_FINISH_KEY, WAITING_USER_LIST, FINISH_USER_NUM_KEY, USER_LOGIN_STATE
 import threading
+import multiprocessing
 
 # 使用selenium自动登陆，获取空间全部说说内容，不下载图片
 # 比较完整的一个接口，可直接调用
@@ -67,6 +68,9 @@ def web_interface(username, nickname, stop_time, mood_num, cookie_text, no_delet
 
     # 清洗好友数据
     friend_data_state = sp.clean_friend_data()
+    sp.get_useful_info_from_json()
+
+
     if friend_data_state:
         # 获取第一位好友数据
         sp.get_first_friend_info()
@@ -74,19 +78,22 @@ def web_interface(username, nickname, stop_time, mood_num, cookie_text, no_delet
         sp.get_most_common_friend()
         # 计算共同群组
         sp.get_most_group()
-    sp.get_useful_info_from_json()
+
     if not sp.mood_data_df.empty:
+        # 说说中的关键字，这个比较花时间
+        p = multiprocessing.Process(target=sp.draw_content_cloud)
+        p.daemon = True
+        p.start()
         # 清洗说说数据并计算点赞最多的人和评论最多的人
         sp.get_most_people()
         # 计算发送动态的时间
         sp.calculate_send_time()
-        sp.draw_cmt_cloud(sp.mood_data_df)
-        sp.draw_like_cloud(sp.mood_data_df)
-        # 说说中的关键字，这个比较花时间
-        # sp.draw_content_cloud(sp.mood_data_df)
+        sp.draw_cmt_cloud()
+        sp.draw_like_cloud()
+        sp.calculate_history_like_agree()
+        p.join()
         # 保存说说数据
         sp.export_mood_df()
-        sp.calculate_history_like_agree()
 
     sp.user_info.save_user()
     sp.re.set(CLEAN_DATA_KEY + username, 1)

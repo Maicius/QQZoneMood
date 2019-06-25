@@ -189,11 +189,9 @@
             </div>
             <p ms-visible="@user.cmt_friend_name !== ''">下面是经常给您评论的好友</p>
             <div class="cloud_img col-lg-5 col-md-12" id="like_cloud_img" ms-visible="@user.cmt_friend_name !== ''">
-
-                {#            </div>#}
-                {#            <div class="cloud_img col-lg-5 col-md-12" id="content_cloud_img">#}
-                {#                <h4>下面是您说说的关键词</h4>#}
-                {#            </div>#}
+            </div>
+            <p ms-visible="@user.most_date !== ''">下面您说说中的关键字</p>
+            <div class="cloud_img col-lg-5 col-md-12" id="content_cloud_img" ms-visible="@user.most_date !== ''">
             </div>
             <div class="download_button">
                 <a class="btn btn-primary col-md-8 download_button"
