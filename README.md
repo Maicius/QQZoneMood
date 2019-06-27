@@ -8,6 +8,10 @@
 
 ![Image](resource/image/history.jpg)
 
+### 相关博客
+
+- [关于python并发爬虫的一些经验总结](http://www.xiaomaidong.com/?p=1189)
+
 ### 系统架构图
 
 ![](resource/image/structure.png)
