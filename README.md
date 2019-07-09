@@ -16,7 +16,7 @@
 
 ![](resource/image/structure.png)
 
-### 运行方式
+### docker版运行方式
 
 - 本项目将网页配置版本打包为docker（以下简称docker版），本版本计划部署到线上
 
@@ -32,7 +32,7 @@
 
 	> 4.数据可视化和下载（excel表）
 
-- docker版运行方式(请确保已经安装了docker和docker-compose)：
+- 运行命令(请确保已经安装了docker和docker-compose)：
 
 	> git clone https://github.com/Maicius/QQZoneMood.git
 
@@ -40,22 +40,7 @@
 
 	> docker-compose up
 	
-	> 浏览器里输入地址: [http://localhost:80](http://localhost:80)
-
-- 完整版运行方式：
-
-	> git clone https://github.com/Maicius/QQZoneMood.git
-	
-	> cd QQZoneMood/config
-	
-	> mv userinfo.json.example userinfo.json
-	
-	> mv friend\_info.json.example friend\_info.json
-	
-	> 根据自己需求修改上述两个配置文件
-	
-	> 在 test中提供了多个程序入口，可根据自己需要选择运行
-	
+	> 浏览器里输入地址: [http://localhost:80](http://localhost:80)	
 
 ### TO DO...
 
@@ -195,7 +180,7 @@
         :param mood_begin: 开始下载的动态序号，0表示从第0条动态开始下载
         :param mood_num: 下载的动态数量，最好设置为20的倍数
         :param stop_time: 停止下载的时间，-1表示全部数据；注意，这里是倒序，比如，stop_time="2016-01-01",表示爬取当前时间到2016年1月1日前的数据
-        :param recover: 是否从redis或文件中恢复数据（主要用于爬虫意外中断之后的数据恢复），注意，此功能在多线程中不可用
+        :param recover: 是否从redis或文件中恢复数据（主要用于爬虫意外中断之后的数据恢复）。注意!!!此功能在多线程中不可用！！！
         :param download_small_image: 是否下载缩略图，仅供预览用的小图，该步骤比较耗时，QQ空间提供了3中不同尺寸的图片，这里下载的是最小尺寸的图片
         :param download_big_image: 是否下载大图，QQ空间中保存的最大的图片，该步骤比较耗时
         :param download_mood_detail:是否下载动态详情
@@ -226,9 +211,7 @@
 
 > QQ空间说说按点赞和评论数分类图
 
-<img src="resource/image/show_qr.JPG" style="width:32%">
-<img src="resource/image/show_like.JPG" style="width:32%">
-<img src="resource/image/show_cmt.JPG" style="width:32%">
+![mobile](resource/image/mobileScreen.png)
 
 > 手机端运行截图
 
