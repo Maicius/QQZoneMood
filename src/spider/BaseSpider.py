@@ -31,6 +31,7 @@ class BaseSpider(object):
         self.download_mood_detail = download_mood_detail
         self.download_like_detail = download_like_detail
         self.download_like_names = download_like_names
+        # 控制线程数量，包括获取动态的线程数量和好友数据的线程数量，默认为10，这里表示两个子任务都开启10个线程
         self.thread_num = 10
         self.thread_list = []
         self.no_delete = no_delete
