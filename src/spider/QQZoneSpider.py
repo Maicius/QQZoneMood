@@ -305,14 +305,15 @@ class QQZoneSpider(BaseSpider):
                 recover_index_split = recover_index % 20
         url = url_mood + '&pos=' + str(pos)
         print("url", url)
-        res = self.req.get(url=url, headers=self.h5_headers, timeout=20)
-        mood = res.content.decode('utf-8')
-        if self.debug:
-            print(res.status_code)
-        # print(mood)
-        mood_json = json.loads(self.get_json(mood))
-        mood_num = mood_json['usrinfo']['msgnum']
-        self.get_first_mood(mood_num, url_mood)
+        try:
+            mood_num = self.get_mood_num(url, url_mood)
+        except:
+            time.sleep(1)
+            try:
+                mood_num = self.get_mood_num(url, url_mood)
+            except:
+                print("Failed to get mood num")
+                mood_num = 0
         # 如果mood_num为-1或指定的mood_num大于实际的动态数量，则下载全部的动态
         if self.mood_num == -1 or self.mood_num > mood_num:
             self.mood_num = mood_num
@@ -364,6 +365,15 @@ class QQZoneSpider(BaseSpider):
         if self.debug:
             print("Best Step:", step)
         return step
+
+    def get_mood_num(self, url, url_mood):
+        res = self.req.get(url=url, headers=self.h5_headers, timeout=20)
+        mood = res.content.decode('utf-8')
+        print("获取主页动态数量:", res.status_code)
+        mood_json = json.loads(self.get_json(mood))
+        mood_num = mood_json['usrinfo']['msgnum']
+        self.get_first_mood(mood_num, url_mood)
+        return mood_num
 
     def get_mood_in_range(self, pos, mood_num, recover_index_split, url_mood, until_stop_time):
         print("进入线程:", mood_num, until_stop_time)
@@ -531,7 +541,7 @@ class QQZoneSpider(BaseSpider):
             json_content = json.loads(self.get_json(str(mood_list.content.decode('utf-8'))))
             last_mood = json_content['msglist'][-1]
             self.user_info.first_mood_time = last_mood['createTime']
-
+            self.user_info.save_user()
         except BaseException as e:
             self.format_error(e, "Failed to get first send mood time")
 
