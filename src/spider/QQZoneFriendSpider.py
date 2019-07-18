@@ -134,10 +134,10 @@ class QQZoneFriendSpider(QQZoneSpider):
             self.save_data_to_json(self.friend_detail, self.FRIEND_DETAIL_FILE_NAME)
         print("获取好友数据成功，文件路径为：", self.FRIEND_DETAIL_FILE_NAME)
 
-    # 保证每个线程至少爬20次，最多开10个线程
+    # 保证每个线程至少爬20次，最多开self.thread_num个线程
     def calculate_thread_num(self, num):
-        if num >= 200:
-            thread_num = 10
+        if num >= 20 * self.thread_num:
+            thread_num = self.thread_num
         else:
             thread_num = math.ceil(num / 20)
         return thread_num
@@ -161,8 +161,10 @@ class QQZoneFriendSpider(QQZoneSpider):
                 self.format_error(e, friend)
                 print(data)
                 continue
+            finally:
+                index += step
             self.friend_detail.append(data)
-            index += step
+
             if self.use_redis:
                 self.re.set(FRIEND_INFO_COUNT_KEY + self.username, len(self.friend_detail))
                 if not self.no_delete:

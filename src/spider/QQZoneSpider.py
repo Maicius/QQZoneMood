@@ -317,9 +317,7 @@ class QQZoneSpider(BaseSpider):
         if self.mood_num == -1 or self.mood_num > mood_num:
             self.mood_num = mood_num
         # 根据mood_num分配线程个数
-        if self.mood_num >= 200:
-            self.thread_num = 10
-        else:
+        if self.mood_num < 20 * self.thread_num:
             self.thread_num = round(self.mood_num / 20)
         if self.thread_num < 1:
             self.thread_num = 1
