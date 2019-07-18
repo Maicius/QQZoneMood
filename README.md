@@ -4,7 +4,7 @@
 
 - 在线系统（支持移动端）:[QQ空间数据分析-小麦冬](http://app.xiaomaidong.com)
 
-![Image](resource/image/text.jpg)
+![Image](resource/image/info2.png)
 
 ![Image](resource/image/history.jpg)
 
