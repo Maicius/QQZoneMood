@@ -3,6 +3,7 @@ import os
 curPath = os.path.abspath(os.path.dirname(__file__))
 rootPath = os.path.split(curPath)[0]
 sys.path.append(os.path.split(rootPath)[0])
+print(sys.path)
 from src.analysis.QQZoneAnalysis import QQZoneAnalysis
 from src.spider.QQZoneSpider import QQZoneSpider
 from src.util.constant import WEB_SPIDER_INFO, CLEAN_DATA_KEY, LOGIN_FAILED, \
@@ -12,6 +13,7 @@ import threading
 # 使用selenium自动登陆，获取空间全部说说内容，不下载图片
 # 比较完整的一个接口，可直接调用
 def capture_main_data():
+    print(sys.path)
     sp = QQZoneSpider(use_redis=True, debug=True, download_small_image=False, download_big_image=False)
     sp.login_with_qr_code()
     sp.get_main_page_info()

@@ -18,13 +18,15 @@ from src.spider.BaseSpider import BaseSpider
 from src.util import util
 from src.util.constant import qzone_jother2, SPIDER_USER_NUM_LIMIT, EXPIRE_TIME_IN_SECONDS, MOOD_NUM_KEY, \
     WEB_SPIDER_INFO, GET_MAIN_PAGE_FAILED, MOOD_NUM_PRE, GET_FIRST_LOGIN_TIME, LOGIN_SUCCESS, LOGIN_FAILED, \
-    LOGIN_NOT_MATCH, FORCE_STOP_SPIDER_FLAG, FINISH_USER_NUM_KEY
+    LOGIN_NOT_MATCH, FORCE_STOP_SPIDER_FLAG
 import math
 import execjs
 import threading
 from src.util.constant import FINISH_ALL_INFO, MOOD_COUNT_KEY, STOP_SPIDER_KEY, STOP_SPIDER_FLAG
 import os
 from http import cookiejar
+import subprocess
+import sys
 
 class QQZoneSpider(BaseSpider):
     def __init__(self, use_redis=False, debug=False, mood_begin=0, mood_num=-1, stop_time='-1',
@@ -104,10 +106,24 @@ class QQZoneSpider(BaseSpider):
         wait_time = 0
         login_url = 'https://ssl.ptlogin2.qq.com/ptqrshow?appid=549000912&e=2&l=M&s=3&d=72&v=4&t=0.{0}6252926{1}2285{2}86&daid=5'.format(
             random.randint(0, 9), random.randint(0, 9), random.randint(0, 9))
+        qr_res = self.req.get(url=login_url, headers=self.headers, timeout=20)
+        self.save_image_single(qr_res.content, self.QR_CODE_PATH)
+        # for mac os
+        if sys.platform.find('darwin') >= 0:
+            subprocess.call(['open', self.QR_CODE_PATH + '.jpg'])
+        # for linux
+        elif sys.platform.find('linux') >= 0:
+            subprocess.call(['xdg-open', self.QR_CODE_PATH + '.jpg'])
+        # for windows
+        elif sys.platform.find('win32') >= 0:
+            # subprocess.call(['open', QRImagePath])
+            os.startfile(self.QR_CODE_PATH + '.jpg')
+        else:
+            subprocess.call(['xdg-open', self.QR_CODE_PATH + '.jpg'])
+        print('请使用微信扫描二维码登陆')
         while wait_time < 60:
             wait_time += 1
-            qr_res = self.req.get(url=login_url, headers=self.headers, timeout=20)
-            self.save_image_single(qr_res.content, self.QR_CODE_PATH)
+
             login_sig = self.get_cookie('pt_login_sig')
             qr_sig = self.get_cookie('qrsig')
 
