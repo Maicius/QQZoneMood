@@ -6,6 +6,8 @@ sys.path.append(os.path.split(rootPath)[0])
 from src.spider.QQZoneSpider import QQZoneSpider
 import math
 import threading
+import pandas as pd
+import json
 
 class winClient(object):
 
@@ -35,8 +37,8 @@ class winClient(object):
             self.output(item_str)
         while True:
             self.output('------------------------')
-            self.output("以下输入请全部只输入数字！按回车键结束输入！")
-            self.output("输入Q退出本程序")
+            self.output("**以下输入请全部只输入数字！按回车键结束输入！**")
+            self.output("**输入Q退出本程序**")
             is_digit = False
             while not is_digit:
                 self.output('请输入您要选择的说说序号:')
@@ -58,7 +60,7 @@ class winClient(object):
                 t2.start()
             is_digit = False
             while not is_digit:
-                self.output('请输入抽奖的类型，1-点赞；2-评论；3-我全都要！ ：')
+                self.output('请输入抽奖的类型，1-点赞；2-评论；(其它)-我全都要！ ：')
                 type = input()
                 is_digit = self.check_input(type)
             is_digit = False
@@ -74,9 +76,16 @@ class winClient(object):
                 self.cmt_t.join()
             except:
                 pass
-            self.output("恭喜以下用户中奖!")
-            self.output(self.like_list_name)
-            self.output(self.cmt_name)
+            self.type = int(type)
+            self.user_num = int(user_num)
+            self.file_name = self.content_list[mood_order - 1]['content']
+            if len(self.file_name) > 10:
+                self.file_name = self.file_name[:10]
+            self.do_raffle()
+            cmt_df = pd.DataFrame(self.cmt_list)
+            like_df = pd.DataFrame(self.like_list)
+            cmt_df.to_excel("评论-" + self.file_name + '.xlsx', index=False)
+            like_df.to_excel("点赞-" + self.file_name + '.xlsx', index=False)
 
     def get_content_list(self, url_mood, pos):
         self.sp.get_mood_in_range(pos=pos, mood_num=20, recover_index_split=0, url_mood=url_mood, until_stop_time=True)
@@ -89,6 +98,35 @@ class winClient(object):
         tid = unikey['tid']
         self.start_like_cmt_thread(key, tid)
 
+    def do_raffle(self):
+        if self.type == 1:
+            raffle_list = self.like_list
+        elif self.type == 2:
+            raffle_list = self.cmt_list
+        else:
+            raffle_list = self.like_list + self.cmt_list
+        raffle_df = pd.DataFrame(raffle_list)
+        if raffle_df.empty:
+            self.output("候选用户为空，选择的该条说说可能没有点赞或评论，请重新选择")
+            return
+        raffle_df.drop_duplicates('qq', inplace=True)
+        if self.user_num >= raffle_df.shape[0]:
+            self.output("抽奖目标人数大于候选人数,因此所有人中奖！")
+            self.output('------------------------')
+            raffle_json = json.loads(raffle_df.to_json(orient="records"))
+            for user in raffle_json:
+                print('| ', user['qq'],' |', user['name'])
+        else:
+            self.output("恭喜以下中奖用户！")
+            self.output('------------------------')
+            raffled = raffle_df.sample(n=self.user_num)
+            raffle_json = json.loads(raffled.to_json(orient="records"))
+
+            for user in raffle_json:
+                print('| ', user['qq'],' |', user['name'])
+        self.output('------------------------')
+
+
     def start_like_cmt_thread(self, key, tid):
         self.like_t = threading.Thread(target=self.get_like_names, args=(key, tid))
         self.cmt_t = threading.Thread(target=self.get_cmt_names, args=(key, tid))
@@ -99,9 +137,11 @@ class winClient(object):
 
     def get_like_names(self, key, tid):
         self.like_list_name = self.sp.get_like_list(key, tid)
+        self.parse_like_names()
 
     def get_cmt_names(self, key, tid):
         self.cmt_name = self.sp.get_mood_all_cmt(key, tid)
+        self.parse_cmt_names()
 
     def check_input(self, x):
         if x == 'Q' or x == 'q':
@@ -118,6 +158,31 @@ class winClient(object):
 
     def output(self, x):
         print(x)
+
+    def parse_like_names(self):
+        like_names = self.like_list_name['data']['like_uin_info']
+        like_list = []
+        for name in like_names:
+            uin = name['fuin']
+            nick = name['nick']
+            like_list.append(dict(qq=uin, name=nick))
+        self.like_list = like_list
+
+    def parse_cmt_names(self):
+        cmt_list = []
+        for i, name in enumerate(self.cmt_name):
+            if i < 20:
+                temp = name['owner']
+                user = dict(qq=temp['uin'], name=temp['name'])
+            else:
+                cmt_name = name['poster']['name']
+                cmt_id = name['poster']['id']
+                user = dict(qq=cmt_id, name=cmt_name)
+            user['content'] = name['content']
+            cmt_list.append(user)
+        self.cmt_list = cmt_list
+        data = pd.DataFrame(self.cmt_list)
+        data.to_csv()
 
 if __name__ == '__main__':
     wc = winClient()

@@ -194,6 +194,7 @@ class QQZoneSpider(BaseSpider):
     def remove_qr_code(self):
         if os.path.exists(self.QR_CODE_PATH + '.jpg'):
             os.remove(self.QR_CODE_PATH + '.jpg')
+
             if self.debug:
                 print("success to delete qr code")
 
