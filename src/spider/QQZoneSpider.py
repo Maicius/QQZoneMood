@@ -32,7 +32,7 @@ class QQZoneSpider(BaseSpider):
     def __init__(self, use_redis=False, debug=False, mood_begin=0, mood_num=-1, stop_time='-1',
                  download_small_image=False, download_big_image=False,
                  download_mood_detail=True, download_like_detail=True, download_like_names=True, recover=False,
-                 cookie_text=None, from_web=False, username='', nickname='', no_delete=True, pool_flag='127.0.0.1', from_client=True):
+                 cookie_text=None, from_web=False, username='', nickname='', no_delete=True, pool_flag='127.0.0.1', from_client=False):
         """
         init method
         :param use_redis: If true, use redis and json file to save data, if false, use json file only.
@@ -506,7 +506,7 @@ class QQZoneSpider(BaseSpider):
 
     # 获取评论详情
     def get_cmt_detail_url(self, start, top_id):
-        url = 'https://h5.qzone.qq.com/proxy/domain/taotao.qzone.qq.com/cgi-bin/emotion_cgi_getcmtreply_v6?'
+        url = 'https://user.qzone.qq.com/proxy/domain/taotao.qzone.qq.com/cgi-bin/emotion_cgi_getcmtreply_v6?'
         params = {
             'format': 'jsonp',
             'g_tk': self.g_tk,
@@ -516,7 +516,7 @@ class QQZoneSpider(BaseSpider):
             'num': 20,
             'order': 0,
             'outCharset': '',
-            'qzonetoken': '',
+            'qzonetoken': self.qzonetoken,
             'random': '',
             'ref': '',
             'start': start,

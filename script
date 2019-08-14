@@ -1,2 +1,1 @@
-pyinstaller -w --hidden-import PyQt5.sip --hidden-import pandas --hidden-import="pandas._libs.tslibs.timedeltas" --hidden-import="pandas._libs.tslibs.np_datetime" --hidden-import="pandas._libs.tslibs.nattype" --hidden-import="pandas._libs.skiplist" win_client.py
-\n
+pyinstaller -c -F --hidden-import PyQt5.sip --hidden-import pandas --hidden-import="pandas._libs.tslibs.timedeltas" --hidden-import="pandas._libs.tslibs.np_datetime" --hidden-import="pandas._libs.tslibs.nattype" --hidden-import="pandas._libs.skiplist" win_client.py
