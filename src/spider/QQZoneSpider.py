@@ -753,11 +753,11 @@ class QQZoneSpider(BaseSpider):
 
     # unikey 是用于辨别每条说说的唯一识别码
     # unikey eg: http://user.qzone.qq.com/1272082503/mood/4770d24b81eba85b0b110800.1
-    def get_unilikeKey_tid_and_smallpic(self, mood_detail):
+    def get_unilikeKey_tid_and_smallpic(self, mood_detail, count=0):
         unikey_tid_list = []
         jsonData = json.loads(mood_detail)
         try:
-            count = 0
+            count = count
             for item in jsonData['msglist']:
                 count += 1
                 tid = item['tid']

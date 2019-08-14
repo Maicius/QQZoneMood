@@ -8,9 +8,11 @@ import math
 import threading
 import pandas as pd
 import json
+import re
 
 class winClient(object):
-
+    like_list = []
+    cmt_list = []
     def __init__(self):
         self.sp = QQZoneSpider(use_redis=False, debug=False, from_client=True, mood_num=20)
         warm_tip = "****************************************\n" \
@@ -22,13 +24,15 @@ class winClient(object):
             self.sp.login_with_qr_code()
             url_mood = self.sp.get_mood_url()
             url_mood = url_mood + '&uin=' + str(self.sp.username)
-            self.get_content_list(url_mood, 0)
+            self.content_list = self.get_content_list(url_mood, 0)
+            self.content_list += self.get_content_list(url_mood, 20)
+            self.content_list += self.get_content_list(url_mood, 40)
             self.output("用户" + self.sp.username + "登陆成功！")
         except BaseException:
             self.output("用户登陆失败！请检查网络连接或稍后再试！")
             exit(1)
         self.output('------------------------')
-        self.output("最近的20条说说")
+        self.output("最近的60条说说")
         for item in self.content_list:
             content = item['content']
             if len(content) > 20:
@@ -36,63 +40,79 @@ class winClient(object):
             item_str = '|' + str(item['order']) + '|' + content
             self.output(item_str)
         while True:
-            self.output('------------------------')
-            self.output("**以下输入请全部只输入数字！按回车键结束输入！**")
-            self.output("**输入Q退出本程序**")
-            is_digit = False
-            while not is_digit:
-                self.output('请输入您要选择的说说序号:')
-                mood_order = input()
-                is_digit = self.check_input(mood_order)
-            mood_order = int(mood_order)
-            if mood_order <= 20:
-                pos = math.ceil(mood_order / 20) - 1
-                mood_order = mood_order % 20
-                t1 = threading.Thread(target=self.get_all, args=(url_mood, pos, mood_order))
-                t1.setDaemon(True)
-                t1.start()
-            else:
-                unikey = self.content_list[mood_order - 1]
-                key = unikey['unikey']
-                tid = unikey['tid']
-                t2 = threading.Thread(target=self.start_like_cmt_thread, args=(key, tid))
-                t2.setDaemon(True)
-                t2.start()
-            is_digit = False
-            while not is_digit:
-                self.output('请输入抽奖的类型，1-点赞；2-评论；(其它)-我全都要！ ：')
-                type = input()
-                is_digit = self.check_input(type)
-            is_digit = False
-            while not is_digit:
-                self.output('请选择抽奖的用户数量：')
-                user_num = input()
-                is_digit = self.check_input(user_num)
-            # 等待线程运行完
             try:
-                t1.join()
-                t2.join()
-                self.like_t.join()
-                self.cmt_t.join()
-            except:
-                pass
-            self.type = int(type)
-            self.user_num = int(user_num)
-            self.file_name = self.content_list[mood_order - 1]['content']
-            if len(self.file_name) > 10:
-                self.file_name = self.file_name[:10]
-            self.do_raffle()
-            cmt_df = pd.DataFrame(self.cmt_list)
-            like_df = pd.DataFrame(self.like_list)
-            cmt_df.to_excel("评论-" + self.file_name + '.xlsx', index=False)
-            like_df.to_excel("点赞-" + self.file_name + '.xlsx', index=False)
+                self.output('------------------------')
+                self.output("**以下输入请全部只输入数字！按回车键结束输入！**")
+                self.output("**输入Q退出本程序**")
+                is_digit = False
+                while not is_digit:
+                    self.output('请输入您要选择的说说序号:')
+                    mood_order = input()
+                    is_digit = self.check_input(mood_order)
+                mood_order = int(mood_order)
+                if mood_order > len(self.content_list):
+                    pos = (math.ceil(mood_order / 20) - 1) * 20
+                    mood_order = mood_order % 20
+                    t1 = threading.Thread(target=self.get_all, args=(url_mood, pos, mood_order))
+                    t1.setDaemon(True)
+                    t1.start()
+                else:
+                    unikey = self.content_list[mood_order - 1]
+                    key = unikey['unikey']
+                    tid = unikey['tid']
+                    t2 = threading.Thread(target=self.start_like_cmt_thread, args=(key, tid))
+                    t2.setDaemon(True)
+                    t2.start()
+                is_digit = False
+                while not is_digit:
+                    self.output('请输入抽奖的类型，1-点赞；2-评论；(其它)-我全都要！ ：')
+                    type = input()
+                    is_digit = self.check_input(type)
+                is_digit = False
+                while not is_digit:
+                    self.output('请选择抽奖的用户数量：')
+                    user_num = input()
+                    is_digit = self.check_input(user_num)
+                # 等待线程运行完
+                try:
+                    t1.join()
+                    t2.join()
+                    self.like_t.join()
+                    self.cmt_t.join()
+                except:
+                    pass
+                self.type = int(type)
+                self.user_num = int(user_num)
+                self.file_name = self.content_list[mood_order - 1]['content']
+                if len(self.file_name) > 10:
+                    self.file_name = self.file_name[:10]
+                self.file_name = re.sub('[^\w\u4e00-\u9fff]+', '', self.file_name)
+                if len(self.file_name) <= 0:
+                    self.file_name = str(mood_order)
+                print("说说:", self.file_name)
+                self.do_raffle()
+                cmt_df = pd.DataFrame(self.cmt_list)
+                like_df = pd.DataFrame(self.like_list)
+                cmt_df.to_excel("评论-" + self.file_name + '.xlsx', index=False)
+                like_df.to_excel("点赞-" + self.file_name + '.xlsx', index=False)
+            except BaseException as e:
+                if str(e) == '2':
+                    exit(2)
+                else:
+                    self.output('----------------------')
+                    print(e)
+                    self.output("未知错误，请重新尝试")
+                    self.output('----------------------')
+
 
     def get_content_list(self, url_mood, pos):
-        self.sp.get_mood_in_range(pos=pos, mood_num=20, recover_index_split=0, url_mood=url_mood, until_stop_time=True)
-        self.content_list = self.sp.get_unilikeKey_tid_and_smallpic(self.sp.content[0])
+        self.sp.get_mood_in_range(pos=pos, mood_num=pos + 20, recover_index_split=0, url_mood=url_mood, until_stop_time=True)
+        content_list = self.sp.get_unilikeKey_tid_and_smallpic(self.sp.content[0], count=pos)
+        self.sp.content.pop()
+        return content_list
 
     def get_all(self, url_mood, pos, mood_order):
-        self.get_content_list(url_mood, pos)
+        self.content_list = self.get_content_list(url_mood, pos)
         unikey = self.content_list[mood_order - 1]
         key = unikey['unikey']
         tid = unikey['tid']
@@ -183,8 +203,6 @@ class winClient(object):
             user['content'] = name['content']
             cmt_list.append(user)
         self.cmt_list = cmt_list
-        data = pd.DataFrame(self.cmt_list)
-        data.to_csv()
 
 if __name__ == '__main__':
     wc = winClient()
