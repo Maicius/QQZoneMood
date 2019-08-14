@@ -64,7 +64,7 @@ class BaseSpider(object):
         if use_redis:
             self.re = self.connect_redis()
 
-        if not from_web:
+        if not from_web and not from_client:
             self.username, self.password, self.nickname = self.get_username_password()
 
         else:

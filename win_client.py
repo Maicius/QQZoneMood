@@ -109,6 +109,8 @@ class winClient(object):
         if raffle_df.empty:
             self.output("候选用户为空，选择的该条说说可能没有点赞或评论，请重新选择")
             return
+        else:
+            self.output("共有满足条件的候选用户" + str(raffle_df.shape[0]) + "名")
         raffle_df.drop_duplicates('qq', inplace=True)
         if self.user_num >= raffle_df.shape[0]:
             self.output("抽奖目标人数大于候选人数,因此所有人中奖！")

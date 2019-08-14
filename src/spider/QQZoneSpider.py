@@ -108,18 +108,20 @@ class QQZoneSpider(BaseSpider):
             random.randint(0, 9), random.randint(0, 9), random.randint(0, 9))
         qr_res = self.req.get(url=login_url, headers=self.headers, timeout=20)
         self.save_image_single(qr_res.content, self.QR_CODE_PATH)
-        # for mac os
-        if sys.platform.find('darwin') >= 0:
-            subprocess.call(['open', self.QR_CODE_PATH + '.jpg'])
-        # for linux
-        elif sys.platform.find('linux') >= 0:
-            subprocess.call(['xdg-open', self.QR_CODE_PATH + '.jpg'])
-        # for windows
-        elif sys.platform.find('win32') >= 0:
-            # subprocess.call(['open', QRImagePath])
-            os.startfile(self.QR_CODE_PATH + '.jpg')
-        else:
-            subprocess.call(['xdg-open', self.QR_CODE_PATH + '.jpg'])
+
+        if not self.from_web:
+            # for mac os
+            if sys.platform.find('darwin') >= 0:
+                subprocess.call(['open', self.QR_CODE_PATH + '.jpg'])
+            # for linux
+            elif sys.platform.find('linux') >= 0:
+                subprocess.call(['xdg-open', self.QR_CODE_PATH + '.jpg'])
+            # for windows
+            elif sys.platform.find('win32') >= 0:
+                # subprocess.call(['open', QRImagePath])
+                os.startfile(self.QR_CODE_PATH + '.jpg')
+            else:
+                subprocess.call(['xdg-open', self.QR_CODE_PATH + '.jpg'])
         print('请使用微信扫描二维码登陆')
         print("若二维码未自动弹出，请手动到以下路径寻找二维码图片:")
         print(self.QR_CODE_PATH + '.jpg')
@@ -175,9 +177,9 @@ class QQZoneSpider(BaseSpider):
         if username != self.username and not self.from_client:
             if self.use_redis:
                 self.re.lpush(WEB_SPIDER_INFO + self.username, LOGIN_NOT_MATCH)
-            self.username = username
             return False
-
+        self.username = username
+        self.init_user_info()
         self.headers['host'] = 'user.qzone.qq.com'
         skey = self.get_cookie('p_skey')
         self.g_tk = self.get_GTK(skey)
@@ -194,7 +196,6 @@ class QQZoneSpider(BaseSpider):
     def remove_qr_code(self):
         if os.path.exists(self.QR_CODE_PATH + '.jpg'):
             os.remove(self.QR_CODE_PATH + '.jpg')
-
             if self.debug:
                 print("success to delete qr code")
 
