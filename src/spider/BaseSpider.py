@@ -134,15 +134,16 @@ class BaseSpider(object):
             self.load_all_data_from_json()
 
     def format_error(self, e, msg=""):
-        print('ERROR===================')
-        print(e)
-        print(msg)
-        logging.error(e)
-        logging.error(msg)
-        print('ERROR===================')
-        if self.debug:
-            # raise e
-            pass
+        if not self.from_client:
+            print('ERROR===================')
+            print(e)
+            print(msg)
+            logging.error(e)
+            logging.error(msg)
+            print('ERROR===================')
+            if self.debug:
+                # raise e
+                pass
 
     def logging_info(self, info):
         logging.info(info)

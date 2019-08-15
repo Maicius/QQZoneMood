@@ -9,7 +9,10 @@ import threading
 import pandas as pd
 import json
 import re
-
+"""
+QQ空间抽奖小程序
+可以指定说说并从点赞或评论的人中随机抽奖
+"""
 class winClient(object):
     like_list = []
     cmt_list = []
@@ -17,7 +20,6 @@ class winClient(object):
         self.sp = QQZoneSpider(use_redis=False, debug=False, from_client=True, mood_num=20)
         warm_tip = "****************************************\n" \
                    "**************QQ空间抽奖小程序***************\n" \
-                   "****************中飞院定制版****************\n" \
                    "****************************************"
         self.output(warm_tip)
         try:

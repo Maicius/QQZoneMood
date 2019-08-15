@@ -2,11 +2,15 @@
 
 -  多线程抓取QQ空间说说内容并进行分析，提供基于Flask和avalon.js的web配置界面，以及配套的测试用例
 
+- 提供抽奖小程序，可以根据指定说说的点赞或评论信息进行随机抽奖（可单独打包为windows下的命令行程序）
+
 - 在线系统（支持移动端）:[QQ空间数据分析-小麦冬](http://app.xiaomaidong.com)
 
 ![Image](resource/image/info2.png)
 
 ![Image](resource/image/history.jpg)
+
+![Image](resource/image/raffle.png)
 
 ### 相关博客
 
