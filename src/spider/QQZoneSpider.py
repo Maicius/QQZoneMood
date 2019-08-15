@@ -595,7 +595,7 @@ class QQZoneSpider(BaseSpider):
 
                 cmt_list.extend(comments)
             except BaseException as e:
-                print(content)
+                # print(content)
                 self.format_error(e, content)
                 raise e
         return cmt_list
