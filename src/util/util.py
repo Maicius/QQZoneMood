@@ -44,6 +44,7 @@ def get_standard_date2(date):
     return time.strftime("%Y-%m-%d", time_array)
 
 
+
 # 将字符串时间转换为时间戳
 def get_mktime(date_string):
     return time.mktime(time.strptime(date_string, '%Y-%m-%d'))
@@ -52,7 +53,6 @@ def get_mktime(date_string):
 def get_mktime2(date_string):
     return time.mktime(time.strptime(date_string, '%Y年%m月%d日'))
 
-
 # 将时间戳转化为标准时间
 def get_standard_time_from_mktime(mktime):
     return time.strftime("%Y-%m-%d", time.localtime(mktime))
@@ -60,6 +60,9 @@ def get_standard_time_from_mktime(mktime):
 def get_standard_time_from_mktime2(mktime):
     temp = time.strftime("%Y-%m-%d", time.localtime(mktime))
     return get_mktime(temp)
+
+def get_full_time_from_mktime(mktime):
+    return time.strftime("%Y-%m-%d %X", time.localtime(mktime))
 
 
 def get_month(date):
@@ -142,3 +145,4 @@ def remove_waste_emoji(text):
 if __name__ =='__main__':
     print(get_mktime('2018-09-6'))
     print(get_mktime('2018-9-06'))
+    print(get_full_time_from_mktime(1566545874))

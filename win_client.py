@@ -1,14 +1,17 @@
 import sys
 import os
+
 curPath = os.path.abspath(os.path.dirname(__file__))
 rootPath = os.path.split(curPath)[0]
 sys.path.append(os.path.split(rootPath)[0])
 from src.spider.QQZoneSpider import QQZoneSpider
+from src.util.util import get_full_time_from_mktime
 import math
 import threading
 import pandas as pd
 import json
 import re
+import time
 """
 QQ空间抽奖小程序
 可以指定说说并从点赞或评论的人中随机抽奖
@@ -22,19 +25,32 @@ class winClient(object):
                    "**************QQ空间抽奖小程序***************\n" \
                    "****************************************"
         self.output(warm_tip)
+        self.output("请输入获取最近访客的时间间隔，默认为60秒")
+        time_step = input()
+        try:
+            time_step = int(time_step)
+        except:
+            time_step = 60
+        visit_file_name = "最近访客" + get_full_time_from_mktime(int(time.time())) + ".xlsx"
+        self.output("最近访客文件名:" + visit_file_name)
+
         try:
             self.sp.login_with_qr_code()
-            url_mood = self.sp.get_mood_url()
-            url_mood = url_mood + '&uin=' + str(self.sp.username)
-            self.content_list = self.get_content_list(url_mood, 0)
-            self.content_list += self.get_content_list(url_mood, 20)
-            self.content_list += self.get_content_list(url_mood, 40)
             self.output("用户" + self.sp.username + "登陆成功！")
         except BaseException:
             self.output("用户登陆失败！请检查网络连接或稍后再试！")
             exit(1)
+
+        visit_t = threading.Thread(target=self.sp.parse_recent_visit, args=[visit_file_name, time_step])
+        visit_t.start()
+        self.output("正在获取最近的说说...")
+        url_mood = self.sp.get_mood_url()
+        url_mood = url_mood + '&uin=' + str(self.sp.username)
+        self.content_list = self.get_content_list(url_mood, 0)
+        self.content_list += self.get_content_list(url_mood, 20)
+        self.content_list += self.get_content_list(url_mood, 40)
         self.output('------------------------')
-        self.output("最近的60条说说")
+        self.output("最近的60条说说:")
         for item in self.content_list:
             content = item['content']
             if len(content) > 20:

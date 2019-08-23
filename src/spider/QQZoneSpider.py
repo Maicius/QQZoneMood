@@ -27,12 +27,14 @@ import os
 from http import cookiejar
 import subprocess
 import sys
+import pandas as pd
 
 class QQZoneSpider(BaseSpider):
     def __init__(self, use_redis=False, debug=False, mood_begin=0, mood_num=-1, stop_time='-1',
                  download_small_image=False, download_big_image=False,
                  download_mood_detail=True, download_like_detail=True, download_like_names=True, recover=False,
-                 cookie_text=None, from_web=False, username='', nickname='', no_delete=True, pool_flag='127.0.0.1', from_client=False):
+                 cookie_text=None, from_web=False, username='', nickname='', no_delete=True, pool_flag='127.0.0.1',
+                 from_client=False, get_visit=False):
         """
         init method
         :param use_redis: If true, use redis and json file to save data, if false, use json file only.
@@ -58,7 +60,7 @@ class QQZoneSpider(BaseSpider):
                             download_mood_detail=download_mood_detail, download_like_detail=download_like_detail,
                             download_like_names=download_like_names, recover=recover, cookie_text=cookie_text,
                             from_web=from_web, username=username, nickname=nickname, no_delete=no_delete,
-                            pool_flag=pool_flag, from_client=from_client)
+                            pool_flag=pool_flag, from_client=from_client, get_visit=get_visit)
 
         self.req = requests.Session()
         self.cookies = cookiejar.CookieJar()
@@ -94,11 +96,12 @@ class QQZoneSpider(BaseSpider):
         扫描二维码登陆
         :return:
         """
-        cookies = cookiejar.Cookie(version=0, name='_qz_referrer', value='qzone.qq.com', port=None, port_specified=False,
-                            domain='qq.com',
-                            domain_specified=False, domain_initial_dot=False, path='/', path_specified=True,
-                            secure=False, expires=None, discard=True, comment=None, comment_url=None,
-                            rest={'HttpOnly': None}, rfc2109=False)
+        cookies = cookiejar.Cookie(version=0, name='_qz_referrer', value='qzone.qq.com', port=None,
+                                   port_specified=False,
+                                   domain='qq.com',
+                                   domain_specified=False, domain_initial_dot=False, path='/', path_specified=True,
+                                   secure=False, expires=None, discard=True, comment=None, comment_url=None,
+                                   rest={'HttpOnly': None}, rfc2109=False)
         self.cookies.set_cookie(cookies)
         self.headers['host'] = 'ssl.ptlogin2.qq.com'
         self.headers['referer'] = 'https://qzone.qq.com/'
@@ -384,7 +387,6 @@ class QQZoneSpider(BaseSpider):
                 print("finish===================")
             else:
                 self.re.delete(FORCE_STOP_SPIDER_FLAG + self.username)
-
 
     def find_best_step(self, mood_num, thread_num):
         step = int(mood_num / thread_num // 20 * 20)
@@ -888,3 +890,21 @@ class QQZoneSpider(BaseSpider):
         self.qzonetoken = qzonetoken
         if self.debug:
             print("qzone_token:", qzonetoken)
+
+    def parse_recent_visit(self, file_path, time_step):
+        # 必须新开线程执行
+        while True:
+            url, _ = self.get_main_page_url()
+            res = self.req.get(url=url, headers=self.headers)
+            content = json.loads(self.get_json(res.content.decode("utf-8")))
+            visit_data = content['data']['module_3']['data']
+            if 'items' in visit_data:
+                visit_list = visit_data['items']
+                for item in visit_list:
+                    self.visit_list.append(
+                        dict(qq=item['uin'], time=util.get_full_time_from_mktime(item['time']), name=item['name']))
+
+            visit_df = pd.DataFrame(self.visit_list)
+            visit_df.drop_duplicates(inplace=True)
+            visit_df.to_excel(file_path, index=False)
+            time.sleep(time_step)
