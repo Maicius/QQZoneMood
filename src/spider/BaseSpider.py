@@ -21,7 +21,7 @@ class BaseSpider(object):
     def __init__(self, use_redis=False, debug=False, mood_begin=0, mood_num=-1, stop_time='-1',
                  download_small_image=False, download_big_image=False,
                  download_mood_detail=True, download_like_detail=True, download_like_names=True, recover=False,
-                 cookie_text=None, from_web=False, username='', nickname='', no_delete=True, pool_flag='127.0.0.1', from_client=False):
+                 cookie_text=None, from_web=False, username='', nickname='', no_delete=True, pool_flag='127.0.0.1', from_client=False, get_visit=False):
         # 初始化下载项
         self.mood_begin = mood_begin
         self.mood_num = mood_num
@@ -50,6 +50,7 @@ class BaseSpider(object):
         self.pool_flag = pool_flag
         self.from_web = from_web
         self.random_qr_name = str(random.random())
+        self.get_visit = get_visit
         self.QR_CODE_PATH  = BASE_PATH + '/src/web/static/image/qr' + self.random_qr_name
         self.headers = {
             'host': 'user.qzone.qq.com',
@@ -61,6 +62,7 @@ class BaseSpider(object):
         }
         self.h5_headers = deepcopy(self.headers)
         self.h5_headers['host'] = self.h5_host
+        self.visit_list = []
         if use_redis:
             self.re = self.connect_redis()
 
