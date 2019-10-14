@@ -1,16 +1,22 @@
 # QQZoneMood
 
--  多线程抓取QQ空间说说内容并进行分析，提供基于Flask和avalon.js的web配置界面，以及配套的测试用例
+简介
+
+- 多线程抓取QQ空间说说内容并进行分析，提供基于Flask和avalon.js的web配置界面，以及配套的测试用例
 
 - 提供抽奖小程序，可以根据指定说说的点赞或评论信息进行随机抽奖（可单独打包为windows下的命令行程序）
 
+- 反向计算用户在每个时间点的好友数量，并可动态展示用户好友的增加过程，参考[视频](https://v.youku.com/v_show/id_XMzkxMDQ0NTcyMA==.html?spm=a2hzp.8244740.0.0)
+
 - 在线系统（支持移动端）:[QQ空间数据分析-小麦冬](http://app.xiaomaidong.com)
 
-![Image](resource/image/info2.png)
+![基本信息](resource/image/info2.png)
 
-![Image](resource/image/history.jpg)
+![动态历史图](resource/image/history.jpg)
 
-![Image](resource/image/raffle.png)
+![QQ好友成长图](resource/image/qqfriend.png)
+
+![抽奖小工具](resource/image/raffle.png)
 
 ### 相关博客
 
