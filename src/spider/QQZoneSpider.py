@@ -894,17 +894,21 @@ class QQZoneSpider(BaseSpider):
     def parse_recent_visit(self, file_path, time_step):
         # 必须新开线程执行
         while True:
-            url, _ = self.get_main_page_url()
-            res = self.req.get(url=url, headers=self.headers)
-            content = json.loads(self.get_json(res.content.decode("utf-8")))
-            visit_data = content['data']['module_3']['data']
-            if 'items' in visit_data:
-                visit_list = visit_data['items']
-                for item in visit_list:
-                    self.visit_list.append(
-                        dict(qq=item['uin'], time=util.get_full_time_from_mktime(item['time']), name=item['name']))
+            try:
+                url, _ = self.get_main_page_url()
+                res = self.req.get(url=url, headers=self.headers)
+                content = json.loads(self.get_json(res.content.decode("utf-8")))
+                visit_data = content['data']['module_3']['data']
+                if 'items' in visit_data:
+                    visit_list = visit_data['items']
+                    for item in visit_list:
+                        self.visit_list.append(
+                            dict(qq=item['uin'], time=util.get_full_time_from_mktime(item['time']), name=item['name']))
 
-            visit_df = pd.DataFrame(self.visit_list)
-            visit_df.drop_duplicates(inplace=True)
-            visit_df.to_excel(file_path, index=False)
-            time.sleep(time_step)
+                visit_df = pd.DataFrame(self.visit_list)
+                visit_df.drop_duplicates(inplace=True)
+                visit_df.to_excel(file_path, index=False)
+                time.sleep(time_step)
+            except BaseException:
+                print("获取最近访客出错")
+                exit(3)

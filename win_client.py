@@ -31,15 +31,15 @@ class winClient(object):
             time_step = int(time_step)
         except:
             time_step = 60
-        visit_file_name = "最近访客" + get_full_time_from_mktime(int(time.time())) + ".xlsx"
+        visit_file_name = "最近访客" + str(int(time.time())) + ".xlsx"
+        visit_file_name.replace(" ", "")
         self.output("最近访客文件名:" + visit_file_name)
-
         try:
             self.sp.login_with_qr_code()
             self.output("用户" + self.sp.username + "登陆成功！")
         except BaseException:
             self.output("用户登陆失败！请检查网络连接或稍后再试！")
-            exit(1)
+            os._exit(1)
 
         visit_t = threading.Thread(target=self.sp.parse_recent_visit, args=[visit_file_name, time_step])
         visit_t.start()
@@ -115,7 +115,7 @@ class winClient(object):
                 like_df.to_excel("点赞-" + self.file_name + '.xlsx', index=False)
             except BaseException as e:
                 if str(e) == '2':
-                    exit(2)
+                    os._exit(2)
                 else:
                     self.output('----------------------')
                     print(e)
@@ -186,7 +186,7 @@ class winClient(object):
     def check_input(self, x):
         if x == 'Q' or x == 'q':
             self.output("即将退出本程序！希望您使用愉快！")
-            exit(2)
+            os._exit(2)
         try:
             x = int(x)
             if x <= 0:
