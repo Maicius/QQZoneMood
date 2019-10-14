@@ -1,6 +1,10 @@
 # QQZoneMood
 
-简介
+### 相关博客
+
+- [关于python并发爬虫的一些经验总结](http://www.xiaomaidong.com/?p=1189)
+
+### 简介
 
 - 多线程抓取QQ空间说说内容并进行分析，提供基于Flask和avalon.js的web配置界面，以及配套的测试用例
 
@@ -17,10 +21,6 @@
 ![QQ好友成长图](resource/image/qqfriend.png)
 
 ![抽奖小工具](resource/image/raffle.png)
-
-### 相关博客
-
-- [关于python并发爬虫的一些经验总结](http://www.xiaomaidong.com/?p=1189)
 
 ### 系统架构图
 
