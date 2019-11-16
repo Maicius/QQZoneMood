@@ -88,7 +88,7 @@
                            disabled="disabled">
                     <label class="form-check-label" for="no_delete">数据永久存储(开发者选项，普通用户勿选)</label>
                 </div>
-                <div ms-visible="@login_state == 1" class="col-md-12 col-lg-8 qr_container">
+                <div ms-visible="@login_state == 1" class="col-md-12 col-lg-4 qr_container">
                     <p style="color:red">用手机QQ扫描该二维码即可登陆QQ空间</p>
                     <p style="color:red">谨慎！存在一定的隐私泄漏风险！！！</p>
                     <div class="form-group form-control"
@@ -148,7 +148,7 @@
                     停止
                 </button>
                 <button type="button" class="btn btn-danger" :click="@force_stop_spider()" id="stop_spider"
-                        title="立即停止爬虫并保存数据"
+                        title="强制停止爬虫，不会保存数据"
                         ms-visible="@spider_state==1" style="margin-left: 10px;">
                     强制停止
                 </button>
