@@ -27,12 +27,14 @@ import os
 from http import cookiejar
 import subprocess
 import sys
+import pandas as pd
 
 class QQZoneSpider(BaseSpider):
     def __init__(self, use_redis=False, debug=False, mood_begin=0, mood_num=-1, stop_time='-1',
                  download_small_image=False, download_big_image=False,
                  download_mood_detail=True, download_like_detail=True, download_like_names=True, recover=False,
-                 cookie_text=None, from_web=False, username='', nickname='', no_delete=True, pool_flag='127.0.0.1'):
+                 cookie_text=None, from_web=False, username='', nickname='', no_delete=True, pool_flag='127.0.0.1',
+                 from_client=False, get_visit=False):
         """
         init method
         :param use_redis: If true, use redis and json file to save data, if false, use json file only.
@@ -58,7 +60,7 @@ class QQZoneSpider(BaseSpider):
                             download_mood_detail=download_mood_detail, download_like_detail=download_like_detail,
                             download_like_names=download_like_names, recover=recover, cookie_text=cookie_text,
                             from_web=from_web, username=username, nickname=nickname, no_delete=no_delete,
-                            pool_flag=pool_flag)
+                            pool_flag=pool_flag, from_client=from_client, get_visit=get_visit)
 
         self.req = requests.Session()
         self.cookies = cookiejar.CookieJar()
@@ -94,11 +96,12 @@ class QQZoneSpider(BaseSpider):
         扫描二维码登陆
         :return:
         """
-        cookies = cookiejar.Cookie(version=0, name='_qz_referrer', value='qzone.qq.com', port=None, port_specified=False,
-                            domain='qq.com',
-                            domain_specified=False, domain_initial_dot=False, path='/', path_specified=True,
-                            secure=False, expires=None, discard=True, comment=None, comment_url=None,
-                            rest={'HttpOnly': None}, rfc2109=False)
+        cookies = cookiejar.Cookie(version=0, name='_qz_referrer', value='qzone.qq.com', port=None,
+                                   port_specified=False,
+                                   domain='qq.com',
+                                   domain_specified=False, domain_initial_dot=False, path='/', path_specified=True,
+                                   secure=False, expires=None, discard=True, comment=None, comment_url=None,
+                                   rest={'HttpOnly': None}, rfc2109=False)
         self.cookies.set_cookie(cookies)
         self.headers['host'] = 'ssl.ptlogin2.qq.com'
         self.headers['referer'] = 'https://qzone.qq.com/'
@@ -108,19 +111,24 @@ class QQZoneSpider(BaseSpider):
             random.randint(0, 9), random.randint(0, 9), random.randint(0, 9))
         qr_res = self.req.get(url=login_url, headers=self.headers, timeout=20)
         self.save_image_single(qr_res.content, self.QR_CODE_PATH)
-        # for mac os
-        if sys.platform.find('darwin') >= 0:
-            subprocess.call(['open', self.QR_CODE_PATH + '.jpg'])
-        # for linux
-        elif sys.platform.find('linux') >= 0:
-            subprocess.call(['xdg-open', self.QR_CODE_PATH + '.jpg'])
-        # for windows
-        elif sys.platform.find('win32') >= 0:
-            # subprocess.call(['open', QRImagePath])
-            os.startfile(self.QR_CODE_PATH + '.jpg')
-        else:
-            subprocess.call(['xdg-open', self.QR_CODE_PATH + '.jpg'])
+
+        if not self.from_web:
+            # for mac os
+            if sys.platform.find('darwin') >= 0:
+                subprocess.call(['open', self.QR_CODE_PATH + '.jpg'])
+            # for linux
+            elif sys.platform.find('linux') >= 0:
+                subprocess.call(['xdg-open', self.QR_CODE_PATH + '.jpg'])
+            # for windows
+            elif sys.platform.find('win32') >= 0:
+                # subprocess.call(['open', QRImagePath])
+                os.startfile(self.QR_CODE_PATH + '.jpg')
+            else:
+                subprocess.call(['xdg-open', self.QR_CODE_PATH + '.jpg'])
         print('请使用微信扫描二维码登陆')
+        print("若二维码未自动弹出，请手动到以下路径寻找二维码图片:")
+        print(self.QR_CODE_PATH + '.jpg')
+        print('-------------------------')
         while wait_time < 60:
             wait_time += 1
 
@@ -133,7 +141,7 @@ class QQZoneSpider(BaseSpider):
             # 如果不是从网页发来的请求，就本地展示二维码
             if not self.from_web and wait_time <= 1:
                 self.show_image(self.QR_CODE_PATH + '.jpg')
-            elif self.from_web and wait_time <= 1:
+            elif self.from_web and wait_time <= 1 and self.use_redis:
                 self.re.lpush(WEB_SPIDER_INFO + self.username, self.random_qr_name + ".jpg")
             while True:
                 self.headers['referer'] = self.qzone_login_url
@@ -169,13 +177,13 @@ class QQZoneSpider(BaseSpider):
         username = re.findall(r'uin=([0-9]+?)&', ret[5])[0]
 
         # 避免获取别人信息
-        if username != self.username:
-            self.re.lpush(WEB_SPIDER_INFO + self.username, LOGIN_NOT_MATCH)
-            self.username = username
+        if username != self.username and not self.from_client:
+            if self.use_redis:
+                self.re.lpush(WEB_SPIDER_INFO + self.username, LOGIN_NOT_MATCH)
             return False
-
+        self.username = username
+        self.init_user_info()
         self.headers['host'] = 'user.qzone.qq.com'
-        print("login success")
         skey = self.get_cookie('p_skey')
         self.g_tk = self.get_GTK(skey)
         self.headers['host'] = 'user.qzone.qq.com'
@@ -184,13 +192,15 @@ class QQZoneSpider(BaseSpider):
         self.get_qzone_token()
         if self.use_redis:
             self.re.lpush(WEB_SPIDER_INFO + self.username, LOGIN_SUCCESS)
-        print("Login success,", self.username)
+        if not self.from_client:
+            print("用户" + self.username + "登陆成功！")
         return True
 
     def remove_qr_code(self):
         if os.path.exists(self.QR_CODE_PATH + '.jpg'):
             os.remove(self.QR_CODE_PATH + '.jpg')
-            print("success to delete qr code")
+            if self.debug:
+                print("success to delete qr code")
 
     def get_cookie(self, key):
         for c in self.cookies:
@@ -338,7 +348,8 @@ class QQZoneSpider(BaseSpider):
             self.thread_num = round(self.mood_num / 20)
         if self.thread_num < 1:
             self.thread_num = 1
-        print("获取QQ动态的线程数量:", self.thread_num)
+        if not self.from_client:
+            print("获取QQ动态的线程数量:", self.thread_num)
         step = self.find_best_step(self.mood_num, self.thread_num)
 
         for i in range(0, self.thread_num):
@@ -352,29 +363,30 @@ class QQZoneSpider(BaseSpider):
         for t in self.thread_list:
             t.setDaemon(False)
             t.start()
-            print("开始线程:", t.getName())
+            if not self.from_client:
+                print("开始线程:", t.getName())
 
         # 等待全部子线程结束
         for t in self.thread_list:
             t.join()
 
         # 如果不是强制停止的，就保存数据
-        force_key = self.re.get(FORCE_STOP_SPIDER_FLAG + self.username)
-        if force_key != FORCE_STOP_SPIDER_FLAG:
-            # 保存所有数据到指定文件
-            print('保存最终数据中...')
-            if self.use_redis:
-                self.re.set(STOP_SPIDER_KEY + self.username, FINISH_ALL_INFO)
-            if (self.debug):
-                print('Error Unikeys Num:', len(self.error_like_detail_unikeys))
-                print('Retry to get them...')
-            self.retry_error_unikey()
-            self.save_all_data_to_json()
-            self.result_report()
-            print("finish===================")
-        else:
-            self.re.delete(FORCE_STOP_SPIDER_FLAG + self.username)
-
+        if self.use_redis:
+            force_key = self.re.get(FORCE_STOP_SPIDER_FLAG + self.username)
+            if force_key != FORCE_STOP_SPIDER_FLAG and not self.from_client:
+                # 保存所有数据到指定文件
+                print('保存最终数据中...')
+                if self.use_redis:
+                    self.re.set(STOP_SPIDER_KEY + self.username, FINISH_ALL_INFO)
+                if (self.debug):
+                    print('Error Unikeys Num:', len(self.error_like_detail_unikeys))
+                    print('Retry to get them...')
+                self.retry_error_unikey()
+                self.save_all_data_to_json()
+                self.result_report()
+                print("finish===================")
+            else:
+                self.re.delete(FORCE_STOP_SPIDER_FLAG + self.username)
 
     def find_best_step(self, mood_num, thread_num):
         step = int(mood_num / thread_num // 20 * 20)
@@ -385,16 +397,20 @@ class QQZoneSpider(BaseSpider):
     def get_mood_num(self, url, url_mood):
         res = self.req.get(url=url, headers=self.h5_headers, timeout=20)
         mood = res.content.decode('utf-8')
-        print("获取主页动态数量:", res.status_code)
+        if self.debug:
+            print("获取主页动态数量的状态码:", res.status_code)
         mood_json = json.loads(self.get_json(mood))
         mood_num = mood_json['usrinfo']['msgnum']
-        self.get_first_mood(mood_num, url_mood)
+        if not self.from_client:
+            self.get_first_mood(mood_num, url_mood)
         return mood_num
 
     def get_mood_in_range(self, pos, mood_num, recover_index_split, url_mood, until_stop_time):
-        print("进入线程:", mood_num, until_stop_time)
+        if not self.from_client:
+            print("进入线程:", mood_num, until_stop_time)
         while pos < mood_num and until_stop_time:
-            print('正在爬取', pos, '...')
+            if not self.from_client:
+                print('正在爬取', pos, '...')
             # self.re.lpush(WEB_SPIDER_INFO + self.username, "正在爬取" + str(pos) + "...")
             try:
                 url = url_mood + '&pos=' + str(pos)
@@ -405,19 +421,19 @@ class QQZoneSpider(BaseSpider):
                 except BaseException as e:
                     json_content = self.get_json(mood_list.text)
                 self.content.append(json_content)
-
-                # 获取每条动态的unikey
-                unikeys = self.get_unilikeKey_tid_and_smallpic(json_content)
-                if len(unikeys) != 0:
-                    # 从数据中恢复后，避免重复爬取相同数据
-                    if recover_index_split != 0:
-                        unikeys = unikeys[recover_index_split:]
-                        recover_index_split = 0
-                    # 获取数据
-                    until_stop_time = self.do_get_infos(unikeys, until_stop_time)
-                    if self.use_redis:
-                        until_stop_time = False if self.re.get(
-                            STOP_SPIDER_KEY + str(self.username)) == STOP_SPIDER_FLAG else True
+                if not self.from_client:
+                    # 获取每条动态的unikey
+                    unikeys = self.get_unilikeKey_tid_and_smallpic(json_content)
+                    if len(unikeys) != 0:
+                        # 从数据中恢复后，避免重复爬取相同数据
+                        if recover_index_split != 0:
+                            unikeys = unikeys[recover_index_split:]
+                            recover_index_split = 0
+                        # 获取数据
+                        until_stop_time = self.do_get_infos(unikeys, until_stop_time)
+                        if self.use_redis:
+                            until_stop_time = False if self.re.get(
+                                STOP_SPIDER_KEY + str(self.username)) == STOP_SPIDER_FLAG else True
                 pos += 20
                 # 每抓100条保存一次数据
                 if pos % 100 == 0 and self.use_redis:
@@ -492,7 +508,7 @@ class QQZoneSpider(BaseSpider):
 
     # 获取评论详情
     def get_cmt_detail_url(self, start, top_id):
-        url = 'https://h5.qzone.qq.com/proxy/domain/taotao.qzone.qq.com/cgi-bin/emotion_cgi_getcmtreply_v6?'
+        url = 'https://user.qzone.qq.com/proxy/domain/taotao.qzone.qq.com/cgi-bin/emotion_cgi_getcmtreply_v6?'
         params = {
             'format': 'jsonp',
             'g_tk': self.g_tk,
@@ -502,7 +518,7 @@ class QQZoneSpider(BaseSpider):
             'num': 20,
             'order': 0,
             'outCharset': '',
-            'qzonetoken': '',
+            'qzonetoken': self.qzonetoken,
             'random': '',
             'ref': '',
             'start': start,
@@ -581,7 +597,7 @@ class QQZoneSpider(BaseSpider):
 
                 cmt_list.extend(comments)
             except BaseException as e:
-                print(content)
+                # print(content)
                 self.format_error(e, content)
                 raise e
         return cmt_list
@@ -650,6 +666,18 @@ class QQZoneSpider(BaseSpider):
             return tid[0]
         else:
             return ''
+
+    def get_mood_all_cmt(self, key, tid):
+        mood_detail = self.get_mood_detail(key, tid)
+        mood = json.loads(mood_detail)
+        # 超过20的评论要继续获取
+        cmt_num = self.check_comment_num(mood)
+        if 'commentlist' in mood:
+            if cmt_num != -1:
+                extern_cmt = self.get_all_cmt_num(cmt_num, tid)
+                mood['commentlist'].extend(extern_cmt)
+            return mood['commentlist']
+        return []
 
     def retry_error_unikey(self):
         """
@@ -727,12 +755,15 @@ class QQZoneSpider(BaseSpider):
 
     # unikey 是用于辨别每条说说的唯一识别码
     # unikey eg: http://user.qzone.qq.com/1272082503/mood/4770d24b81eba85b0b110800.1
-    def get_unilikeKey_tid_and_smallpic(self, mood_detail):
+    def get_unilikeKey_tid_and_smallpic(self, mood_detail, count=0):
         unikey_tid_list = []
         jsonData = json.loads(mood_detail)
         try:
+            count = count
             for item in jsonData['msglist']:
+                count += 1
                 tid = item['tid']
+                content = item['content']
                 unikey = self.mood_host + tid + '.1'
                 if (self.debug):
                     print('unikey:' + unikey)
@@ -761,8 +792,8 @@ class QQZoneSpider(BaseSpider):
                     curlikekey = unikey + "<.>" + unikey
 
                 unikey_tid_list.append(
-                    dict(unikey=unikey, tid=tid, small_pic_list=pic_list, curlikekey=curlikekey,
-                         big_pic_list=big_pic_list))
+                    dict(order=count, unikey=unikey, tid=tid, small_pic_list=pic_list, curlikekey=curlikekey,
+                         big_pic_list=big_pic_list, content=content))
 
         except BaseException as e:
             self.format_error(e)
@@ -857,4 +888,27 @@ class QQZoneSpider(BaseSpider):
         content = res.content.decode("utf-8")
         qzonetoken = re.findall(re.compile("g_qzonetoken = \(function\(\)\{ try\{return \"(.*)?\""), content)[0]
         self.qzonetoken = qzonetoken
-        print("qzone_token:", qzonetoken)
+        if self.debug:
+            print("qzone_token:", qzonetoken)
+
+    def parse_recent_visit(self, file_path, time_step):
+        # 必须新开线程执行
+        while True:
+            try:
+                url, _ = self.get_main_page_url()
+                res = self.req.get(url=url, headers=self.headers)
+                content = json.loads(self.get_json(res.content.decode("utf-8")))
+                visit_data = content['data']['module_3']['data']
+                if 'items' in visit_data:
+                    visit_list = visit_data['items']
+                    for item in visit_list:
+                        self.visit_list.append(
+                            dict(qq=item['uin'], time=util.get_full_time_from_mktime(item['time']), name=item['name']))
+
+                visit_df = pd.DataFrame(self.visit_list)
+                visit_df.drop_duplicates(inplace=True)
+                visit_df.to_excel(file_path, index=False)
+                time.sleep(time_step)
+            except BaseException:
+                print("获取最近访客出错")
+                exit(3)

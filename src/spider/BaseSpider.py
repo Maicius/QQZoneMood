@@ -21,7 +21,7 @@ class BaseSpider(object):
     def __init__(self, use_redis=False, debug=False, mood_begin=0, mood_num=-1, stop_time='-1',
                  download_small_image=False, download_big_image=False,
                  download_mood_detail=True, download_like_detail=True, download_like_names=True, recover=False,
-                 cookie_text=None, from_web=False, username='', nickname='', no_delete=True, pool_flag='127.0.0.1'):
+                 cookie_text=None, from_web=False, username='', nickname='', no_delete=True, pool_flag='127.0.0.1', from_client=False, get_visit=False):
         # 初始化下载项
         self.mood_begin = mood_begin
         self.mood_num = mood_num
@@ -34,6 +34,7 @@ class BaseSpider(object):
         # 控制线程数量，包括获取动态的线程数量和好友数据的线程数量，默认为10，这里表示两个子任务都开启10个线程
         self.thread_num = 10
         self.thread_list = []
+        self.from_client = from_client
         self.no_delete = no_delete
         if stop_time != '-1':
             self.stop_time = util.get_mktime(stop_time)
@@ -49,6 +50,7 @@ class BaseSpider(object):
         self.pool_flag = pool_flag
         self.from_web = from_web
         self.random_qr_name = str(random.random())
+        self.get_visit = get_visit
         self.QR_CODE_PATH  = BASE_PATH + '/src/web/static/image/qr' + self.random_qr_name
         self.headers = {
             'host': 'user.qzone.qq.com',
@@ -60,10 +62,11 @@ class BaseSpider(object):
         }
         self.h5_headers = deepcopy(self.headers)
         self.h5_headers['host'] = self.h5_host
+        self.visit_list = []
         if use_redis:
             self.re = self.connect_redis()
 
-        if not from_web:
+        if not from_web and not from_client:
             self.username, self.password, self.nickname = self.get_username_password()
 
         else:
@@ -133,15 +136,16 @@ class BaseSpider(object):
             self.load_all_data_from_json()
 
     def format_error(self, e, msg=""):
-        print('ERROR===================')
-        print(e)
-        print(msg)
-        logging.error(e)
-        logging.error(msg)
-        print('ERROR===================')
-        if self.debug:
-            # raise e
-            pass
+        if not self.from_client:
+            print('ERROR===================')
+            print(e)
+            print(msg)
+            logging.error(e)
+            logging.error(msg)
+            print('ERROR===================')
+            if self.debug:
+                # raise e
+                pass
 
     def logging_info(self, info):
         logging.info(info)
@@ -170,7 +174,8 @@ class BaseSpider(object):
         """
         self.USER_BASE_DIR = BASE_DIR + self.username + '/'
         logging_dir = self.USER_BASE_DIR + 'log/'
-        print("logging_dir:", logging_dir)
+        if self.debug:
+            print("logging_dir:", logging_dir)
         util.check_dir_exist(logging_dir)
         logging.basicConfig(level=logging.INFO,
                             format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
@@ -214,8 +219,8 @@ class BaseSpider(object):
         util.check_dir_exist(USER_BASE_DIR + 'friend/')
         util.check_dir_exist(self.FRIEND_HEADER_IMAGE_PATH)
         self.init_analysis_path()
-
-        print("Init file Name Finish:", self.USER_BASE_DIR)
+        if self.debug:
+            print("Init file Name Finish:", self.USER_BASE_DIR)
 
     def init_analysis_path(self):
         self.friend_dir = BASE_DIR + self.username + '/friend/' + 'friend_detail_list.csv'
