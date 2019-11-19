@@ -1,5 +1,7 @@
 # QQZoneMood
 
+**注意** 由于经费问题，线上服务在累计服务了335人之后已下线
+
 ### 相关博客
 
 - [关于python并发爬虫的一些经验总结](http://www.xiaomaidong.com/?p=1189)
@@ -11,8 +13,6 @@
 - 提供抽奖小程序，可以根据指定说说的点赞或评论信息进行随机抽奖（可单独打包为windows下的命令行程序）
 
 - 反向计算用户在每个时间点的好友数量，并可动态展示用户好友的增加过程，参考[视频](https://v.youku.com/v_show/id_XMzkxMDQ0NTcyMA==.html?spm=a2hzp.8244740.0.0)
-
-- 在线系统（支持移动端）:[QQ空间数据分析-小麦冬](http://app.xiaomaidong.com)
 
 ![基本信息](resource/image/info2.png)
 
