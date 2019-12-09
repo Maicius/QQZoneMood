@@ -1,7 +1,5 @@
 # QQZoneMood
 
-**注意** 由于经费问题，线上服务在累计服务了335人之后已下线
-
 ### 相关博客
 
 - [关于python并发爬虫的一些经验总结](http://www.xiaomaidong.com/?p=1189)
