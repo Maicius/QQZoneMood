@@ -24,15 +24,15 @@
 
 ![](resource/image/structure.png)
 
-### docker版运行方式
+### docker版简介
 
-- 本项目将网页配置版本打包为docker（以下简称docker版），本版本计划部署到线上
+- 本项目将网页配置版本打包为docker（以下简称docker版），本版本用于部署到线上
 
 - 此外，还有大量已完成的功能（爬取好友的动态、爬取图片等）未进行整合
 
 - docker版主要包括以下功能：
 
-	> 1.配置用户名、QQ号、爬取动态的数量、停止日期、识别码、cookie等参数
+	> 1.配置用户名、QQ号、校验码
 
 	> 2.根据1中配置获取QQ空间的动态数量和好友基本信息
 
@@ -40,7 +40,7 @@
 
 	> 4.数据可视化和下载（excel表）
 
-- 运行命令(请确保已经安装了docker和docker-compose)：
+- 运行方式(请确保已经安装了docker和docker-compose)：
 
 	> git clone https://github.com/Maicius/QQZoneMood.git
 
@@ -50,10 +50,13 @@
 	
 	> 浏览器里输入地址: [http://localhost:80](http://localhost:80)	
 
+- 关于校验码
+    
+    相当于用户在该网站的密码，为了安全请不要与QQ密码相同。设置校验码的目的是为了保证用户在该网站上只能查看自己的数据。
+
 ### TO DO...
 
 - 将更多的功能整合到docker版中
-- Web排队机制（为上线做准备）
 - Web展示界面优化（想做成网易云年度歌单的风格）
 - 计算更多指标
 
