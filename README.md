@@ -162,7 +162,7 @@
 
 - *注意*：
  	
- 	> 程序提供了三种登陆的接口，分别是扫码登录、cookie登录、账号密码模拟登录
+ 	> 程序提供了三种登陆的接口，分别是扫码登录、cookie登录、账号密码模拟登录，默认使用扫码登录
  	> 其中账号密码模拟登录依赖于selenium，需要手动下载chrome driver和chrome浏览器  
 	> 请注意版本匹配，可以查看这篇博客：  
 	> [selenium之 chromedriver与chrome版本映射表（更新至v2.32）](http://blog.csdn.net/huilan_same/article/details/51896672)
