@@ -147,7 +147,7 @@
 - templates：网页
 
 
-### 系统说明
+### 其它说明
 
 - python版本：3.6
 - 模拟登陆时若出现图形验证码，可以在点击登陆后设置5秒暂停，以手动完成验证
@@ -161,16 +161,25 @@
 	> Redis使用中常见问题可以参考这篇博客:[Redis 踩坑笔记](http://www.xiaomaidong.com/?p=308)
 
 - *注意*：
- 
- 	> 本爬虫登录部分是使用的selenium模拟登陆，需要手动下载chrome driver和chrome浏览器  
+ 	
+ 	> 程序提供了三种登陆的接口，分别是扫码登录、cookie登录、账号密码模拟登录
+ 	> 其中账号密码模拟登录依赖于selenium，需要手动下载chrome driver和chrome浏览器  
 	> 请注意版本匹配，可以查看这篇博客：  
 	> [selenium之 chromedriver与chrome版本映射表（更新至v2.32）](http://blog.csdn.net/huilan_same/article/details/51896672)
 
-#### 开发者运行方式 
+#### 开发版运行方式 
+
+- 0.下载
+
+	> git clone https://github.com/Maicius/QQZoneMood.git
+
+	> cd QQZoneMood
 
 - 1.安装依赖
 
 	> pip3 install -r requirements.txt 
+	
+	（不建议使用conda，因为sha1等库在conda的源中没有）
 
 - 2.修改配置文件
 
