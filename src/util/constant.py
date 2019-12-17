@@ -78,6 +78,7 @@ HISTORY_LIKE_AGREE = 'history_like_agree_'
 
 FRIEND_LIST_KEY = 'friend_list_'
 
+# 成功使用爬虫的的用户数量
 FINISH_USER_NUM_KEY = 'finish_user_num_key'
 
 # 电脑上的中文字体
