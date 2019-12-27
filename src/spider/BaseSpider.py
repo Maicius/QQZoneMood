@@ -10,9 +10,9 @@ import logging
 from src.web.entity.UserInfo import UserInfo
 from src.web.web_util.web_util import get_redis_conn
 import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
 import threading
 import random
+from PIL import Image
 
 class BaseSpider(object):
     """
@@ -412,7 +412,8 @@ class BaseSpider(object):
         t.start()
 
     def do_show_image(self, file_path):
-        image = mpimg.imread(file_path)
+        # image = mpimg.imread(file_path)
+        image = Image.open(file_path)
         plt.imshow(image)
         plt.axis('off')
         plt.show()

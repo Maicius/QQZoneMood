@@ -3,13 +3,13 @@ import json
 import pandas as pd
 import jieba
 from wordcloud import WordCloud, ImageColorGenerator, STOPWORDS
-from scipy.misc import imread
+from PIL import Image
 import matplotlib.pyplot as plt
 from src.spider.QQZoneFriendMoodSpider import QQZoneFriendMoodSpider
 from src.analysis.Average import Average
 from src.util.constant import BASE_DIR, SYSTEM_FONT, EXPIRE_TIME_IN_SECONDS
 from src.util.util import get_standard_time_from_mktime2
-
+import numpy as np
 
 class QQZoneAnalysis(QQZoneFriendMoodSpider):
     def __init__(self, use_redis=False, debug=False, username='', analysis_friend=False, mood_begin=0, mood_num=-1,
@@ -281,7 +281,8 @@ class QQZoneAnalysis(QQZoneFriendMoodSpider):
         :param background_image: 词云图的背景形状
         :return:
         """
-        mask = imread(BASE_DIR + background_image)
+        mask = Image.open(BASE_DIR + background_image)
+        mask = np.array(mask)
         my_wordcloud = WordCloud(
             background_color='white',  # 设置背景颜色
             mask=mask,  # 设置背景图片
