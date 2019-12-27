@@ -58,9 +58,10 @@ class QQZoneFriendMoodSpider(QQZoneFriendSpider):
 
     def get_friend_mood(self, friend_qq='', nick_name='佚名', mood_num = -1):
         """
-        获取好友动态
+
         :param friend_qq:
         :param nick_name:
+        :param mood_num: 此处mood num的优先级比较高
         :return:
         """
         if self.g_tk == 0:
@@ -70,7 +71,8 @@ class QQZoneFriendMoodSpider(QQZoneFriendSpider):
             self.friend_name_list.clear()
             self.friend_name_list.append(dict(friend_qq=friend_qq, nick_name=nick_name))
         for friend in self.friend_name_list:
-            self.mood_num = mood_num
+            if mood_num != -1:
+                self.mood_num = mood_num
             print("begin to capture:", friend['friend_qq'])
             self.change_username(friend['friend_qq'], friend['nick_name'])
             # 重新初始化参数
@@ -79,6 +81,7 @@ class QQZoneFriendMoodSpider(QQZoneFriendSpider):
             self.init_file_name()
 
             self.get_mood_list()
+            self.mood_num = -1
 
     def reset_username(self):
         """

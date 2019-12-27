@@ -118,18 +118,21 @@ class Average(object):
         cmt_df = pd.DataFrame(cmt_list_csv)
         if self.debug:
             print(cmt_df.shape)
-        all_cmt_name_df = cmt_df['comment_name']
-        cmt_names = cmt_df['comment_name'].drop_duplicates()
-        cmt_result_csv = []
-        for name in cmt_names:
-            cmt_name_result = (all_cmt_name_df == name)
-            cmt_times = cmt_name_result.sum()
-            cmt_result_csv.append(dict(cmt_name=name, cmt_times=cmt_times))
-        cmt_result_csv_df = pd.DataFrame(cmt_result_csv)
-        cmt_result_csv_df.sort_values(by='cmt_times', inplace=True, ascending=False)
-        if export_csv:
-            cmt_result_csv_df.to_csv(self.CMT_RESULT_NAMES)
-        return cmt_result_csv_df
+        if not cmt_df.empty:
+            all_cmt_name_df = cmt_df['comment_name']
+            cmt_names = cmt_df['comment_name'].drop_duplicates()
+            cmt_result_csv = []
+            for name in cmt_names:
+                cmt_name_result = (all_cmt_name_df == name)
+                cmt_times = cmt_name_result.sum()
+                cmt_result_csv.append(dict(cmt_name=name, cmt_times=cmt_times))
+            cmt_result_csv_df = pd.DataFrame(cmt_result_csv)
+            cmt_result_csv_df.sort_values(by='cmt_times', inplace=True, ascending=False)
+            if export_csv:
+                cmt_result_csv_df.to_csv(self.CMT_RESULT_NAMES)
+            return cmt_result_csv_df
+        else:
+            return None
 
     def calculate_like_rank(self, df):
         pass

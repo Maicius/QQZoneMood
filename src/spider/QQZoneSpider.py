@@ -373,7 +373,7 @@ class QQZoneSpider(BaseSpider):
         # 如果不是强制停止的，就保存数据
         if self.use_redis:
             force_key = self.re.get(FORCE_STOP_SPIDER_FLAG + self.username)
-            if force_key != FORCE_STOP_SPIDER_FLAG and not self.from_client:
+            if not force_key or (force_key != FORCE_STOP_SPIDER_FLAG and not self.from_client):
                 # 保存所有数据到指定文件
                 print('保存最终数据中...')
                 if self.use_redis:

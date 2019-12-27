@@ -3,6 +3,9 @@ import unittest
 from src.spider.QQZoneFriendSpider import QQZoneFriendSpider
 
 class FriendSpiderTest(unittest.TestCase):
+    """
+    测试获取好友数据（基本信息，不是说说内容）
+    """
 
     def test_init(self):
         QQZoneFriendSpider()

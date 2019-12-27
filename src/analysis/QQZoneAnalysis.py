@@ -332,22 +332,27 @@ class QQZoneAnalysis(QQZoneFriendMoodSpider):
 
     def draw_cmt_cloud(self, df):
         cmt_df = self.av.calculate_cmt_rank(df)
-        cmt_dict = {x[0]: x[1] for x in cmt_df.values}
-        self.drawWordCloud(cmt_dict, self.username + '_cmt', dict_type=True)
+        if not cmt_df.empty:
+            cmt_dict = {x[0]: x[1] for x in cmt_df.values}
+            self.drawWordCloud(cmt_dict, self.username + '_cmt', dict_type=True)
 
     def rank_like_people(self, df):
         uin_list = df['uin_list']
         all_uin_list = []
         for item in uin_list:
             all_uin_list.extend(item)
-        all_uin_df = pd.DataFrame(all_uin_list)
-        all_uin_count = all_uin_df.groupby(['nick']).count().reset_index()
-        return all_uin_count
+        if len(all_uin_list) > 0:
+            all_uin_df = pd.DataFrame(all_uin_list)
+            all_uin_count = all_uin_df.groupby(['nick']).count().reset_index()
+            return all_uin_count
+        else:
+            return None
 
     def draw_like_cloud(self, df):
         all_uin_count = self.rank_like_people(df)
-        all_uin_dict = {str(x[0]): x[1] for x in all_uin_count.values}
-        self.drawWordCloud(all_uin_dict, self.username + '_like', dict_type=True)
+        if all_uin_count:
+            all_uin_dict = {str(x[0]): x[1] for x in all_uin_count.values}
+            self.drawWordCloud(all_uin_dict, self.username + '_like', dict_type=True)
 
     def export_mood_df(self, export_csv=True, export_excel=True):
         """
