@@ -350,7 +350,7 @@ class QQZoneAnalysis(QQZoneFriendMoodSpider):
 
     def draw_like_cloud(self, df):
         all_uin_count = self.rank_like_people(df)
-        if all_uin_count:
+        if not all_uin_count.empty:
             all_uin_dict = {str(x[0]): x[1] for x in all_uin_count.values}
             self.drawWordCloud(all_uin_dict, self.username + '_like', dict_type=True)
 
