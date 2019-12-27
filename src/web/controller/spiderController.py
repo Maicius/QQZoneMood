@@ -32,7 +32,7 @@ def query_spider_info(QQ, password):
         if info.find(".jpg") != -1:
             finish = LOGGING_STATE
         elif info.find(LOGIN_NOT_MATCH) != -1:
-            conn.lrem(WAITING_USER_LIST, QQ)
+            conn.lrem(WAITING_USER_LIST, 0, QQ)
             conn.hdel(USER_MAP_KEY, QQ)
             finish = NOT_MATCH_STATE
         elif info.find(FRIEND_INFO_PRE) != -1:
@@ -42,7 +42,7 @@ def query_spider_info(QQ, password):
             finish = SUCCESS_STATE
             mood_num = int(info.split(':')[1])
         elif info.find("失败") != -1:
-            conn.lrem(WAITING_USER_LIST, QQ)
+            conn.lrem(WAITING_USER_LIST, 0, QQ)
             conn.hdel(USER_MAP_KEY, QQ)
             finish = FAILED_STATE
             mood_num = FAILED_STATE
@@ -102,7 +102,7 @@ def start_spider():
             result = dict(result=ALREADY_IN, waiting_num=waiting_num, friend_num=friend_num, mood_num=mood_num)
             return json.dumps(result, ensure_ascii=False)
         elif qq in waiting_list and login_success == "0":
-            conn.lrem(WAITING_USER_LIST, qq)
+            conn.lrem(WAITING_USER_LIST,0, qq)
 
         if waiting_num >= SPIDER_USER_NUM_LIMIT:
             result = dict(result=WAITING_USER_STATE, waiting_num=waiting_num)

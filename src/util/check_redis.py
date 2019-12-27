@@ -43,7 +43,7 @@ class CheckUser(object):
                 # logging.info(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')+'---' + index + ' no longer exist, delete it from dict')
                 self.user_dict[index] = 0
             if self.user_dict[index] >= 10:
-                conn.lrem(WAITING_USER_LIST, index)
+                conn.lrem(WAITING_USER_LIST, 0, index)
                 print(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')+'---' + index + ' time >= 10, delete it from redis')
                 self.user_dict[index] = 0
 

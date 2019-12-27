@@ -59,7 +59,7 @@ def do_clear_data_by_user(QQ, conn):
         os.system("rm -rf " + DATA_DIR_KEY)
         os.system("rm -rf " + WEB_IMAGE_PATH_DIR)
         conn.hdel(USER_MAP_KEY, QQ)
-        conn.lrem(WAITING_USER_LIST, QQ)
+        conn.lrem(WAITING_USER_LIST, 0, QQ)
         # redis的del不支持正则表达式，因此只能循环删除
         all_keys = conn.keys("*" + QQ + "*")
         print()

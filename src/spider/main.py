@@ -98,8 +98,8 @@ def web_interface(username, nickname, stop_time, mood_num, cookie_text, no_delet
     else:
         now_user = int(now_user)
     sp.re.set(FINISH_USER_NUM_KEY, now_user + 1)
-    # 对排队list中删除当前用户，注意该指令的传参方式与redis-cli中不同
-    sp.re.lrem(WAITING_USER_LIST, username)
+    # 对排队list中删除当前用户，注意该指令的传参方式在不同redis版本中有差异
+    sp.re.lrem(WAITING_USER_LIST, 0, username)
 
 def get_user_basic_info():
     sp = QQZoneSpider(use_redis=True, debug=False, mood_begin=0, mood_num=-1,
