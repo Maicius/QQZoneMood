@@ -39,6 +39,7 @@ class QQZoneFriendSpider(QQZoneSpider):
         self.friend_thread_list = []
         self.export_excel = export_excel
         self.export_csv = export_csv
+        self.error_friend_num = 0
 
     def get_friend_list(self):
         """
@@ -160,13 +161,15 @@ class QQZoneFriendSpider(QQZoneSpider):
             except BaseException as e:
                 self.format_error(e, friend)
                 print(data)
+                self.error_friend_num += 1
                 continue
             finally:
                 index += step
             self.friend_detail.append(data)
 
             if self.use_redis:
-                self.re.set(FRIEND_INFO_COUNT_KEY + self.username, len(self.friend_detail))
+                # 这里保存的是friend detail的长度，在多线程的情况下，只有friend detail才能表示所有的数据
+                self.re.set(FRIEND_INFO_COUNT_KEY + self.username, len(self.friend_detail) + self.error_friend_num)
                 if not self.no_delete:
                     self.re.expire(FRIEND_INFO_COUNT_KEY + self.username, EXPIRE_TIME_IN_SECONDS)
                 until_stop_time = False if self.re.get(STOP_SPIDER_KEY + str(self.username)) == STOP_SPIDER_FLAG else True
@@ -332,8 +335,6 @@ class QQZoneFriendSpider(QQZoneSpider):
             self.user_info.most_group = most_group[0]
             self.user_info.most_group_member = most_group[1]
             print(most_group)
-
-
 
     def get_first_friend_info(self):
         if self.friend_df.empty:
