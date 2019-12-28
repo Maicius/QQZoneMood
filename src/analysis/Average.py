@@ -132,7 +132,7 @@ class Average(object):
                 cmt_result_csv_df.to_csv(self.CMT_RESULT_NAMES)
             return cmt_result_csv_df
         else:
-            return None
+            return pd.DataFrame()
 
     def calculate_like_rank(self, df):
         pass

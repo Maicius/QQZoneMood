@@ -347,7 +347,6 @@ class BaseSpider(object):
             self.save_data_to_txt(data=self.error_like_list_unikeys,
                                   file_name=self.ERROR_LIKE_LIST_NAME_UNIKEY_FILE_NAME)
 
-        self.save_data_to_redis(final_result=True)
 
     def connect_redis(self):
         conn = get_redis_conn(self.pool_flag)

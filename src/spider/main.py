@@ -109,5 +109,18 @@ def get_user_basic_info():
                       download_like_names=True, recover=False, cookie_text=None)
     return sp.user_info
 
+def generate_friend_info():
+    """
+    获取好友的空间数据并进行数据分析
+    :return:
+    """
+    qa = QQZoneAnalysis(use_redis=False, debug=False)
+    # 建议在resource/config/friend_info.json中配置需要爬取的好友QQ号
+    # 也可以直接在这里传入qq号，此处传入的QQ号优先级比配置文件大，但是配置文件可以批量传入QQ号
+    qa.get_friend_mood(friend_qq='')
+    qa.get_useful_info_from_json()
+    qa.draw_like_cloud(qa.mood_data_df)
+    qa.draw_cmt_cloud(qa.mood_data_df)
+
 if __name__ == '__main__':
-    capture_main_data()
+    generate_friend_info()

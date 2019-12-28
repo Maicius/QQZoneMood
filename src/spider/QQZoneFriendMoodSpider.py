@@ -65,7 +65,8 @@ class QQZoneFriendMoodSpider(QQZoneFriendSpider):
         :return:
         """
         if self.g_tk == 0:
-            self.login()
+            # self.login()
+            self.login_with_qr_code()
         if friend_qq != '':
             print("因传入参数不为空，所以舍弃配置文件friend_info.json的内容")
             self.friend_name_list.clear()

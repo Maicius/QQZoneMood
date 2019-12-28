@@ -375,6 +375,7 @@ class QQZoneSpider(BaseSpider):
             force_key = self.re.get(FORCE_STOP_SPIDER_FLAG + self.username)
             if not force_key or (force_key != FORCE_STOP_SPIDER_FLAG and not self.from_client):
                 # 保存所有数据到指定文件
+
                 print('保存最终数据中...')
                 if self.use_redis:
                     self.re.set(STOP_SPIDER_KEY + self.username, FINISH_ALL_INFO)
@@ -382,11 +383,13 @@ class QQZoneSpider(BaseSpider):
                     print('Error Unikeys Num:', len(self.error_like_detail_unikeys))
                     print('Retry to get them...')
                 self.retry_error_unikey()
-                self.save_all_data_to_json()
-                self.result_report()
+                self.save_data_to_redis(final_result=True)
                 print("finish===================")
             else:
                 self.re.delete(FORCE_STOP_SPIDER_FLAG + self.username)
+        self.save_all_data_to_json()
+        self.result_report()
+
 
     def find_best_step(self, mood_num, thread_num):
         step = int(mood_num / thread_num // 20 * 20)
@@ -446,6 +449,7 @@ class QQZoneSpider(BaseSpider):
                 logging.error(e)
                 print("因错误导致爬虫终止....现在临时保存数据")
                 self.save_all_data_to_json()
+                self.save_data_to_redis(final_result=True)
                 print('已爬取的数据页数(20条一页):', pos)
                 print("保存临时数据成功")
                 print("ERROR===================")
