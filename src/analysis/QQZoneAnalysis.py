@@ -14,7 +14,23 @@ import numpy as np
 class QQZoneAnalysis(QQZoneFriendMoodSpider):
     def __init__(self, use_redis=False, debug=False, username='', analysis_friend=False, mood_begin=0, mood_num=-1,
                  stop_time='-1', from_web=False, nickname='', no_delete=True, cookie_text='', pool_flag='127.0.0.1', exprot_excel=True, export_csv=False):
+        """
 
+        :param use_redis:
+        :param debug:
+        :param username:
+        :param analysis_friend: 是否要分析好友数据（比如最早的好友、共同好友数量最多的好友），如果要分析该类指标，必须已经获取了好友数据
+        :param mood_begin:
+        :param mood_num:
+        :param stop_time:
+        :param from_web:
+        :param nickname:
+        :param no_delete:
+        :param cookie_text:
+        :param pool_flag:
+        :param exprot_excel:
+        :param export_csv:
+        """
         QQZoneFriendMoodSpider.__init__(self, use_redis=use_redis, debug=debug, recover=False, username=username, mood_num=mood_num,
                               mood_begin=mood_begin, stop_time=stop_time, from_web=from_web, nickname=nickname,
                               no_delete=no_delete, cookie_text=cookie_text, analysis=True, export_excel=exprot_excel, export_csv=export_csv, pool_flag=pool_flag)
@@ -114,26 +130,32 @@ class QQZoneAnalysis(QQZoneFriendMoodSpider):
             self.friend_df = pd.read_csv(self.FRIEND_DETAIL_LIST_FILE_NAME)
         if not self.has_clean_data:
             self.get_useful_info_from_json()
-        day_begin_time = self.mood_data_df['time_stamp'].apply(lambda x: get_standard_time_from_mktime2(x))
-        day_time_stamp = self.mood_data_df['time_stamp']
-        time_diff = day_time_stamp - day_begin_time
-        # 3个小时的时间差
-        time_step = 60 * 60 * 3
-        time_state = time_diff.apply(lambda x: x // time_step)
-        time_state_df = pd.DataFrame(time_state)
-        time_state_df['count'] = 1
-        time_state_df = time_state_df.groupby(by='time_stamp').sum().reset_index()
-        temp = max(time_state_df['count'].values)
+        try:
+            day_begin_time = self.mood_data_df['time_stamp'].apply(lambda x: get_standard_time_from_mktime2(x))
+            day_time_stamp = self.mood_data_df['time_stamp']
+            time_diff = day_time_stamp - day_begin_time
+            # 3个小时的时间差
+            time_step = 60 * 60 * 3
+            time_state = time_diff.apply(lambda x: x // time_step)
+            time_state_df = pd.DataFrame(time_state)
+            time_state_df['count'] = 1
 
-        most_state = time_state_df.loc[time_state_df['count'] == temp, 'time_stamp'].values[0]
-        # 判断是否是夜猫子
-        is_night = (time_state_df.loc[time_state_df['time_stamp'] == 0, 'count'].values[0] / time_state_df['count'].sum()) > 0.1
-        self.mood_data_df['time_state'] = time_state
-        self.time_step_df = pd.DataFrame(time_state)
-        if self.debug:
-            print('send time:', self.mood_data_df.shape)
-        self.user_info.most_time_state = most_state
-        self.user_info.is_night = int(is_night)
+            time_state_df = time_state_df.groupby(by='time_stamp').sum().reset_index()
+            temp = max(time_state_df['count'].values)
+            most_state = time_state_df.loc[time_state_df['count'] == temp, 'time_stamp'].values[0]
+            # 判断是否是夜猫子
+            is_night = (time_state_df.loc[time_state_df['time_stamp'] == 0, 'count'].values[0] / time_state_df['count'].sum()) > 0.1
+            self.mood_data_df['time_state'] = time_state
+            self.time_step_df = pd.DataFrame(time_state)
+            if self.debug:
+                print('send time:', self.mood_data_df.shape)
+            self.user_info.most_time_state = most_state
+            self.user_info.is_night = int(is_night)
+        except BaseException as e:
+            self.format_error(e, "Failed to analysis sedn mood time")
+            self.user_info.most_time_state = 0
+            self.user_info.is_night = 0
+
 
     def parse_mood_detail(self, mood):
         try:
@@ -378,13 +400,20 @@ class QQZoneAnalysis(QQZoneFriendMoodSpider):
         if not self.has_clean_data:
             self.get_useful_info_from_json()
         all_uin_count = self.rank_like_people(self.mood_data_df)
-        all_uin_count = all_uin_count.sort_values(by="gender", ascending=False).reset_index()
-        most_like_name = all_uin_count.loc[0, 'nick']
+        if not all_uin_count.empty:
+            all_uin_count = all_uin_count.sort_values(by="gender", ascending=False).reset_index()
+            most_like_name = all_uin_count.loc[0, 'nick']
+            self.user_info.like_friend_name = most_like_name
+        else:
+            self.user_info.like_friend_name = ''
 
         cmt_df = self.av.calculate_cmt_rank(self.mood_data_df).reset_index()
-        most_cmt_name = cmt_df.loc[0, 'cmt_name']
-        self.user_info.cmt_friend_name = most_cmt_name
-        self.user_info.like_friend_name = most_like_name
+        if not all_uin_count.empty:
+            most_cmt_name = cmt_df.loc[0, 'cmt_name']
+            self.user_info.cmt_friend_name = most_cmt_name
+        else:
+            self.user_info.cmt_friend_name = ''
+
 
 
     def calculate_history_like_agree(self):

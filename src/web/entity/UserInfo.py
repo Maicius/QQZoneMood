@@ -59,6 +59,7 @@ class UserInfo(object):
         data = self.to_dict()
         with open(self.temp_dir + "user_info.json", 'w', encoding='utf-8') as w:
             json.dump(data, w, ensure_ascii=False)
+        print("user info result file was saved to:", self.temp_dir + "user_info.json")
 
     def load(self):
         try:

@@ -141,7 +141,10 @@ class BaseSpider(object):
             print(e)
             print(msg)
             logging.error(e)
-            logging.error(msg)
+            try:
+                logging.error(msg)
+            except:
+                pass
             print('ERROR===================')
             if self.debug:
                 # raise e
