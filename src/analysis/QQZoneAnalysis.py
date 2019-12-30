@@ -408,7 +408,7 @@ class QQZoneAnalysis(QQZoneFriendMoodSpider):
             self.user_info.like_friend_name = ''
 
         cmt_df = self.av.calculate_cmt_rank(self.mood_data_df).reset_index()
-        if not all_uin_count.empty:
+        if not cmt_df.empty:
             most_cmt_name = cmt_df.loc[0, 'cmt_name']
             self.user_info.cmt_friend_name = most_cmt_name
         else:

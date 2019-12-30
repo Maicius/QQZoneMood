@@ -401,6 +401,9 @@ let vm = avalon.define({
 
     return_config: function () {
         vm.view_data_state = VIEW_DATA_STATE.config;
+    },
+    judge_stop_friend_processbar: function () {
+        return vm.spider_state === 1 || vm.spider_friend_num < vm.all_friend_num;
     }
 });
 
