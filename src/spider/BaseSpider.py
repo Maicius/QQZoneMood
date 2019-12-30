@@ -140,8 +140,8 @@ class BaseSpider(object):
             print('ERROR===================')
             print(e)
             print(msg)
-            logging.error(e)
             try:
+                logging.error(e)
                 logging.error(msg)
             except:
                 pass
