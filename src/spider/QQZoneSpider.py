@@ -320,8 +320,7 @@ class QQZoneSpider(BaseSpider):
          # 获取动态详情列表（一页20个）并存储到本地
         :return:
         """
-        url_mood = self.get_mood_url()
-        url_mood = url_mood + '&uin=' + str(self.username)
+        url_mood = self.get_mood_url() + '&uin=' + str(self.username)
         pos = self.mood_begin
         recover_index_split = 0
         if self.recover:
@@ -332,14 +331,19 @@ class QQZoneSpider(BaseSpider):
         url = url_mood + '&pos=' + str(pos)
         print("url", url)
         try:
-            mood_num = self.get_mood_num(url, url_mood)
+            mood_num = self.get_mood_num()
         except:
+            # 这个数据很重要，所以重复一次
             time.sleep(1)
             try:
-                mood_num = self.get_mood_num(url, url_mood)
+                mood_num = self.get_mood_num()
             except:
                 print("Failed to get mood num")
                 mood_num = 0
+
+        if not self.from_client and mood_num > 0:
+            self.get_first_mood(mood_num)
+
         # 如果mood_num为-1或指定的mood_num大于实际的动态数量，则下载全部的动态
         if self.mood_num == -1 or self.mood_num > mood_num:
             self.mood_num = mood_num
@@ -397,15 +401,15 @@ class QQZoneSpider(BaseSpider):
             print("Best Step:", step)
         return step
 
-    def get_mood_num(self, url, url_mood):
+    def get_mood_num(self):
+        url_mood = self.get_mood_url() + '&uin=' + str(self.username)
+        url = url_mood + '&pos=0'
         res = self.req.get(url=url, headers=self.h5_headers, timeout=20)
         mood = res.content.decode('utf-8')
         if self.debug:
             print("获取主页动态数量的状态码:", res.status_code)
         mood_json = json.loads(self.get_json(mood))
         mood_num = mood_json['usrinfo']['msgnum']
-        if not self.from_client:
-            self.get_first_mood(mood_num, url_mood)
         return mood_num
 
     def get_mood_in_range(self, pos, mood_num, recover_index_split, url_mood, until_stop_time):
@@ -560,7 +564,7 @@ class QQZoneSpider(BaseSpider):
             return dict(tid=tid)
 
     # 获取第一条动态
-    def get_first_mood(self, mood_num, url_mood):
+    def get_first_mood(self, mood_num):
         """
         获取用户最早的一条动态的发表时间
         :param mood_num:
@@ -570,8 +574,9 @@ class QQZoneSpider(BaseSpider):
         try:
             last_page = math.ceil(mood_num / 20) - 1
             pos = 20 * last_page
+            url_mood = self.get_mood_url() + '&uin=' + str(self.username)
             url = url_mood + '&pos=' + str(pos)
-            mood_list = self.req.get(url=url, headers=self.headers, timeout=20)
+            mood_list = self.req.get(url=url, headers=self.h5_headers, timeout=20)
             if self.debug:
                 print("第一次动态发表时间:", mood_list.status_code)
             json_content = json.loads(self.get_json(str(mood_list.content.decode('utf-8'))))

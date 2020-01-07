@@ -98,5 +98,11 @@ class SpiderTest(unittest.TestCase):
         sp.get_main_page_info()
         sp.get_mood_list()
 
+    def test_get_first_mood(self):
+        sp = QQZoneSpider(use_redis=False, debug=True)
+        sp.login_with_qr_code()
+        mood_num = sp.get_mood_num()
+        sp.get_first_mood(mood_num)
+
 if __name__ =='__main__':
     unittest.main()
