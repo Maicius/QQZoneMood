@@ -403,7 +403,7 @@ let vm = avalon.define({
         vm.view_data_state = VIEW_DATA_STATE.config;
     },
     judge_stop_friend_processbar: function () {
-        return vm.spider_state === 1 || vm.spider_friend_num < vm.all_friend_num;
+        return vm.spider_state === SPIDER_STATE.SPIDER && vm.spider_friend_num < vm.all_friend_num;
     }
 });
 

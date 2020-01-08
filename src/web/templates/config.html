@@ -127,7 +127,7 @@
                     <p style="margin-top:20px; font-size: 18px">{$friend_info_spider_text$}{$spider_friend_num$} /
                         {$all_friend_num$}</p>
                     <div class="progress">
-                        <div :class="['progress-bar',(@spider_friend_num < @all_friend_num ? ('progress-bar-animated', 'progress-bar-striped'): 'bg-success')]"
+                        <div :class="['progress-bar',(@judge_stop_friend_processbar() ? ('progress-bar-animated', 'progress-bar-striped'): 'bg-success')]"
                              role="progressbar"
                              aria-valuemin="0" aria-valuemax="100" :css="{width: @friend_process_width}">
                         </div>
