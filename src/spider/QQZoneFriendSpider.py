@@ -265,7 +265,7 @@ class QQZoneFriendSpider(QQZoneSpider):
 
         friend_df = pd.DataFrame(self.friend_detail_list)
         friend_df.sort_values(by='add_friend_time', inplace=True)
-
+        friend_df['add_friend_time2'] = friend_df['add_friend_time'].apply(lambda x: util.get_full_time_from_mktime(x))
         if self.export_excel:
             friend_df.to_excel(self.FRIEND_DETAIL_EXCEL_FILE_NAME)
         if self.export_csv:
