@@ -140,7 +140,7 @@ def generate_friend_info():
     获取好友的空间数据并进行数据分析
     :return:
     """
-    qa = QQZoneAnalysis(use_redis=False, debug=False, analysis_friend=False, mood_num=20)
+    qa = QQZoneAnalysis(use_redis=False, debug=False, analysis_friend=False)
     # 建议在resource/config/friend_info.json中配置需要爬取的好友QQ号
     # 也可以直接在这里传入qq号，此处传入的QQ号优先级比配置文件大，但是配置文件可以批量传入QQ号
     qa.get_friend_mood(friend_qq='')

@@ -142,7 +142,27 @@ def remove_waste_emoji(text):
     text = re.subn(re.compile('@\{.*?\}'), '', text)[0]
     return text
 
+extra_chars = set("\"\'!#$%&\()*+,-./:;<=>?@[\\]^_`{|}~！#￥%&？《》{}“”，：‘’。（）·、；【】")
+def remove_special_tag(text):
+    all_tag = set(re.findall(u'[^\u4e00-\u9fa5a-zA-Z0-9\*]', text))
+    special_tag = all_tag.difference(extra_chars)
+    for tag in special_tag:
+        text = text.replace(tag, '')
+    return text
+
+def test_remove_special_tag():
+    text1 = "🌕🍙"
+    text2 = "LoToRy.🤓"
+    text3 = "一棵树的头像🤔"
+    text4 = "{\"name\": \"高冷的逗比\"}"
+    assert "" == remove_special_tag(text1)
+    assert "LoToRy." == remove_special_tag(text2)
+    assert "一棵树的头像" == remove_special_tag(text3)
+    assert "{\"name\":\"高冷的逗比\"}" == remove_special_tag(text4)
+
+
 if __name__ =='__main__':
     print(get_mktime('2018-09-6'))
     print(get_mktime('2018-9-06'))
     print(get_full_time_from_mktime(1566545874))
+    test_remove_special_tag()

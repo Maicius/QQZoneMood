@@ -9,6 +9,8 @@ import datetime
 from src.util.constant import FINISH_FRIEND_INFO_ALL, STOP_FRIEND_INFO_SPIDER_KEY, WEB_SPIDER_INFO, \
     FRIEND_INFO_PRE, FRIEND_INFO_COUNT_KEY, EXPIRE_TIME_IN_SECONDS, FRIEND_LIST_KEY, STOP_SPIDER_KEY, STOP_SPIDER_FLAG, \
     FRIEND_NUM_KEY
+from src.util.util import remove_special_tag
+
 
 class QQZoneFriendSpider(QQZoneSpider):
     """
@@ -154,6 +156,7 @@ class QQZoneFriendSpider(QQZoneSpider):
                 print('正在爬取好友:', uin, '数据...,', 'index=', index)
             url = self.get_friend_detail_url(uin)
             content = self.get_json(self.req.get(url, headers=self.headers, timeout=20).content.decode('utf-8'))
+
             data = json.loads(content)
             try:
                 data = data['data']
@@ -231,50 +234,57 @@ class QQZoneFriendSpider(QQZoneSpider):
         清洗好友数据，生成csv
         :return:
         """
-        if len(self.friend_list) == 0:
-            self.load_friend_data()
-        friend_total_num = len(self.friend_list)
-        print("valid friend num:", friend_total_num)
-        friend_list_df = pd.DataFrame(self.friend_list)
-        self.friend_detail_list = []
-        if friend_total_num == 0:
-            print("该用户没有好友")
+        try:
+            if len(self.friend_list) == 0:
+                self.load_friend_data()
+            friend_total_num = len(self.friend_list)
+            print("valid friend num:", friend_total_num)
+            friend_list_df = pd.DataFrame(self.friend_list)
+            self.friend_detail_list = []
+            if friend_total_num == 0:
+                print("该用户没有好友")
+                return False
+            for friend in self.friend_detail:
+                try:
+                    friend_uin = friend['friendUin']
+                    add_friend_time = friend['addFriendTime']
+                    img = friend_list_df.loc[friend_list_df['uin'] == friend_uin, 'img'].values[0]
+                    nick = friend['nick']
+                    nick_name = remove_special_tag(nick[str(friend_uin)])
+
+                    common_friend_num = len(friend['common']['friend'])
+                    common_group_num = len(friend['common']['group'])
+                    common_group_names = friend['common']['group']
+                    self.friend_detail_list.append(
+                        dict(uin=self.username, friend_uin=friend_uin, add_friend_time=add_friend_time,
+                             nick_name=nick_name, common_friend_num=common_friend_num,
+                             common_group_num=common_group_num, common_group_names=common_group_names, img=img))
+
+                except BaseException as e:
+                    if self.debug:
+                        print("单向好友:", friend)
+                    self.friend_detail_list.append(
+                        dict(uin=0, friend_uin=friend['friendUin'], add_friend_time=0,
+                             nick_name='单向好友', common_friend_num=0,
+                             common_group_num=0, common_group_names='', img=''))
+
+            friend_df = pd.DataFrame(self.friend_detail_list)
+            friend_df.sort_values(by='add_friend_time', inplace=True)
+            friend_df['add_friend_time2'] = friend_df['add_friend_time'].apply(lambda x: util.get_full_time_from_mktime(x))
+            friend_df.fillna('', inplace=True)
+
+            if self.export_excel:
+                friend_df.to_excel(self.FRIEND_DETAIL_EXCEL_FILE_NAME)
+            if self.export_csv:
+                friend_df.to_csv(self.FRIEND_DETAIL_LIST_FILE_NAME)
+            if self.debug:
+                print("Finish to clean friend data...")
+                print("File Name:", self.FRIEND_DETAIL_LIST_FILE_NAME)
+            self.friend_df = friend_df
+            return True
+        except BaseException as e:
+            self.format_error(e, "Failed to parse friend_info")
             return False
-        for friend in self.friend_detail:
-            try:
-                friend_uin = friend['friendUin']
-                add_friend_time = friend['addFriendTime']
-                img = friend_list_df.loc[friend_list_df['uin'] == friend_uin, 'img'].values[0]
-                nick = friend['nick']
-                nick_name = nick[str(friend_uin)]
-                common_friend_num = len(friend['common']['friend'])
-                common_group_num = len(friend['common']['group'])
-                common_group_names = friend['common']['group']
-                self.friend_detail_list.append(
-                    dict(uin=self.username, friend_uin=friend_uin, add_friend_time=add_friend_time,
-                         nick_name=nick_name, common_friend_num=common_friend_num,
-                         common_group_num=common_group_num, common_group_names=common_group_names, img=img))
-
-            except BaseException as e:
-                if self.debug:
-                    print("单向好友:", friend)
-                self.friend_detail_list.append(
-                    dict(uin=0, friend_uin=friend['friendUin'], add_friend_time=0,
-                         nick_name='单向好友', common_friend_num=0,
-                         common_group_num=0, common_group_names='', img=''))
-
-        friend_df = pd.DataFrame(self.friend_detail_list)
-        friend_df.sort_values(by='add_friend_time', inplace=True)
-        friend_df['add_friend_time2'] = friend_df['add_friend_time'].apply(lambda x: util.get_full_time_from_mktime(x))
-        if self.export_excel:
-            friend_df.to_excel(self.FRIEND_DETAIL_EXCEL_FILE_NAME)
-        if self.export_csv:
-            friend_df.to_csv(self.FRIEND_DETAIL_LIST_FILE_NAME)
-        if self.debug:
-            print("Finish to clean friend data...")
-            print("File Name:", self.FRIEND_DETAIL_LIST_FILE_NAME)
-        self.friend_df = friend_df
-        return True
 
     def get_friend_total_num(self):
         self.load_friend_data()

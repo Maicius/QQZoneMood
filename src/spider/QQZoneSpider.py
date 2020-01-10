@@ -29,6 +29,9 @@ import subprocess
 import sys
 import pandas as pd
 
+from src.util.util import remove_special_tag
+
+
 class QQZoneSpider(BaseSpider):
     def __init__(self, use_redis=False, debug=False, mood_begin=0, mood_num=-1, stop_time='-1',
                  download_small_image=False, download_big_image=False,
@@ -411,7 +414,7 @@ class QQZoneSpider(BaseSpider):
             if self.debug:
                 print("该用户信息存在乱码")
                 self.format_error(e, "Bad decode exists in user info")
-            mood = res.text
+            mood = remove_special_tag(res.text)
         if self.debug:
             print("获取主页动态数量的状态码:", res.status_code)
         mood_json = json.loads(self.get_json(mood))
@@ -432,7 +435,7 @@ class QQZoneSpider(BaseSpider):
                 try:
                     json_content = self.get_json(str(mood_list.content.decode('utf-8')))
                 except BaseException as e:
-                    json_content = self.get_json(mood_list.text)
+                    json_content = self.get_json(remove_special_tag(mood_list.text))
                 self.content.append(json_content)
                 if not self.from_client:
                     # 获取每条动态的unikey
@@ -588,7 +591,7 @@ class QQZoneSpider(BaseSpider):
             try:
                 json_content = json.loads(self.get_json(str(mood_list.content.decode('utf-8'))))
             except:
-                json_content = json.loads(self.get_json(str(mood_list.text)))
+                json_content = json.loads(self.get_json(str(remove_special_tag(mood_list.text))))
             last_mood = json_content['msglist'][-1]
             self.user_info.first_mood_time = last_mood['createTime']
         except BaseException as e:

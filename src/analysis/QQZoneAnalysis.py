@@ -101,16 +101,22 @@ class QQZoneAnalysis(QQZoneFriendMoodSpider):
 
         data_df.drop(['total_num', 'index'], axis=1, inplace=True)
         # data_df.drop_duplicate()
-        n_E = self.av.calculate_E(data_df)
-        max_n_E = max(n_E)
-        data_df['n_E'] = n_E
-        data_df['user'] = self.username
+        try:
+            n_E = self.av.calculate_E(data_df)
+            max_n_E = max(n_E)
+            data_df['n_E'] = n_E
+            data_df['user'] = self.username
 
-        self.mood_data_df = data_df
-        date = self.mood_data_df.loc[self.mood_data_df.n_E == max_n_E, 'time'].values[0]
-        # 计算熵最高的日期
-        self.user_info.most_date = date
-        self.has_clean_data = True
+            self.mood_data_df = data_df
+            data_df = data_df.sort_values(by='n_E', ascending=False)
+            date = data_df['time'].values[0]
+            # date = self.mood_data_df.loc[self.mood_data_df.n_E == max_n_E, 'time'].values[0]
+            # 计算熵最高的日期
+            self.user_info.most_date = date
+        except:
+            self.user_info.most_date = ''
+        finally:
+            self.has_clean_data = True
 
     def calculate_send_time(self):
         """
