@@ -13,7 +13,6 @@ import json
 import copy
 import datetime
 import random
-import logging
 from src.spider.BaseSpider import BaseSpider
 from src.util import util
 from src.util.constant import qzone_jother2, SPIDER_USER_NUM_LIMIT, EXPIRE_TIME_IN_SECONDS, MOOD_NUM_KEY, \
@@ -65,7 +64,6 @@ class QQZoneSpider(BaseSpider):
                             from_web=from_web, username=username, nickname=nickname, no_delete=no_delete,
                             pool_flag=pool_flag, from_client=from_client, get_visit=get_visit)
 
-        self.req = requests.Session()
         self.cookies = cookiejar.CookieJar()
         self.req.cookies = self.cookies
         connection_num = 20 * SPIDER_USER_NUM_LIMIT
@@ -140,7 +138,7 @@ class QQZoneSpider(BaseSpider):
 
             if self.debug:
                 print("success to download qr code")
-            logging.info("success to download qr code")
+            self.logging.info("success to download qr code")
             # 如果不是从网页发来的请求，就本地展示二维码
             if not self.from_web and wait_time <= 1:
                 self.show_image(self.QR_CODE_PATH + '.jpg')
@@ -173,7 +171,7 @@ class QQZoneSpider(BaseSpider):
             self.re.lpush(WEB_SPIDER_INFO + self.username, LOGIN_FAILED)
             self.format_error("Failed to login with qr code")
             return False
-        logging.info("scan qr code success")
+        self.logging.info("scan qr code success")
 
         self.nickname = ret[11]
         self.req.get(url=ret[5])
@@ -286,7 +284,7 @@ class QQZoneSpider(BaseSpider):
         self.cookies = cookie
         print(cookie)
         print("Login success")
-        logging.info("login_success")
+        self.logging.info("login_success")
         self.web.quit()
 
     # 手动添加cookie完成登陆
@@ -458,8 +456,8 @@ class QQZoneSpider(BaseSpider):
                         self.save_data_to_redis(final_result=False)
             except BaseException as e:
                 print("ERROR===================")
-                logging.error('wrong place')
-                logging.error(e)
+                self.logging.error('wrong place')
+                self.logging.error(e)
                 print("因错误导致爬虫终止....现在临时保存数据")
                 self.save_all_data_to_json()
                 self.save_data_to_redis(final_result=True)

@@ -1,5 +1,7 @@
 import datetime
 
+import requests
+
 from src.threadPool.ImageThreadPool import ImageThreadPool
 from src.util import util
 from copy import deepcopy
@@ -23,6 +25,7 @@ class BaseSpider(object):
                  download_mood_detail=True, download_like_detail=True, download_like_names=True, recover=False,
                  cookie_text=None, from_web=False, username='', nickname='', no_delete=True, pool_flag='127.0.0.1', from_client=False, get_visit=False):
         # 初始化下载项
+        self.req = requests.Session()
         self.mood_begin = mood_begin
         self.mood_num = mood_num
         self.recover = recover
@@ -141,8 +144,8 @@ class BaseSpider(object):
             print(e)
             print(msg)
             try:
-                logging.error(e)
-                logging.error(msg)
+                self.logging.error(e)
+                self.logging.error(msg)
             except:
                 pass
             print('ERROR===================')
@@ -151,7 +154,7 @@ class BaseSpider(object):
                 pass
 
     def logging_info(self, info):
-        logging.info(info)
+        self.logging.info(info)
 
     def init_parameter(self):
         self.mood_count = 0
@@ -169,6 +172,27 @@ class BaseSpider(object):
         self.error_mood = {}
         self.until_stop_time = True
 
+    def init_log(self):
+        filelog = True
+        logging_dir = self.USER_BASE_DIR + 'log/'
+        if self.debug:
+            print("logging_dir:", logging_dir)
+        util.check_dir_exist(logging_dir)
+        # logging.basicConfig(level=logging.INFO,
+        #                     format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
+        #                     datefmt='%a, %d %b %Y %H:%M:%S',
+        #                     filename=logging_dir + self.username + '.log',
+        #                     filemode='w+')
+        log_path = logging_dir + self.username + '.log'
+        logger = logging.getLogger('log')
+        logger.setLevel(logging.INFO)
+        formatter = logging.Formatter('%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s')
+        if filelog:
+            fh = logging.FileHandler(log_path, encoding='utf-8')
+            fh.setLevel(logging.DEBUG)
+            fh.setFormatter(formatter)
+            logger.addHandler(fh)
+        return logger
 
     def init_file_name(self):
         """
@@ -176,16 +200,10 @@ class BaseSpider(object):
         :return:
         """
         self.USER_BASE_DIR = BASE_DIR + self.username + '/'
-        logging_dir = self.USER_BASE_DIR + 'log/'
-        if self.debug:
-            print("logging_dir:", logging_dir)
-        util.check_dir_exist(logging_dir)
-        logging.basicConfig(level=logging.INFO,
-                            format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
-                            datefmt='%a, %d %b %Y %H:%M:%S',
-                            filename=logging_dir + self.username + '.log',
-                            filemode='w+')
-        logging.info('file_name_head:' + self.username)
+
+        self.logging = self.init_log()
+
+        self.logging.info('file_name_head:' + self.username)
 
         DATA_DIR_HEAD = self.USER_BASE_DIR + 'data/'
         self.CONTENT_FILE_NAME = DATA_DIR_HEAD + 'QQ_content.json'
