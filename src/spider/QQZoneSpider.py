@@ -405,7 +405,13 @@ class QQZoneSpider(BaseSpider):
         url_mood = self.get_mood_url() + '&uin=' + str(self.username)
         url = url_mood + '&pos=0'
         res = self.req.get(url=url, headers=self.h5_headers, timeout=20)
-        mood = res.content.decode('utf-8')
+        try:
+            mood = res.content.decode('utf-8')
+        except BaseException as e:
+            if self.debug:
+                print("该用户信息存在乱码")
+                self.format_error(e, "Bad decode exists in user info")
+            mood = res.text
         if self.debug:
             print("获取主页动态数量的状态码:", res.status_code)
         mood_json = json.loads(self.get_json(mood))
@@ -579,12 +585,17 @@ class QQZoneSpider(BaseSpider):
             mood_list = self.req.get(url=url, headers=self.h5_headers, timeout=20)
             if self.debug:
                 print("第一次动态发表时间:", mood_list.status_code)
-            json_content = json.loads(self.get_json(str(mood_list.content.decode('utf-8'))))
+            try:
+                json_content = json.loads(self.get_json(str(mood_list.content.decode('utf-8'))))
+            except:
+                json_content = json.loads(self.get_json(str(mood_list.text)))
             last_mood = json_content['msglist'][-1]
             self.user_info.first_mood_time = last_mood['createTime']
-            self.user_info.save_user()
         except BaseException as e:
+            self.user_info.first_mood_time = ''
             self.format_error(e, "Failed to get first send mood time")
+        finally:
+            self.user_info.save_user()
 
     # 评论数量超过20的说说需要再循环爬取
     def get_all_cmt_num(self, cmt_num, tid):

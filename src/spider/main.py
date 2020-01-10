@@ -147,5 +147,5 @@ def generate_friend_info():
     do_analysis_for_all(qa)
 
 if __name__ == '__main__':
-    # generate_friend_info()
-    capture_main_data_and_analysis()
+    generate_friend_info()
+    # capture_main_data_and_analysis()
