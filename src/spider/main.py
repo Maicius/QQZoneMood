@@ -83,10 +83,14 @@ def web_interface(username, nickname, stop_time, mood_num, cookie_text, no_delet
         sp.re.rpush(WEB_SPIDER_INFO + username, GET_MOOD_FAILED)
         exit(1)
     sp.re.set(MOOD_FINISH_KEY + str(username), 1)
+    sp.logging_info("finish to capture data")
+    sp.logging_info("begin to analysis...")
+
     # 在爬虫完成之后分析所有数据
     do_analysis_for_all(sp)
 
     sp.user_info.save_user()
+    sp.logging_info("finish to analysis")
     sp.re.set(CLEAN_DATA_KEY + username, 1)
     now_user = sp.re.get(FINISH_USER_NUM_KEY)
     if now_user is None:
@@ -96,6 +100,8 @@ def web_interface(username, nickname, stop_time, mood_num, cookie_text, no_delet
     sp.re.set(FINISH_USER_NUM_KEY, now_user + 1)
     # 对排队list中删除当前用户，注意该指令的传参方式在不同redis版本中有差异
     sp.re.lrem(WAITING_USER_LIST, 0, username)
+    sp.logging_info("finish to delete user from waiting list")
+    sp.logging_info("Success!")
 
 def get_user_basic_info():
     sp = QQZoneSpider(use_redis=True, debug=False, mood_begin=0, mood_num=-1,
