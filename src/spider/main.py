@@ -45,18 +45,18 @@ def web_interface(username, nickname, stop_time, mood_num, cookie_text, no_delet
 
     sp.re.hset(USER_MAP_KEY, username, password)
     sp.re.set(USER_LOGIN_STATE + username, 0)
-    sp.logging_info(username + "init success")
+    sp.logging_info(username + " init web info success")
     try:
         state = sp.login_with_qr_code()
         sp.remove_qr_code()
         # 登陆失败就退出本线程
         if not state:
-            sp.logging_info(username + "logging failed")
+            sp.logging_info(username + " logging failed")
             sp.re.rpush(WEB_SPIDER_INFO + username, LOGIN_FAILED)
             exit(1)
         else:
             # 存储登陆状态
-            sp.logging_info(username + "logging success")
+            sp.logging_info(username + " logging success")
             sp.re.rpush(WEB_SPIDER_INFO + username, "用户" + str(sp.username) + "登陆成功")
             sp.re.set(USER_LOGIN_STATE + username, 1)
     except BaseException as e:

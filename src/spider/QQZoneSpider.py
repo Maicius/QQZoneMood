@@ -457,13 +457,14 @@ class QQZoneSpider(BaseSpider):
             except BaseException as e:
                 print("ERROR===================")
                 self.logging.error('wrong place')
-                self.logging.error(e)
+                self.logging.exception(e)
                 print("因错误导致爬虫终止....现在临时保存数据")
                 self.save_all_data_to_json()
                 self.save_data_to_redis(final_result=True)
                 print('已爬取的数据页数(20条一页):', pos)
                 print("保存临时数据成功")
                 print("ERROR===================")
+                exit(1)
                 # raise e
         pass
 

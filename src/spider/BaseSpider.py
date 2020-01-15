@@ -144,7 +144,7 @@ class BaseSpider(object):
             print(e)
             print(msg)
             try:
-                self.logging.error(e)
+                self.logging.exception(msg=e)
                 self.logging.error(msg)
             except:
                 pass
