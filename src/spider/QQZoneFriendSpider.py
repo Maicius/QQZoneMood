@@ -110,8 +110,8 @@ class QQZoneFriendSpider(QQZoneSpider):
                     self.re.expire(WEB_SPIDER_INFO + self.username, EXPIRE_TIME_IN_SECONDS)
             self.user_info.friend_num = friend_num
             thread_num = self.calculate_thread_num(friend_num)
-            print("获取好友基本信息的线程数量：", thread_num)
-            print("开始获取好友数据...")
+            self.logging_info("获取好友基本信息的线程数量：" + str(thread_num))
+            self.logging_info("开始获取好友数据...")
             for i in range(thread_num):
                 begin_index = i
                 t = threading.Thread(target=self.do_get_friend_detail, args=(begin_index, friend_num, thread_num, True))
@@ -163,7 +163,8 @@ class QQZoneFriendSpider(QQZoneSpider):
                 data['friendUin'] = uin
             except BaseException as e:
                 self.format_error(e, friend)
-                print(data)
+                if self.debug:
+                    print(data)
                 self.error_friend_num += 1
                 continue
             finally:

@@ -141,8 +141,9 @@ class BaseSpider(object):
     def format_error(self, e, msg=""):
         if not self.from_client:
             print('ERROR===================')
-            print(e)
-            print(msg)
+            if self.debug:
+                print(e)
+                print(msg)
             try:
                 self.logging.exception(msg=e)
                 self.logging.error(msg)

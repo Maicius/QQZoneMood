@@ -138,7 +138,7 @@ class QQZoneSpider(BaseSpider):
 
             if self.debug:
                 print("success to download qr code")
-            self.logging.info("success to download qr code")
+            self.logging_info("success to download qr code")
             # 如果不是从网页发来的请求，就本地展示二维码
             if not self.from_web and wait_time <= 1:
                 self.show_image(self.QR_CODE_PATH + '.jpg')
@@ -169,9 +169,9 @@ class QQZoneSpider(BaseSpider):
         # 登陆失败
         if ret[1] != '0':
             self.re.lpush(WEB_SPIDER_INFO + self.username, LOGIN_FAILED)
-            self.format_error("Failed to login with qr code")
+            self.logging_info("Failed to login with qr code")
             return False
-        self.logging.info("scan qr code success")
+        self.logging_info("scan qr code success")
 
         self.nickname = ret[11]
         self.req.get(url=ret[5])
