@@ -4,7 +4,6 @@ import time
 import datetime
 import redis
 import re
-from src.util import util
 from src.util.constant import BASE_DIR, WEB_IMAGE_PATH
 
 WAITING_USER_LIST = 'waiting_user_list'
