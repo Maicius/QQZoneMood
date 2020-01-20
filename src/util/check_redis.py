@@ -49,7 +49,7 @@ class CheckUser(object):
                 conn.lrem(WAITING_USER_LIST, 0, index)
                 print(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')+'---' + index + ' time >= 10, delete it from redis')
                 self.user_dict[index] = 0
-        self.check_user_file()
+        # self.check_user_file()
 
     def check_user_file(self):
         file_list = os.listdir(BASE_DIR)

@@ -28,6 +28,9 @@ import re
 # %%:  %% => %
 # Oct 19, 2017 12:00:00 AM
 # May 27, 2015 12:00:00 AM
+from src.util.check_redis import WAITING_USER_LIST
+from src.util.constant import BASE_DIR, WEB_IMAGE_PATH, USER_MAP_KEY
+
 
 def get_short_date(date):
     time_array = time.strptime(date, "%Y-%m-%d")
@@ -159,6 +162,31 @@ def test_remove_special_tag():
     assert "LoToRy." == remove_special_tag(text2)
     assert "一棵树的头像" == remove_special_tag(text3)
     assert "{\"name\":\"高冷的逗比\"}" == remove_special_tag(text4)
+
+def do_clear_data_by_user(QQ, conn):
+    DATA_DIR_KEY = BASE_DIR + QQ + '/'
+    WEB_IMAGE_PATH_DIR = WEB_IMAGE_PATH + QQ + '/'
+    if os.path.exists(DATA_DIR_KEY):
+        # 删除有QQ号的所有key
+        # 该方法在docker中无法使用，因为该容器内无redis-cli
+        # delete_cmd = "redis-cli KEYS \"*" + QQ + "*\"|xargs redis-cli DEL"
+        # print(delete_cmd)
+        # os.system(delete_cmd)
+        # 删除 该路径下所有文件
+        os.system("rm -rf " + DATA_DIR_KEY)
+        os.system("rm -rf " + WEB_IMAGE_PATH_DIR)
+        conn.hdel(USER_MAP_KEY, QQ)
+        conn.lrem(WAITING_USER_LIST, 0, QQ)
+        # redis的del不支持正则表达式，因此只能循环删除
+        all_keys = conn.keys("*" + QQ + "*")
+        print()
+        for key in all_keys:
+            conn.delete(key)
+        # os.removedirs(os.path.join(BASE_DIR, QQ))
+        finish = 1
+    else:
+        finish = 2
+    return finish
 
 
 if __name__ =='__main__':
