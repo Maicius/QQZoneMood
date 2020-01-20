@@ -28,8 +28,7 @@ import re
 # %%:  %% => %
 # Oct 19, 2017 12:00:00 AM
 # May 27, 2015 12:00:00 AM
-from src.util.check_redis import WAITING_USER_LIST
-from src.util.constant import BASE_DIR, WEB_IMAGE_PATH, USER_MAP_KEY
+from src.util.constant import WAITING_USER_LIST, BASE_DIR, WEB_IMAGE_PATH, USER_MAP_KEY
 
 
 def get_short_date(date):
