@@ -48,31 +48,36 @@ class CheckUser(object):
                 conn.lrem(WAITING_USER_LIST, 0, index)
                 print(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')+'---' + index + ' time >= 10, delete it from redis')
                 self.user_dict[index] = 0
-        # self.check_user_file()
+        self.check_user_file()
 
     def check_user_file(self):
-        file_list = os.listdir(BASE_DIR)
-        user_file_list = []
-        for file in file_list:
-            if re.match('[0-9]+', file):
-                user_file_list.append(file)
-        # print(user_file_list)
-        for user_file in user_file_list:
-            if user_file in self.user_file_dict:
-                self.user_file_dict[user_file] += 1
-                if self.user_file_dict[user_file] > 60 * 24:
-                    DATA_DIR_KEY = BASE_DIR + user_file + '/'
-                    WEB_IMAGE_PATH_DIR = WEB_IMAGE_PATH + user_file + '/'
-                    os.system("rm -rf " + DATA_DIR_KEY)
-                    os.system("rm -rf " + WEB_IMAGE_PATH_DIR)
-                    print(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')+'---' + user_file + ' time >= 24小时, delete it')
-            else:
-                self.user_file_dict[user_file] = 1
+        try:
+            file_list = os.listdir(BASE_DIR)
+            user_file_list = []
+            for file in file_list:
+                if re.match('[0-9]+', file):
+                    user_file_list.append(file)
+            print(user_file_list)
+            for user_file in user_file_list:
+                if user_file in self.user_file_dict:
+                    self.user_file_dict[user_file] += 1
+                    if self.user_file_dict[user_file] > 60 * 12:
+                        DATA_DIR_KEY = BASE_DIR + user_file + '/'
+                        WEB_IMAGE_PATH_DIR = WEB_IMAGE_PATH + user_file + '/'
+                        os.system("rm -rf " + DATA_DIR_KEY)
+                        os.system("rm -rf " + WEB_IMAGE_PATH_DIR)
+                        print(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')+'---' + user_file + ' time >= 24小时, delete it')
+                else:
+                    self.user_file_dict[user_file] = 1
 
-        indexs = self.user_dict.keys()
-        for index in indexs:
-            if index not in user_file_list:
-                self.user_file_dict.pop(index)
+            indexs = self.user_dict.keys()
+            for index in indexs:
+                if index not in user_file_list:
+                    self.user_file_dict.pop(index)
+        except BaseException as e:
+            print("delete file failed...")
+            print(e)
+            pass
 
 
 
