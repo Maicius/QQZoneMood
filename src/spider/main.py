@@ -154,4 +154,5 @@ def generate_friend_info():
 
 if __name__ == '__main__':
     # generate_friend_info()
+    # 开启爬虫并分析数据
     capture_main_data_and_analysis()

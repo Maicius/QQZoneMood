@@ -116,7 +116,14 @@ class QQZoneSpider(BaseSpider):
         if not self.from_web:
             # for mac os
             if sys.platform.find('darwin') >= 0:
-                subprocess.call(['open', self.QR_CODE_PATH + '.jpg'])
+                # Fix issue 50: https://github.com/Maicius/QQZoneMood/issues/50
+                # subprocess.call(['open', self.QR_CODE_PATH + '.jpg'])
+                try:
+                    os.system("open " + self.QR_CODE_PATH + '.jpg')
+                    self.logging_info("打开二维码图片成功")
+                except:
+                    self.logging_info("打开二维码图片失败")
+
             # for linux
             elif sys.platform.find('linux') >= 0:
                 subprocess.call(['xdg-open', self.QR_CODE_PATH + '.jpg'])
