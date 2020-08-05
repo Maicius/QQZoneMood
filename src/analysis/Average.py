@@ -87,7 +87,7 @@ class Average(object):
         print("平均点赞数量:", self.like_num_average)
         print("平均浏览量:", self.prd_num_average)
 
-    def calculate_cmt_rank(self, df, export_csv=False):
+    def clean_cmt_df(self, df):
         cmt_list = df['cmt_list']
         if self.debug:
             print(cmt_list.shape)
@@ -110,12 +110,24 @@ class Average(object):
                     json_item = json.loads(item3)
                     cmt_list_csv.extend(json_item)
                 except JSONDecodeError as e:
-                    wrong_count +=1
+                    wrong_count += 1
                     print(e, item3)
                     pass
         if self.debug:
             print("wrong count:", wrong_count)
         cmt_df = pd.DataFrame(cmt_list_csv)
+        return cmt_df
+
+    def calculate_cmt_rank(self, df, export_csv=False):
+        """
+        统计每个好友的评论量排名
+        :param df:
+        :param export_csv:
+        :return: 带有评论次数的好友名，df
+        """
+
+        cmt_df = self.clean_cmt_df(df)
+
         if self.debug:
             print(cmt_df.shape)
         if not cmt_df.empty:

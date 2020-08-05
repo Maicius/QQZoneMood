@@ -50,8 +50,12 @@ class AnalysisTest(unittest.TestCase):
     def test_get_most_people(self):
         qa = QQZoneAnalysis(use_redis=True)
         qa.get_most_people()
+        print(qa.user_info.total_like_list)
         print(qa.user_info.like_friend_name)
         print(qa.user_info.cmt_friend_name)
+        qa.user_info.save_user()
+
+        print("只点赞的好友数量:", qa.user_info.like_friend_num)
 
     def test_get_history(self):
         qa = QQZoneAnalysis(use_redis=True)

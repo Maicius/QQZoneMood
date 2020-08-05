@@ -10,6 +10,7 @@ from src.analysis.Average import Average
 from src.util.constant import BASE_DIR, SYSTEM_FONT, EXPIRE_TIME_IN_SECONDS
 from src.util.util import get_standard_time_from_mktime2
 import numpy as np
+import time
 
 class QQZoneAnalysis(QQZoneFriendMoodSpider):
     def __init__(self, use_redis=False, debug=False, username='', analysis_friend=False, mood_begin=0, mood_num=-1,
@@ -40,9 +41,10 @@ class QQZoneAnalysis(QQZoneFriendMoodSpider):
         self.like_list_names_df = []
         self.analysis_friend = analysis_friend
         self.has_clean_data = False
-
+        self.cmt_df = None
+        self.like_uin_df = None
         self.av = Average(use_redis=False, file_name_head=username, analysis=True, debug=debug)
-
+        self.cmt_friend_set = set()
         # 用于绘制词云图的字体，请更改为自己电脑上任意一款支持中文的字体，否则将无法显示中文
         self.system_font = SYSTEM_FONT
 
@@ -382,6 +384,25 @@ class QQZoneAnalysis(QQZoneFriendMoodSpider):
             all_uin_dict = {str(x[0]): x[1] for x in all_uin_count.values}
             self.drawWordCloud(all_uin_dict, self.username + '_like', dict_type=True)
 
+    def get_non_activate_friend(self):
+        """
+        计算曾经很活跃但是现在不活跃的好友
+        :return:
+        """
+        # 获取当前的秒级时间戳
+        now_time = time.time()
+        last_year_time = now_time - 60 * 60 * 24 * 365
+        recent_year_df = self.mood_data_df[self.mood_data_df['time_stamp'] > last_year_time]
+        if not recent_year_df.empty:
+            recent_like_df = self.rank_like_people(recent_year_df)
+            recent_friend_set = set(recent_like_df['nick'].values)
+            self.user_info.non_activate_friend_num = len(self.cmt_friend_set - recent_friend_set)
+        newest_time = self.mood_data_df.head(1)['time_stamp'].values[0]
+
+        self.user_info.non_activate_time = int((now_time - newest_time) / (24 * 3600))
+
+        pass
+
     def export_mood_df(self, export_csv=True, export_excel=True):
         """
         根据传入的文件名前缀清洗原始数据，导出csv和excel表
@@ -405,20 +426,36 @@ class QQZoneAnalysis(QQZoneFriendMoodSpider):
         """
         if not self.has_clean_data:
             self.get_useful_info_from_json()
+        # 取得点赞的人的数据
         all_uin_count = self.rank_like_people(self.mood_data_df)
         if not all_uin_count.empty:
             all_uin_count = all_uin_count.sort_values(by="gender", ascending=False).reset_index()
             most_like_name = all_uin_count.loc[0, 'nick']
+            self.user_info.total_like_num = int(all_uin_count['gender'].sum())
+            all_uin_count.columns = ['index', 'name', 'value']
+            self.user_info.total_like_list = json.loads(all_uin_count.head(5)[['name', 'value']].to_json(orient="records"))
+            like_friend_set = set(all_uin_count['name'].values)
             self.user_info.like_friend_name = most_like_name
         else:
             self.user_info.like_friend_name = ''
 
+        # 取得评论的人的数据
         cmt_df = self.av.calculate_cmt_rank(self.mood_data_df).reset_index()
+
         if not cmt_df.empty:
+            self.user_info.total_cmt_num = int(cmt_df['cmt_times'].sum())
+            self.user_info.cmt_friend_num = cmt_df.shape[0]
             most_cmt_name = cmt_df.loc[0, 'cmt_name']
+            cmt_friend_set = set(cmt_df['cmt_name'].values)
             self.user_info.cmt_friend_name = most_cmt_name
+            self.cmt_friend_set = cmt_friend_set
+            try:
+                self.user_info.like_friend_num = len(like_friend_set - cmt_friend_set)
+            except:
+                self.logging.error("获取只点赞的好友数量失败")
         else:
             self.user_info.cmt_friend_name = ''
+        self.get_non_activate_friend()
 
 
 

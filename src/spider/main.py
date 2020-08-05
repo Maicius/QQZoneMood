@@ -28,7 +28,7 @@ def capture_main_data_and_analysis():
     开启爬虫并分析数据
     :return:
     """
-    qa = QQZoneAnalysis(use_redis=False, debug=True, stop_time='2011-11-11', mood_num=20, analysis_friend=False)
+    qa = QQZoneAnalysis(use_redis=False, debug=True, stop_time='2011-11-11', mood_num=-1, analysis_friend=False)
     qa.login_with_qr_code()
     qa.get_main_page_info()
     qa.get_mood_list()
@@ -136,7 +136,7 @@ def do_analysis_for_all(sp):
         sp.draw_cmt_cloud(sp.mood_data_df)
         sp.draw_like_cloud(sp.mood_data_df)
         # 说说中的关键字，这个比较花时间
-        # sp.draw_content_cloud(sp.mood_data_df)
+        sp.draw_content_cloud(sp.mood_data_df)
         # 保存说说数据
         sp.export_mood_df()
         sp.calculate_history_like_agree()

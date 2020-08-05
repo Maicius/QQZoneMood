@@ -38,6 +38,22 @@ class UserInfo(object):
     most_group = ''
     most_group_member = 0
 
+
+    total_like_num = 0
+    total_cmt_num = 0
+    avg_like_num = 0
+
+    cmt_friend_num = 0
+    cmt_msg_num = 0
+    like_friend_num = 0
+    non_activate_friend_num = 0
+
+    non_activate_time = 0
+
+    total_like_list = []
+    my_top_words = []
+    friend_top_words = []
+
     is_none = True
     def __init__(self, username):
         self.temp_dir = BASE_DIR + username + '/temp/'
@@ -53,7 +69,11 @@ class UserInfo(object):
                     cmt_friend_name=self.cmt_friend_name, single_friend=self.single_friend, most_date = self.most_date,
                     most_time_state=self.most_time_state, is_night = self.is_night, most_friend=self.most_friend,
                     most_common_friend_num=self.most_common_friend_num, most_group=self.most_group,
-                    most_group_member=self.most_group_member)
+                    most_group_member=self.most_group_member, total_like_num=self.total_like_num, total_cmt_num=self.total_cmt_num,
+                    avg_like_num = self.avg_like_num, cmt_friend_num = self.cmt_friend_num, cmt_msg_num = self.cmt_msg_num,
+                    like_friend_num = self.like_friend_num, non_activate_friend_num = 0,
+                    total_like_List = json.dumps(self.total_like_list, ensure_ascii=False), my_top_words = json.dumps(self.my_top_words, ensure_ascii=False),
+                    friend_top_words = json.dumps(self.friend_top_words, ensure_ascii=False), non_activate_time=self.non_activate_time)
 
     def save_user(self):
         data = self.to_dict()
@@ -100,3 +120,14 @@ class UserInfo(object):
         self.most_common_friend_num = data['most_common_friend_num']
         self.most_group = data['most_group']
         self.most_group_member = data['most_group_member']
+        self.total_like_num = data['total_like_num']
+        self.total_cmt_num = data['total_cmt_num']
+        self.avg_like_num = data['avg_like_num']
+        self.cmt_friend_num = data['cmt_friend_num']
+        self.cmt_msg_num = data['cmt_msg_num']
+        self.like_friend_num = data['like_friend_num']
+        self.non_activate_friend_num = data['non_activate_friend_num']
+        self.total_like_list = data['total_like_list']
+        self.my_top_words = data['my_top_words']
+        self.friend_top_words = data['friend_top_words']
+        self.non_activate_time = data['non_activate_time']
