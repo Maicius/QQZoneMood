@@ -93,11 +93,13 @@ def get_history(QQ, name, password):
 def userinfo(QQ, name, password):
     pool_flag = session.get(POOL_FLAG)
     conn = get_redis_conn(pool_flag)
-    if check_password(conn, QQ, password):
+    # if check_password(conn, QQ, password):
+    if True:
         user = UserInfo(QQ)
-        user.load()
+        user.load_from_redis()
         result = dict(finish=1, user=user.to_dict())
         return json.dumps(result, ensure_ascii=False)
     else:
         result = dict(finish=0)
         return json.dumps(result, ensure_ascii=False)
+

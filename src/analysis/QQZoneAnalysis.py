@@ -111,10 +111,22 @@ class QQZoneAnalysis(QQZoneFriendMoodSpider):
 
             self.mood_data_df = data_df
             data_df = data_df.sort_values(by='n_E', ascending=False)
-            date = data_df['time'].values[0]
+            most_date_df = data_df.head(1)
+            date = most_date_df['time'].values[0]
             # date = self.mood_data_df.loc[self.mood_data_df.n_E == max_n_E, 'time'].values[0]
             # 计算熵最高的日期
+            self.user_info.most_date_like = int(most_date_df['like_num'].values[0])
+            self.user_info.most_date_cmt = int(most_date_df['cmt_total_num'].values[0])
+            self.user_info.most_date_content = most_date_df['content'].values[0]
+            if len(self.user_info.most_date_content) > 20:
+                self.user_info.most_date_content = self.user_info.most_date_content[:20] + "..."
             self.user_info.most_date = date
+            self.user_info.most_date_prd = int(most_date_df['prd_num'].values[0])
+            self.user_info.avg_like_num = int(data_df['like_num'].mean())
+            self.user_info.total_like_num = int(data_df['like_num'].sum())
+            self.user_info.total_cmt_num = int(data_df['cmt_total_num'].sum())
+            data_df['word_len'] = data_df['content'].apply(lambda x: len(x))
+            self.user_info.total_word_num = int(data_df['word_len'].sum())
         except:
             self.user_info.most_date = ''
         finally:
@@ -160,10 +172,43 @@ class QQZoneAnalysis(QQZoneFriendMoodSpider):
             self.user_info.most_time_state = most_state
             self.user_info.is_night = int(is_night)
         except BaseException as e:
-            self.format_error(e, "Failed to analysis sedn mood time")
+            self.format_error(e, "Failed to analysis send mood time")
             self.user_info.most_time_state = 0
             self.user_info.is_night = 0
 
+    def calculate_early_send_time(self):
+        if self.friend_df is None:
+            self.friend_df = pd.read_csv(self.FRIEND_DETAIL_LIST_FILE_NAME)
+        if not self.has_clean_data:
+            self.get_useful_info_from_json()
+        try:
+            day_begin_time = self.mood_data_df['time_stamp'].apply(lambda x: get_standard_time_from_mktime2(x))
+            day_time_stamp = self.mood_data_df['time_stamp']
+            time_diff = day_time_stamp - day_begin_time
+            self.mood_data_df['early_time'] = time_diff
+            early_mood_time = self.mood_data_df.loc[self.mood_data_df['early_time'] < 60 * 60 * 5]
+            has_cmt = False
+            if not early_mood_time.empty:
+                early_mood_time2 = early_mood_time.loc[early_mood_time['cmt_total_num'] > 1]
+                if not early_mood_time2.empty:
+                    early_mood_time = early_mood_time2
+                    has_cmt = True
+
+            early_mood_time.sort_values(by='early_time', ascending=False, inplace=True)
+            earliest_mood = early_mood_time.head(1)
+            self.user_info.early_mood_date = earliest_mood['time'].values[0]
+            self.user_info.early_mood_time = int(earliest_mood['early_time'].values[0] // (60 * 60))
+            self.user_info.early_mood_content = earliest_mood['content'].values[0]
+            if has_cmt:
+
+                early_cmt_df = self.av.clean_cmt_df(early_mood_time)
+                cmt_friend = early_cmt_df.head(1)
+                self.user_info.early_mood_friend = cmt_friend['comment_name']
+                self.user_info.early_mood_cmt = cmt_friend['comment_content']
+            if len(self.user_info.early_mood_content) > 20:
+                self.user_info.early_mood_content = self.user_info.early_mood_content[:20] + "..."
+        except BaseException as e:
+            self.format_error(e, "failed to analysis send mood early time")
 
     def parse_mood_detail(self, mood):
         try:
@@ -352,13 +397,25 @@ class QQZoneAnalysis(QQZoneFriendMoodSpider):
         for word in word_list:
             if len(word) >= 2 and word.find('e') == -1 and word not in waste_words:
                 word_list2.append(word)
-        words_text = " ".join(word_list2)
-        return words_text
+        # words_text = " ".join(word_list2)
+        return word_list2
 
     def draw_content_cloud(self, df):
         content = df['content'].sum()
         words = self.get_jieba_words(content)
+        words = " ".join(words)
         self.drawWordCloud(words, self.username + '_content')
+
+    def get_top_words(self, df):
+        content = df['content'].sum()
+        words = self.get_jieba_words(content)
+        words_df = pd.DataFrame(words)
+        words_df.columns = ['word']
+        words_df['cnt'] = 1
+        words_df = words_df.groupby(['word']).sum().reset_index()
+        words_df = words_df.head(10)
+
+
 
     def draw_cmt_cloud(self, df):
         cmt_df = self.av.calculate_cmt_rank(df)
@@ -390,7 +447,7 @@ class QQZoneAnalysis(QQZoneFriendMoodSpider):
         :return:
         """
         # 获取当前的秒级时间戳
-        now_time = time.time()
+        now_time = int(time.time())
         last_year_time = now_time - 60 * 60 * 24 * 365
         recent_year_df = self.mood_data_df[self.mood_data_df['time_stamp'] > last_year_time]
         if not recent_year_df.empty:
@@ -431,9 +488,9 @@ class QQZoneAnalysis(QQZoneFriendMoodSpider):
         if not all_uin_count.empty:
             all_uin_count = all_uin_count.sort_values(by="gender", ascending=False).reset_index()
             most_like_name = all_uin_count.loc[0, 'nick']
-            self.user_info.total_like_num = int(all_uin_count['gender'].sum())
+            # self.user_info.total_like_num = int(all_uin_count['gender'].sum())
             all_uin_count.columns = ['index', 'name', 'value']
-            self.user_info.total_like_list = json.loads(all_uin_count.head(5)[['name', 'value']].to_json(orient="records"))
+            self.user_info.total_like_list = json.loads(all_uin_count.head(10)[['name', 'value']].to_json(orient="records"))
             like_friend_set = set(all_uin_count['name'].values)
             self.user_info.like_friend_name = most_like_name
         else:
@@ -443,7 +500,7 @@ class QQZoneAnalysis(QQZoneFriendMoodSpider):
         cmt_df = self.av.calculate_cmt_rank(self.mood_data_df).reset_index()
 
         if not cmt_df.empty:
-            self.user_info.total_cmt_num = int(cmt_df['cmt_times'].sum())
+            # self.user_info.total_cmt_num = int(cmt_df['cmt_times'].sum())
             self.user_info.cmt_friend_num = cmt_df.shape[0]
             most_cmt_name = cmt_df.loc[0, 'cmt_name']
             cmt_friend_set = set(cmt_df['cmt_name'].values)

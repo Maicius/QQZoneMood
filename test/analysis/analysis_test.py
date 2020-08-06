@@ -28,6 +28,11 @@ class AnalysisTest(unittest.TestCase):
         qa.calculate_send_time()
         print("TEST IS NIGHT:", bool(qa.user_info.is_night))
 
+    def test_calculate_early_send_time(self):
+        qa = QQZoneAnalysis(use_redis=True)
+        qa.calculate_early_send_time()
+        print(qa.user_info.early_mood_content)
+
     # 绘制经常评论的人的词云图
     def test_draw_cmt_cloud(self):
         qa = QQZoneAnalysis(use_redis=True)
@@ -39,6 +44,11 @@ class AnalysisTest(unittest.TestCase):
         qa = QQZoneAnalysis(use_redis=True)
         qa.get_useful_info_from_json()
         qa.draw_content_cloud(qa.mood_data_df)
+
+    def test_get_content_top_words(self):
+        qa = QQZoneAnalysis(use_redis=True)
+        qa.get_useful_info_from_json()
+        qa.get_top_words(qa.mood_data_df)
 
     # 绘制点赞的人的词云图
     def test_draw_like_cloud(self):

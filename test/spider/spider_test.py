@@ -3,7 +3,7 @@ import unittest
 from src.spider.BaseSpider import BaseSpider
 from src.spider.QQZoneSpider import QQZoneSpider
 from src.spider.main import capture_main_data
-
+import json
 
 class SpiderTest(unittest.TestCase):
     """
@@ -103,6 +103,11 @@ class SpiderTest(unittest.TestCase):
         sp.login_with_qr_code()
         mood_num = sp.get_mood_num()
         sp.get_first_mood(mood_num)
+
+    def test_retry(self):
+        failed_msg = '{"code":-3000,"message":"\xe8\xaf\xb7\xe5\x85\x88\xe7\x99\xbb\xe5\xbd\x95\xe7\xa9\xba\xe9\x97\xb4","result":{"code":1003,"msg":"\xe8\xaf\xb7\xe5\x85\x88\xe7\x99\xbb\xe5\xbd\x95\xe7\xa9\xba\xe9\x97\xb4","now":1596656257},"subcode":-1000001}'
+        pass
+
 
 if __name__ =='__main__':
     unittest.main()

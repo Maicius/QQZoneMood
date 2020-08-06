@@ -2,6 +2,9 @@ from src.util.constant import BASE_DIR
 from src.util.util import check_dir_exist
 import json
 
+from src.web.web_util.web_constant import USER_INFO_KEY
+from src.web.web_util.web_util import judge_pool, get_redis_conn
+
 
 class UserInfo(object):
     QQ = ''
@@ -28,7 +31,17 @@ class UserInfo(object):
     single_friend = 0
 
     most_date = ''
+    most_date_like = 0
+    most_date_cmt = 0
     most_time_state = ''
+    most_date_prd = 0
+    most_date_content = ''
+
+    early_mood_date = ''
+    early_mood_time = 0
+    early_mood_content = ''
+    early_mood_cmt = ''
+    early_mood_friend = ''
 
     is_night = ''
 
@@ -54,6 +67,8 @@ class UserInfo(object):
     my_top_words = []
     friend_top_words = []
 
+    total_word_num = 0
+
     is_none = True
     def __init__(self, username):
         self.temp_dir = BASE_DIR + username + '/temp/'
@@ -71,14 +86,22 @@ class UserInfo(object):
                     most_common_friend_num=self.most_common_friend_num, most_group=self.most_group,
                     most_group_member=self.most_group_member, total_like_num=self.total_like_num, total_cmt_num=self.total_cmt_num,
                     avg_like_num = self.avg_like_num, cmt_friend_num = self.cmt_friend_num, cmt_msg_num = self.cmt_msg_num,
-                    like_friend_num = self.like_friend_num, non_activate_friend_num = 0,
-                    total_like_List = json.dumps(self.total_like_list, ensure_ascii=False), my_top_words = json.dumps(self.my_top_words, ensure_ascii=False),
-                    friend_top_words = json.dumps(self.friend_top_words, ensure_ascii=False), non_activate_time=self.non_activate_time)
+                    like_friend_num = self.like_friend_num, non_activate_friend_num = self.non_activate_friend_num,
+                    total_like_list = json.dumps(self.total_like_list, ensure_ascii=False), my_top_words = json.dumps(self.my_top_words, ensure_ascii=False),
+                    friend_top_words = json.dumps(self.friend_top_words, ensure_ascii=False), non_activate_time=self.non_activate_time,
+                    most_date_cmt = self.most_date_cmt, most_date_like = self.most_date_like, most_date_prd = self.most_date_prd,
+                    total_word_num = self.total_word_num, most_date_content = self.most_date_content,
+                    early_mood_time = self.early_mood_time, early_mood_cmt = self.early_mood_cmt, early_mood_content = self.early_mood_content,
+                    early_mood_friend = self.early_mood_friend, early_mood_date = self.early_mood_date
+        )
 
     def save_user(self):
         data = self.to_dict()
         with open(self.temp_dir + "user_info.json", 'w', encoding='utf-8') as w:
             json.dump(data, w, ensure_ascii=False)
+        serial_data = json.dumps(data, ensure_ascii=False)
+        conn = self.get_redis_conn()
+        conn.set(USER_INFO_KEY, serial_data)
         print("user info result file was saved to:", self.temp_dir + "user_info.json")
 
     def load(self):
@@ -94,6 +117,21 @@ class UserInfo(object):
             print(e)
             return None
 
+    def load_from_redis(self):
+        try:
+            conn = self.get_redis_conn()
+            data = json.loads(conn.get(USER_INFO_KEY))
+
+            self.change_dict_to_object(data)
+            self.is_none = False
+        except:
+            print("从redis中加载数据失败，尝试从文件加载")
+            return self.load()
+
+    def get_redis_conn(self):
+        host = judge_pool()
+        conn = get_redis_conn(host)
+        return conn
 
     def change_dict_to_object(self, data):
         self.QQ = data['QQ']
@@ -127,7 +165,23 @@ class UserInfo(object):
         self.cmt_msg_num = data['cmt_msg_num']
         self.like_friend_num = data['like_friend_num']
         self.non_activate_friend_num = data['non_activate_friend_num']
+
+        data['total_like_list'] = json.loads(data['total_like_list'])
+        data['my_top_words'] = json.loads(data['my_top_words'])
+        data['friend_top_words'] = json.loads(data['friend_top_words'])
+
         self.total_like_list = data['total_like_list']
         self.my_top_words = data['my_top_words']
         self.friend_top_words = data['friend_top_words']
         self.non_activate_time = data['non_activate_time']
+        self.most_date_like = data['most_date_like']
+        self.most_date_cmt = data['most_date_cmt']
+        self.most_date_prd = data['most_date_prd']
+        self.total_word_num = data['total_word_num']
+        self.most_date_content = data['most_date_content']
+
+        self.early_mood_time = data['early_mood_time']
+        self.early_mood_content = data['early_mood_content']
+        self.early_mood_cmt = data['early_mood_cmt']
+        self.early_mood_friend = data['early_mood_friend']
+        self.early_mood_date = data['early_mood_date']

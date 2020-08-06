@@ -19,3 +19,4 @@ scipy
 openpyxl
 pillow
 twisted
+flask-cors

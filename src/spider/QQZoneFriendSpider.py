@@ -157,8 +157,8 @@ class QQZoneFriendSpider(QQZoneSpider):
             url = self.get_friend_detail_url(uin)
             content = self.get_json(self.req.get(url, headers=self.headers, timeout=20).content.decode('utf-8'))
 
-            data = json.loads(content)
             try:
+                data = json.loads(content)
                 data = data['data']
                 data['friendUin'] = uin
             except BaseException as e:
