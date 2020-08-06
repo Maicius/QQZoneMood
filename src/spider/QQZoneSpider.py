@@ -888,11 +888,12 @@ class QQZoneSpider(BaseSpider):
                 print("获取登陆时间状态:", res.status_code)
             content = json.loads(self.get_json(res.content.decode("utf-8")))
             data = content['data']
-            self.user_info.first_time = util.get_standard_time_from_mktime(data['firstlogin'])
+            first_time = util.get_standard_time_from_mktime(data['firstlogin'])
             today = int(datetime.datetime.now().year)
-            first_year = int(self.user_info.first_time.split('-')[0])
+            first_year = int(first_time.split('-')[0])
             years = today - first_year
             self.user_info.years = years
+            self.user_info.first_time = util.get_standard_time_with_name(first_time)
             if self.debug:
                 print("Finish to get first time")
             print("Success to Get Main Page Info!")

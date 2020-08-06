@@ -124,6 +124,14 @@ let vm = avalon.define({
         }
     },
 
+    view_new_data: function() {
+        if (vm.qq_id.length === 0 && vm.password.length === 0 && vm.nick_name.length === 0) {
+            alert("QQ号、用户名和校验码不能为空");
+        } else {
+             $(window).attr('location','http://localhost:3000/data/userinfo/' +vm.qq_id +"/" +vm.nick_name + "/" + vm.encrypt())
+        }
+    },
+
     submit_data: function () {
         if (vm.qq_id !== '' && vm.nick_name !== '') {
             if (agree) {

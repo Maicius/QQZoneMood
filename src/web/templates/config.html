@@ -105,7 +105,7 @@
                     <button type="button" class="btn btn-danger col-xs-5" :click="@clear_cache()" id="delete_cache"
                             style="margin-left: 10px">清除缓存
                     </button>
-                    <button type="button" class="btn btn-primary col-xs-12" :click="@view_data()" id="view_data"
+                    <button type="button" class="btn btn-primary col-xs-12" :click="@view_new_data()" id="view_data"
                             title="查看数据"
                             style="margin-left: 10px">
                         查看数据
@@ -156,7 +156,8 @@
             <div class="spider_finish" ms-visible="@spider_state == 2">
                 <div class="col-lg-8 col-md-12" style="margin: 20px auto 50px auto">
                     <p ms-visible="@data_state == 0"> {$clean_data_text$}</p>
-                    <a href="javascript:void(0);" :click="@view_data()" :visible="@data_state == 1">点击此处查看数据分析结果</a>
+{#                    <a href="javascript:void(0);" :click="@view_data()" :visible="@data_state == 1">点击此处查看数据分析结果</a>#}
+                    <a :attr="{href: 'http://localhost:3000/data/userinfo/' + @qq_id + '/' + @nick_name + '/' + @encrypt()}" style="color: dodgerblue; cursor: pointer" :visible="@data_state == 1">点击此处查看数据分析结果</a>
                 </div>
             </div>
         </div>

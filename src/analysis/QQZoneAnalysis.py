@@ -200,11 +200,10 @@ class QQZoneAnalysis(QQZoneFriendMoodSpider):
             self.user_info.early_mood_time = int(earliest_mood['early_time'].values[0] // (60 * 60))
             self.user_info.early_mood_content = earliest_mood['content'].values[0]
             if has_cmt:
-
                 early_cmt_df = self.av.clean_cmt_df(early_mood_time)
                 cmt_friend = early_cmt_df.head(1)
-                self.user_info.early_mood_friend = cmt_friend['comment_name']
-                self.user_info.early_mood_cmt = cmt_friend['comment_content']
+                self.user_info.early_mood_friend = cmt_friend['comment_name'].values[0]
+                self.user_info.early_mood_cmt = cmt_friend['comment_content'].values[0]
             if len(self.user_info.early_mood_content) > 20:
                 self.user_info.early_mood_content = self.user_info.early_mood_content[:20] + "..."
         except BaseException as e:

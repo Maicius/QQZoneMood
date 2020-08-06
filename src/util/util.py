@@ -59,6 +59,11 @@ def get_mktime2(date_string):
 def get_standard_time_from_mktime(mktime):
     return time.strftime("%Y-%m-%d", time.localtime(mktime))
 
+# 将时间戳转化为标准时间3
+def get_standard_time_from_mktime3(mktime):
+    return time.strftime("%Y-%m-%d", time.localtime(mktime))
+
+
 def get_standard_time_from_mktime2(mktime):
     temp = time.strftime("%Y-%m-%d", time.localtime(mktime))
     return get_mktime(temp)
@@ -187,9 +192,14 @@ def do_clear_data_by_user(QQ, conn):
         finish = 2
     return finish
 
+def get_standard_time_with_name(time):
+    time_list = time.split('-')
+    time = time_list[0] + '年' + time_list[1] + '月' + time_list[2] + '日'
+    return time
 
 if __name__ =='__main__':
     print(get_mktime('2018-09-6'))
-    print(get_mktime('2018-9-06'))
+    print(get_standard_time_with_name('2018-9-06'))
+    print(get_standard_time_from_mktime3(1566545874))
     print(get_full_time_from_mktime(1566545874))
     test_remove_special_tag()

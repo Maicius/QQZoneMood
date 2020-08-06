@@ -364,7 +364,7 @@ class QQZoneFriendSpider(QQZoneSpider):
         first_header_url = self.FRIEND_HEADER_IMAGE_PATH + str(int(self.friend_df.loc[0, 'friend_uin'])) + '.jpg'
 
         self.user_info.first_friend = early_nick
-        self.user_info.first_friend_time = early_time
+        self.user_info.first_friend_time = util.get_standard_time_with_name(early_time)
         self.user_info.first_friend_header = first_header_url
         self.user_info.save_user()
 
