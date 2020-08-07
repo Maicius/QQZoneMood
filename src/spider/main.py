@@ -28,12 +28,12 @@ def capture_main_data_and_analysis():
     开启爬虫并分析数据
     :return:
     """
-    qa = QQZoneAnalysis(use_redis=False, debug=True, stop_time='2011-11-11', mood_num=-1, analysis_friend=True)
+    qa = QQZoneAnalysis(use_redis=False, debug=False, stop_time='2011-11-11', mood_num=-1, analysis_friend=True)
     qa.login_with_qr_code()
     qa.get_main_page_info()
     qa.get_mood_list()
     if qa.analysis_friend:
-        qa.thread_num = 20
+        qa.thread_num = 10
         qa.get_friend_detail()
     do_analysis_for_all(qa)
     qa.user_info.save_user()

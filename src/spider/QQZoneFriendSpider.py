@@ -162,6 +162,7 @@ class QQZoneFriendSpider(QQZoneSpider):
                 data = data['data']
                 data['friendUin'] = uin
             except BaseException as e:
+                print("Failed to get friend detail for:{}".format(friend))
                 self.format_error(e, friend)
                 if self.debug:
                     print(data)

@@ -426,6 +426,15 @@ class QQZoneSpider(BaseSpider):
         mood_num = mood_json['usrinfo']['msgnum']
         return mood_num
 
+    def get_json_content(self, url):
+        mood_list = self.req.get(url=url, headers=self.h5_headers, timeout=20)
+        # print(mood_list.content)
+        try:
+            json_content = self.get_json(str(mood_list.content.decode('utf-8')))
+        except BaseException as e:
+            json_content = self.get_json(remove_special_tag(mood_list.text))
+        return json_content
+
     def get_mood_in_range(self, pos, mood_num, recover_index_split, url_mood, until_stop_time):
         if not self.from_client:
             print("进入线程:", mood_num, until_stop_time)
@@ -434,27 +443,35 @@ class QQZoneSpider(BaseSpider):
                 print('正在爬取', pos, '...')
             # self.re.lpush(WEB_SPIDER_INFO + self.username, "正在爬取" + str(pos) + "...")
             try:
-                url = url_mood + '&pos=' + str(pos)
-                mood_list = self.req.get(url=url, headers=self.h5_headers, timeout=20)
-                # print(mood_list.content)
                 try:
-                    json_content = self.get_json(str(mood_list.content.decode('utf-8')))
+                    url = url_mood + '&pos=' + str(pos)
+                    json_content = self.get_json_content(url)
+                    repeat_time = 1
+                    while json_content.find("使用人数过多，请稍后再试") != -1 and repeat_time < 5:
+                        time.sleep(repeat_time)
+                        json_content = self.get_json_content(url)
+                        repeat_time += 1
+                    if json_content.find("使用人数过多，请稍后再试") != -1:
+                        print("Failed to parse mood content for index:{}".format(pos))
+                        self.format_error("Failed to parse mood content for index:{}".format(pos))
+                        continue
+                    self.content.append(json_content)
+                    if not self.from_client:
+                        # 获取每条动态的unikey
+                        unikeys = self.get_unilikeKey_tid_and_smallpic(json_content)
+                        if len(unikeys) != 0:
+                            # 从数据中恢复后，避免重复爬取相同数据
+                            if recover_index_split != 0:
+                                unikeys = unikeys[recover_index_split:]
+                                recover_index_split = 0
+                            # 获取数据
+                            until_stop_time = self.do_get_infos(unikeys, until_stop_time)
+                            if self.use_redis:
+                                until_stop_time = False if self.re.get(
+                                    STOP_SPIDER_KEY + str(self.username)) == STOP_SPIDER_FLAG else True
                 except BaseException as e:
-                    json_content = self.get_json(remove_special_tag(mood_list.text))
-                self.content.append(json_content)
-                if not self.from_client:
-                    # 获取每条动态的unikey
-                    unikeys = self.get_unilikeKey_tid_and_smallpic(json_content)
-                    if len(unikeys) != 0:
-                        # 从数据中恢复后，避免重复爬取相同数据
-                        if recover_index_split != 0:
-                            unikeys = unikeys[recover_index_split:]
-                            recover_index_split = 0
-                        # 获取数据
-                        until_stop_time = self.do_get_infos(unikeys, until_stop_time)
-                        if self.use_redis:
-                            until_stop_time = False if self.re.get(
-                                STOP_SPIDER_KEY + str(self.username)) == STOP_SPIDER_FLAG else True
+                    self.format_error("unexpected error in parse mood content, index:{}".format(pos), e)
+
                 pos += 20
                 # 每抓100条保存一次数据
                 if pos % 100 == 0 and self.use_redis:
@@ -629,7 +646,7 @@ class QQZoneSpider(BaseSpider):
             except BaseException as e:
                 # print(content)
                 print("获取数量超过20的评论失败")
-                self.format_error(e, content)
+                self.format_error(e, content.decode("utf-8"))
                 if self.debug:
                     raise e
         return cmt_list

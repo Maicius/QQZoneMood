@@ -6,6 +6,8 @@ avalon.config({
 let vm = avalon.define({
     $id: 'qqzone',
     nick_name: '',
+    // 若是本地开发，请修改为localhost
+    QQ_LOCATION: 'http://qq.xiaomaidong.com/data/userinfo/',
     qq_id: '',
     stop_num: -1,
     stop_date: '-1',
@@ -128,7 +130,7 @@ let vm = avalon.define({
         if (vm.qq_id.length === 0 && vm.password.length === 0 && vm.nick_name.length === 0) {
             alert("QQ号、用户名和校验码不能为空");
         } else {
-             $(window).attr('location','http://localhost:3000/data/userinfo/' +vm.qq_id +"/" +vm.nick_name + "/" + vm.encrypt())
+             $(window).attr('location', QQ_LOCATION +vm.qq_id +"/" +vm.nick_name + "/" + vm.encrypt())
         }
     },
 

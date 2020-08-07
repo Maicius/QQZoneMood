@@ -93,8 +93,7 @@ def get_history(QQ, name, password):
 def userinfo(QQ, name, password):
     pool_flag = session.get(POOL_FLAG)
     conn = get_redis_conn(pool_flag)
-    # if check_password(conn, QQ, password):
-    if True:
+    if check_password(conn, QQ, password):
         user = UserInfo(QQ)
         user.load_from_redis()
         result = dict(finish=1, user=user.to_dict())
