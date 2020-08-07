@@ -85,11 +85,13 @@ def web_interface(username, nickname, stop_time, mood_num, cookie_text, no_delet
     sp.re.set(MOOD_FINISH_KEY + str(username), 1)
     sp.logging_info("finish to capture data")
     sp.logging_info("begin to analysis...")
-
     # 在爬虫完成之后分析所有数据
-    do_analysis_for_all(sp)
-
-    sp.user_info.save_user()
+    try:
+        do_analysis_for_all(sp)
+        sp.user_info.save_user()
+    except BaseException as e:
+        sp.logging_info("failed to analysis")
+        sp.logging.error(e)
     sp.logging_info("finish to analysis")
     sp.re.set(CLEAN_DATA_KEY + username, 1)
     now_user = sp.re.get(FINISH_USER_NUM_KEY)

@@ -66,6 +66,8 @@
                         <p class="card-text">此程序为QQ空间爬虫</p>
                         <p class="card-text">可以用于对QQ空间的数据进行备份和可视化</p>
                         <p class="card-text">为保证程序正常运行，只允许最多2位用户同时使用爬虫</p>
+                        <p class="card-text">成功运行爬虫后可在一天内凭QQ号和校验码直接查看数据</p>
+                        <p class="card-text">请不要反复启动爬虫占用时间</p>
                         <p class="card-text">点击下方开始获取后扫码登陆QQ空间即可开始运行</p>
                         <a class="card-text" href="https://github.com/Maicius/QQZoneMood/blob/master/README.md"
                            target="_blank">点此查看具体功能</a>
@@ -158,7 +160,7 @@
                     <p ms-visible="@data_state == 0"> {$clean_data_text$}</p>
 {#                    <a href="javascript:void(0);" :click="@view_data()" :visible="@data_state == 1">点击此处查看数据分析结果</a>#}
                     <a :attr="{href: @QQ_LOCATION + @qq_id + '/' + @nick_name + '/' + @encrypt()}" style="color: dodgerblue; cursor: pointer" :visible="@data_state == 1">点击此处查看数据分析结果</a>
-                    <span>(建议在移动端打开)</span>
+                    <p><span>(建议在移动端打开)</span></p>
                 </div>
             </div>
         </div>

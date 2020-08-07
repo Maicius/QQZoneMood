@@ -101,7 +101,7 @@ class UserInfo(object):
             json.dump(data, w, ensure_ascii=False)
         serial_data = json.dumps(data, ensure_ascii=False)
         conn = self.get_redis_conn()
-        conn.set(USER_INFO_KEY, serial_data)
+        conn.set(USER_INFO_KEY + self.QQ, serial_data)
         print("user info result file was saved to:", self.temp_dir + "user_info.json")
 
     def load(self):
@@ -117,16 +117,16 @@ class UserInfo(object):
             print(e)
             return None
 
-    def load_from_redis(self):
+    def load_from_redis(self, qq):
         try:
             conn = self.get_redis_conn()
-            data = json.loads(conn.get(USER_INFO_KEY))
+            data = json.loads(conn.get(USER_INFO_KEY + qq))
 
             self.change_dict_to_object(data)
             self.is_none = False
         except:
-            print("从redis中加载数据失败，尝试从文件加载")
-            return self.load()
+            print("从redis中加载数据失败...")
+            return None
 
     def get_redis_conn(self):
         host = judge_pool()
