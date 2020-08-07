@@ -446,18 +446,20 @@ class QQZoneAnalysis(QQZoneFriendMoodSpider):
         :return:
         """
         # 获取当前的秒级时间戳
-        now_time = int(time.time())
-        last_year_time = now_time - 60 * 60 * 24 * 365
-        recent_year_df = self.mood_data_df[self.mood_data_df['time_stamp'] > last_year_time]
-        if not recent_year_df.empty:
-            recent_like_df = self.rank_like_people(recent_year_df)
-            recent_friend_set = set(recent_like_df['nick'].values)
-            self.user_info.non_activate_friend_num = len(self.cmt_friend_set - recent_friend_set)
-        newest_time = self.mood_data_df.head(1)['time_stamp'].values[0]
+        try:
+            now_time = int(time.time())
+            last_year_time = now_time - 60 * 60 * 24 * 365
+            recent_year_df = self.mood_data_df[self.mood_data_df['time_stamp'] > last_year_time]
+            if not recent_year_df.empty:
+                recent_like_df = self.rank_like_people(recent_year_df)
+                recent_friend_set = set(recent_like_df['nick'].values)
+                self.user_info.non_activate_friend_num = len(self.cmt_friend_set - recent_friend_set)
+            newest_time = self.mood_data_df.head(1)['time_stamp'].values[0]
 
-        self.user_info.non_activate_time = int((now_time - newest_time) / (24 * 3600))
+            self.user_info.non_activate_time = int((now_time - newest_time) / (24 * 3600 * 365))
+        except BaseException as e:
+            self.format_error(e, "failed to parse activate friend")
 
-        pass
 
     def export_mood_df(self, export_csv=True, export_excel=True):
         """
