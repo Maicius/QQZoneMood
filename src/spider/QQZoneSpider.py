@@ -936,9 +936,10 @@ class QQZoneSpider(BaseSpider):
         if self.debug:
             print(url)
         res = self.req.get(url=url, headers=self.headers, timeout=20)
-        if self.debug:
-            print("qzone token main page:", res.status_code)
+        # if self.debug:
+        print("qzone token main page:", res.status_code)
         content = res.content.decode("utf-8")
+        self.logging_info(content)
         qzonetoken = re.findall(re.compile("g_qzonetoken = \(function\(\)\{ try\{return \"(.*)?\""), content)[0]
         self.qzonetoken = qzonetoken
         if self.debug:
