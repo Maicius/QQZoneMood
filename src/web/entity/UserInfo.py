@@ -121,9 +121,9 @@ class UserInfo(object):
         try:
             conn = self.get_redis_conn()
             data = json.loads(conn.get(USER_INFO_KEY + qq))
-
             self.change_dict_to_object(data)
             self.is_none = False
+            return data
         except:
             print("从redis中加载数据失败...")
             return None

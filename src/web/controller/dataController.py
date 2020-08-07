@@ -95,9 +95,13 @@ def userinfo(QQ, name, password):
     conn = get_redis_conn(pool_flag)
     if check_password(conn, QQ, password):
         user = UserInfo(QQ)
-        user.load_from_redis(QQ)
-        result = dict(finish=1, user=user.to_dict())
-        return json.dumps(result, ensure_ascii=False)
+        result = user.load_from_redis(QQ)
+        if result != None:
+            result = dict(finish=1, user=user.to_dict())
+            return json.dumps(result, ensure_ascii=False)
+        else:
+            result = dict(finish=0)
+            return json.dumps(result, ensure_ascii=False)
     else:
         result = dict(finish=0)
         return json.dumps(result, ensure_ascii=False)
