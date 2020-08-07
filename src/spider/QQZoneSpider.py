@@ -282,7 +282,7 @@ class QQZoneSpider(BaseSpider):
         self.web.get('https://user.qzone.qq.com/{}/main'.format(self.username))
         time.sleep(3)
         content = self.web.page_source
-        self.logging_info(content)
+        # self.logging_info(content)
         qzonetoken = re.findall(re.compile("g_qzonetoken = \(function\(\)\{ try\{return \"(.*)?\""), content)[0]
         self.qzonetoken = qzonetoken
         cookie = ''
@@ -940,7 +940,7 @@ class QQZoneSpider(BaseSpider):
             # if self.debug:
             print("qzone token main page:", res.status_code)
             content = res.content.decode("utf-8")
-            self.logging_info(content)
+            # self.logging_info(content)
             qzonetoken = re.findall(re.compile("g_qzonetoken = \(function\(\)\{ try\{return \"(.*)?\""), content)[0]
             self.qzonetoken = qzonetoken
             if self.debug:
