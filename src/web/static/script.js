@@ -7,7 +7,7 @@ let vm = avalon.define({
     $id: 'qqzone',
     nick_name: '',
     // 若是本地开发，请修改为localhost
-    QQ_LOCATION: 'http://qzone.xiaomaidong.com:3000/data/userinfo/',
+    QQ_LOCATION: 'http://qqzone.xiaomaidong.com/data/userinfo/',
     qq_id: '',
     stop_num: -1,
     stop_date: '-1',
