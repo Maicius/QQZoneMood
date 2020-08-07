@@ -618,6 +618,7 @@ class QQZoneSpider(BaseSpider):
             if self.debug:
                 print(start)
                 print('获取超过20的评论的人信息:', cmt_num, url)
+            # 20200807备注：QQ空间抽风，获取超过20的评论会显示未登陆
             content = self.req.get(url, headers=self.headers).content
             try:
                 content_json = self.get_json(content.decode('utf-8'))
@@ -627,8 +628,10 @@ class QQZoneSpider(BaseSpider):
                 cmt_list.extend(comments)
             except BaseException as e:
                 # print(content)
+                print("获取数量超过20的评论失败")
                 self.format_error(e, content)
-                raise e
+                if self.debug:
+                    raise e
         return cmt_list
 
     def do_get_infos(self, unikeys, until_stop_time):
@@ -682,7 +685,7 @@ class QQZoneSpider(BaseSpider):
                     self.re.set(MOOD_COUNT_KEY + str(self.username), self.mood_count)
 
             except BaseException as e:
-                self.format_error(e, 'continue to capture...')
+                self.format_error(e, 'meet some error, but continue to capture...')
                 if self.debug:
                     raise e
                 continue
@@ -825,8 +828,10 @@ class QQZoneSpider(BaseSpider):
                          big_pic_list=big_pic_list, content=content))
 
         except BaseException as e:
+            self.logging_info("faield to parse msglist, ")
+            self.logging_info(jsonData)
             self.format_error(e)
-            pass
+
         return unikey_tid_list
 
     def get_main_page_url(self):
