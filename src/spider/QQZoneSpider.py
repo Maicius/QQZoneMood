@@ -197,7 +197,9 @@ class QQZoneSpider(BaseSpider):
         self.headers['host'] = 'user.qzone.qq.com'
         self.headers.pop('referer')
         # self.init_user_info()
-        self.get_qzone_token()
+        # self.get_qzone_token()
+        qzone_token = self.calculate_qzone_token()
+        self.qzonetoken = qzone_token
         if self.use_redis:
             self.re.lpush(WEB_SPIDER_INFO + self.username, LOGIN_SUCCESS)
         if not self.from_client:
