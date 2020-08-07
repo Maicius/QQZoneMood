@@ -1,5 +1,10 @@
 # QQZoneMood
 
+### 体验地址：
+
+1. [app.xiaomaidong.com](http://app.xiaomaidong.com)
+2. [qzone.xiaomaidong.com](http://qzone.xiaomaidong.com/)
+
 ### 相关博客
 
 - [关于python并发爬虫的一些经验总结](http://www.xiaomaidong.com/?p=1189)
