@@ -4,7 +4,7 @@ services:
   web:
     build: .
     ports:
-     - "80:5000"
+     - "8080:5000"
     volumes:
      - .:/qqzone_spider
     depends_on:

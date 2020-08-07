@@ -65,7 +65,7 @@ SPIDERING_USER_LIST  = 'spidering_user_list'
 
 WAITING_USER_LIST = 'waiting_user_list'
 
-SPIDER_USER_NUM_LIMIT = 2
+SPIDER_USER_NUM_LIMIT = 5
 
 QR_CODE_MAP_KEY = 'qr_code_map_key'
 

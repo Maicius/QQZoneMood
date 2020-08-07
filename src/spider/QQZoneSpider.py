@@ -282,6 +282,7 @@ class QQZoneSpider(BaseSpider):
         self.web.get('https://user.qzone.qq.com/{}/main'.format(self.username))
         time.sleep(3)
         content = self.web.page_source
+        # self.logging_info(content)
         qzonetoken = re.findall(re.compile("g_qzonetoken = \(function\(\)\{ try\{return \"(.*)?\""), content)[0]
         self.qzonetoken = qzonetoken
         cookie = ''
@@ -931,17 +932,23 @@ class QQZoneSpider(BaseSpider):
         return ctx.call("qzonetoken")
 
     def get_qzone_token(self):
-        url = 'https://user.qzone.qq.com/' + self.raw_username + '/main'
-        if self.debug:
-            print(url)
-        res = self.req.get(url=url, headers=self.headers, timeout=20)
-        if self.debug:
+        try:
+            url = 'https://user.qzone.qq.com/' + self.raw_username + '/main'
+            if self.debug:
+                print(url)
+            res = self.req.get(url=url, headers=self.headers, timeout=20)
+            # if self.debug:
             print("qzone token main page:", res.status_code)
-        content = res.content.decode("utf-8")
-        qzonetoken = re.findall(re.compile("g_qzonetoken = \(function\(\)\{ try\{return \"(.*)?\""), content)[0]
-        self.qzonetoken = qzonetoken
-        if self.debug:
-            print("qzone_token:", qzonetoken)
+            content = res.content.decode("utf-8")
+            # self.logging_info(content)
+            qzonetoken = re.findall(re.compile("g_qzonetoken = \(function\(\)\{ try\{return \"(.*)?\""), content)[0]
+            self.qzonetoken = qzonetoken
+            if self.debug:
+                print("qzone_token:", qzonetoken)
+        except BaseException as e:
+            self.format_error("获取token失败", e)
+            self.qzonetoken = ""
+            pass
 
     def parse_recent_visit(self, file_path, time_step):
         # 必须新开线程执行
