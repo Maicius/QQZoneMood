@@ -130,7 +130,7 @@ let vm = avalon.define({
         if (vm.qq_id.length === 0 && vm.password.length === 0 && vm.nick_name.length === 0) {
             alert("QQ号、用户名和校验码不能为空");
         } else {
-             $(window).attr('location', QQ_LOCATION +vm.qq_id +"/" +vm.nick_name + "/" + vm.encrypt())
+             $(window).attr('location', vm.QQ_LOCATION +vm.qq_id +"/" +vm.nick_name + "/" + vm.encrypt())
         }
     },
 
