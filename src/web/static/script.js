@@ -6,8 +6,8 @@ avalon.config({
 let vm = avalon.define({
     $id: 'qqzone',
     nick_name: '',
-    // 若是本地开发，请修改为localhost
-    QQ_LOCATION: 'http://qqzone.xiaomaidong.com/data/userinfo/',
+    // 请修改为对应的前端地址
+    QQ_LOCATION: 'http://qq.xiaomaidong.com/data/userinfo/',
     qq_id: '',
     stop_num: -1,
     stop_date: '-1',
