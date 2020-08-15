@@ -13,7 +13,7 @@ from src.util.constant import WAITING_USER_LIST
 from flask_cors import *
 
 app = Flask(__name__)
-CORS(app, supports_credentials=True)  # 设置跨域
+# CORS(app, supports_credentials=True)  # 设置跨域
 app.config['SECRET_KEY']=os.urandom(24)
 app.config['PERMANENT_SESSION_LIFETIME']=timedelta(days=7)
 host = judge_pool()
