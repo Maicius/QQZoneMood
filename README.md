@@ -13,7 +13,7 @@
 
 - 多线程抓取QQ空间说说内容并进行分析，提供基于Flask和avalon.js的web配置界面，以及配套的测试用例
 
-- 模仿网易云年度歌单风格的数据展示页面，子项目地址:[QQZoneSwipper](https://github.com/Maicius/QQZoneSwipper)
+- 基于React Slides的数据展示页面，风格模仿网易云年度报告。子项目地址:[QQZoneSwipper](https://github.com/Maicius/QQZoneSwipper)
 
 - 提供抽奖小程序，可以根据指定说说的点赞或评论信息进行随机抽奖（可单独打包为windows下的命令行程序）
 
@@ -43,19 +43,25 @@
 
 	> 2.根据1中配置获取QQ空间的动态数量和好友基本信息
 
-	> 3.清除缓存
-
-	> 4.数据可视化和下载（excel表）
+	> 3.数据可视化
 
 - 运行方式(请确保已经安装了docker和docker-compose)：
 
-	> git clone https://github.com/Maicius/QQZoneMood.git
-
-	> cd QQZoneMood
-
-	> docker-compose up
+	> 1.git clone https://github.com/Maicius/QQZoneMood.git
 	
-	> 浏览器里输入地址: [http://localhost:80](http://localhost:80)	
+	> 2.将 QQZoneMood/src/web/static/constant.js中QQ\_FRONT\_LACTION 修改为自己的前端项目地址（本地默认地址为localhost:3000）
+
+	> 3.cd QQZoneMood & docker-compose up -d
+	
+	> 4.下载前端子项目
+	
+	> git clone https://github.com/Maicius/QQZoneSwipper
+	
+	> 5.将 QQZoneSwipper/src/utils/constant.js中的SERVER_HOST修改为服务器的地址（本地默认地址为localhost:80）
+	
+	> 6.cd QQZoneSwipper & npm run start
+	
+	> 7.浏览器里输入地址: [http://localhost:80](http://localhost:80)	
 
 - 关于校验码
     
