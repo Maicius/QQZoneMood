@@ -73,3 +73,7 @@ const LOGGING_STATE = 3;
 const NOT_MATCH_STATE = -5;
 
 const WRONG_PASSWORD_QQ = "QQ号校验码不匹配,如果在爬虫过程中出现此问题，通常是网络错误，请稍后再试";
+
+// 请修改为自己的的数据分析网站地址
+// 数据分析网站是单独的子项目，地址：https://github.com/Maicius/QQZoneSwipper
+const QQ_FRONT_LACTION = 'http://qq.xiaomaidong.com';

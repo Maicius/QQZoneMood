@@ -7,7 +7,7 @@ let vm = avalon.define({
     $id: 'qqzone',
     nick_name: '',
     // 请修改为对应的前端地址
-    QQ_LOCATION: 'http://qq.xiaomaidong.com/data/userinfo/',
+    QQ_LOCATION: QQ_FRONT_LACTION + '/data/userinfo/',
     qq_id: '',
     stop_num: -1,
     stop_date: '-1',
