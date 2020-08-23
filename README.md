@@ -58,8 +58,9 @@
 	> git clone https://github.com/Maicius/QQZoneSwipper
 	
 	> 5.将 QQZoneSwipper/src/utils/constant.js中的SERVER_HOST修改为服务器的地址（本地默认地址为localhost:80）
+	> 启动前端子项目，请确保已安装了npm
 	
-	> 6.cd QQZoneSwipper & npm run start
+	> 6.cd QQZoneSwipper & npm install --save & npm run start
 	
 	> 7.浏览器里输入地址: [http://localhost:80](http://localhost:80)	
 
