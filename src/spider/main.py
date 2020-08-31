@@ -132,16 +132,30 @@ def do_analysis_for_all(sp):
     sp.get_useful_info_from_json()
     if not sp.mood_data_df.empty:
         # 清洗说说数据并计算点赞最多的人和评论最多的人
-        sp.get_most_people()
+        try:
+            sp.get_most_people()
+        except BaseException as e:
+            sp.logging_info("failed to get most people")
+            sp.format_error(e)
         # 计算发送动态的时间
         # sp.calculate_send_time()
-        sp.calculate_early_send_time()
+        try:
+            sp.calculate_early_send_time()
+        except BaseException as e:
+            sp.logging_info("failed to calculate early time")
+            sp.format_error(e)
+            sp.logging.exception(e)
         # sp.draw_cmt_cloud(sp.mood_data_df)
         # sp.draw_like_cloud(sp.mood_data_df)
         # 说说中的关键字，这个比较花时间
         # sp.draw_content_cloud(sp.mood_data_df)
         # 保存说说数据
-        sp.export_mood_df()
+        try:
+            sp.export_mood_df()
+        except BaseException as e:
+            sp.logging_info("failed to save csv or xlsx file")
+            sp.format_error(e)
+
         # sp.calculate_history_like_agree()
 
 def generate_friend_info():
