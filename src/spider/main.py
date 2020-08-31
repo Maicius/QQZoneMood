@@ -91,7 +91,8 @@ def web_interface(username, nickname, stop_time, mood_num, cookie_text, no_delet
         sp.user_info.save_user()
     except BaseException as e:
         sp.logging_info("failed to analysis")
-        sp.logging.error(e)
+        sp.format_error(e, "failed to analysis because: ")
+        sp.logging.exception(e)
     sp.logging_info("finish to analysis")
     sp.re.set(CLEAN_DATA_KEY + username, 1)
     now_user = sp.re.get(FINISH_USER_NUM_KEY)
@@ -144,7 +145,6 @@ def do_analysis_for_all(sp):
         except BaseException as e:
             sp.logging_info("failed to calculate early time")
             sp.format_error(e)
-            sp.logging.exception(e)
         # sp.draw_cmt_cloud(sp.mood_data_df)
         # sp.draw_like_cloud(sp.mood_data_df)
         # 说说中的关键字，这个比较花时间
