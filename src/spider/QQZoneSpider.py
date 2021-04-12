@@ -617,7 +617,12 @@ class QQZoneSpider(BaseSpider):
             except:
                 json_content = json.loads(self.get_json(str(remove_special_tag(mood_list.text))))
             last_mood = json_content['msglist'][-1]
+            today = int(datetime.datetime.now().year)
             self.user_info.first_mood_time = last_mood['createTime']
+            first_year = int(last_mood['createTime'].split('年')[0])
+            years = today - first_year
+            self.user_info.years = years
+            print(self.user_info.years)
         except BaseException as e:
             self.user_info.first_mood_time = ''
             self.format_error(e, "Failed to get first send mood time")
