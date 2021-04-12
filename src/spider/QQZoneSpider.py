@@ -904,26 +904,27 @@ class QQZoneSpider(BaseSpider):
             self.format_error(e, "Failed to get main page info")
             if self.use_redis:
                 self.re.rpush(WEB_SPIDER_INFO + self.username, GET_MAIN_PAGE_FAILED)
-        try:
-            self.headers['referer'] = 'https://user.qzone.qq.com/' + self.raw_username + '/main'
-            res = self.req.get(url=url2, headers=self.headers)
-            if self.debug:
-                print("获取登陆时间状态:", res.status_code)
-            content = json.loads(self.get_json(res.content.decode("utf-8")))
-            data = content['data']
-            first_time = util.get_standard_time_from_mktime(data['firstlogin'])
-            today = int(datetime.datetime.now().year)
-            first_year = int(first_time.split('-')[0])
-            years = today - first_year
-            self.user_info.years = years
-            self.user_info.first_time = util.get_standard_time_with_name(first_time)
-            if self.debug:
-                print("Finish to get first time")
-            print("Success to Get Main Page Info!")
-        except BaseException as e:
-            self.format_error(e, "Failed to get first login time")
-            if self.use_redis:
-                self.re.rpush(WEB_SPIDER_INFO + self.username, GET_FIRST_LOGIN_TIME)
+        ### 已失效
+        # try:
+        #     self.headers['referer'] = 'https://user.qzone.qq.com/' + self.raw_username + '/main'
+        #     res = self.req.get(url=url2, headers=self.headers)
+        #     if self.debug:
+        #         print("获取登陆时间状态:", res.status_code)
+        #     content = json.loads(self.get_json(res.content.decode("utf-8")))
+        #     data = content['data']
+        #     first_time = util.get_standard_time_from_mktime(data['firstlogin'])
+        #     today = int(datetime.datetime.now().year)
+        #     first_year = int(first_time.split('-')[0])
+        #     years = today - first_year
+        #     self.user_info.years = years
+        #     self.user_info.first_time = util.get_standard_time_with_name(first_time)
+        #     if self.debug:
+        #         print("Finish to get first time")
+        #     print("Success to Get Main Page Info!")
+        # except BaseException as e:
+        #     self.format_error(e, "Failed to get first login time")
+        #     if self.use_redis:
+        #         self.re.rpush(WEB_SPIDER_INFO + self.username, GET_FIRST_LOGIN_TIME)
 
     def calculate_qzone_token(self):
         ctx = execjs.compile(
