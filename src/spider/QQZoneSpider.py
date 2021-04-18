@@ -802,14 +802,14 @@ class QQZoneSpider(BaseSpider):
 
     # 根据unikey 获得tid
     def get_tid(self, unikey):
-        # unikey是链接，形如：http://user.qzone.qq.com/1272082503/mood/4770d24bc5bb7459cc140200.1
+        # unikey是链接，形如：http://user.qzone.qq.com/458546290/mood/4770d24bc5bb7459cc140200.1
         # 其中，4770d24bc5bb7459cc14020是tid
         tids = unikey.split("/")
         tid = tids[5].split(".")
         return tid[0]
 
     # unikey 是用于辨别每条说说的唯一识别码
-    # unikey eg: http://user.qzone.qq.com/1272082503/mood/4770d24b81eba85b0b110800.1
+    # unikey eg: http://user.qzone.qq.com/458546290/mood/4770d24b81eba85b0b110800.1
     def get_unilikeKey_tid_and_smallpic(self, mood_detail, count=0):
         unikey_tid_list = []
         jsonData = json.loads(mood_detail)

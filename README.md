@@ -23,13 +23,24 @@
 
 ![](resource/image/newStyle2.jpg)
 
-![QQ好友成长图](resource/image/qqfriend.png)
-
-![抽奖小工具](resource/image/raffle.png)
-
 ### 系统架构图
 
 ![](resource/image/structure.png)
+
+### 部署注意事项
+
+- 在本地分别启动后端和前端，端口号分别默认为5000和3000
+
+- 修改 QQZoneMood/src/web/static/constant.js中QQ\_FRONT\_LOCATION变量为前端地址,如
+
+	> http://localhost:3000
+
+- 修改 QQZoneSwipper/src/utils/constant.js中SERVER\_HOST变量为后端地址，如：
+
+	> http://localhost:5000
+
+注意url末尾都不要加斜杠（/）
+
 
 ### docker版简介
 
@@ -58,21 +69,69 @@
 	> git clone https://github.com/Maicius/QQZoneSwipper
 	
 	> 5.将 QQZoneSwipper/src/utils/constant.js中的SERVER_HOST修改为服务器的地址（本地默认地址为localhost:80）
-	> 启动前端子项目，请确保已安装了npm
 	
-	> 6.cd QQZoneSwipper & npm install --save & npm run start
+	> 6.启动前端子项目，请确保已安装了npm
 	
-	> 7.浏览器里输入地址: [http://localhost:80](http://localhost:80)	
+	> 	cd QQZoneSwipper & npm install --save & npm run start
+	
+	> 7.浏览器里输入地址: [http://localhost:80](http://localhost:80)
+
 
 - 关于校验码
     
     相当于用户在该网站的密码，为了安全请不要与QQ密码相同。设置校验码的目的是为了保证用户在该网站上只能查看自己的数据。
+    
+### 开发版运行方式 
 
-### TO DO...
+- 0.下载
 
-- ~~将更多的功能整合到docker版中~~
-- ~~Web展示界面优化（想做成网易云年度歌单的风格）~~
-- ~~计算更多指标~~
+	> git clone https://github.com/Maicius/QQZoneMood.git
+
+	> cd QQZoneMood
+
+- 1.安装依赖
+
+	> pip3 install -r requirements.txt 
+	
+	（不建议使用conda，因为sha1等库在conda的源中没有）
+
+- 2.修改配置文件
+
+	> 修改userinfo.json.example为文件userinfo.json，并填好QQ号、QQ密码、保存数据用的文件名前缀；
+	
+	> [可选]修改需要爬取的好友的QQ号和保存数据用的文件名前缀
+	
+- 3.\_\_init\_\_函数参数说明，请根据需要修改（所有参数都有默认值，即使不修改任何参与也能运行）	
+
+
+		def __init__(self, use_redis=False, debug=False, mood_begin=0, mood_num=-1, stop_time='-1',
+                 download_small_image=False, download_big_image=False,
+                 download_mood_detail=True, download_like_detail=True, download_like_names=True, recover=False,
+                 cookie_text=None, from_web=False, username='', nickname='', no_delete=True, pool_flag='127.0.0.1'):
+
+        :param use_redis: If true, use redis and json file to save data, if false, use json file only.
+        :param debug: If true, print info in console
+        :param mood_begin: 开始下载的动态序号，0表示从第0条动态开始下载
+        :param mood_num: 下载的动态数量，最好设置为20的倍数
+        :param stop_time: 停止下载的时间，-1表示全部数据；注意，这里是倒序，比如，stop_time="2016-01-01",表示爬取当前时间到2016年1月1日前的数据
+        :param recover: 是否从redis或文件中恢复数据（主要用于爬虫意外中断之后的数据恢复）。注意!!!此功能在多线程中不可用！！！
+        :param download_small_image: 是否下载缩略图，仅供预览用的小图，该步骤比较耗时，QQ空间提供了3中不同尺寸的图片，这里下载的是最小尺寸的图片
+        :param download_big_image: 是否下载大图，QQ空间中保存的最大的图片，该步骤比较耗时
+        :param download_mood_detail:是否下载动态详情
+        :param download_like_detail:是否下载点赞的详情，包括点赞数量、评论数量、浏览量，该数据未被清除
+        :param download_like_names:是否下载点赞的详情，主要包含点赞的人员列表，该数据有很多都被清空了
+        :param from_web: 表示是否来自web接口，如果为True，将该请求来自web接口，则不会读取配置文件
+        :param username: 在web模式中，传递过来的用户QQ号
+        :param nickname: 在web模式中，传递过来的用户昵称
+        :param no_delete: 是否在redis中缓存数据，如果为True,则不会删除，如果为False，则设置24小时的缓存时间
+        :param pool_flag: redis的连接池host，因为docker中host与外部不同，所以在启动程序时会自动判断是不是处于docker中
+        
+- 4.运行flask服务器
+
+	> python3 src/web/server.py
+
+- 5.其它程序入口可以参考test中测试用例
+
 
 ### 已实现功能
 
@@ -181,63 +240,14 @@
 	> 请注意版本匹配，可以查看这篇博客：  
 	> [selenium之 chromedriver与chrome版本映射表（更新至v2.32）](http://blog.csdn.net/huilan_same/article/details/51896672)
 
-#### 开发版运行方式 
-
-- 0.下载
-
-	> git clone https://github.com/Maicius/QQZoneMood.git
-
-	> cd QQZoneMood
-
-- 1.安装依赖
-
-	> pip3 install -r requirements.txt 
-	
-	（不建议使用conda，因为sha1等库在conda的源中没有）
-
-- 2.修改配置文件
-
-	> 修改userinfo.json.example为文件userinfo.json，并填好QQ号、QQ密码、保存数据用的文件名前缀；
-	
-	> [可选]修改需要爬取的好友的QQ号和保存数据用的文件名前缀
-	
-- 3.\_\_init\_\_函数参数说明，请根据需要修改（所有参数都有默认值，即使不修改任何参与也能运行）	
-
-
-		def __init__(self, use_redis=False, debug=False, mood_begin=0, mood_num=-1, stop_time='-1',
-                 download_small_image=False, download_big_image=False,
-                 download_mood_detail=True, download_like_detail=True, download_like_names=True, recover=False,
-                 cookie_text=None, from_web=False, username='', nickname='', no_delete=True, pool_flag='127.0.0.1'):
-
-        :param use_redis: If true, use redis and json file to save data, if false, use json file only.
-        :param debug: If true, print info in console
-        :param mood_begin: 开始下载的动态序号，0表示从第0条动态开始下载
-        :param mood_num: 下载的动态数量，最好设置为20的倍数
-        :param stop_time: 停止下载的时间，-1表示全部数据；注意，这里是倒序，比如，stop_time="2016-01-01",表示爬取当前时间到2016年1月1日前的数据
-        :param recover: 是否从redis或文件中恢复数据（主要用于爬虫意外中断之后的数据恢复）。注意!!!此功能在多线程中不可用！！！
-        :param download_small_image: 是否下载缩略图，仅供预览用的小图，该步骤比较耗时，QQ空间提供了3中不同尺寸的图片，这里下载的是最小尺寸的图片
-        :param download_big_image: 是否下载大图，QQ空间中保存的最大的图片，该步骤比较耗时
-        :param download_mood_detail:是否下载动态详情
-        :param download_like_detail:是否下载点赞的详情，包括点赞数量、评论数量、浏览量，该数据未被清除
-        :param download_like_names:是否下载点赞的详情，主要包含点赞的人员列表，该数据有很多都被清空了
-        :param from_web: 表示是否来自web接口，如果为True，将该请求来自web接口，则不会读取配置文件
-        :param username: 在web模式中，传递过来的用户QQ号
-        :param nickname: 在web模式中，传递过来的用户昵称
-        :param no_delete: 是否在redis中缓存数据，如果为True,则不会删除，如果为False，则设置24小时的缓存时间
-        :param pool_flag: redis的连接池host，因为docker中host与外部不同，所以在启动程序时会自动判断是不是处于docker中
-        
-- 4.运行flask服务器
-
-	> python3 src/web/server.py
-
-- 5.其它程序入口可以参考test中测试用例
-
 - 运行结果例图：
 ![IMAGE](resource/image/screen1.png)
 ![image](resource/image/image2.png)
 ![Image](resource/image/comment.jpg)
 ![Image3](resource/image/comment_content.jpg)
 ![Image](resource/image/bike2.png)
+![QQ好友成长图](resource/image/qqfriend.png)
+![抽奖小工具](resource/image/raffle.png)
 
 > QQ动态关键字词云
 

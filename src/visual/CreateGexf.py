@@ -64,12 +64,12 @@ class CreateGexf(QQZoneFriendSpider):
         all_group_name = pd.DataFrame(list(self.group_name_set))
         all_group_name['friend'] = '-1'
         all_group_name['add_friend_time'] = -1
-        all_group_name['img'] = 'http://localhost:8080/static/maicius/1272082503_s.png'
+        all_group_name['img'] = 'http://localhost:8080/static/maicius/458546290_s.png'
         all_people_name = self.data[['nick_name', 'common_friend_num', 'add_friend_time','img']]
         all_people_name.columns = [0, 'friend', 'add_friend_time', 'img']
         node_df = pd.DataFrame(pd.concat([all_group_name, all_people_name], axis=0)).reset_index()
         node_df.drop(['index'],axis=1, inplace=True)
-        node_df.fillna('http://localhost:8080/static/maicius/850053825_s.jpg', inplace=True)
+        node_df.fillna('http://localhost:8080/static/maicius/458546290.jpg', inplace=True)
         node_df = node_df.reset_index()
         node_df.columns = ['id', 'node', 'friend', 'add_friend_time', 'img']
         cols = ['id', 'node', 'friend', 'add_friend_time', 'img']

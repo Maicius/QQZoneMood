@@ -55,9 +55,9 @@ class SpiderTest(unittest.TestCase):
     def test_extract_tid(self):
         sp = QQZoneSpider(use_redis=False, debug=False, mood_num=20, download_mood_detail=False,
                           download_like_detail=True, download_like_names=False)
-        str1 = 'http://user.qzone.qq.com/1272082503/mood/4770d24b00acd95c13e00500.1<.>http://user.qzone.qq.com/1272082503/mood/4770d24b00acd95c13e00500.1'
-        str2 = 'http://user.qzone.qq.com/1272082503/mood/4770d24bbb83d95c05600900.1^||^https://b339.photo.store.qq.com/psb?/91b7c939-e3c7-41d8-a450-626a11d7ce19/4iKMKW.M8phXT8bghzPgKjz.rdkmby5vOiOJi4PqSlk!/b/dFMBAAAAAAAA&bo=7gI2Be4CNgURECc!^||^0'
-        str3 = 'http://user.qzone.qq.com/1272082503/mood/4770d24b5c91d65cf9af0b00.1<.>http://user.qzone.qq.com/1272082503/mood/4770d24b5c91d65cf9af0b00.1'
+        str1 = 'http://user.qzone.qq.com/458546290/mood/4770d24b00acd95c13e00500.1<.>http://user.qzone.qq.com/1272082503/mood/4770d24b00acd95c13e00500.1'
+        str2 = 'http://user.qzone.qq.com/458546290/mood/4770d24bbb83d95c05600900.1^||^https://b339.photo.store.qq.com/psb?/91b7c939-e3c7-41d8-a450-626a11d7ce19/4iKMKW.M8phXT8bghzPgKjz.rdkmby5vOiOJi4PqSlk!/b/dFMBAAAAAAAA&bo=7gI2Be4CNgURECc!^||^0'
+        str3 = 'http://user.qzone.qq.com/458546290/mood/4770d24b5c91d65cf9af0b00.1<.>http://user.qzone.qq.com/1272082503/mood/4770d24b5c91d65cf9af0b00.1'
         expect1 = '4770d24b00acd95c13e00500'
         expect2 = '4770d24bbb83d95c05600900'
         expect3 = '4770d24b5c91d65cf9af0b00'
