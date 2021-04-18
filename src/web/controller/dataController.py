@@ -4,7 +4,7 @@ from src.util.constant import *
 import os
 
 from src.web.entity.UserInfo import UserInfo
-from src.web.web_util.web_util import check_password, get_redis_conn
+from src.web.web_util.web_util import check_password, get_redis_conn, judge_pool
 
 data = Blueprint('data',__name__)
 
@@ -92,7 +92,12 @@ def get_history(QQ, name, password):
 @data.route('/userinfo/<QQ>/<name>/<password>')
 def userinfo(QQ, name, password):
     pool_flag = session.get(POOL_FLAG)
-    conn = get_redis_conn(pool_flag)
+    # 当前后端域名：端口不一致时，cookie无法跨站传输，导致session为空，故需要再判断一次
+    if not pool_flag:
+      host = judge_pool()
+      conn = get_redis_conn(host)
+    else:
+      conn = get_redis_conn(pool_flag)
     if check_password(conn, QQ, password):
         user = UserInfo(QQ)
         result = user.load_from_redis(QQ)
