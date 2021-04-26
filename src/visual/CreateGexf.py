@@ -28,11 +28,6 @@ class CreateGexf(QQZoneFriendSpider):
         self.change_image_url()
         self.calculate()
         self.format_output()
-
-    def remove_waste_index(self):
-        index_list = self.data[self.data['add_friend_time'] == 0].index
-        self.data.drop(index=index_list, inplace=True)
-
     def calculate(self):
         group_list = []
         group_name_list = []
@@ -103,6 +98,7 @@ class CreateGexf(QQZoneFriendSpider):
                 # print(key), print(target_list)
                 for target in target_list:
                     writer.writerow([source, target[0], target[1]])
+
 
 if __name__ == '__main__':
     gexf = CreateGexf(file_name_head="maicius")

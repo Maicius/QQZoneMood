@@ -11,7 +11,12 @@ data = Blueprint('data',__name__)
 @data.route('/download_file/<QQ>/<password>/<file_type>')
 def download_excel(QQ, password, file_type):
     pool_flag = session.get(POOL_FLAG)
-    conn = get_redis_conn(pool_flag)
+    # 当前后端域名：端口不一致时，cookie无法跨站传输，导致session为空，故需要再判断一次
+    if not pool_flag:
+      host = judge_pool()
+      conn = get_redis_conn(host)
+    else:
+      conn = get_redis_conn(pool_flag)
     if not check_password(conn, QQ, password):
         return json.dumps(dict(finish="QQ号与校验码不匹配"), ensure_ascii=False)
 
@@ -35,6 +40,13 @@ def download_excel(QQ, password, file_type):
 def clear_cache(QQ, password):
     pool_flag = session.get(POOL_FLAG)
     conn = get_redis_conn(pool_flag)
+    pool_flag = session.get(POOL_FLAG)
+    # 当前后端域名：端口不一致时，cookie无法跨站传输，导致session为空，故需要再判断一次
+    if not pool_flag:
+      host = judge_pool()
+      conn = get_redis_conn(host)
+    else:
+      conn = get_redis_conn(pool_flag)
     if not check_password(conn, QQ, password):
         return json.dumps(dict(finish="QQ号与校验码不匹配"), ensure_ascii=False)
     else:
@@ -75,6 +87,11 @@ def do_clear_data_by_user(QQ, conn):
 def get_history(QQ, name, password):
     pool_flag = session.get(POOL_FLAG)
     conn = get_redis_conn(pool_flag)
+    # 当前后端域名：端口不一致时，cookie无法跨站传输，导致session为空，故需要再判断一次
+    if not pool_flag:
+      host = judge_pool()
+      conn = get_redis_conn(host)
+
     result = {}
     if not check_password(conn, QQ, password):
         result['finish'] = 0
