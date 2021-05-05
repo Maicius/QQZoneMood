@@ -9,6 +9,13 @@
 
 - [关于python并发爬虫的一些经验总结](http://www.xiaomaidong.com/?p=1189)
 
+### QQ交流群
+
+- 群号：707583419
+![](resource/image/qrCodeGroup.png)
+
+
+
 ### 简介
 
 - 多线程抓取QQ空间说说内容并进行分析，提供基于Flask和avalon.js的web配置界面，以及配套的测试用例
