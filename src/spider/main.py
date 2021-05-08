@@ -136,7 +136,7 @@ def do_analysis_for_all(sp):
         try:
             sp.get_most_people()
         except BaseException as e:
-            sp.logging_info("failed to get most people")
+            sp.logging_info("fahiled to get most people")
             sp.format_error(e)
         # 计算发送动态的时间
         # sp.calculate_send_time()
@@ -148,7 +148,7 @@ def do_analysis_for_all(sp):
         # sp.draw_cmt_cloud(sp.mood_data_df)
         # sp.draw_like_cloud(sp.mood_data_df)
         # 说说中的关键字，这个比较花时间
-        # sp.draw_content_cloud(sp.mood_data_df)
+        sp.draw_content_cloud(sp.mood_data_df)
         # 保存说说数据
         try:
             sp.export_mood_df()

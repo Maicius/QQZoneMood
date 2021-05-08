@@ -10,11 +10,11 @@
 - [关于python并发爬虫的一些经验总结](http://www.xiaomaidong.com/?p=1189)
 
 ### QQ交流群
+ 群号：707583419
 
-- 群号：707583419
 ![](resource/image/qrCodeGroup.png)
 
-
+如果在使用中遇见bug，或者关于项目有什么想法，欢迎在群中交流
 
 ### 简介
 
