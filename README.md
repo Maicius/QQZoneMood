@@ -32,7 +32,7 @@
 
 ### 系统架构图
 
-![](resource/image/structure.png)
+![](resource/image/sctructure.jpg)
 
 ### 部署注意事项
 
