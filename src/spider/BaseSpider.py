@@ -159,6 +159,8 @@ class BaseSpider(object):
         self.logging.info(info)
 
     def init_parameter(self):
+        # 初始化线程列表
+        self.thread_list = []
         self.mood_count = 0
         self.like_detail = []
         self.like_list_names = []
