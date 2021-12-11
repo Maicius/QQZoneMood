@@ -677,7 +677,7 @@ class QQZoneSpider(BaseSpider):
                 if self.debug:
                     raise e
         if len(cmt_list) < cmt_num - 20:
-            print("注意：未能成功获取所有评论！！！")
+            print("注意：未能成功获取所有评论：{} / {}！！！".format(len(cmt_list) + 20, cmt_num))
         return cmt_list
 
     def do_get_infos(self, unikeys, until_stop_time):
