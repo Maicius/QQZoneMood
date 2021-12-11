@@ -166,7 +166,6 @@ class winClient(object):
                 print('| ', user['qq'],' |', user['name'])
         self.output('------------------------')
 
-
     def start_like_cmt_thread(self, key, tid):
         self.like_t = threading.Thread(target=self.get_like_names, args=(key, tid))
         self.cmt_t = threading.Thread(target=self.get_cmt_names, args=(key, tid))

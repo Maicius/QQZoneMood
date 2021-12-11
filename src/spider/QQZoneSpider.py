@@ -566,7 +566,7 @@ class QQZoneSpider(BaseSpider):
             'topicId': top_id,
             'uin': self.raw_username
         }
-        return url + parse.urlencode(params)
+        return url + parse.urlencode(params) + '&g_tk={}'.format(self.g_tk)
 
     # 获取点赞的人的详情
     def get_like_detail(self, curlikekey, tid):
@@ -635,26 +635,49 @@ class QQZoneSpider(BaseSpider):
         # 向上取整
         page = math.ceil(cmt_num / 20)
         cmt_list = []
-        for i in range(1, page):
-            start = i * 20
+        cur_page = 1
+        REPEAT_TIMES = 5
+        cur_repeat_times = 0
+        while cur_page < page:
+            start = cur_page * 20
             url = self.get_cmt_detail_url(start=start, top_id=top_id)
             if self.debug:
                 print(start)
                 print('获取超过20的评论的人信息:', cmt_num, url)
-            # 20200807备注：QQ空间抽风，获取超过20的评论会显示未登陆
+            # 20200807 备注：QQ空间抽风，获取超过20的评论会显示未登陆
+            # 20211211 备注：该问题已解决
             content = self.req.get(url, headers=self.headers).content
             try:
                 content_json = self.get_json(content.decode('utf-8'))
                 content_json = json.loads(content_json)
+                if "code" in content_json:
+                    if content_json['code'] == -3000:
+                        if cur_repeat_times < REPEAT_TIMES:
+                            print('tid:', tid)
+                            print("获取第{}页出错，显示未登陆，开始重试...".format(cur_page))
+                            time.sleep(random.random())
+                            cur_repeat_times += 1
+                            continue
+                        else:
+                            cur_repeat_times = 0
+                            print("获取第{}页出错，已达最高重试次数".format(cur_page))
+                            cur_page += 1
+                            continue
+                if cur_repeat_times > 0:
+                    print("重试{}次之后成功获取第{}页".format(cur_repeat_times, cur_page))
+                    cur_repeat_times = 0
                 comments = content_json['data']['comments']
-
                 cmt_list.extend(comments)
+                # 成功获取，页数+1
+                cur_page += 1
             except BaseException as e:
                 # print(content)
                 print("获取数量超过20的评论失败")
                 self.format_error(e, content.decode("utf-8"))
                 if self.debug:
                     raise e
+        if len(cmt_list) < cmt_num - 20:
+            print("注意：未能成功获取所有评论！！！")
         return cmt_list
 
     def do_get_infos(self, unikeys, until_stop_time):

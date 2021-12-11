@@ -17,8 +17,18 @@ class FriendMoodSpiderTest(unittest.TestCase):
         assert fms.raw_username != fms.username
 
     def test_get_friend_mood(self):
+        fms = QQZoneFriendMoodSpider(mood_num=200)
+        fms.get_friend_mood()
+
+    # 本方法用于测试获取某一指定的tid的说说的所有评论
+    def test_get_friend_target_mood(self):
+        target_tid = 'c060675ac576a961ebdc0800'
+        cmt_num = 233
         fms = QQZoneFriendMoodSpider(mood_num=20)
         fms.get_friend_mood()
+        cmt_list = fms.get_all_cmt_num(cmt_num, target_tid)
+        print(len(cmt_list))
+
 
     def test_generate_friend_info(self):
         qa = QQZoneAnalysis(mood_num=200, use_redis=False, debug=True)
