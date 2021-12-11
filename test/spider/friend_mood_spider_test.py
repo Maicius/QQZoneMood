@@ -29,7 +29,6 @@ class FriendMoodSpiderTest(unittest.TestCase):
         cmt_list = fms.get_all_cmt_num(cmt_num, target_tid)
         print(len(cmt_list))
 
-
     def test_generate_friend_info(self):
         qa = QQZoneAnalysis(mood_num=200, use_redis=False, debug=True)
         # 建议在resource/config/friend_info.json中配置需要爬取的好友QQ号
