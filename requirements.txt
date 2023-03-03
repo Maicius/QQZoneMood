@@ -20,3 +20,4 @@ openpyxl
 pillow
 twisted
 flask-cors
+jieba
