@@ -4,7 +4,7 @@
 # 登陆使用的是Selenium， 无法识别验证码
 # 若出现验证码，则先尝试手动从浏览器登陆并退出再运行程序
 from requests.adapters import HTTPAdapter
-from selenium import webdriver
+# from selenium import webdriver
 import requests
 import time
 from urllib import parse
@@ -148,7 +148,9 @@ class QQZoneSpider(BaseSpider):
             self.logging_info("success to download qr code")
             # 如果不是从网页发来的请求，就本地展示二维码
             if not self.from_web and wait_time <= 1:
-                self.show_image(self.QR_CODE_PATH + '.jpg')
+                pass
+                print("注意：mac os 上不允许子线程弹出窗口")
+                # self.show_image(self.QR_CODE_PATH + '.jpg')
             elif self.from_web and wait_time <= 1 and self.use_redis:
                 self.re.lpush(WEB_SPIDER_INFO + self.username, self.random_qr_name + ".jpg")
             while True:
@@ -263,37 +265,38 @@ class QQZoneSpider(BaseSpider):
         self.g_tk = h & 2147483647
 
     # 使用selenium自动登陆并获取cookie
-    def auto_get_cookie(self):
-        self.web = webdriver.Chrome()
-        self.web.get(self.host)
-        self.web.switch_to.frame('login_frame')
-        log = self.web.find_element_by_id("switcher_plogin")
-        log.click()
-        time.sleep(1)
-        username = self.web.find_element_by_id('u')
-        username.send_keys(self.username)
-        ps = self.web.find_element_by_id('p')
-        ps.send_keys(self.password)
-        btn = self.web.find_element_by_id('login_button')
-        time.sleep(1)
-        btn.click()
-        time.sleep(10)
-        print("begin...")
-        self.web.get('https://user.qzone.qq.com/{}/main'.format(self.username))
-        time.sleep(3)
-        content = self.web.page_source
-        # self.logging_info(content)
-        qzonetoken = re.findall(re.compile("g_qzonetoken = \(function\(\)\{ try\{return \"(.*)?\""), content)[0]
-        self.qzonetoken = qzonetoken
-        cookie = ''
-        # 获取cookie
-        for elem in self.web.get_cookies():
-            cookie += elem["name"] + "=" + elem["value"] + ";"
-        self.cookies = cookie
-        print(cookie)
-        print("Login success")
-        self.logging.info("login_success")
-        self.web.quit()
+    # 废弃！！！！
+    # def auto_get_cookie(self):
+    #     self.web = webdriver.Chrome()
+    #     self.web.get(self.host)
+    #     self.web.switch_to.frame('login_frame')
+    #     log = self.web.find_element_by_id("switcher_plogin")
+    #     log.click()
+    #     time.sleep(1)
+    #     username = self.web.find_element_by_id('u')
+    #     username.send_keys(self.username)
+    #     ps = self.web.find_element_by_id('p')
+    #     ps.send_keys(self.password)
+    #     btn = self.web.find_element_by_id('login_button')
+    #     time.sleep(1)
+    #     btn.click()
+    #     time.sleep(10)
+    #     print("begin...")
+    #     self.web.get('https://user.qzone.qq.com/{}/main'.format(self.username))
+    #     time.sleep(3)
+    #     content = self.web.page_source
+    #     # self.logging_info(content)
+    #     qzonetoken = re.findall(re.compile("g_qzonetoken = \(function\(\)\{ try\{return \"(.*)?\""), content)[0]
+    #     self.qzonetoken = qzonetoken
+    #     cookie = ''
+    #     # 获取cookie
+    #     for elem in self.web.get_cookies():
+    #         cookie += elem["name"] + "=" + elem["value"] + ";"
+    #     self.cookies = cookie
+    #     print(cookie)
+    #     print("Login success")
+    #     self.logging.info("login_success")
+    #     self.web.quit()
 
     # 手动添加cookie完成登陆
     def manu_get_cookie(self, cookie_text):
@@ -424,6 +427,9 @@ class QQZoneSpider(BaseSpider):
         if self.debug:
             print("获取主页动态数量的状态码:", res.status_code)
         mood_json = json.loads(self.get_json(mood))
+        print(mood_json['message'])
+        if mood_json['message'] == '使用人数过多，请稍后再试':
+            print(mood_json['message'])
         mood_num = mood_json['usrinfo']['msgnum']
         return mood_num
 
@@ -627,7 +633,7 @@ class QQZoneSpider(BaseSpider):
             self.user_info.first_mood_time = ''
             self.format_error(e, "Failed to get first send mood time")
         finally:
-            self.user_info.save_user()
+            self.user_info.save_user(use_redis=self.use_redis)
 
     # 评论数量超过20的说说需要再循环爬取
     def get_all_cmt_num(self, cmt_num, tid):
@@ -975,7 +981,7 @@ class QQZoneSpider(BaseSpider):
             if self.debug:
                 print("qzone_token:", qzonetoken)
         except BaseException as e:
-            self.format_error("获取token失败", e)
+            # self.format_error("获取token失败", e)
             self.qzonetoken = ""
             pass
 

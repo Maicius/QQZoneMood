@@ -152,7 +152,7 @@ class BaseSpider(object):
                 pass
             print('ERROR===================')
             if self.debug:
-                # raise e
+                raise e
                 pass
 
     def logging_info(self, info):

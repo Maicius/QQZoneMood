@@ -96,7 +96,7 @@ class QQZoneFriendMoodSpider(QQZoneFriendSpider):
         self.init_parameter()
 
 if __name__ == '__main__':
-    qqfriend = QQZoneFriendMoodSpider(use_redis=True, debug=False, mood_begin=0, mood_num=500,
+    qqfriend = QQZoneFriendMoodSpider(use_redis=False, debug=False, mood_begin=0, mood_num=500,
                                       stop_time='2014-06-01',
                                       download_small_image=False, download_big_image=False,
                                       download_mood_detail=True, download_like_detail=True, download_like_names=True,

@@ -68,22 +68,22 @@ class SpiderTest(unittest.TestCase):
 
     # 测试只下载说说详情
     def test_capture_info(self):
-        sp = QQZoneSpider(use_redis=True, debug=False, mood_num=20, download_mood_detail=False,
+        sp = QQZoneSpider(use_redis=False, debug=False, mood_num=20, download_mood_detail=False,
                           download_like_detail=True, download_like_names=False)
 
-        sp.login()
+        sp.login_with_qr_code()
         sp.get_mood_list()
 
     # 并发获取200条说说数据
     def test_capture_info_parallel(self):
-        sp = QQZoneSpider(use_redis=True, debug=False, mood_num=200)
-        sp.login()
+        sp = QQZoneSpider(use_redis=False, debug=True, mood_num=200)
+        sp.login_with_qr_code()
         sp.get_mood_list()
 
     # 获取全部说说数据，不下载图片
     def test_capture_main_data(self):
         sp = QQZoneSpider(use_redis=True, debug=False)
-        sp.login()
+        sp.login_with_qr_code()
         sp.get_main_page_info()
         sp.get_mood_list()
 

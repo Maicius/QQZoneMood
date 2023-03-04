@@ -95,13 +95,14 @@ class UserInfo(object):
                     early_mood_friend = self.early_mood_friend, early_mood_date = self.early_mood_date
         )
 
-    def save_user(self):
+    def save_user(self, use_redis=True):
         data = self.to_dict()
         with open(self.temp_dir + "user_info.json", 'w', encoding='utf-8') as w:
             json.dump(data, w, ensure_ascii=False)
         serial_data = json.dumps(data, ensure_ascii=False)
-        conn = self.get_redis_conn()
-        conn.set(USER_INFO_KEY + self.QQ, serial_data)
+        if use_redis:
+          conn = self.get_redis_conn()
+          conn.set(USER_INFO_KEY + self.QQ, serial_data)
         print("user info result file was saved to:", self.temp_dir + "user_info.json")
 
     def load(self):
